@@ -490,6 +490,11 @@ function getTemplateSetting(template: PreviewTemplate | undefined, key: string, 
   return value == null ? fallback : String(value);
 }
 
+function getBooleanSetting(template: PreviewTemplate | undefined, key: string, fallback = false) {
+  const value = template?.settings?.[key];
+  return typeof value === "boolean" ? value : fallback;
+}
+
 function splitTemplateSections(template: PreviewTemplate | undefined) {
   return getTemplateSetting(template, "section_order", "header,seller-buyer,items,totals,qr,footer")
     .split(",")
