@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
+import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import {
   createCostCenter,
   listCostCenters,
@@ -75,7 +76,7 @@ export function CostCentersOverview() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-inspector-real-register="cost-centers">
       <Card className="rounded-[2rem] border-white/70 bg-white/92 p-7 shadow-[0_28px_54px_-38px_rgba(17,32,24,0.2)] backdrop-blur-xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
@@ -131,6 +132,20 @@ export function CostCentersOverview() {
           </div>
         </Card>
       </div>
+
+      <WorkspaceDataTable
+        title="Cost center register"
+        caption="Operational cost-center rows available for purchase and reporting allocation."
+        rows={costCenters}
+        emptyMessage="Create the first cost center to start tagging purchase documents."
+        columns={[
+          { header: "Code", render: (row) => row.code },
+          { header: "Name", render: (row) => row.name },
+          { header: "Description", render: (row) => row.description || "-" },
+          { header: "Status", render: (row) => row.isActive ? "Active" : "Inactive" },
+        ]}
+        badge={loading ? "Loading" : `${costCenters.length} rows`}
+      />
 
       {error ? <div className="rounded-[1.2rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div> : null}
       {feedback ? <div className="rounded-[1.2rem] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{feedback}</div> : null}

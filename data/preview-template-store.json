@@ -1,0 +1,102 @@
+[
+  {
+    "id": 801,
+    "name": "Executive ZATCA Classic",
+    "document_types": ["tax_invoice", "quotation", "proforma_invoice"],
+    "locale_mode": "bilingual",
+    "accent_color": "#1f7a53",
+    "watermark_text": "Gulf Hisab",
+    "header_html": "<strong>Premium bilingual invoice layout</strong>",
+    "footer_html": "<span>Generated from the compliance template engine</span>",
+    "settings": {
+      "layout": "classic",
+      "section_order": "header,seller-buyer,items,totals,qr,footer",
+      "card_style": "soft",
+      "watermark_mode": "logo"
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": true,
+    "is_active": true
+  },
+  {
+    "id": 802,
+    "name": "Navy Compact Grid",
+    "document_types": ["tax_invoice", "quotation", "proforma_invoice"],
+    "locale_mode": "en",
+    "accent_color": "#204f8c",
+    "watermark_text": "B2B",
+    "header_html": "<strong>Compact commercial layout</strong>",
+    "footer_html": "<span>Compact grid footer</span>",
+    "settings": {
+      "layout": "compact-grid",
+      "section_order": "header,totals,seller-buyer,items,qr,footer",
+      "card_style": "outlined",
+      "watermark_mode": "logo"
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 803,
+    "name": "Bronze Statement",
+    "document_types": ["tax_invoice", "vendor_bill", "purchase_invoice"],
+    "locale_mode": "bilingual",
+    "accent_color": "#8c5a20",
+    "watermark_text": "Finance",
+    "header_html": "<strong>Statement-first layout</strong>",
+    "footer_html": "<span>Bronze statement footer</span>",
+    "settings": {
+      "layout": "statement",
+      "section_order": "header,seller-buyer,totals,items,qr,footer",
+      "card_style": "banded",
+      "watermark_mode": "logo"
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 804,
+    "name": "Monochrome Legal",
+    "document_types": ["tax_invoice", "quotation", "proforma_invoice"],
+    "locale_mode": "bilingual",
+    "accent_color": "#28313b",
+    "watermark_text": "Official Copy",
+    "header_html": "<strong>Legal filing layout</strong>",
+    "footer_html": "<span>Audit-ready footer</span>",
+    "settings": {
+      "layout": "legal",
+      "section_order": "header,seller-buyer,items,qr,totals,footer",
+      "card_style": "minimal",
+      "watermark_mode": "logo"
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 805,
+    "name": "Saudi Modern Ledger",
+    "document_types": ["tax_invoice", "quotation", "proforma_invoice"],
+    "locale_mode": "bilingual",
+    "accent_color": "#0f766e",
+    "watermark_text": "Saudi VAT",
+    "header_html": "<strong>Modern ledger layout</strong>",
+    "footer_html": "<span>Saudi modern footer</span>",
+    "settings": {
+      "layout": "ledger",
+      "section_order": "header,qr,seller-buyer,items,totals,footer",
+      "card_style": "ledger",
+      "watermark_mode": "logo"
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": false,
+    "is_active": true
+  }
+]

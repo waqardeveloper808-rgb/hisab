@@ -1,0 +1,86 @@
+{
+  "route": "/workspace/user/proforma-invoices",
+  "verdict": "PASS",
+  "table_found": true,
+  "row_count": 1,
+  "filters_found": true,
+  "actions_found": [
+    "Import",
+    "Export",
+    "Create Proforma",
+    "Reset",
+    "quotation",
+    "proforma invoice",
+    "tax invoice",
+    "cash invoice",
+    "recurring invoice",
+    "credit note",
+    "debit note",
+    "api invoice",
+    "PRO-2026-2107proforma invoice",
+    "Preview",
+    "View",
+    "Download",
+    "Payment",
+    "Duplicate"
+  ],
+  "filler_text_found": false,
+  "network_failures": [],
+  "ui_findings": [],
+  "logic_findings": [],
+  "visual_findings": [
+    "Split view collapses vertically on a large desktop viewport instead of keeping the register and preview side by side."
+  ],
+  "architecture_findings": [],
+  "zatca_check": "NOT_AVAILABLE",
+  "five_whys": {
+    "analyses": []
+  },
+  "root_cause_summary": "No route-level failure required a root-cause escalation.",
+  "recommended_fixes": [],
+  "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-proforma-invoices.png",
+  "api_calls": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/documents",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/contacts",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/items",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/documents/2107",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/documents/2107/preview",
+      "resourceType": "fetch"
+    }
+  ],
+  "evidence": [
+    "DOM marker reported preview data mode.",
+    "Split-view operating layout detected.",
+    "Preview/detail surface detected alongside the register.",
+    "Import/export controls detected.",
+    "Create targets: /workspace/invoices/new?documentType=proforma_invoice"
+  ],
+  "zatca_details": {
+    "issues": [
+      "ZATCA verification is only attempted on invoice routes."
+    ]
+  }
+}

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --navbar-height: 5.75rem;
+  --navbar-height: 5.25rem;
   --color-canvas: #f7fbf8;
   --color-surface: #ffffff;
   --color-surface-soft: #eef6f1;
@@ -25,16 +25,15 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 6rem;
+  overflow-x: clip;
 }
 
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-manrope), sans-serif;
-  background-image:
-    radial-gradient(circle at top, rgba(31, 122, 83, 0.1), transparent 38%),
-    radial-gradient(circle at 82% 16%, rgba(180, 138, 71, 0.14), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 248, 0.98));
+  overflow-x: clip;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 248, 0.98));
 }
 
 body::before {
@@ -43,7 +42,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
-  opacity: 0.35;
+  opacity: 0.18;
 }
 
 a {
@@ -107,6 +106,10 @@ textarea:focus-visible {
 button:active,
 a:active {
   transform: translateY(1px);
+}
+
+table {
+  width: 100%;
 }
 
 [role="listbox"] {

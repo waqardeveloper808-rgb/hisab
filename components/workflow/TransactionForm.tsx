@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
@@ -12,7 +11,7 @@ import { QuickCreateDialog } from "@/components/workflow/QuickCreateDialog";
 import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
 import { contactToOption, useWorkspaceData } from "@/components/workflow/WorkspaceDataProvider";
 import type { ContactKind, ContactRecord, PickerOption, TransactionKind, TransactionLine } from "@/components/workflow/types";
-import { calculateLineTotal, createId, currency } from "@/components/workflow/utils";
+import { calculateLineSubtotal, calculateLineTotal, calculateLineVatAmount, createId, currency } from "@/components/workflow/utils";
 import {
   finalizeTransactionDraft,
   getDocument,
@@ -34,6 +33,7 @@ import { mapWorkspaceHref } from "@/lib/workspace-path";
 type TransactionFormProps = {
   kind: TransactionKind;
   documentId?: number;
+  initialDocumentType?: string;
 };
 
 const configByKind = {
@@ -83,18 +83,6 @@ function normalizeFieldValue(value: string | number | boolean | null | undefined
   return "";
 }
 
-function HelpTip({ text }: { text: string }) {
-  return (
-    <span
-      title={text}
-      className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-line bg-surface-soft text-[11px] font-semibold text-muted"
-      aria-label={text}
-    >
-      ?
-    </span>
-  );
-}
-
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -136,7 +124,28 @@ function workflowStatusLabel(status: "draft" | "issued" | "reported" | "paid" | 
   }[status];
 }
 
-export function TransactionForm({ kind, documentId }: TransactionFormProps) {
+function buildDefaultInvoiceCustomFields(kind: TransactionKind): Record<string, string | number | boolean | null> {
+  if (kind !== "invoice") {
+    return {};
+  }
+
+  return {
+    supply_date: today(),
+    currency: "SAR",
+    seller_name_en: "Gulf Hisab Trading Co.",
+    seller_name_ar: "شركة غلف حساب التجارية",
+    seller_vat_number: "300123456700003",
+    seller_address_en: "King Fahd Road, Riyadh 12271, Saudi Arabia",
+    seller_address_ar: "طريق الملك فهد، الرياض 12271، المملكة العربية السعودية",
+    buyer_name_en: "",
+    buyer_name_ar: "",
+    buyer_vat_number: "",
+    buyer_address_en: "",
+    buyer_address_ar: "",
+  };
+}
+
+export function TransactionForm({ kind, documentId, initialDocumentType }: TransactionFormProps) {
   const config = configByKind[kind];
   const { basePath } = useWorkspacePath();
   const { createContact, customers, suppliers, searchContacts, items } = useWorkspaceData();
@@ -156,14 +165,18 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
   const [costCenters, setCostCenters] = useState<CostCenterRecord[]>([]);
   const [reference, setReference] = useState(kind === "invoice" ? "INV-DRAFT-1001" : "BILL-DRAFT-1001");
   const [documentTitle, setDocumentTitle] = useState("");
-  const [documentType, setDocumentType] = useState(config.defaultDocumentType);
+  const [documentType, setDocumentType] = useState(
+    initialDocumentType && config.typeOptions.includes(initialDocumentType)
+      ? initialDocumentType
+      : config.defaultDocumentType,
+  );
   const [issueDate, setIssueDate] = useState("2026-04-13");
   const [dueDate, setDueDate] = useState("2026-04-20");
   const [notes, setNotes] = useState("");
   const [languageCode, setLanguageCode] = useState<"en" | "ar">("en");
   const [templateId, setTemplateId] = useState<number | null>(null);
   const [documentCostCenterId, setDocumentCostCenterId] = useState<number | null>(null);
-  const [documentCustomFields, setDocumentCustomFields] = useState<Record<string, string | number | boolean | null>>({});
+  const [documentCustomFields, setDocumentCustomFields] = useState<Record<string, string | number | boolean | null>>(buildDefaultInvoiceCustomFields(kind));
   const [purchaseContext, setPurchaseContext] = useState({ type: "", purpose: "", category: "" });
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
@@ -182,28 +195,11 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
   ]);
   const [draftContactName, setDraftContactName] = useState("");
   const [createContactOpen, setCreateContactOpen] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const notesId = `${kind}-notes`;
   const activeDocumentId = documentId ?? loadedDocument?.id ?? null;
   const workflowStatus = normalizeDocumentWorkflowStatus(loadedDocument);
   const readOnlyDocument = Boolean(loadedDocument && workflowStatus !== "draft");
   const readOnlyLabel = workflowStatusLabel(workflowStatus);
-
-  useEffect(() => {
-    if (documentId || kind === "invoice") {
-      return;
-    }
-
-    const storageKey = `hisab-onboarding-${kind}`;
-
-    try {
-      if (!window.localStorage.getItem(storageKey)) {
-        setShowOnboarding(true);
-      }
-    } catch {
-      setShowOnboarding(true);
-    }
-  }, [documentId, kind]);
 
   useEffect(() => {
     let active = true;
@@ -230,6 +226,19 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (documentId) {
+      return;
+    }
+
+    if (initialDocumentType && config.typeOptions.includes(initialDocumentType)) {
+      setDocumentType(initialDocumentType);
+      return;
+    }
+
+    setDocumentType(config.defaultDocumentType);
+  }, [config.defaultDocumentType, config.typeOptions, documentId, initialDocumentType]);
 
   useEffect(() => {
     if (!documentId) {
@@ -315,6 +324,8 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
     setHydratedDocumentId(loadedDocument.id);
   }, [config.contactKind, config.contactLabel, customers, hydratedDocumentId, items, loadedDocument, suppliers]);
 
+  const subtotal = lines.reduce((sum, line) => sum + calculateLineSubtotal(line), 0);
+  const vatTotal = lines.reduce((sum, line) => sum + calculateLineVatAmount(line), 0);
   const total = lines.reduce((sum, line) => sum + calculateLineTotal(line), 0);
   const count = kind === "invoice" ? customers.length : suppliers.length;
   const availableTemplates = useMemo(() => templates.filter((template) => {
@@ -342,6 +353,8 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
 
     return field.appliesTo.length === 0 || field.appliesTo.includes(documentType);
   }), [customFieldDefinitions, documentType]);
+  const selectedTemplate = availableTemplates.find((template) => template.id === templateId) ?? null;
+  const activeCurrency = String(documentCustomFields.currency ?? "SAR");
 
   function handleContactSelect(option: PickerOption | null) {
     setSelectedContact(option);
@@ -356,6 +369,15 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
 
     if (match) {
       setSelectedContactRecord(match);
+
+      if (kind === "invoice") {
+        setDocumentCustomFields((current) => ({
+          ...current,
+          buyer_name_en: current.buyer_name_en || match.displayName,
+          buyer_address_en: current.buyer_address_en || match.city,
+        }));
+      }
+
       return;
     }
 
@@ -537,18 +559,6 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
     }
   }
 
-  function dismissOnboarding() {
-    const storageKey = `hisab-onboarding-${kind}`;
-
-    try {
-      window.localStorage.setItem(storageKey, "seen");
-    } catch {
-      // Ignore storage failures and still close the popup.
-    }
-
-    setShowOnboarding(false);
-  }
-
   if (loadingEditor) {
     return (
       <Card className="rounded-[2rem] border-white/70 bg-white/92 p-8 shadow-[0_28px_54px_-38px_rgba(17,32,24,0.2)] backdrop-blur-xl">
@@ -560,7 +570,7 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]" data-inspector-workflow-form={kind} data-inspector-inline-create-contact="true" data-inspector-inline-create-item="true">
       <div className="space-y-6">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
@@ -588,28 +598,34 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
             </div>
         </div>
 
-        {showOnboarding && kind !== "invoice" ? (
-          <Card className="rounded-[1.8rem] border border-amber-200 bg-[linear-gradient(135deg,rgba(255,248,232,0.96),rgba(255,255,255,0.96))] p-6 shadow-[0_28px_54px_-42px_rgba(137,94,14,0.2)]">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div className="max-w-3xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-amber-700">First purchase</p>
-                <h3 className="mt-2 text-2xl font-semibold text-ink">Capture the first purchase document with full context from the start.</h3>
-                <p className="mt-3 text-sm leading-7 text-muted">Pick or create the supplier, define the purchase context, assign cost centers or dynamic fields, then save or post the bill. The help tips in this editor explain what drives reporting and approvals.</p>
+        {!readOnlyDocument ? (
+          <Card className="rounded-[1.2rem] border-white/70 bg-white/92 p-4 shadow-[0_18px_36px_-28px_rgba(17,32,24,0.16)] backdrop-blur-xl">
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="rounded-[1.2rem] border border-line bg-surface-soft px-4 py-3" data-inspector-workflow-step="contact">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Step 1</p>
+                <p className="mt-1 font-semibold text-ink">Save {kind === "invoice" ? "customer" : "supplier"}</p>
+                <p className="mt-1 text-sm text-muted">Pick an existing contact or create one inline without leaving the draft.</p>
               </div>
-              <Button variant="secondary" onClick={dismissOnboarding}>Dismiss</Button>
+              <div className="rounded-[1.2rem] border border-line bg-surface-soft px-4 py-3" data-inspector-workflow-step="items">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Step 2</p>
+                <p className="mt-1 font-semibold text-ink">Add saved line items</p>
+                <p className="mt-1 text-sm text-muted">Each line must point to a saved product or service before the document can be finalized.</p>
+              </div>
+              <div className="rounded-[1.2rem] border border-line bg-surface-soft px-4 py-3" data-inspector-workflow-step="document">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Step 3</p>
+                <p className="mt-1 font-semibold text-ink">Save or issue document</p>
+                <p className="mt-1 text-sm text-muted">Draft first if needed, then finalize once dates, totals, and template are correct.</p>
+              </div>
+              <div className="rounded-[1.2rem] border border-line bg-surface-soft px-4 py-3" data-inspector-workflow-step="payment">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Step 4</p>
+                <p className="mt-1 font-semibold text-ink">Record settlement</p>
+                <p className="mt-1 text-sm text-muted">Optional payment updates the payment register and open balance in the same flow.</p>
+              </div>
             </div>
           </Card>
         ) : null}
 
         <Card className="rounded-[1.2rem] border-white/70 bg-white/92 p-4 shadow-[0_18px_36px_-28px_rgba(17,32,24,0.16)] backdrop-blur-xl">
-          {!readOnlyDocument && kind !== "invoice" ? (
-            <div className="mb-5 flex flex-wrap gap-3 rounded-[1.5rem] border border-line bg-surface-soft px-4 py-4 text-sm text-muted">
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 font-semibold text-ink">Contact <HelpTip text="Create the supplier inline if they do not exist yet. The draft stays intact." /></span>
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 font-semibold text-ink">Template <HelpTip text="Templates change the rendered layout and PDF output. Switch the document type first to see matching templates." /></span>
-            {kind === "bill" ? <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 font-semibold text-ink">Purchase context <HelpTip text="Type, purpose, category, and cost center feed downstream reporting and purchase analysis." /></span> : null}
-            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 font-semibold text-ink">Payment <HelpTip text="Leave payment blank if the invoice or bill stays open. Recording payment here settles it immediately." /></span>
-            </div>
-          ) : null}
           {readOnlyDocument ? <div className="mb-5 rounded-[1.4rem] border border-line bg-surface-soft px-4 py-3 text-sm text-muted">This invoice is available for viewing only. Use the invoice register for allowed follow-up actions.</div> : null}
           <div className="grid gap-3 lg:grid-cols-2">
             <EntityPicker
@@ -641,7 +657,7 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
             <Input label="Issue date" type="date" value={issueDate} onChange={(event) => setIssueDate(event.target.value)} disabled={readOnlyDocument} />
             <Input label="Due date" type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} disabled={readOnlyDocument} />
             <div>
-              <label htmlFor={`${kind}-template`} className="mb-2.5 flex items-center gap-2 text-sm font-semibold text-ink">Template <HelpTip text="The chosen template controls branding and preview layout for this document." /></label>
+              <label htmlFor={`${kind}-template`} className="mb-2.5 block text-sm font-semibold text-ink">Template</label>
               <select id={`${kind}-template`} value={templateId ?? ""} disabled={readOnlyDocument} onChange={(event) => setTemplateId(event.target.value ? Number(event.target.value) : null)} className="block w-full rounded-2xl border border-line-strong bg-white px-4 py-3.5 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-surface-soft">
                 <option value="">Default template</option>
                 {availableTemplates.map((template) => (
@@ -663,10 +679,37 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
                 })}
               </div>
             </div>
+            {kind === "invoice" ? (
+              <div className="lg:col-span-2 rounded-[1.4rem] border border-line bg-surface-soft p-4">
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-ink">ZATCA invoice identity</p>
+                    <p className="mt-1 text-sm text-muted">Seller, buyer, supply date, and invoice currency flow into preview, PDF, QR, and totals.</p>
+                  </div>
+                  <div className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">Template {selectedTemplate?.name ?? "Default"}</div>
+                </div>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  <Input label="Supply date" type="date" value={String(documentCustomFields.supply_date ?? "")} onChange={(event) => updateDocumentCustomField("supply_date", event.target.value || null)} disabled={readOnlyDocument} />
+                  <Input label="Currency" value={activeCurrency} onChange={(event) => updateDocumentCustomField("currency", event.target.value.toUpperCase() || "SAR")} disabled={readOnlyDocument} />
+                  <Input label="Seller name (EN)" value={String(documentCustomFields.seller_name_en ?? "")} onChange={(event) => updateDocumentCustomField("seller_name_en", event.target.value || null)} disabled={readOnlyDocument} />
+                  <Input label="Seller name (AR)" value={String(documentCustomFields.seller_name_ar ?? "")} onChange={(event) => updateDocumentCustomField("seller_name_ar", event.target.value || null)} disabled={readOnlyDocument} />
+                  <Input label="Seller VAT number" value={String(documentCustomFields.seller_vat_number ?? "")} onChange={(event) => updateDocumentCustomField("seller_vat_number", event.target.value || null)} disabled={readOnlyDocument} />
+                  <Input label="Buyer VAT number" value={String(documentCustomFields.buyer_vat_number ?? "")} onChange={(event) => updateDocumentCustomField("buyer_vat_number", event.target.value || null)} disabled={readOnlyDocument} />
+                  <Input label="Buyer name (EN)" value={String(documentCustomFields.buyer_name_en ?? "")} onChange={(event) => updateDocumentCustomField("buyer_name_en", event.target.value || null)} disabled={readOnlyDocument} />
+                  <Input label="Buyer name (AR)" value={String(documentCustomFields.buyer_name_ar ?? "")} onChange={(event) => updateDocumentCustomField("buyer_name_ar", event.target.value || null)} disabled={readOnlyDocument} />
+                  <div className="md:col-span-2 grid gap-3 md:grid-cols-2">
+                    <Input label="Seller address (EN)" value={String(documentCustomFields.seller_address_en ?? "")} onChange={(event) => updateDocumentCustomField("seller_address_en", event.target.value || null)} disabled={readOnlyDocument} />
+                    <Input label="Seller address (AR)" value={String(documentCustomFields.seller_address_ar ?? "")} onChange={(event) => updateDocumentCustomField("seller_address_ar", event.target.value || null)} disabled={readOnlyDocument} />
+                    <Input label="Buyer address (EN)" value={String(documentCustomFields.buyer_address_en ?? "")} onChange={(event) => updateDocumentCustomField("buyer_address_en", event.target.value || null)} disabled={readOnlyDocument} />
+                    <Input label="Buyer address (AR)" value={String(documentCustomFields.buyer_address_ar ?? "")} onChange={(event) => updateDocumentCustomField("buyer_address_ar", event.target.value || null)} disabled={readOnlyDocument} />
+                  </div>
+                </div>
+              </div>
+            ) : null}
             {kind === "bill" ? (
               <>
                 <div>
-                  <label htmlFor="purchase-type" className="mb-2.5 flex items-center gap-2 text-sm font-semibold text-ink">Purchase type <HelpTip text="Use this to classify the commercial nature of the purchase for later analytics." /></label>
+                  <label htmlFor="purchase-type" className="mb-2.5 block text-sm font-semibold text-ink">Purchase type</label>
                   <select id="purchase-type" value={purchaseContext.type} disabled={readOnlyDocument} onChange={(event) => setPurchaseContext((current) => ({ ...current, type: event.target.value }))} className="block w-full rounded-2xl border border-line-strong bg-white px-4 py-3.5 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-surface-soft">
                     <option value="">Select purchase type</option>
                     <option value="inventory">Inventory</option>
@@ -745,7 +788,9 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
           </div>
         </Card>
 
-        <LineItemsEditor kind={kind} lines={lines} onChange={setLines} costCenters={costCenters} lineFieldDefinitions={lineFieldDefinitions} readOnly={readOnlyDocument} />
+        <div data-inspector-workflow-step="line-editor">
+          <LineItemsEditor kind={kind} lines={lines} onChange={setLines} costCenters={costCenters} lineFieldDefinitions={lineFieldDefinitions} readOnly={readOnlyDocument} />
+        </div>
 
         {lineValidation ? <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">{lineValidation}</div> : null}
         {submitError ? <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{submitError}</div> : null}
@@ -781,27 +826,21 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
           <div className="mt-5 rounded-[1.6rem] bg-surface-soft p-4">
             <div className="flex items-center justify-between text-sm text-muted"><span>{kind === "invoice" ? "Customer" : "Supplier"}</span><span className="font-semibold text-ink">{selectedContact?.label ?? "Not chosen yet"}</span></div>
             <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Type</span><span className="font-semibold text-ink">{labelize(documentType)}</span></div>
-            <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Template</span><span className="font-semibold text-ink">{availableTemplates.find((template) => template.id === templateId)?.name ?? "Default"}</span></div>
+            <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Template</span><span className="font-semibold text-ink">{selectedTemplate?.name ?? "Default"}</span></div>
             <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Lines</span><span className="font-semibold text-ink">{lines.length}</span></div>
-            <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Total</span><span className="text-lg font-semibold text-ink">{currency(total)} SAR</span></div>
+            <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Subtotal</span><span className="font-semibold text-ink">{currency(subtotal)} {activeCurrency}</span></div>
+            <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>VAT</span><span className="font-semibold text-ink">{currency(vatTotal)} {activeCurrency}</span></div>
+            <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Total</span><span className="text-lg font-semibold text-ink">{currency(total)} {activeCurrency}</span></div>
+            {kind === "invoice" ? <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Supply date</span><span className="font-semibold text-ink">{String(documentCustomFields.supply_date ?? issueDate)}</span></div> : null}
             {loadedDocument ? <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Status</span><span className="font-semibold text-ink">{readOnlyLabel}</span></div> : null}
             {loadedDocument ? <div className="mt-3 flex items-center justify-between text-sm text-muted"><span>Balance</span><span className="font-semibold text-ink">{currency(loadedDocument.balanceDue)} SAR</span></div> : null}
           </div>
-          {kind === "bill" ? (
-            <div className="mt-5 rounded-[1.6rem] border border-line bg-white p-4 text-sm text-muted">
-              <p className="font-semibold text-ink">Purchase intelligence</p>
-              <p className="mt-2 leading-6">Type, purpose, category, and cost center are stored with the draft and reopened from the document center.</p>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link href={mapWorkspaceHref("/workspace/purchases/cost-centers", basePath)} className="text-sm font-semibold text-primary hover:text-primary-hover">Manage cost centers</Link>
-              </div>
-            </div>
-          ) : null}
           <div className="mt-5 rounded-[1.6rem] border border-line bg-white p-4 text-sm text-muted">
             <p className="font-semibold text-ink">{readOnlyDocument ? "Document state" : "Record payment now"}</p>
             <div className="mt-4 space-y-4">
               <Input label={kind === "invoice" ? "Money received now" : "Money paid now"} type="number" min="0" step="0.01" value={paymentAmount} onChange={(event) => setPaymentAmount(event.target.value)} disabled={readOnlyDocument} hint={kind === "invoice" ? "Leave blank to keep the invoice unpaid." : "Leave blank if this document stays open for later settlement."} />
               <div>
-                <label htmlFor={`${kind}-payment-method`} className="mb-2.5 flex items-center gap-2 text-sm font-semibold text-ink">Method <HelpTip text="Choose how the settlement was made so the payment register stays accurate." /></label>
+                <label htmlFor={`${kind}-payment-method`} className="mb-2.5 block text-sm font-semibold text-ink">Method</label>
                 <select id={`${kind}-payment-method`} value={paymentMethod} disabled={readOnlyDocument} onChange={(event) => setPaymentMethod(event.target.value)} className="block w-full rounded-2xl border border-line-strong bg-white px-4 py-3.5 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:bg-surface-soft">
                   <option value="bank_transfer">Bank transfer</option>
                   <option value="cash">Cash</option>
@@ -810,7 +849,7 @@ export function TransactionForm({ kind, documentId }: TransactionFormProps) {
                 </select>
               </div>
               <Input label="Payment reference" value={paymentReference} onChange={(event) => setPaymentReference(event.target.value)} placeholder="Optional payment reference" disabled={readOnlyDocument} />
-              {readOnlyDocument ? <p className="text-sm text-muted">Settlement remains available from the invoice register when this invoice still has an open balance.</p> : null}
+              {readOnlyDocument ? <p className="text-sm text-muted">Settlement remains available from the invoice register when this invoice still has an open balance.</p> : <p className="text-sm text-muted">Saving a payment here updates the payment register and reduces the open balance immediately.</p>}
             </div>
           </div>
         </Card>

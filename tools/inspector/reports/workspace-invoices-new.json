@@ -1,0 +1,75 @@
+{
+  "route": "/workspace/invoices/new",
+  "verdict": "PASS",
+  "table_found": false,
+  "row_count": 0,
+  "filters_found": true,
+  "actions_found": [
+    "Search customer name, city, phone, or email⌄",
+    "quotation",
+    "proforma invoice",
+    "tax invoice",
+    "recurring invoice",
+    "cash invoice",
+    "api invoice",
+    "Add line",
+    "Search item name or code⌄",
+    "Save draft",
+    "Issue document"
+  ],
+  "filler_text_found": false,
+  "network_failures": [],
+  "ui_findings": [],
+  "logic_findings": [],
+  "visual_findings": [],
+  "architecture_findings": [],
+  "zatca_check": "NOT_AVAILABLE",
+  "five_whys": {
+    "analyses": []
+  },
+  "root_cause_summary": "No route-level failure required a root-cause escalation.",
+  "recommended_fixes": [],
+  "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-invoices-new.png",
+  "api_calls": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/custom-fields",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/cost-centers",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/templates",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/contacts",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/items",
+      "resourceType": "fetch"
+    }
+  ],
+  "evidence": [
+    "DOM marker reported preview data mode.",
+    "Invoices inspected: 5",
+    "Payments inspected: 2"
+  ],
+  "zatca_details": {
+    "issues": [
+      "ZATCA verification is only attempted on invoice routes."
+    ]
+  }
+}

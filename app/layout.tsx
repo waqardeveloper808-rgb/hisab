@@ -31,7 +31,7 @@ export default async function RootLayout({
   const productConfig = await getProductConfig();
 
   return (
-    <html lang="en" className={`${manrope.variable} h-full antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${manrope.variable} h-full antialiased`}>
       <body className="min-h-full bg-canvas text-ink">
         <AppFrame supportHref={buildWhatsAppHref(productConfig.supportWhatsappNumber)}>{children}</AppFrame>
       </body>

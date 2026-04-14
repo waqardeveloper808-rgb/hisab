@@ -1,0 +1,233 @@
+[
+  {
+    "id": 2108,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 11500,
+    "balance_due": 11500,
+    "paid_total": 0,
+    "tax_total": 1500,
+    "taxable_total": 10000,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Noor",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21081,
+        "item_id": 304,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "QMS Audit",
+        "quantity": 1,
+        "unit_price": 10000,
+        "gross_amount": 10000,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2105,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 1495,
+    "balance_due": 1495,
+    "paid_total": 0,
+    "tax_total": 195,
+    "taxable_total": 1300,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21051,
+        "item_id": 303,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Inspection Services",
+        "quantity": 1,
+        "unit_price": 1300,
+        "gross_amount": 1300,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2104,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 1495,
+    "balance_due": 1495,
+    "paid_total": 0,
+    "tax_total": 195,
+    "taxable_total": 1300,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21041,
+        "item_id": 303,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Inspection Services",
+        "quantity": 1,
+        "unit_price": 1300,
+        "gross_amount": 1300,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2106,
+    "type": "quotation",
+    "status": "draft",
+    "contact_id": 102,
+    "document_number": "QUO-2026-2106",
+    "issue_date": "2026-04-14",
+    "due_date": "2026-04-21",
+    "grand_total": 2875,
+    "balance_due": 2875,
+    "paid_total": 0,
+    "tax_total": 375,
+    "taxable_total": 2500,
+    "contact": {
+      "display_name": "Desert Retail Co."
+    },
+    "title": "Warehouse onboarding quotation",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "ap@desertretail.sa",
+    "custom_fields": {
+      "reference": "QUO-2026-2106"
+    },
+    "template": {
+      "id": 802,
+      "name": "Compact Invoice"
+    },
+    "notes": "Customer requested pricing before invoice issue.",
+    "compliance_metadata": null,
+    "lines": [
+      {
+        "id": 21061,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": 11,
+        "description": "Warehouse onboarding quotation",
+        "quantity": 1,
+        "unit_price": 2500,
+        "gross_amount": 2500,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2107,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "PRO-2026-2107",
+    "issue_date": "2026-04-14",
+    "due_date": "2026-04-21",
+    "grand_total": 5175,
+    "balance_due": 5175,
+    "paid_total": 0,
+    "tax_total": 675,
+    "taxable_total": 4500,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Annual compliance rollout proforma",
+    "language_code": "en",
+    "sent_at": "2026-04-14T09:00:00Z",
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "PRO-2026-2107"
+    },
+    "template": {
+      "id": 801,
+      "name": "Standard Tax Invoice"
+    },
+    "notes": "Pre-billing approval document before conversion to tax invoice.",
+    "compliance_metadata": null,
+    "lines": [
+      {
+        "id": 21071,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": 11,
+        "description": "Annual compliance rollout proforma",
+        "quantity": 1,
+        "unit_price": 4500,
+        "gross_amount": 4500,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  }
+]

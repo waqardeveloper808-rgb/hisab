@@ -1,6 +1,6 @@
 import type { ConfidenceLevel, WhyAnalysis } from "./route-catalog";
 
-export type FailureCandidateType = "placeholder" | "auth-limited" | "duplicate-headers" | "missing-register" | "network-failure";
+export type FailureCandidateType = "placeholder" | "auth-limited" | "duplicate-headers" | "missing-register" | "workflow-break" | "business-logic" | "network-failure";
 
 export type FailureCandidate = {
   type: FailureCandidateType;
@@ -76,6 +76,38 @@ export function runFiveWhys(candidate: FailureCandidate): WhyAnalysis {
         confirmed: candidate.evidence,
         likely: [],
         possible: [],
+        recommended_fix: candidate.recommendedFix,
+      };
+    case "workflow-break":
+      return {
+        symptom: candidate.symptom,
+        evidence: candidate.evidence,
+        why1: "Because the user cannot complete the business flow from this screen without leaving the route or hitting a blocked action.",
+        why2: "Because required workflow states are not fully wired into the page and its backing API path.",
+        why3: "Because the route was validated for presence before it was validated for end-to-end workflow completion.",
+        why4: "Because the inspector did not previously enforce workflow markers or accounting side effects.",
+        why5: "Because product acceptance focused on page availability instead of business completion criteria.",
+        root_cause: "The route exists, but its business workflow contract was not enforced end to end across UI markers, write actions, and downstream accounting effects.",
+        confidence_level: candidate.confidence,
+        confirmed: candidate.evidence,
+        likely: ["The UI and preview API were implemented in separate passes."],
+        possible: ["Workflow acceptance criteria were not encoded into the inspector until now."],
+        recommended_fix: candidate.recommendedFix,
+      };
+    case "business-logic":
+      return {
+        symptom: candidate.symptom,
+        evidence: candidate.evidence,
+        why1: "Because document, payment, or ledger totals are not internally consistent.",
+        why2: "Because at least one write path is not updating all dependent business records.",
+        why3: "Because downstream accounting effects were assumed rather than verified after each transaction change.",
+        why4: "Because the system lacked automated checks for customer-invoice-payment-accounting integrity.",
+        why5: "Because product validation emphasized route rendering over bookkeeping consistency.",
+        root_cause: "Business-state transitions are incomplete, so invoices, payments, and books can drift out of sync unless the write path updates every dependent register.",
+        confidence_level: candidate.confidence,
+        confirmed: candidate.evidence,
+        likely: ["One or more preview or backend endpoints are updating only the primary record."],
+        possible: ["Normalization logic may be masking the inconsistency until inspector fetches report snapshots."],
         recommended_fix: candidate.recommendedFix,
       };
     case "network-failure":

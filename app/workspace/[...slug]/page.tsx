@@ -10,5 +10,9 @@ export default async function WorkspaceCatchAllPage({ params }: { params: Promis
     notFound();
   }
 
-  return <WorkspaceModulePage page={page} />;
+  return (
+    <div data-inspector-route-owner="catch-all" data-inspector-register="placeholder">
+      <WorkspaceModulePage page={page} />
+    </div>
+  );
 }

@@ -47,6 +47,7 @@ export type ZatcaDetails = {
   source_route?: string;
   qr_selector?: string;
   qr_screenshot_path?: string;
+  qr_base64?: string;
   decoded_payload?: string;
   extracted_fields?: Record<string, string>;
   comparisons?: ZatcaComparison[];
@@ -81,8 +82,11 @@ export type InspectRouteConfig = {
   path: string;
   directPageFile: string;
   expectedRegister: boolean;
+  expectedWorkflow?: boolean;
+  requiredWorkflowMarkers?: string[];
   supportsZatca: boolean;
   createActionLabels: string[];
+  requiredCreateHrefIncludes?: string[];
   placeholderMarkers: string[];
 };
 
@@ -93,6 +97,17 @@ export type RouteCodeSignals = {
 };
 
 export const inspectedRoutes: InspectRouteConfig[] = [
+  {
+    key: "workspace-invoices-new",
+    path: "/workspace/invoices/new",
+    directPageFile: "app/workspace/invoices/new/page.tsx",
+    expectedRegister: false,
+    expectedWorkflow: true,
+    requiredWorkflowMarkers: ["contact", "items", "document", "payment", "line-editor"],
+    supportsZatca: false,
+    createActionLabels: ["Save draft", "Issue document"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Current workload"],
+  },
   {
     key: "workspace-user-invoices",
     path: "/workspace/user/invoices",
@@ -145,6 +160,116 @@ export const inspectedRoutes: InspectRouteConfig[] = [
     expectedRegister: true,
     supportsZatca: false,
     createActionLabels: ["Create Account", "Add Account"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-bills",
+    path: "/workspace/user/bills",
+    directPageFile: "app/workspace/user/bills/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Create Bill"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-quotations",
+    path: "/workspace/user/quotations",
+    directPageFile: "app/workspace/user/quotations/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Create Quotation"],
+    requiredCreateHrefIncludes: ["documentType=quotation"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-proforma-invoices",
+    path: "/workspace/user/proforma-invoices",
+    directPageFile: "app/workspace/user/proforma-invoices/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Create Proforma"],
+    requiredCreateHrefIncludes: ["documentType=proforma_invoice"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-purchase-orders",
+    path: "/workspace/user/purchase-orders",
+    directPageFile: "app/workspace/user/purchase-orders/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Create Purchase Order"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-expenses",
+    path: "/workspace/user/expenses",
+    directPageFile: "app/workspace/user/expenses/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Capture Expense"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-products",
+    path: "/workspace/user/products",
+    directPageFile: "app/workspace/user/products/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Add Product", "Create Item"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-branches",
+    path: "/workspace/user/branches",
+    directPageFile: "app/workspace/user/branches/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Add Branch"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-projects",
+    path: "/workspace/user/projects",
+    directPageFile: "app/workspace/user/projects/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Add Project"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-cost-centers",
+    path: "/workspace/user/cost-centers",
+    directPageFile: "app/workspace/user/cost-centers/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["Add Cost Center", "Create Cost Center"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-journal-entries",
+    path: "/workspace/user/journal-entries",
+    directPageFile: "app/workspace/user/journal-entries/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: ["New Journal Entry"],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-reports",
+    path: "/workspace/user/reports",
+    directPageFile: "app/workspace/user/reports/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: [],
+    placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
+  },
+  {
+    key: "workspace-user-vat",
+    path: "/workspace/user/vat",
+    directPageFile: "app/workspace/user/vat/page.tsx",
+    expectedRegister: true,
+    supportsZatca: false,
+    createActionLabels: [],
     placeholderMarkers: ["Alerts and pending work", "Related workflow links", "Return to User Workspace"],
   },
 ];

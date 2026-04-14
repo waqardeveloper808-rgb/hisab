@@ -7,10 +7,27 @@ type DomEvidence = {
   rowCount: number;
   filtersFound: boolean;
   actionsFound: string[];
+  splitViewFound: boolean;
+  splitViewSideBySide: boolean | null;
+  previewSurfaceFound: boolean;
+  previewActionsFound: string[];
+  importExportFound: boolean;
+  rowClickableFound: boolean;
+  guidanceCount: number;
+  createTargets: string[];
+  qrInsideRegister: boolean;
+  routeOwner: string | null;
+  dataMode: string | null;
+  workflowForm: string | null;
+  workflowMarkers: string[];
+  inlineCreateMarkers: string[];
+  registerMarkers: string[];
+  realRegisterMarkers: string[];
   fillerMatches: string[];
   emptyStateTexts: string[];
   wastedSpaceReasons: string[];
   overflowIssues: string[];
+  duplicateTopLevelHeadings: string[];
   duplicateHeaders: string[];
   layoutIssues: string[];
   deadLinkCandidates: string[];
@@ -19,9 +36,16 @@ type DomEvidence = {
   visibleText: string;
 };
 
+type ApiCallTally = {
+  method: string;
+  url: string;
+  count: number;
+};
+
 export type RouteInspectionArtifacts = {
   dom: DomEvidence;
   apiCalls: NetworkCall[];
+  apiCallTallies: ApiCallTally[];
   networkFailures: NetworkFailure[];
   linkFindings: string[];
 };
@@ -102,6 +126,22 @@ export async function inspectRoutePage(
       .map((element) => normalizeText(element.textContent))
       .filter((value) => value.length > 0 && value.length <= 48),
   ).slice(0, 24);
+  const splitViewFound = document.querySelector("[data-inspector-split-view='true']") !== null;
+  const previewSurfaceFound = document.querySelector("[data-inspector-preview-surface='true']") !== null;
+  const previewActionsFound = unique(
+    Array.from(document.querySelectorAll("[data-inspector-issued-actions='true'] a, [data-inspector-issued-actions='true'] button"))
+      .map((element) => normalizeText(element.textContent))
+      .filter((value) => value.length > 0 && value.length <= 48),
+  );
+  const importExportFound = document.querySelector("[data-inspector-import-export='true']") !== null;
+  const rowClickableFound = document.querySelector("[data-inspector-row-clickable='true']") !== null;
+  const guidanceCount = document.querySelectorAll("[data-inspector-guidance='true']").length;
+  const createTargets = unique(
+    Array.from(document.querySelectorAll("[data-inspector-create-href]"))
+      .map((element) => element.getAttribute("data-inspector-create-href") ?? "")
+      .filter(Boolean),
+  );
+  const qrInsideRegister = document.querySelector("table [data-zatca-qr='true'], table img[alt*='QR' i], table img[alt*='ZATCA' i], table canvas[aria-label*='QR' i], table svg[aria-label*='QR' i]") !== null;
   const tables = Array.from(main.querySelectorAll("table"));
   const dataRows = tables.flatMap((table) => Array.from(table.querySelectorAll("tbody tr"))).filter((row) => {
     const rowText = normalizeText(row.textContent).toLowerCase();
@@ -120,15 +160,47 @@ export async function inspectRoutePage(
   );
   const mainText = normalizeText(main.textContent);
   const fillerMatches = route.placeholderMarkers.filter((marker) => mainText.includes(marker));
+  const routeOwner = document.querySelector("[data-inspector-route-owner]")?.getAttribute("data-inspector-route-owner") ?? null;
+  const dataMode = document.querySelector("[data-inspector-workspace-mode]")?.getAttribute("data-inspector-workspace-mode")
+    ?? document.querySelector("[data-inspector-data-mode]")?.getAttribute("data-inspector-data-mode")
+    ?? null;
+  const workflowForm = document.querySelector("[data-inspector-workflow-form]")?.getAttribute("data-inspector-workflow-form") ?? null;
+  const workflowMarkers = unique(
+    Array.from(document.querySelectorAll("[data-inspector-workflow-step]"))
+      .map((element) => element.getAttribute("data-inspector-workflow-step") ?? "")
+      .filter(Boolean),
+  );
+  const inlineCreateMarkers = unique(
+    [
+      document.querySelector("[data-inspector-inline-create-contact='true']") ? "contact" : "",
+      document.querySelector("[data-inspector-inline-create-item='true']") ? "item" : "",
+    ].filter(Boolean),
+  );
+  const registerMarkers = unique(
+    Array.from(document.querySelectorAll("[data-inspector-register]"))
+      .map((element) => element.getAttribute("data-inspector-register") ?? "")
+      .filter(Boolean),
+  );
+  const realRegisterMarkers = unique(
+    Array.from(document.querySelectorAll("[data-inspector-real-register]"))
+      .map((element) => element.getAttribute("data-inspector-real-register") ?? "")
+      .filter(Boolean),
+  );
+  const duplicateTopLevelHeadings = unique(
+    Array.from(document.querySelectorAll("h1"))
+      .map((element) => normalizeText(element.textContent))
+      .filter((heading, index, collection) => heading.length > 0 && collection.indexOf(heading) !== index),
+  );
   const duplicateHeaders = unique(
     Array.from(document.querySelectorAll("h1, h2"))
       .map((element) => normalizeText(element.textContent))
       .filter((heading, index, collection) => heading.length > 0 && collection.indexOf(heading) !== index),
   );
   const documentH1Count = document.querySelectorAll("h1").length;
-  const layoutIssues = documentH1Count > 1
-    ? [`Document renders ${documentH1Count} H1 elements.`]
-    : [];
+  const layoutIssues = [
+    ...(documentH1Count > 1 ? [`Document renders ${documentH1Count} H1 elements.`] : []),
+    ...duplicateTopLevelHeadings.map((heading) => `Duplicate top-level heading detected: ${heading}`),
+  ];
   const deadLinkCandidates = Array.from(main.querySelectorAll("a[href]"))
     .map((anchor) => {
       const href = anchor.getAttribute("href") ?? "";
@@ -159,6 +231,17 @@ export async function inspectRoutePage(
     .filter((candidate) => /qr|zatca|invoice/i.test(candidate.label));
   const overflowIssues: string[] = [];
   const wastedSpaceReasons: string[] = [];
+  let splitViewSideBySide: boolean | null = null;
+
+  if (splitViewFound && previewSurfaceFound) {
+    const registerBox = await page.locator("table").first().boundingBox().catch(() => null);
+    const previewBox = await page.locator("[data-inspector-preview-surface='true']").first().boundingBox().catch(() => null);
+
+    if (registerBox && previewBox) {
+      splitViewSideBySide = previewBox.x > registerBox.x + (registerBox.width * 0.45)
+        && Math.abs(previewBox.y - registerBox.y) < 160;
+    }
+  }
 
   const mainChildren = page.locator("main > *");
   const childCount = Math.min(await mainChildren.count(), 8);
@@ -180,10 +263,27 @@ export async function inspectRoutePage(
     rowCount: dataRows.length,
     filtersFound: filterControls.length >= 2,
     actionsFound,
+    splitViewFound,
+    splitViewSideBySide,
+    previewSurfaceFound,
+    previewActionsFound,
+    importExportFound,
+    rowClickableFound,
+    guidanceCount,
+    createTargets,
+    qrInsideRegister,
+    routeOwner,
+    dataMode,
+    workflowForm,
+    workflowMarkers,
+    inlineCreateMarkers,
+    registerMarkers,
+    realRegisterMarkers,
     fillerMatches,
     emptyStateTexts,
     wastedSpaceReasons,
     overflowIssues,
+    duplicateTopLevelHeadings,
     duplicateHeaders,
     layoutIssues,
     deadLinkCandidates,
@@ -199,9 +299,32 @@ export async function inspectRoutePage(
   return {
     dom,
     apiCalls: uniqueApiCalls(apiCalls),
+    apiCallTallies: tallyApiCalls(apiCalls),
     networkFailures: uniqueNetworkFailures(networkFailures),
     linkFindings,
   };
+}
+
+function tallyApiCalls(calls: NetworkCall[]) {
+  const tallies = new Map<string, ApiCallTally>();
+
+  calls.forEach((call) => {
+    const key = `${call.method}:${call.url}`;
+    const current = tallies.get(key);
+
+    if (current) {
+      current.count += 1;
+      return;
+    }
+
+    tallies.set(key, {
+      method: call.method,
+      url: call.url,
+      count: 1,
+    });
+  });
+
+  return [...tallies.values()].filter((entry) => entry.count > 1);
 }
 
 function uniqueApiCalls(calls: NetworkCall[]) {

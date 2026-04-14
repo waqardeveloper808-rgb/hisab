@@ -1,15 +1,20 @@
-import path from "node:path";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
 
 export default defineConfig({
-  test: {
-    environment: "jsdom",
-    globals: true,
-    setupFiles: ["./vitest.setup.ts"],
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "."),
+  server: {
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      host: '127.0.0.1',
+      port: 5173,
     },
   },
-});
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.js'],
+      refresh: true,
+    }),
+  ],
+})

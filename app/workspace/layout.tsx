@@ -9,7 +9,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   return (
     <WorkspacePathProvider value={{ basePath: "/workspace" }}>
-      <WorkspaceAccessProvider value={access}>
+      <WorkspaceAccessProvider value={access} session={session}>
         <WorkspaceDataProvider>
           <WorkspaceShell session={session} access={access}>{children}</WorkspaceShell>
         </WorkspaceDataProvider>

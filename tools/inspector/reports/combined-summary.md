@@ -1,29 +1,55 @@
 # Workspace Inspector Summary
 
-Generated: 2026-04-14T06:37:06.318Z
+Generated: 2026-04-14T10:06:38.176Z
 
-Routes inspected: 6
-PASS: 0
-FAIL: 2
+Routes inspected: 19
+PASS: 19
+FAIL: 0
 AUTH_LIMITED: 0
-PLACEHOLDER: 4
+PLACEHOLDER: 0
 EMPTY_VALID: 0
 
 ## Route Verdicts
 
-- /workspace/user/invoices: FAIL | rows=0 | zatca=NOT_AVAILABLE
-- /workspace/user/customers: PLACEHOLDER | rows=0 | zatca=NOT_AVAILABLE
-- /workspace/user/payments: PLACEHOLDER | rows=0 | zatca=NOT_AVAILABLE
-- /workspace/user/vendors: PLACEHOLDER | rows=0 | zatca=NOT_AVAILABLE
-- /workspace/user/document-templates: FAIL | rows=50 | zatca=NOT_AVAILABLE
-- /workspace/user/chart-of-accounts: PLACEHOLDER | rows=0 | zatca=NOT_AVAILABLE
+- /workspace/invoices/new: PASS | rows=0 | zatca=NOT_AVAILABLE
+- /workspace/user/invoices: PASS | rows=6 | zatca=INVALID
+- /workspace/user/customers: PASS | rows=2 | zatca=NOT_AVAILABLE
+- /workspace/user/payments: PASS | rows=1 | zatca=NOT_AVAILABLE
+- /workspace/user/vendors: PASS | rows=2 | zatca=NOT_AVAILABLE
+- /workspace/user/document-templates: PASS | rows=3 | zatca=NOT_AVAILABLE
+- /workspace/user/chart-of-accounts: PASS | rows=7 | zatca=NOT_AVAILABLE
+- /workspace/user/bills: PASS | rows=1 | zatca=NOT_AVAILABLE
+- /workspace/user/quotations: PASS | rows=1 | zatca=NOT_AVAILABLE
+- /workspace/user/proforma-invoices: PASS | rows=1 | zatca=NOT_AVAILABLE
+- /workspace/user/purchase-orders: PASS | rows=1 | zatca=NOT_AVAILABLE
+- /workspace/user/expenses: PASS | rows=4 | zatca=NOT_AVAILABLE
+- /workspace/user/products: PASS | rows=4 | zatca=NOT_AVAILABLE
+- /workspace/user/branches: PASS | rows=3 | zatca=NOT_AVAILABLE
+- /workspace/user/projects: PASS | rows=3 | zatca=NOT_AVAILABLE
+- /workspace/user/cost-centers: PASS | rows=3 | zatca=NOT_AVAILABLE
+- /workspace/user/journal-entries: PASS | rows=28 | zatca=NOT_AVAILABLE
+- /workspace/user/reports: PASS | rows=45 | zatca=NOT_AVAILABLE
+- /workspace/user/vat: PASS | rows=2 | zatca=NOT_AVAILABLE
 
 ## Root Cause Highlights
 
-- /workspace/user/invoices: Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.
-- /workspace/user/customers: Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.
-- /workspace/user/payments: Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.
-- /workspace/user/vendors: Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.
-- /workspace/user/document-templates: Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.
-- /workspace/user/chart-of-accounts: Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.
+- /workspace/invoices/new: No route-level failure required a root-cause escalation.
+- /workspace/user/invoices: No route-level failure required a root-cause escalation.
+- /workspace/user/customers: No route-level failure required a root-cause escalation.
+- /workspace/user/payments: No route-level failure required a root-cause escalation.
+- /workspace/user/vendors: No route-level failure required a root-cause escalation.
+- /workspace/user/document-templates: No route-level failure required a root-cause escalation.
+- /workspace/user/chart-of-accounts: No route-level failure required a root-cause escalation.
+- /workspace/user/bills: No route-level failure required a root-cause escalation.
+- /workspace/user/quotations: No route-level failure required a root-cause escalation.
+- /workspace/user/proforma-invoices: No route-level failure required a root-cause escalation.
+- /workspace/user/purchase-orders: No route-level failure required a root-cause escalation.
+- /workspace/user/expenses: No route-level failure required a root-cause escalation.
+- /workspace/user/products: No route-level failure required a root-cause escalation.
+- /workspace/user/branches: No route-level failure required a root-cause escalation.
+- /workspace/user/projects: No route-level failure required a root-cause escalation.
+- /workspace/user/cost-centers: No route-level failure required a root-cause escalation.
+- /workspace/user/journal-entries: No route-level failure required a root-cause escalation.
+- /workspace/user/reports: No route-level failure required a root-cause escalation.
+- /workspace/user/vat: No route-level failure required a root-cause escalation.
 

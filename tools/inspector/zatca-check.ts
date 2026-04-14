@@ -69,8 +69,9 @@ export async function runZatcaCheck(
 
     const locator = qrPage.locator(candidate.selector).first();
     const screenshotPath = path.join(screenshotsDir, `${route.key}-zatca-qr.png`);
+    const qrBase64 = await extractQrBase64(qrPage, candidate.selector);
     const imageBuffer = await locator.screenshot({ path: screenshotPath });
-    const decodedPayload = decodeQrBuffer(imageBuffer);
+    const decodedPayload = await extractPayloadFromElement(qrPage, candidate.selector) ?? decodeQrBuffer(imageBuffer);
 
     if (!decodedPayload) {
       return {
@@ -79,6 +80,7 @@ export async function runZatcaCheck(
           source_route: invoiceDetailHref ?? route.path,
           qr_selector: candidate.selector,
           qr_screenshot_path: screenshotPath,
+          qr_base64: qrBase64 ?? undefined,
           issues: ["QR image was captured but could not be decoded."],
         },
       };
@@ -109,6 +111,7 @@ export async function runZatcaCheck(
           source_route: invoiceDetailHref ?? route.path,
           qr_selector: candidate.selector,
           qr_screenshot_path: screenshotPath,
+          qr_base64: qrBase64 ?? undefined,
           decoded_payload: decodedPayload,
           extracted_fields: extractedFields,
           issues: ["QR was decoded, but the page did not expose comparable invoice fields for verification."],
@@ -124,6 +127,7 @@ export async function runZatcaCheck(
         source_route: invoiceDetailHref ?? route.path,
         qr_selector: candidate.selector,
         qr_screenshot_path: screenshotPath,
+        qr_base64: qrBase64 ?? undefined,
         decoded_payload: decodedPayload,
         extracted_fields: extractedFields,
         comparisons,
@@ -139,6 +143,9 @@ export async function runZatcaCheck(
 
 async function findQrCandidate(page: Page) {
   const candidates = [
+    "[data-zatca-qr='true']",
+    "img[data-zatca-qr]",
+    "canvas[data-zatca-qr]",
     "img[alt*='QR' i]",
     "img[alt*='zatca' i]",
     "img[src*='qr' i]",
@@ -236,4 +243,26 @@ async function extractPageFields(page: Page) {
 
 function normalizeComparisonValue(value: string) {
   return value.replace(/\s+/g, " ").replace(/,/g, "").trim().toLowerCase();
+}
+
+async function extractPayloadFromElement(page: Page, selector: string) {
+  return page.locator(selector).first().evaluate((element) => {
+    return element.getAttribute("data-zatca-payload")
+      ?? element.getAttribute("data-qr-payload")
+      ?? null;
+  }).catch(() => null);
+}
+
+async function extractQrBase64(page: Page, selector: string) {
+  return page.locator(selector).first().evaluate((element) => {
+    if (element instanceof HTMLImageElement && element.src.startsWith("data:image/")) {
+      return element.src.split(",")[1] ?? null;
+    }
+
+    if (element instanceof HTMLCanvasElement) {
+      return element.toDataURL("image/png").split(",")[1] ?? null;
+    }
+
+    return null;
+  }).catch(() => null);
 }

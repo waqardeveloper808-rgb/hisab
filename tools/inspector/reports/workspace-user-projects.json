@@ -1,0 +1,55 @@
+{
+  "route": "/workspace/user/projects",
+  "verdict": "PASS",
+  "table_found": true,
+  "row_count": 3,
+  "filters_found": false,
+  "actions_found": [
+    "Add Project",
+    "Sign in",
+    "Invoices",
+    "Bills",
+    "Branch"
+  ],
+  "filler_text_found": false,
+  "network_failures": [],
+  "ui_findings": [
+    "Register rows are not exposed as clickable operating surfaces.",
+    "Register context is lost because no split preview surface was detected.",
+    "Import/export controls are missing from the register surface."
+  ],
+  "logic_findings": [],
+  "visual_findings": [
+    "Register does not expose a split-view operating layout."
+  ],
+  "architecture_findings": [],
+  "zatca_check": "NOT_AVAILABLE",
+  "five_whys": {
+    "analyses": []
+  },
+  "root_cause_summary": "No route-level failure required a root-cause escalation.",
+  "recommended_fixes": [],
+  "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-projects.png",
+  "api_calls": [
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/contacts",
+      "resourceType": "fetch"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "url": "http://localhost:3000/api/workspace/items",
+      "resourceType": "fetch"
+    }
+  ],
+  "evidence": [
+    "DOM marker reported preview data mode."
+  ],
+  "zatca_details": {
+    "issues": [
+      "ZATCA verification is only attempted on invoice routes."
+    ]
+  }
+}

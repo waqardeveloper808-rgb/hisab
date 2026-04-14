@@ -305,6 +305,13 @@ type BackendCompanyAsset = {
   size_bytes: number;
   public_url: string;
   is_active: boolean;
+  metadata?: {
+    dominant_colors?: string[] | null;
+    generated_theme?: Record<string, string> | null;
+    transparent_background?: boolean | null;
+    width?: number | null;
+    height?: number | null;
+  } | null;
 };
 
 type BackendCustomFieldDefinition = {
@@ -767,6 +774,13 @@ export type CompanyAssetRecord = {
   sizeBytes: number;
   publicUrl: string;
   isActive: boolean;
+  metadata: {
+    dominantColors: string[];
+    generatedTheme: Record<string, string>;
+    transparentBackground: boolean;
+    width: number;
+    height: number;
+  } | null;
 };
 
 export type CustomFieldDefinitionRecord = {
@@ -828,6 +842,8 @@ export type TransactionSubmissionResult = {
 
 const workspaceApiBase = "/api/workspace";
 
+const inflightWorkspaceReads = new Map<string, Promise<unknown>>();
+
 function getWorkspaceApiBase() {
   return workspaceApiBase;
 }
@@ -852,6 +868,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return response.json() as Promise<T>;
+}
+
+function dedupeWorkspaceRead<T>(key: string, factory: () => Promise<T>) {
+  const currentRequest = inflightWorkspaceReads.get(key) as Promise<T> | undefined;
+
+  if (currentRequest) {
+    return currentRequest;
+  }
+
+  const nextRequest = factory().finally(() => {
+    if (inflightWorkspaceReads.get(key) === nextRequest) {
+      inflightWorkspaceReads.delete(key);
+    }
+  });
+
+  inflightWorkspaceReads.set(key, nextRequest);
+  return nextRequest;
 }
 
 async function platformRequest<T>(path: string, init?: RequestInit): Promise<T> {
@@ -1227,6 +1260,13 @@ function mapCompanyAsset(asset: BackendCompanyAsset): CompanyAssetRecord {
     sizeBytes: asset.size_bytes,
     publicUrl: asset.public_url,
     isActive: asset.is_active,
+    metadata: asset.metadata ? {
+      dominantColors: asset.metadata.dominant_colors ?? [],
+      generatedTheme: asset.metadata.generated_theme ?? {},
+      transparentBackground: Boolean(asset.metadata.transparent_background),
+      width: numberValue(asset.metadata.width),
+      height: numberValue(asset.metadata.height),
+    } : null,
   };
 }
 
@@ -2181,7 +2221,7 @@ export async function listDocuments(filters?: {
 }
 
 export async function getDocument(documentId: number): Promise<DocumentDetailRecord> {
-  const result = await request<ApiEnvelope<BackendDocumentDetail>>(`documents/${documentId}`);
+  const result = await dedupeWorkspaceRead(`document:${documentId}`, () => request<ApiEnvelope<BackendDocumentDetail>>(`documents/${documentId}`));
   return mapDocumentDetail(result.data);
 }
 
@@ -2193,7 +2233,8 @@ export async function getDocumentPreview(documentId: number, options?: { templat
   }
 
   const path = searchParams.size ? `documents/${documentId}/preview?${searchParams.toString()}` : `documents/${documentId}/preview`;
-  const result = await request<ApiEnvelope<BackendDocumentPreview>>(path);
+  const cacheKey = searchParams.size ? `document-preview:${documentId}:${searchParams.toString()}` : `document-preview:${documentId}`;
+  const result = await dedupeWorkspaceRead(cacheKey, () => request<ApiEnvelope<BackendDocumentPreview>>(path));
   return result.data;
 }
 

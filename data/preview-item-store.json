@@ -1,0 +1,26 @@
+[
+  {
+    "id": 304,
+    "type": "service",
+    "name": "Audit",
+    "sku": null,
+    "default_sale_price": 0,
+    "default_purchase_price": 0,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 303,
+    "type": "service",
+    "name": "Inspection Services",
+    "sku": "1024",
+    "default_sale_price": 0,
+    "default_purchase_price": 0,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  }
+]

@@ -13,9 +13,21 @@ import type { ContactRecord, ItemRecord } from "@/components/workflow/types";
 
 type ViewMode = "customers" | "suppliers" | "items";
 
-export function ContactsOverview() {
+type ContactsOverviewProps = {
+  initialViewMode?: ViewMode;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+};
+
+export function ContactsOverview({
+  initialViewMode = "customers",
+  eyebrow = "Contacts",
+  title = "Customers, suppliers, and saved items stay searchable from one directory home.",
+  description = "The transaction flow still owns quick creation, while this page gives finance a calm place to review the records behind daily work.",
+}: ContactsOverviewProps) {
   const { basePath } = useWorkspacePath();
-  const [viewMode, setViewMode] = useState<ViewMode>("customers");
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [query, setQuery] = useState("");
   const [customers, setCustomers] = useState<ContactRecord[]>([]);
   const [suppliers, setSuppliers] = useState<ContactRecord[]>([]);
@@ -54,9 +66,9 @@ export function ContactsOverview() {
       <Card className="rounded-[2rem] border-white/70 bg-white/92 p-7 shadow-[0_28px_54px_-38px_rgba(17,32,24,0.2)] backdrop-blur-xl">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Contacts</p>
-            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink">Customers, suppliers, and saved items stay searchable from one directory home.</h1>
-            <p className="mt-4 text-base leading-7 text-muted">The transaction flow still owns quick creation, while this page gives finance a calm place to review the records behind daily work.</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">{eyebrow}</p>
+            <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink">{title}</h1>
+            <p className="mt-4 text-base leading-7 text-muted">{description}</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button href={mapWorkspaceHref("/workspace/invoices/new", basePath)}>New invoice</Button>

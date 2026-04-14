@@ -34,17 +34,37 @@ export function buildRootCauseAnalysis(report: RouteReport): {
       symptom: `${report.route} renders duplicate top-level headings.`,
       evidence: report.visual_findings.filter((finding) => /H1|heading/i.test(finding)).slice(0, 3),
       confidence: "high",
-      recommendedFix: "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading.",
+      recommendedFix: "Let the page body own the single H1 for the module route and keep the workspace shell title as non-heading chrome.",
     });
   }
 
-  if (!report.table_found && report.verdict !== "AUTH_LIMITED" && report.verdict !== "PLACEHOLDER") {
+  if (!report.table_found && report.verdict !== "AUTH_LIMITED" && report.verdict !== "PLACEHOLDER" && report.actions_found.some((action) => /save draft|issue document|post document/i.test(action)) === false) {
     candidates.push({
       type: "missing-register",
       symptom: `${report.route} does not expose a register surface.`,
       evidence: [...report.ui_findings, ...report.logic_findings].slice(0, 3),
       confidence: "medium",
       recommendedFix: "Add a real register table with row actions and module data wiring for this route.",
+    });
+  }
+
+  if (report.logic_findings.some((finding) => /Workflow break|Dead-end form/i.test(finding))) {
+    candidates.push({
+      type: "workflow-break",
+      symptom: `${report.route} breaks the intended business workflow.` ,
+      evidence: report.logic_findings.filter((finding) => /Workflow break|Dead-end form/i.test(finding)).slice(0, 4),
+      confidence: "high",
+      recommendedFix: "Wire the missing workflow states into the route and ensure inline create plus downstream write effects are available from the same screen.",
+    });
+  }
+
+  if (report.logic_findings.some((finding) => /Business rule failure/i.test(finding))) {
+    candidates.push({
+      type: "business-logic",
+      symptom: `${report.route} exposed inconsistent business totals or statuses.`,
+      evidence: report.logic_findings.filter((finding) => /Business rule failure/i.test(finding)).slice(0, 4),
+      confidence: "high",
+      recommendedFix: "Fix the transaction write path so document totals, payment balances, and downstream books update together after each business action.",
     });
   }
 

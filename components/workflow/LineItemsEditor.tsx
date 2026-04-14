@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/Button";
 import { EntityPicker } from "@/components/workflow/EntityPicker";
 import { QuickCreateDialog } from "@/components/workflow/QuickCreateDialog";
 import { QuickCreateItemForm } from "@/components/workflow/QuickCreateItemForm";
 import { itemToOption, useWorkspaceData } from "@/components/workflow/WorkspaceDataProvider";
 import type { ItemRecord, TransactionKind, TransactionLine } from "@/components/workflow/types";
-import { calculateLineTotal, createId, currency } from "@/components/workflow/utils";
+import { calculateLineSubtotal, calculateLineTotal, calculateLineVatAmount, createId, currency } from "@/components/workflow/utils";
 import type { CostCenterRecord, CustomFieldDefinitionRecord } from "@/lib/workspace-api";
 
 type LineItemsEditorProps = {
@@ -21,6 +21,7 @@ type LineItemsEditorProps = {
 
 export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineFieldDefinitions = [], readOnly = false }: LineItemsEditorProps) {
   const { createItem, items, searchItems, recordItemSelection } = useWorkspaceData();
+  const formId = useId();
   const [openCreateForLine, setOpenCreateForLine] = useState<string | null>(null);
   const [draftItemName, setDraftItemName] = useState("");
 
@@ -85,6 +86,11 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
     });
   }
 
+  function getFieldString(line: TransactionLine, fieldSlug: string) {
+    const value = line.customFields[fieldSlug];
+    return typeof value === "string" || typeof value === "number" ? String(value) : "";
+  }
+
   return (
     <div className="rounded-[1.2rem] border border-line bg-white p-4 shadow-[0_12px_28px_-24px_rgba(17,32,24,0.16)]">
       <div className="flex flex-col gap-2 border-b border-line pb-3 sm:flex-row sm:items-end sm:justify-between">
@@ -96,11 +102,13 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
       </div>
 
       <div className="mt-3 space-y-3">
-        {lines.map((line) => {
+        {lines.map((line, index) => {
           const selectedItem = items.find((item) => item.id === line.itemId) ?? null;
-          const descriptionId = `${line.id}-description`;
-          const quantityId = `${line.id}-quantity`;
-          const priceId = `${line.id}-price`;
+          const fieldPrefix = `${formId}-line-${index}`;
+          const descriptionId = `${fieldPrefix}-description`;
+          const quantityId = `${fieldPrefix}-quantity`;
+          const priceId = `${fieldPrefix}-price`;
+          const costCenterId = `${fieldPrefix}-cost-center`;
 
           return (
             <div key={line.id} className="rounded-xl border border-line bg-surface-soft p-3">
@@ -109,7 +117,7 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
                   <Button variant="tertiary" onClick={() => removeLine(line.id)}>Remove</Button>
                 ) : null}
               </div>
-              <div className="grid gap-3 lg:grid-cols-[1.25fr_1fr_0.6fr_0.7fr_0.8fr]">
+              <div className="grid gap-3 xl:grid-cols-[1.1fr_1fr_0.55fr_0.7fr_0.6fr_0.75fr_0.8fr]">
                 <EntityPicker
                   label="Product or service"
                   placeholder="Search item name or code"
@@ -156,6 +164,16 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
                   />
                 </div>
                 <div>
+                  <label htmlFor={`${fieldPrefix}-description-ar`} className="mb-2.5 block text-sm font-semibold text-ink">Arabic description</label>
+                  <input
+                    id={`${fieldPrefix}-description-ar`}
+                    value={getFieldString(line, "description_ar")}
+                    disabled={readOnly}
+                    onChange={(event) => updateCustomField(line.id, "description_ar", event.target.value || null)}
+                    className="block w-full rounded-xl border border-line-strong bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
+                  />
+                </div>
+                <div>
                   <label htmlFor={quantityId} className="mb-2.5 block text-sm font-semibold text-ink">Qty</label>
                   <input
                     id={quantityId}
@@ -180,10 +198,30 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
                   />
                 </div>
                 <div>
+                  <label htmlFor={`${fieldPrefix}-vat-rate`} className="mb-2.5 block text-sm font-semibold text-ink">VAT %</label>
+                  <input
+                    id={`${fieldPrefix}-vat-rate`}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={getFieldString(line, "vat_rate") || "15"}
+                    disabled={readOnly}
+                    onChange={(event) => updateCustomField(line.id, "vat_rate", Number(event.target.value) || 0)}
+                    className="block w-full rounded-xl border border-line-strong bg-white px-3 py-2.5 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2.5 block text-sm font-semibold text-ink">VAT amount</label>
+                  <div className="rounded-xl border border-line bg-white px-3 py-2.5 text-sm font-semibold text-ink">
+                    {currency(calculateLineVatAmount(line))} SAR
+                  </div>
+                </div>
+                <div>
                   <label className="mb-2.5 block text-sm font-semibold text-ink">Line total</label>
                   <div className="rounded-xl border border-line bg-white px-3 py-2.5 text-sm font-semibold text-ink">
                     {currency(calculateLineTotal(line))} SAR
                   </div>
+                  <p className="mt-1 text-xs text-muted">Net {currency(calculateLineSubtotal(line))} SAR</p>
                 </div>
               </div>
 
@@ -191,9 +229,9 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
                 <div className="mt-4 grid gap-4 lg:grid-cols-2">
                   {kind === "bill" ? (
                     <div>
-                      <label htmlFor={`${line.id}-cost-center`} className="mb-2.5 block text-sm font-semibold text-ink">Cost center</label>
+                      <label htmlFor={costCenterId} className="mb-2.5 block text-sm font-semibold text-ink">Cost center</label>
                       <select
-                        id={`${line.id}-cost-center`}
+                        id={costCenterId}
                         value={line.costCenterId ?? ""}
                         disabled={readOnly}
                         onChange={(event) => updateLine(line.id, { costCenterId: event.target.value ? Number(event.target.value) : null })}
@@ -224,12 +262,14 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
                       );
                     }
 
+                    const customFieldId = `${fieldPrefix}-${field.slug}`;
+
                     if (field.fieldType === "select") {
                       return (
                         <div key={field.id}>
-                          <label htmlFor={`${line.id}-${field.slug}`} className="mb-2.5 block text-sm font-semibold text-ink">{field.name}</label>
+                          <label htmlFor={customFieldId} className="mb-2.5 block text-sm font-semibold text-ink">{field.name}</label>
                           <select
-                            id={`${line.id}-${field.slug}`}
+                            id={customFieldId}
                             value={typeof value === "string" ? value : ""}
                             disabled={readOnly}
                             onChange={(event) => updateCustomField(line.id, field.slug, event.target.value || null)}
@@ -246,9 +286,9 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
 
                     return (
                       <div key={field.id}>
-                        <label htmlFor={`${line.id}-${field.slug}`} className="mb-2.5 block text-sm font-semibold text-ink">{field.name}</label>
+                        <label htmlFor={customFieldId} className="mb-2.5 block text-sm font-semibold text-ink">{field.name}</label>
                         <input
-                          id={`${line.id}-${field.slug}`}
+                          id={customFieldId}
                           value={typeof value === "string" || typeof value === "number" ? String(value) : ""}
                           disabled={readOnly}
                           onChange={(event) => updateCustomField(line.id, field.slug, event.target.value || null)}

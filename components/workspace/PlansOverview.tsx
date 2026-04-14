@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
@@ -82,11 +82,7 @@ export function PlansOverview() {
   const [error, setError] = useState<string | null>(null);
   const canManagePlans = hasAbility(access?.platformAbilities ?? [], "platform.plans.manage");
 
-  useEffect(() => {
-    void loadData();
-  }, []);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     if (isPreview) {
       setConfig(emptyConfig);
       setPlans([]);
@@ -116,7 +112,11 @@ export function PlansOverview() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [isPreview]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   function updateDraft<K extends keyof SubscriptionPlanRecord>(key: K, value: SubscriptionPlanRecord[K]) {
     setPlanDraft((current) => ({ ...current, [key]: value }));

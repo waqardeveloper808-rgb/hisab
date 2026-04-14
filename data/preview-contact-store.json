@@ -1,0 +1,58 @@
+[
+  {
+    "id": 101,
+    "type": "customer",
+    "display_name": "Al Noor Trading",
+    "display_name_ar": "تجارة النور",
+    "email": "finance@alnoor.sa",
+    "phone": "+966500000101",
+    "vat_number": "300998877660003",
+    "billing_address": {
+      "city": "Riyadh",
+      "line_1": "King Abdulaziz Road",
+      "line_1_ar": "طريق الملك عبدالعزيز"
+    }
+  },
+  {
+    "id": 102,
+    "type": "customer",
+    "display_name": "Desert Retail Co.",
+    "display_name_ar": "شركة صحراء للتجزئة",
+    "email": "ap@desertretail.sa",
+    "phone": "+966500000102",
+    "vat_number": "301112223330003",
+    "billing_address": {
+      "city": "Jeddah",
+      "line_1": "Prince Sultan Street",
+      "line_1_ar": "شارع الأمير سلطان"
+    }
+  },
+  {
+    "id": 201,
+    "type": "supplier",
+    "display_name": "Eastern Paper Supply",
+    "display_name_ar": "مؤسسة الشرقية للورق",
+    "email": "accounts@easternpaper.sa",
+    "phone": "+966500000201",
+    "vat_number": "302223334440003",
+    "billing_address": {
+      "city": "Dammam",
+      "line_1": "Corniche Road",
+      "line_1_ar": "طريق الكورنيش"
+    }
+  },
+  {
+    "id": 202,
+    "type": "supplier",
+    "display_name": "Najd Office Systems",
+    "display_name_ar": "أنظمة نجد المكتبية",
+    "email": "payables@najdoffice.sa",
+    "phone": "+966500000202",
+    "vat_number": "303334445550003",
+    "billing_address": {
+      "city": "Riyadh",
+      "line_1": "Makkah Road",
+      "line_1_ar": "طريق مكة"
+    }
+  }
+]

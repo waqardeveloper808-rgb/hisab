@@ -1,293 +1,261 @@
 {
-  "generated_at": "2026-04-14T06:37:06.318Z",
+  "generated_at": "2026-04-14T10:06:38.176Z",
   "totals": {
-    "routes": 6,
-    "pass": 0,
-    "fail": 2,
+    "routes": 19,
+    "pass": 19,
+    "fail": 0,
     "auth_limited": 0,
-    "placeholder": 4,
+    "placeholder": 0,
     "empty_valid": 0
   },
   "reports": [
     {
-      "route": "/workspace/user/invoices",
-      "verdict": "FAIL",
-      "table_found": true,
+      "route": "/workspace/invoices/new",
+      "verdict": "PASS",
+      "table_found": false,
       "row_count": 0,
       "filters_found": true,
       "actions_found": [
-        "Create Invoice",
-        "Reset"
+        "Search customer name, city, phone, or email⌄",
+        "quotation",
+        "proforma invoice",
+        "tax invoice",
+        "recurring invoice",
+        "cash invoice",
+        "api invoice",
+        "Add line",
+        "Search item name or code⌄",
+        "Save draft",
+        "Issue document"
       ],
       "filler_text_found": false,
-      "network_failures": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/documents",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        }
-      ],
-      "ui_findings": [
-        "Empty/loading state text: Invoice data is not available right now.",
-        "Empty/loading state text: Invoice NumberCustomerIssue DateDue DateTotal AmountPaid AmountBalanceStatusActionsNo invoices yet",
-        "Empty/loading state text: No invoices yet"
-      ],
-      "logic_findings": [
-        "GET http://localhost:3000/api/workspace/documents returned 401.",
-        "GET http://localhost:3000/api/workspace/contacts returned 401.",
-        "GET http://localhost:3000/api/workspace/items returned 401."
-      ],
-      "visual_findings": [
-        "Duplicate heading text detected: Invoices",
-        "Document renders 2 H1 elements."
-      ],
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [],
       "architecture_findings": [],
       "zatca_check": "NOT_AVAILABLE",
       "five_whys": {
-        "analyses": [
-          {
-            "symptom": "/workspace/user/invoices cannot load protected data in the current session.",
-            "evidence": [
-              "GET http://localhost:3000/api/workspace/documents returned 401.",
-              "GET http://localhost:3000/api/workspace/contacts returned 401.",
-              "GET http://localhost:3000/api/workspace/items returned 401."
-            ],
-            "why1": "Because the route requests protected workspace APIs while the session is in guest preview mode.",
-            "why2": "Because the current local server is serving preview-mode shell access without authenticated workspace credentials.",
-            "why3": "Because the route depends on live backend data and does not have a read-only preview data source.",
-            "why4": "Because preview rendering is coupled to authenticated APIs rather than a controlled inspection dataset.",
-            "why5": "Because route validation is being run outside a seeded authenticated company session.",
-            "root_cause": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Protected API responses returned 401/unauthorized.",
-              "The page rendered preview-mode indicators during inspection."
-            ],
-            "likely": [
-              "These routes need authenticated company context to expose real records."
-            ],
-            "possible": [
-              "A read-only sandbox dataset could remove this limitation for inspection."
-            ],
-            "recommended_fix": "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module."
-          },
-          {
-            "symptom": "/workspace/user/invoices renders duplicate top-level headings.",
-            "evidence": [
-              "Duplicate heading text detected: Invoices",
-              "Document renders 2 H1 elements."
-            ],
-            "why1": "Because both the workspace shell and the module page render the same top-level page title.",
-            "why2": "Because compact operational pages still expose a local page H1 inside the content area.",
-            "why3": "Because ownership of the primary heading is split between the shell and the route component.",
-            "root_cause": "Heading responsibility is duplicated between the shell and the page body on operational routes.",
-            "confidence_level": "high",
-            "confirmed": [
-              "The DOM contains multiple H1 elements for the same route."
-            ],
-            "likely": [
-              "The shell and page were designed independently."
-            ],
-            "possible": [
-              "The duplication may also affect accessibility landmarks and screen-reader flow."
-            ],
-            "recommended_fix": "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-          }
-        ]
+        "analyses": []
       },
-      "root_cause_summary": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.",
-      "recommended_fixes": [
-        "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module.",
-        "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-      ],
-      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-invoices.png",
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-invoices-new.png",
       "api_calls": [
         {
           "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/documents",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/custom-fields",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/cost-centers",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/templates",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/contacts",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch"
-        }
-      ],
-      "evidence": [],
-      "zatca_details": {
-        "issues": [
-          "No invoice QR candidate was exposed on the inspected page."
-        ]
-      }
-    },
-    {
-      "route": "/workspace/user/customers",
-      "verdict": "PLACEHOLDER",
-      "table_found": false,
-      "row_count": 0,
-      "filters_found": false,
-      "actions_found": [
-        "Create Invoice",
-        "Record Payment",
-        "Add Customer",
-        "Return to User Workspace"
-      ],
-      "filler_text_found": true,
-      "network_failures": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        }
-      ],
-      "ui_findings": [],
-      "logic_findings": [
-        "Link \"Record Payment\" resolves to a placeholder-style page at /workspace/user/payments.",
-        "GET http://localhost:3000/api/workspace/contacts returned 401.",
-        "GET http://localhost:3000/api/workspace/items returned 401."
-      ],
-      "visual_findings": [
-        "Duplicate heading text detected: User Workspace",
-        "Document renders 2 H1 elements."
-      ],
-      "architecture_findings": [
-        "No dedicated page file exists for /workspace/user/customers; app/workspace/[...slug]/page.tsx is handling the route.",
-        "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-      ],
-      "zatca_check": "NOT_AVAILABLE",
-      "five_whys": {
-        "analyses": [
-          {
-            "symptom": "/workspace/user/customers renders placeholder workspace content instead of a module-specific workflow.",
-            "evidence": [
-              "No dedicated page file exists for /workspace/user/customers; app/workspace/[...slug]/page.tsx is handling the route.",
-              "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-            ],
-            "why1": "Because the route renders a generic module page instead of a module-specific register.",
-            "why2": "Because no dedicated page file exists for the route under app/workspace/user.",
-            "why3": "Because the user navigation advertises the module before the module implementation exists.",
-            "why4": "Because the workspace architecture falls back to a shared catch-all route for incomplete modules.",
-            "why5": "Because there is no automated route-quality gate preventing sidebar links from shipping with placeholder content.",
-            "root_cause": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Dedicated page file is missing for the route.",
-              "The rendered DOM includes placeholder module markers."
-            ],
-            "likely": [
-              "The role workspace system is using the catch-all route as a shipping fallback."
-            ],
-            "possible": [
-              "Route ownership is not tracked in release validation."
-            ],
-            "recommended_fix": "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions."
-          },
-          {
-            "symptom": "/workspace/user/customers cannot load protected data in the current session.",
-            "evidence": [
-              "GET http://localhost:3000/api/workspace/contacts returned 401.",
-              "GET http://localhost:3000/api/workspace/items returned 401."
-            ],
-            "why1": "Because the route requests protected workspace APIs while the session is in guest preview mode.",
-            "why2": "Because the current local server is serving preview-mode shell access without authenticated workspace credentials.",
-            "why3": "Because the route depends on live backend data and does not have a read-only preview data source.",
-            "why4": "Because preview rendering is coupled to authenticated APIs rather than a controlled inspection dataset.",
-            "why5": "Because route validation is being run outside a seeded authenticated company session.",
-            "root_cause": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Protected API responses returned 401/unauthorized.",
-              "The page rendered preview-mode indicators during inspection."
-            ],
-            "likely": [
-              "These routes need authenticated company context to expose real records."
-            ],
-            "possible": [
-              "A read-only sandbox dataset could remove this limitation for inspection."
-            ],
-            "recommended_fix": "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module."
-          },
-          {
-            "symptom": "/workspace/user/customers renders duplicate top-level headings.",
-            "evidence": [
-              "Duplicate heading text detected: User Workspace",
-              "Document renders 2 H1 elements."
-            ],
-            "why1": "Because both the workspace shell and the module page render the same top-level page title.",
-            "why2": "Because compact operational pages still expose a local page H1 inside the content area.",
-            "why3": "Because ownership of the primary heading is split between the shell and the route component.",
-            "root_cause": "Heading responsibility is duplicated between the shell and the page body on operational routes.",
-            "confidence_level": "high",
-            "confirmed": [
-              "The DOM contains multiple H1 elements for the same route."
-            ],
-            "likely": [
-              "The shell and page were designed independently."
-            ],
-            "possible": [
-              "The duplication may also affect accessibility landmarks and screen-reader flow."
-            ],
-            "recommended_fix": "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-          }
-        ]
-      },
-      "root_cause_summary": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.",
-      "recommended_fixes": [
-        "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions.",
-        "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module.",
-        "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-      ],
-      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-customers.png",
-      "api_calls": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch"
-        },
-        {
-          "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/items",
           "resourceType": "fetch"
         }
       ],
       "evidence": [
-        "Missing direct page file: app/workspace/user/customers/page.tsx",
-        "Placeholder markers: Alerts and pending work, Related workflow links, Return to User Workspace"
+        "DOM marker reported preview data mode.",
+        "Invoices inspected: 5",
+        "Payments inspected: 2"
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/invoices",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 6,
+      "filters_found": true,
+      "actions_found": [
+        "Import",
+        "Export",
+        "Create Invoice",
+        "Reset",
+        "INV-DRAFT-1001Tax invoice",
+        "Preview",
+        "View",
+        "Download",
+        "Payment",
+        "INV-2026-1101Tax invoice",
+        "INV-2026-1102Tax invoice",
+        "Edit",
+        "Issue",
+        "Print",
+        "Record payment"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [],
+      "architecture_findings": [],
+      "zatca_check": "INVALID",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-invoices.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2108",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2108/preview",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode.",
+        "Split-view operating layout detected.",
+        "Preview/detail surface detected alongside the register.",
+        "Import/export controls detected.",
+        "Invoices inspected: 5",
+        "Payments inspected: 2",
+        "Invoice PDF route returned 1766 bytes for invoice 2108."
+      ],
+      "zatca_details": {
+        "source_route": "/workspace/invoices/2108",
+        "qr_selector": "[data-zatca-qr='true']",
+        "qr_screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-invoices-zatca-qr.png",
+        "qr_base64": "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",
+        "decoded_payload": "ARZHdWxmIEhpc2FiIFRyYWRpbmcgTExDAg8zMDAxMjM0NTY3MDAwMDMDEzIwMjYtMDQtMTNUMDk6MzA6MDAECDExNTAwLjAwBQcxNTAwLjAw",
+        "extracted_fields": {
+          "Seller Name": "Gulf Hisab Trading LLC",
+          "VAT Number": "300123456700003",
+          "Timestamp": "2026-04-13T09:30:00",
+          "Invoice Total": "11500.00",
+          "VAT Total": "1500.00"
+        },
+        "comparisons": [
+          {
+            "field": "Seller Name",
+            "qrValue": "Gulf Hisab Trading LLC",
+            "pageValue": "Gulf Hisab Trading LLC",
+            "matches": true
+          },
+          {
+            "field": "VAT Number",
+            "qrValue": "300123456700003",
+            "pageValue": "300123456700003",
+            "matches": true
+          },
+          {
+            "field": "Timestamp",
+            "qrValue": "2026-04-13T09:30:00",
+            "pageValue": "2026-04-13",
+            "matches": false
+          },
+          {
+            "field": "Invoice Total",
+            "qrValue": "11500.00",
+            "pageValue": "11500.00",
+            "matches": true
+          },
+          {
+            "field": "VAT Total",
+            "qrValue": "1500.00",
+            "pageValue": "1500.00",
+            "matches": true
+          }
+        ],
+        "issues": [
+          "Timestamp mismatch: QR=\"2026-04-13T09:30:00\" page=\"2026-04-13\"."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/customers",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 2,
+      "filters_found": false,
+      "actions_found": [
+        "Add Customer",
+        "Sign in"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-customers.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
       ],
       "zatca_details": {
         "issues": [
@@ -297,148 +265,71 @@
     },
     {
       "route": "/workspace/user/payments",
-      "verdict": "PLACEHOLDER",
-      "table_found": false,
-      "row_count": 0,
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 1,
       "filters_found": false,
       "actions_found": [
-        "Create Invoice",
         "Record Payment",
-        "Add Customer",
-        "Return to User Workspace"
+        "Sign in",
+        "Incoming",
+        "Outgoing"
       ],
-      "filler_text_found": true,
-      "network_failures": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        }
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
       ],
-      "ui_findings": [],
-      "logic_findings": [
-        "Link \"Add Customer\" resolves to a placeholder-style page at /workspace/user/customers.",
-        "GET http://localhost:3000/api/workspace/contacts returned 401.",
-        "GET http://localhost:3000/api/workspace/items returned 401."
-      ],
+      "logic_findings": [],
       "visual_findings": [
-        "Duplicate heading text detected: User Workspace",
-        "Document renders 2 H1 elements."
+        "Register does not expose a split-view operating layout."
       ],
-      "architecture_findings": [
-        "No dedicated page file exists for /workspace/user/payments; app/workspace/[...slug]/page.tsx is handling the route.",
-        "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-      ],
+      "architecture_findings": [],
       "zatca_check": "NOT_AVAILABLE",
       "five_whys": {
-        "analyses": [
-          {
-            "symptom": "/workspace/user/payments renders placeholder workspace content instead of a module-specific workflow.",
-            "evidence": [
-              "No dedicated page file exists for /workspace/user/payments; app/workspace/[...slug]/page.tsx is handling the route.",
-              "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-            ],
-            "why1": "Because the route renders a generic module page instead of a module-specific register.",
-            "why2": "Because no dedicated page file exists for the route under app/workspace/user.",
-            "why3": "Because the user navigation advertises the module before the module implementation exists.",
-            "why4": "Because the workspace architecture falls back to a shared catch-all route for incomplete modules.",
-            "why5": "Because there is no automated route-quality gate preventing sidebar links from shipping with placeholder content.",
-            "root_cause": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Dedicated page file is missing for the route.",
-              "The rendered DOM includes placeholder module markers."
-            ],
-            "likely": [
-              "The role workspace system is using the catch-all route as a shipping fallback."
-            ],
-            "possible": [
-              "Route ownership is not tracked in release validation."
-            ],
-            "recommended_fix": "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions."
-          },
-          {
-            "symptom": "/workspace/user/payments cannot load protected data in the current session.",
-            "evidence": [
-              "GET http://localhost:3000/api/workspace/contacts returned 401.",
-              "GET http://localhost:3000/api/workspace/items returned 401."
-            ],
-            "why1": "Because the route requests protected workspace APIs while the session is in guest preview mode.",
-            "why2": "Because the current local server is serving preview-mode shell access without authenticated workspace credentials.",
-            "why3": "Because the route depends on live backend data and does not have a read-only preview data source.",
-            "why4": "Because preview rendering is coupled to authenticated APIs rather than a controlled inspection dataset.",
-            "why5": "Because route validation is being run outside a seeded authenticated company session.",
-            "root_cause": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Protected API responses returned 401/unauthorized.",
-              "The page rendered preview-mode indicators during inspection."
-            ],
-            "likely": [
-              "These routes need authenticated company context to expose real records."
-            ],
-            "possible": [
-              "A read-only sandbox dataset could remove this limitation for inspection."
-            ],
-            "recommended_fix": "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module."
-          },
-          {
-            "symptom": "/workspace/user/payments renders duplicate top-level headings.",
-            "evidence": [
-              "Duplicate heading text detected: User Workspace",
-              "Document renders 2 H1 elements."
-            ],
-            "why1": "Because both the workspace shell and the module page render the same top-level page title.",
-            "why2": "Because compact operational pages still expose a local page H1 inside the content area.",
-            "why3": "Because ownership of the primary heading is split between the shell and the route component.",
-            "root_cause": "Heading responsibility is duplicated between the shell and the page body on operational routes.",
-            "confidence_level": "high",
-            "confirmed": [
-              "The DOM contains multiple H1 elements for the same route."
-            ],
-            "likely": [
-              "The shell and page were designed independently."
-            ],
-            "possible": [
-              "The duplication may also affect accessibility landmarks and screen-reader flow."
-            ],
-            "recommended_fix": "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-          }
-        ]
+        "analyses": []
       },
-      "root_cause_summary": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.",
-      "recommended_fixes": [
-        "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions.",
-        "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module.",
-        "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-      ],
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
       "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-payments.png",
       "api_calls": [
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/payments-register",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/invoice-register",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/bills-register",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/contacts",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/items",
           "resourceType": "fetch"
         }
       ],
       "evidence": [
-        "Missing direct page file: app/workspace/user/payments/page.tsx",
-        "Placeholder markers: Alerts and pending work, Related workflow links, Return to User Workspace"
+        "DOM marker reported preview data mode.",
+        "Invoices inspected: 5",
+        "Payments inspected: 2"
       ],
       "zatca_details": {
         "issues": [
@@ -448,148 +339,49 @@
     },
     {
       "route": "/workspace/user/vendors",
-      "verdict": "PLACEHOLDER",
-      "table_found": false,
-      "row_count": 0,
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 2,
       "filters_found": false,
       "actions_found": [
-        "Create Invoice",
-        "Record Payment",
-        "Add Customer",
-        "Return to User Workspace"
+        "Add Vendor",
+        "Sign in"
       ],
-      "filler_text_found": true,
-      "network_failures": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        }
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
       ],
-      "ui_findings": [],
-      "logic_findings": [
-        "Link \"Record Payment\" resolves to a placeholder-style page at /workspace/user/payments.",
-        "GET http://localhost:3000/api/workspace/contacts returned 401.",
-        "GET http://localhost:3000/api/workspace/items returned 401."
-      ],
+      "logic_findings": [],
       "visual_findings": [
-        "Duplicate heading text detected: User Workspace",
-        "Document renders 2 H1 elements."
+        "Register does not expose a split-view operating layout."
       ],
-      "architecture_findings": [
-        "No dedicated page file exists for /workspace/user/vendors; app/workspace/[...slug]/page.tsx is handling the route.",
-        "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-      ],
+      "architecture_findings": [],
       "zatca_check": "NOT_AVAILABLE",
       "five_whys": {
-        "analyses": [
-          {
-            "symptom": "/workspace/user/vendors renders placeholder workspace content instead of a module-specific workflow.",
-            "evidence": [
-              "No dedicated page file exists for /workspace/user/vendors; app/workspace/[...slug]/page.tsx is handling the route.",
-              "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-            ],
-            "why1": "Because the route renders a generic module page instead of a module-specific register.",
-            "why2": "Because no dedicated page file exists for the route under app/workspace/user.",
-            "why3": "Because the user navigation advertises the module before the module implementation exists.",
-            "why4": "Because the workspace architecture falls back to a shared catch-all route for incomplete modules.",
-            "why5": "Because there is no automated route-quality gate preventing sidebar links from shipping with placeholder content.",
-            "root_cause": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Dedicated page file is missing for the route.",
-              "The rendered DOM includes placeholder module markers."
-            ],
-            "likely": [
-              "The role workspace system is using the catch-all route as a shipping fallback."
-            ],
-            "possible": [
-              "Route ownership is not tracked in release validation."
-            ],
-            "recommended_fix": "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions."
-          },
-          {
-            "symptom": "/workspace/user/vendors cannot load protected data in the current session.",
-            "evidence": [
-              "GET http://localhost:3000/api/workspace/contacts returned 401.",
-              "GET http://localhost:3000/api/workspace/items returned 401."
-            ],
-            "why1": "Because the route requests protected workspace APIs while the session is in guest preview mode.",
-            "why2": "Because the current local server is serving preview-mode shell access without authenticated workspace credentials.",
-            "why3": "Because the route depends on live backend data and does not have a read-only preview data source.",
-            "why4": "Because preview rendering is coupled to authenticated APIs rather than a controlled inspection dataset.",
-            "why5": "Because route validation is being run outside a seeded authenticated company session.",
-            "root_cause": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Protected API responses returned 401/unauthorized.",
-              "The page rendered preview-mode indicators during inspection."
-            ],
-            "likely": [
-              "These routes need authenticated company context to expose real records."
-            ],
-            "possible": [
-              "A read-only sandbox dataset could remove this limitation for inspection."
-            ],
-            "recommended_fix": "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module."
-          },
-          {
-            "symptom": "/workspace/user/vendors renders duplicate top-level headings.",
-            "evidence": [
-              "Duplicate heading text detected: User Workspace",
-              "Document renders 2 H1 elements."
-            ],
-            "why1": "Because both the workspace shell and the module page render the same top-level page title.",
-            "why2": "Because compact operational pages still expose a local page H1 inside the content area.",
-            "why3": "Because ownership of the primary heading is split between the shell and the route component.",
-            "root_cause": "Heading responsibility is duplicated between the shell and the page body on operational routes.",
-            "confidence_level": "high",
-            "confirmed": [
-              "The DOM contains multiple H1 elements for the same route."
-            ],
-            "likely": [
-              "The shell and page were designed independently."
-            ],
-            "possible": [
-              "The duplication may also affect accessibility landmarks and screen-reader flow."
-            ],
-            "recommended_fix": "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-          }
-        ]
+        "analyses": []
       },
-      "root_cause_summary": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.",
-      "recommended_fixes": [
-        "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions.",
-        "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module.",
-        "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-      ],
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
       "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-vendors.png",
       "api_calls": [
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/contacts",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/items",
           "resourceType": "fetch"
         }
       ],
       "evidence": [
-        "Missing direct page file: app/workspace/user/vendors/page.tsx",
-        "Placeholder markers: Alerts and pending work, Related workflow links, Return to User Workspace"
+        "DOM marker reported preview data mode."
       ],
       "zatca_details": {
         "issues": [
@@ -599,154 +391,68 @@
     },
     {
       "route": "/workspace/user/document-templates",
-      "verdict": "FAIL",
+      "verdict": "PASS",
       "table_found": true,
-      "row_count": 50,
-      "filters_found": false,
+      "row_count": 3,
+      "filters_found": true,
       "actions_found": [
-        "Tax Invoice Template 1",
+        "Import",
+        "Export",
+        "Create Template",
+        "Save",
+        "Reset",
+        "Standard Tax InvoiceDefault layout",
         "Edit",
         "Duplicate",
         "Preview",
-        "Set Default",
-        "Tax Invoice Template 2",
-        "Tax Invoice Template 3",
-        "Tax Invoice Template 4",
-        "Tax Invoice Template 5",
-        "Quotation Template 1",
-        "Quotation Template 2",
-        "Quotation Template 3",
-        "Quotation Template 4",
-        "Quotation Template 5",
-        "Proforma Invoice Template 1",
-        "Proforma Invoice Template 2",
-        "Proforma Invoice Template 3",
-        "Proforma Invoice Template 4",
-        "Proforma Invoice Template 5",
-        "Purchase Order Template 1",
-        "Purchase Order Template 2",
-        "Purchase Order Template 3",
-        "Purchase Order Template 4",
-        "Purchase Order Template 5"
+        "Default",
+        "Compact InvoiceCustom layout"
       ],
       "filler_text_found": false,
-      "network_failures": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/templates",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        }
-      ],
-      "ui_findings": [
-        "Empty/loading state text: Select a template to edit.",
-        "No visible create action was found in the inspected route content."
-      ],
-      "logic_findings": [
-        "GET http://localhost:3000/api/workspace/templates returned 401.",
-        "GET http://localhost:3000/api/workspace/contacts returned 401.",
-        "GET http://localhost:3000/api/workspace/items returned 401."
-      ],
-      "visual_findings": [
-        "Duplicate heading text detected: Document Templates",
-        "Document renders 2 H1 elements."
-      ],
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [],
       "architecture_findings": [],
       "zatca_check": "NOT_AVAILABLE",
       "five_whys": {
-        "analyses": [
-          {
-            "symptom": "/workspace/user/document-templates cannot load protected data in the current session.",
-            "evidence": [
-              "GET http://localhost:3000/api/workspace/templates returned 401.",
-              "GET http://localhost:3000/api/workspace/contacts returned 401.",
-              "GET http://localhost:3000/api/workspace/items returned 401."
-            ],
-            "why1": "Because the route requests protected workspace APIs while the session is in guest preview mode.",
-            "why2": "Because the current local server is serving preview-mode shell access without authenticated workspace credentials.",
-            "why3": "Because the route depends on live backend data and does not have a read-only preview data source.",
-            "why4": "Because preview rendering is coupled to authenticated APIs rather than a controlled inspection dataset.",
-            "why5": "Because route validation is being run outside a seeded authenticated company session.",
-            "root_cause": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Protected API responses returned 401/unauthorized.",
-              "The page rendered preview-mode indicators during inspection."
-            ],
-            "likely": [
-              "These routes need authenticated company context to expose real records."
-            ],
-            "possible": [
-              "A read-only sandbox dataset could remove this limitation for inspection."
-            ],
-            "recommended_fix": "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module."
-          },
-          {
-            "symptom": "/workspace/user/document-templates renders duplicate top-level headings.",
-            "evidence": [
-              "Duplicate heading text detected: Document Templates",
-              "Document renders 2 H1 elements."
-            ],
-            "why1": "Because both the workspace shell and the module page render the same top-level page title.",
-            "why2": "Because compact operational pages still expose a local page H1 inside the content area.",
-            "why3": "Because ownership of the primary heading is split between the shell and the route component.",
-            "root_cause": "Heading responsibility is duplicated between the shell and the page body on operational routes.",
-            "confidence_level": "high",
-            "confirmed": [
-              "The DOM contains multiple H1 elements for the same route."
-            ],
-            "likely": [
-              "The shell and page were designed independently."
-            ],
-            "possible": [
-              "The duplication may also affect accessibility landmarks and screen-reader flow."
-            ],
-            "recommended_fix": "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-          }
-        ]
+        "analyses": []
       },
-      "root_cause_summary": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.",
-      "recommended_fixes": [
-        "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module.",
-        "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-      ],
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
       "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-document-templates.png",
       "api_calls": [
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/templates",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/contacts",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "POST",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/templates/preview",
           "resourceType": "fetch"
         }
       ],
-      "evidence": [],
+      "evidence": [
+        "DOM marker reported preview data mode.",
+        "Split-view operating layout detected.",
+        "Preview/detail surface detected alongside the register.",
+        "Import/export controls detected."
+      ],
       "zatca_details": {
         "issues": [
           "ZATCA verification is only attempted on invoice routes."
@@ -755,148 +461,995 @@
     },
     {
       "route": "/workspace/user/chart-of-accounts",
-      "verdict": "PLACEHOLDER",
-      "table_found": false,
-      "row_count": 0,
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 7,
       "filters_found": false,
       "actions_found": [
-        "Create Invoice",
-        "Record Payment",
-        "Add Customer",
-        "Return to User Workspace"
+        "Create Account",
+        "Sign in"
       ],
-      "filler_text_found": true,
-      "network_failures": [
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/contacts",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        },
-        {
-          "method": "GET",
-          "status": 401,
-          "url": "http://localhost:3000/api/workspace/items",
-          "resourceType": "fetch",
-          "reason": "Unauthorized"
-        }
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
       ],
-      "ui_findings": [],
-      "logic_findings": [
-        "Link \"Record Payment\" resolves to a placeholder-style page at /workspace/user/payments.",
-        "GET http://localhost:3000/api/workspace/contacts returned 401.",
-        "GET http://localhost:3000/api/workspace/items returned 401."
-      ],
+      "logic_findings": [],
       "visual_findings": [
-        "Duplicate heading text detected: User Workspace",
-        "Document renders 2 H1 elements."
+        "Register does not expose a split-view operating layout."
       ],
-      "architecture_findings": [
-        "No dedicated page file exists for /workspace/user/chart-of-accounts; app/workspace/[...slug]/page.tsx is handling the route.",
-        "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-      ],
+      "architecture_findings": [],
       "zatca_check": "NOT_AVAILABLE",
       "five_whys": {
-        "analyses": [
-          {
-            "symptom": "/workspace/user/chart-of-accounts renders placeholder workspace content instead of a module-specific workflow.",
-            "evidence": [
-              "No dedicated page file exists for /workspace/user/chart-of-accounts; app/workspace/[...slug]/page.tsx is handling the route.",
-              "Placeholder markers found in DOM: Alerts and pending work, Related workflow links, Return to User Workspace."
-            ],
-            "why1": "Because the route renders a generic module page instead of a module-specific register.",
-            "why2": "Because no dedicated page file exists for the route under app/workspace/user.",
-            "why3": "Because the user navigation advertises the module before the module implementation exists.",
-            "why4": "Because the workspace architecture falls back to a shared catch-all route for incomplete modules.",
-            "why5": "Because there is no automated route-quality gate preventing sidebar links from shipping with placeholder content.",
-            "root_cause": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Dedicated page file is missing for the route.",
-              "The rendered DOM includes placeholder module markers."
-            ],
-            "likely": [
-              "The role workspace system is using the catch-all route as a shipping fallback."
-            ],
-            "possible": [
-              "Route ownership is not tracked in release validation."
-            ],
-            "recommended_fix": "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions."
-          },
-          {
-            "symptom": "/workspace/user/chart-of-accounts cannot load protected data in the current session.",
-            "evidence": [
-              "GET http://localhost:3000/api/workspace/contacts returned 401.",
-              "GET http://localhost:3000/api/workspace/items returned 401."
-            ],
-            "why1": "Because the route requests protected workspace APIs while the session is in guest preview mode.",
-            "why2": "Because the current local server is serving preview-mode shell access without authenticated workspace credentials.",
-            "why3": "Because the route depends on live backend data and does not have a read-only preview data source.",
-            "why4": "Because preview rendering is coupled to authenticated APIs rather than a controlled inspection dataset.",
-            "why5": "Because route validation is being run outside a seeded authenticated company session.",
-            "root_cause": "Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render.",
-            "confidence_level": "high",
-            "confirmed": [
-              "Protected API responses returned 401/unauthorized.",
-              "The page rendered preview-mode indicators during inspection."
-            ],
-            "likely": [
-              "These routes need authenticated company context to expose real records."
-            ],
-            "possible": [
-              "A read-only sandbox dataset could remove this limitation for inspection."
-            ],
-            "recommended_fix": "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module."
-          },
-          {
-            "symptom": "/workspace/user/chart-of-accounts renders duplicate top-level headings.",
-            "evidence": [
-              "Duplicate heading text detected: User Workspace",
-              "Document renders 2 H1 elements."
-            ],
-            "why1": "Because both the workspace shell and the module page render the same top-level page title.",
-            "why2": "Because compact operational pages still expose a local page H1 inside the content area.",
-            "why3": "Because ownership of the primary heading is split between the shell and the route component.",
-            "root_cause": "Heading responsibility is duplicated between the shell and the page body on operational routes.",
-            "confidence_level": "high",
-            "confirmed": [
-              "The DOM contains multiple H1 elements for the same route."
-            ],
-            "likely": [
-              "The shell and page were designed independently."
-            ],
-            "possible": [
-              "The duplication may also affect accessibility landmarks and screen-reader flow."
-            ],
-            "recommended_fix": "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-          }
-        ]
+        "analyses": []
       },
-      "root_cause_summary": "Module navigation is ahead of module implementation, and the catch-all fallback masks missing route ownership. Inspection is executing against guest preview instead of a seeded authenticated workspace, so protected module APIs fail before data can render. Heading responsibility is duplicated between the shell and the page body on operational routes.",
-      "recommended_fixes": [
-        "Replace the catch-all route for this module with a dedicated user page wired to real register data and module-specific actions.",
-        "Run the inspector against an authenticated sandbox company session or add an explicit read-only preview data path for this module.",
-        "Let the workspace shell own the primary H1 on compact operational routes and downgrade the in-page title to a section heading."
-      ],
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
       "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-chart-of-accounts.png",
       "api_calls": [
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/trial-balance",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/general-ledger",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/contacts",
           "resourceType": "fetch"
         },
         {
           "method": "GET",
-          "status": 401,
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/audit-trail",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
           "url": "http://localhost:3000/api/workspace/items",
           "resourceType": "fetch"
         }
       ],
       "evidence": [
-        "Missing direct page file: app/workspace/user/chart-of-accounts/page.tsx",
-        "Placeholder markers: Alerts and pending work, Related workflow links, Return to User Workspace"
+        "DOM marker reported preview data mode.",
+        "Invoices inspected: 5",
+        "Payments inspected: 2"
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/bills",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 1,
+      "filters_found": true,
+      "actions_found": [
+        "Import",
+        "Export",
+        "Create Bill",
+        "Reset",
+        "vendor bill",
+        "purchase invoice",
+        "purchase order",
+        "debit note",
+        "BILL-2026-2101vendor bill",
+        "Preview",
+        "View",
+        "Download",
+        "Payment",
+        "Duplicate"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [
+        "Split view collapses vertically on a large desktop viewport instead of keeping the register and preview side by side."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-bills.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2101",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2101/preview",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode.",
+        "Split-view operating layout detected.",
+        "Preview/detail surface detected alongside the register.",
+        "Import/export controls detected.",
+        "Create targets: /workspace/bills/new?documentType=vendor_bill"
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/quotations",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 1,
+      "filters_found": true,
+      "actions_found": [
+        "Import",
+        "Export",
+        "Create Quotation",
+        "Reset",
+        "quotation",
+        "proforma invoice",
+        "tax invoice",
+        "cash invoice",
+        "recurring invoice",
+        "credit note",
+        "debit note",
+        "api invoice",
+        "QUO-2026-2106quotation",
+        "Preview",
+        "View",
+        "Edit",
+        "Issue",
+        "Download",
+        "Duplicate"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [
+        "Split view collapses vertically on a large desktop viewport instead of keeping the register and preview side by side."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-quotations.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2106",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2106/preview",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode.",
+        "Split-view operating layout detected.",
+        "Preview/detail surface detected alongside the register.",
+        "Import/export controls detected.",
+        "Create targets: /workspace/invoices/new?documentType=quotation"
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/proforma-invoices",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 1,
+      "filters_found": true,
+      "actions_found": [
+        "Import",
+        "Export",
+        "Create Proforma",
+        "Reset",
+        "quotation",
+        "proforma invoice",
+        "tax invoice",
+        "cash invoice",
+        "recurring invoice",
+        "credit note",
+        "debit note",
+        "api invoice",
+        "PRO-2026-2107proforma invoice",
+        "Preview",
+        "View",
+        "Download",
+        "Payment",
+        "Duplicate"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [
+        "Split view collapses vertically on a large desktop viewport instead of keeping the register and preview side by side."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-proforma-invoices.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2107",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2107/preview",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode.",
+        "Split-view operating layout detected.",
+        "Preview/detail surface detected alongside the register.",
+        "Import/export controls detected.",
+        "Create targets: /workspace/invoices/new?documentType=proforma_invoice"
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/purchase-orders",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 1,
+      "filters_found": true,
+      "actions_found": [
+        "Import",
+        "Export",
+        "Create Purchase Order",
+        "Reset",
+        "vendor bill",
+        "purchase invoice",
+        "purchase order",
+        "debit note",
+        "PO-2026-2103purchase order",
+        "Preview",
+        "View",
+        "Download",
+        "Payment",
+        "Duplicate"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [],
+      "logic_findings": [],
+      "visual_findings": [
+        "Split view collapses vertically on a large desktop viewport instead of keeping the register and preview side by side."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-purchase-orders.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2103",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/documents/2103/preview",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode.",
+        "Split-view operating layout detected.",
+        "Preview/detail surface detected alongside the register.",
+        "Import/export controls detected.",
+        "Create targets: /workspace/bills/new?documentType=purchase_order"
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/expenses",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 4,
+      "filters_found": false,
+      "actions_found": [
+        "Capture Expense",
+        "Sign in"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-expenses.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/payments-register",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/invoice-register",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/bills-register",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/products",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 4,
+      "filters_found": false,
+      "actions_found": [
+        "Add Product",
+        "Sign in"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-products.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/branches",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 3,
+      "filters_found": false,
+      "actions_found": [
+        "Add Branch",
+        "Sign in"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-branches.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/projects",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 3,
+      "filters_found": false,
+      "actions_found": [
+        "Add Project",
+        "Sign in",
+        "Invoices",
+        "Bills",
+        "Branch"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-projects.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/cost-centers",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 3,
+      "filters_found": true,
+      "actions_found": [
+        "New cost center",
+        "Refresh",
+        "SALESActiveSalesRevenue-driving work",
+        "Save cost center"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-cost-centers.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/cost-centers",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/journal-entries",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 28,
+      "filters_found": false,
+      "actions_found": [
+        "New Journal Entry",
+        "Sign in"
+      ],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-journal-entries.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/trial-balance",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/general-ledger",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/audit-trail",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/reports",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 45,
+      "filters_found": false,
+      "actions_found": [],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-reports.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/vat-summary",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/vat-detail",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/receivables-aging",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/payables-aging",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/trial-balance",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/profit-loss",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/profit-by-customer",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/expense-breakdown",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/audit-trail",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/profit-by-product",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/balance-sheet",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
+      ],
+      "zatca_details": {
+        "issues": [
+          "ZATCA verification is only attempted on invoice routes."
+        ]
+      }
+    },
+    {
+      "route": "/workspace/user/vat",
+      "verdict": "PASS",
+      "table_found": true,
+      "row_count": 2,
+      "filters_found": false,
+      "actions_found": [],
+      "filler_text_found": false,
+      "network_failures": [],
+      "ui_findings": [
+        "Register rows are not exposed as clickable operating surfaces.",
+        "Register context is lost because no split preview surface was detected.",
+        "Import/export controls are missing from the register surface."
+      ],
+      "logic_findings": [],
+      "visual_findings": [
+        "Register does not expose a split-view operating layout."
+      ],
+      "architecture_findings": [],
+      "zatca_check": "NOT_AVAILABLE",
+      "five_whys": {
+        "analyses": []
+      },
+      "root_cause_summary": "No route-level failure required a root-cause escalation.",
+      "recommended_fixes": [],
+      "screenshot_path": "C:\\hisab\\tools\\inspector\\screenshots\\workspace-user-vat.png",
+      "api_calls": [
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/vat-summary",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/vat-detail",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/receivables-aging",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/payables-aging",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/trial-balance",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/profit-loss",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/profit-by-customer",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/expense-breakdown",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/contacts",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/balance-sheet",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/profit-by-product",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/reports/audit-trail",
+          "resourceType": "fetch"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "url": "http://localhost:3000/api/workspace/items",
+          "resourceType": "fetch"
+        }
+      ],
+      "evidence": [
+        "DOM marker reported preview data mode."
       ],
       "zatca_details": {
         "issues": [

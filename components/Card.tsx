@@ -6,7 +6,7 @@ export function Card({ className = "", children, ...props }: CardProps) {
   return (
     <div
       className={[
-        "rounded-[1.75rem] border border-line bg-surface p-6 shadow-[0_18px_45px_-34px_rgba(17,32,24,0.18)]",
+        "rounded-[1rem] border border-line bg-surface p-3 shadow-[0_12px_24px_-24px_rgba(17,32,24,0.14)]",
         "backdrop-blur-[2px]",
         className,
       ]

@@ -84,53 +84,28 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
         items: [
           { label: "Invoices", href: "/workspace/user/invoices", matchPrefixes: ["/workspace/invoices", "/workspace/sales"] },
           { label: "Quotations", href: "/workspace/user/quotations" },
-          { label: "Payments", href: "/workspace/user/payments", matchPrefixes: ["/workspace/banking"] },
-          { label: "Customers", href: "/workspace/user/customers", matchPrefixes: ["/workspace/contacts"] },
+          { label: "Proforma", href: "/workspace/user/proforma-invoices" },
         ],
       },
       {
         label: "Purchases",
         items: [
-          { label: "Bills", href: "/workspace/user/bills", matchPrefixes: ["/workspace/bills", "/workspace/purchases"] },
-          { label: "Vendors", href: "/workspace/user/vendors" },
-          { label: "Purchase Orders", href: "/workspace/user/purchase-orders" },
-          { label: "Expenses", href: "/workspace/user/expenses" },
+          { label: "Bills", href: "/workspace/user/bills", matchPrefixes: ["/workspace/bills", "/workspace/purchases", "/workspace/user/purchase-orders"] },
+          { label: "Expenses", href: "/workspace/user/expenses", matchPrefixes: ["/workspace/user/expenses", "/workspace/user/vendors"] },
         ],
       },
       {
         label: "Accounting",
         items: [
-          { label: "Dashboard", href: "/workspace/user" },
-          { label: "Journal Entries", href: "/workspace/user/journal-entries", matchPrefixes: ["/workspace/accounting"] },
-          { label: "Chart of Accounts", href: "/workspace/user/chart-of-accounts", matchPrefixes: ["/workspace/accounting/books"] },
-          { label: "VAT", href: "/workspace/user/vat", matchPrefixes: ["/workspace/vat"] },
-          { label: "Reports", href: "/workspace/user/reports", matchPrefixes: ["/workspace/reports"] },
+          { label: "Ledger", href: "/workspace/user/journal-entries", matchPrefixes: ["/workspace/accounting", "/workspace/user/chart-of-accounts", "/workspace/accounting/books"] },
+          { label: "Reports", href: "/workspace/user/reports", matchPrefixes: ["/workspace/reports", "/workspace/user/vat"] },
         ],
       },
       {
-        label: "Products / Inventory",
+        label: "Settings",
         items: [
-          { label: "Products & Services", href: "/workspace/user/products" },
-          { label: "Units & Pricing", href: "/workspace/user/units-pricing" },
-        ],
-      },
-      {
-        label: "Operations",
-        items: [
-          { label: "Branches", href: "/workspace/user/branches" },
-          { label: "Projects", href: "/workspace/user/projects" },
-          { label: "Cost Centers", href: "/workspace/user/cost-centers", matchPrefixes: ["/workspace/purchases/cost-centers"] },
-          { label: "Bank Accounts", href: "/workspace/user/bank-accounts" },
-          { label: "Fixed Assets", href: "/workspace/user/fixed-assets" },
-        ],
-      },
-      {
-        label: "Support / Settings",
-        items: [
-          { label: "Help", href: "/workspace/user/help", matchPrefixes: ["/workspace/help"] },
-          { label: "Integrations", href: "/workspace/user/integrations" },
-          { label: "Document Templates", href: "/workspace/user/document-templates", matchPrefixes: ["/workspace/settings/templates"] },
-          { label: "Company Settings", href: "/workspace/user/company-settings", matchPrefixes: ["/workspace/settings"] },
+          { label: "Company", href: "/workspace/settings", matchPrefixes: ["/workspace/settings", "/workspace/settings/templates", "/workspace/user/document-templates"] },
+          { label: "Users", href: "/workspace/settings/users" },
         ],
       },
     ],
@@ -292,6 +267,29 @@ const moduleOverrides: Record<string, Omit<WorkspaceModulePageDefinition, "role"
       { title: "VAT review", description: "Keep sales tax visible before filing time.", href: "/workspace/user/vat" },
     ],
   },
+  "/workspace/user/proforma-invoices": {
+    title: "Proforma Invoices",
+    description: "Prepare customer-facing proformas in the sales flow before conversion to a live tax invoice.",
+    metrics: [
+      { label: "Pending approval", value: "Offer stage", detail: "Keep non-posting sales commitments visible before final issue." },
+      { label: "Conversion ready", value: "Sales pipeline", detail: "Move accepted proformas into invoice execution without losing context." },
+      { label: "Customer review", value: "Pre-billing", detail: "Stay in the same register while reviewing rendered output and follow-up status." },
+    ],
+    alerts: [
+      { title: "Convert accepted proformas", detail: "Review accepted pre-billing documents and move them into the tax invoice flow." },
+      { title: "Watch aging offers", detail: "Keep pending customer decisions visible before deals stall." },
+    ],
+    quickActions: [
+      { label: "Create Proforma", href: "/workspace/invoices/new?documentType=proforma_invoice", variant: "primary" },
+      { label: "Open Sales Overview", href: "/workspace/sales", variant: "secondary" },
+      { label: "Open Invoices", href: "/workspace/user/invoices", variant: "tertiary" },
+    ],
+    relatedLinks: [
+      { title: "Quotations", description: "Start with a quotation when pricing still needs negotiation.", href: "/workspace/user/quotations" },
+      { title: "Invoices", description: "Move into live billing once the customer is ready to be invoiced.", href: "/workspace/user/invoices" },
+      { title: "Customers", description: "Keep customer payment and approval context nearby.", href: "/workspace/user/customers" },
+    ],
+  },
   "/workspace/admin/system-health": {
     title: "System Health",
     description: "Track route integrity, platform readiness, and control-surface issues that affect live customer workspaces.",
@@ -369,21 +367,17 @@ function defaultModuleDefinition(role: WorkspaceRoleKey, item: WorkspaceNavItem)
   return {
     role,
     title: item.label,
-    description: `${item.label} is part of the ${roleLabel.toLowerCase()} workflow and gives this role a direct place to review work, move the next action forward, and avoid dead-end navigation.`,
-    metrics: [
-      { label: "Current workload", value: item.label, detail: `Use ${item.label.toLowerCase()} as a live working surface instead of a placeholder section.` },
-      { label: "Pending review", value: "Action required", detail: "Surface items that need attention today before they affect cash flow, support, or conversion." },
-      { label: "Linked workflow", value: roleLabel, detail: "Keep this module connected to the rest of the role workspace." },
-    ],
+    description: `${item.label} does not yet have a dedicated operational screen in the ${roleLabel.toLowerCase()} workspace. Use the linked working routes until this module is implemented as a real register or workflow page.`,
+    metrics: [],
     alerts: [
-      { title: `${item.label} needs daily review`, detail: "Use this page to keep unresolved work visible and actionable." },
-      { title: "Next actions should stay explicit", detail: "Move from the module into the correct document, support, or pipeline flow with one click." },
+      { title: "Dedicated screen not shipped yet", detail: "This route is intentionally honest about its status instead of rendering fake metrics or sample alerts." },
+      { title: "Use the linked working routes", detail: "Create or review real records from adjacent shipped modules until this page has module-specific data and actions." },
     ],
     quickActions: workspaceRoles[role].quickActions.slice(0, 3),
     relatedLinks: [
-      { title: `${workspaceRoles[role].label} home`, description: "Return to the role dashboard with current state and shortcuts.", href: workspaceRoles[role].homeHref },
-      { title: "Help", description: "Open practical help when the workflow needs clarification.", href: "/workspace/help" },
-      { title: "Reports", description: "Cross-check the impact of the current work in the reporting area.", href: "/workspace/reports" },
+      { title: `${workspaceRoles[role].label} home`, description: "Return to the main workspace and open a route that already owns real records.", href: workspaceRoles[role].homeHref },
+      { title: "Help", description: "Open workflow help instead of relying on generic filler guidance.", href: "/workspace/help" },
+      { title: "Reports", description: "Review posted business impact from the reporting area.", href: "/workspace/reports" },
     ],
   };
 }

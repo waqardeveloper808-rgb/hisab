@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
@@ -34,11 +34,7 @@ export function SupportAccountsOverview() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    void loadAccounts();
-  }, []);
-
-  async function loadAccounts() {
+  const loadAccounts = useCallback(async () => {
     if (isPreview) {
       setAccounts([]);
       setDraft(emptyAccount);
@@ -59,7 +55,11 @@ export function SupportAccountsOverview() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [isPreview]);
+
+  useEffect(() => {
+    void loadAccounts();
+  }, [loadAccounts]);
 
   async function handleSave() {
     if (isPreview || ! canManageSupportAccounts) {

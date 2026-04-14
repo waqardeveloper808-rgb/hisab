@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
@@ -40,11 +40,7 @@ export function CompanyUsersOverview() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    void loadUsers();
-  }, []);
-
-  async function loadUsers() {
+  const loadUsers = useCallback(async () => {
     if (isPreview) {
       setSnapshot(emptySnapshot);
       setDraft(emptyUser);
@@ -69,7 +65,11 @@ export function CompanyUsersOverview() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [isPreview]);
+
+  useEffect(() => {
+    void loadUsers();
+  }, [loadUsers]);
 
   async function handleSave() {
     if (isPreview || ! canManageUsers) {
