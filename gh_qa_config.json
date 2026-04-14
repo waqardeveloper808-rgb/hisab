@@ -1,0 +1,98 @@
+{
+  "project_name": "Gulf Hisab",
+  "environment": "local-production-like",
+  "banned_cta_words": ["go", "more", "next"],
+  "banned_ui_labels": ["module", "tag", "badge", "feature card", "structured placeholder", "sandbox mode", "iv", "vt", "za", "wa", "rp"],
+  "suspicious_badge_words": ["module"],
+  "placeholder_copy_patterns": [
+    "lorem ipsum",
+    "coming soon",
+    "todo",
+    "tbd",
+    "placeholder",
+    "dummy text",
+    "sample text",
+    "structured placeholder",
+    "widget"
+  ],
+  "expected_paths": [
+    "app",
+    "components",
+    "data",
+    "lib",
+    "backend/app/Services",
+    "backend/app/Http/Controllers",
+    "backend/database/migrations",
+    "qa"
+  ],
+  "anti_patterns": ["*.bak", "*copy*.*"],
+  "excluded_paths": ["node_modules", ".next", "backend/vendor", "qa_reports", "qa_fixer_backups", ".git", "storage"],
+  "targets": [
+    {
+      "url": "http://127.0.0.1:3001",
+      "expected_text": ["Gulf Hisab", "Start Free Trial", "ZATCA invoicing"],
+      "checkers": ["route_availability", "cta_clarity", "link_integrity", "headline_structure", "internal_label_leaks", "card_hygiene", "placeholder_copy", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/products",
+      "expected_text": ["Products", "Gulf Hisab"],
+      "checkers": ["route_availability", "headline_structure", "internal_label_leaks", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/plans",
+      "expected_text": ["Pricing", "trial"],
+      "checkers": ["route_availability", "cta_clarity", "headline_structure", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/helpdesk-ai",
+      "expected_text": ["Help", "Gulf Hisab"],
+      "checkers": ["route_availability", "headline_structure", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/login",
+      "expected_text": ["Log in"],
+      "checkers": ["route_availability", "cta_clarity", "headline_structure", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/register",
+      "expected_text": ["Start free trial"],
+      "checkers": ["route_availability", "cta_clarity", "headline_structure", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/workspace/user",
+      "expected_text": ["User Workspace", "Total Sales"],
+      "checkers": ["route_availability", "link_integrity", "internal_label_leaks", "placeholder_copy", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/workspace/admin",
+      "expected_text": ["Admin Workspace", "Customer control"],
+      "checkers": ["route_availability", "link_integrity", "internal_label_leaks", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/workspace/assistant",
+      "expected_text": ["Assistant workspace", "Support"],
+      "checkers": ["route_availability", "link_integrity", "internal_label_leaks", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/workspace/agent",
+      "expected_text": ["Agent Workspace", "referral"],
+      "checkers": ["route_availability", "link_integrity", "internal_label_leaks", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/workspace/admin/audit",
+      "expected_text": ["Audit Engine", "QA/QC Engine"],
+      "checkers": ["route_availability", "headline_structure", "internal_label_leaks", "placeholder_copy", "logo_presence"]
+    },
+    {
+      "url": "http://127.0.0.1:3001/this-route-does-not-exist",
+      "expected_status": 404,
+      "expected_text": ["Page not found", "This page is not available"],
+      "forbidden_text": ["Admin Workspace", "Assistant Workspace", "Agent Workspace"],
+      "checkers": ["route_availability", "logo_presence"]
+    },
+    {
+      "repo_root": ".",
+      "checkers": ["architecture_conventions"]
+    }
+  ]
+}

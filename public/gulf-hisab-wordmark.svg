@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" fill="none">
+  <defs>
+    <linearGradient id="gulf-hisab-wordmark" x1="14" y1="10" x2="112" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F7A53"/>
+      <stop offset="1" stop-color="#0F5B41"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="98" height="98" rx="24" fill="url(#gulf-hisab-wordmark)"/>
+  <path d="M35.5 34.5h17.5v18h18V34.5h12v50H71V64.5H53V84.5H35.5V34.5Z" fill="#F7FBF8"/>
+  <path d="M29 91.5c9.2-5.9 19.8-8.9 31.6-8.9 11.1 0 21.7 2.9 31.5 8.7" stroke="#D7EBDD" stroke-width="5" stroke-linecap="round"/>
+  <text x="138" y="59" fill="#112018" font-family="Manrope, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="0.02em">Gulf Hisab</text>
+  <text x="140" y="84" fill="#506157" font-family="Manrope, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="0.22em">ZATCA-READY ACCOUNTING</text>
+</svg>

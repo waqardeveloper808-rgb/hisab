@@ -1,0 +1,83 @@
+{
+  "official_full_logo": "gulf-hisab-wordmark",
+  "official_icon_logo": "icon",
+  "search_extensions": [
+    ".tsx",
+    ".ts",
+    ".jsx",
+    ".js",
+    ".blade.php",
+    ".php"
+  ],
+  "internal_label_replacements": {
+    "ZA": "",
+    "VT": "",
+    "WA": "",
+    "RP": "",
+    "IV": "",
+    "MODULE": "",
+    "Module": ""
+  },
+  "module_badge_patterns": [
+    ">\\s*MODULE\\s*<",
+    ">\\s*Module\\s*<",
+    ">\\s*ZA\\s*<",
+    ">\\s*VT\\s*<",
+    ">\\s*WA\\s*<",
+    ">\\s*RP\\s*<",
+    ">\\s*IV\\s*<"
+  ],
+  "empty_cta_replacements": [
+    [
+      "<button([^>]*)>\\s*</button>",
+      "<button\\1>Start Free Trial</button>"
+    ],
+    [
+      "<a([^>]*)>\\s*</a>",
+      "<a\\1>Learn More</a>"
+    ]
+  ],
+  "known_404_nav_labels": [
+    "User Workspace",
+    "Admin Workspace",
+    "Assistant Workspace",
+    "Agent Workspace"
+  ],
+  "logo_reference_replacements": [
+    [
+      "/logo.svg",
+      "/gulf-hisab-wordmark.svg"
+    ],
+    [
+      "logo.svg",
+      "gulf-hisab-wordmark.svg"
+    ],
+    [
+      "icon-logo.svg",
+      "icon.svg"
+    ],
+    [
+      "small-logo.svg",
+      "icon.svg"
+    ],
+    [
+      "Gulf Hisab SVG Logo 1",
+      "gulf-hisab-wordmark"
+    ],
+    [
+      "Gulf Hisabl SVG Logo 2",
+      "icon"
+    ]
+  ],
+  "lightweight_overlay_terms": [
+    "Open Help",
+    "AI Assistant",
+    "popover",
+    "dropdown",
+    "helper"
+  ],
+  "close_button_patterns": [
+    "<button([^>]*)>\\s*Close\\s*</button>",
+    "<Button([^>]*)>\\s*Close\\s*</Button>"
+  ]
+}
