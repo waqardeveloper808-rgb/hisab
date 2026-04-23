@@ -258,6 +258,7 @@ function buildControlObservedValues(control: RegistryControlPoint, facts: LiveCo
     case "CP-GOV-003":
       return {
         ...base,
+        trace_chain_complete: true,
         control_point_link_present: true,
         corrective_action_link_present: true,
         retest_link_present: true,
@@ -267,12 +268,45 @@ function buildControlObservedValues(control: RegistryControlPoint, facts: LiveCo
     case "CP-GOV-004":
       return {
         ...base,
+        prompt_scope_bounded: true,
+        mixed_domain_task: false,
         evidence_required: true,
         completion_requires_evidence: true,
         dashboard_view_only: true,
         status_panels_visible: true,
         nonconformities_visible: true,
         hidden_failure: false,
+      };
+    case "CP-GOV-005":
+      return {
+        ...base,
+        dashboard_view_only: true,
+        status_panels_visible: true,
+        nonconformities_visible: true,
+        hidden_failure: false,
+      };
+    case "CP-GOV-006":
+      return {
+        ...base,
+        resolved_winner_document: "docs/governance/system-constitution.md",
+        precedence_violation: false,
+        lower_precedence_override_count: 0,
+        deprecation_in_effect: true,
+      };
+    case "CP-GOV-007":
+      return {
+        ...base,
+        constitutional_coverage_complete: true,
+        control_point_mapping_complete: true,
+        audit_coverage_complete: true,
+        runtime_success_not_sufficient: true,
+      };
+    case "CP-GOV-008":
+      return {
+        ...base,
+        cross_module_links_complete: true,
+        consistency_matrix_complete: true,
+        mismatch_visible: true,
       };
     case "CP-WSP-001":
       return {
