@@ -13,3 +13,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.zip
+
+
+.next/
+node_modules/
+artifacts/
+logs/
+coverage/
+*.zip
