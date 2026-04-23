@@ -72,6 +72,7 @@ class AccountingIntegrityService
         $expectedJournalIds = [$salesJournal->id, ...$inventoryJournalIds];
         $this->assertLedgerContainsJournalLines($company, $document, $expectedJournalIds, 'sales_document');
         $this->assertTrialBalanceContainsJournalAccounts($company, $expectedJournalIds, 'sales_document', $document);
+        $this->assertGeneralLedgerIntegrity($company, $expectedJournalIds, 'sales_document', $document);
 
         $this->recordSuccess('accounting_integrity.sales_document_validated', Document::class, $document->id, $company->id, $userId, [
             'document_number' => $document->document_number,
@@ -102,6 +103,7 @@ class AccountingIntegrityService
         $this->assertIncomingPaymentCoverage($company, $payment, $document, $paymentJournal);
         $this->assertLedgerContainsJournalLines($company, $document, [$paymentJournal->id], 'payment');
         $this->assertTrialBalanceContainsJournalAccounts($company, [$paymentJournal->id], 'payment', $document);
+        $this->assertGeneralLedgerIntegrity($company, [$paymentJournal->id], 'payment', $document);
 
         $this->recordSuccess('accounting_integrity.payment_validated', Payment::class, $payment->id, $company->id, $userId, [
             'payment_number' => $payment->payment_number,
@@ -145,6 +147,7 @@ class AccountingIntegrityService
         $this->assertInventoryJournalCoverage($company, $document, $journals, $inventoryJournalIds);
         $this->assertLedgerContainsJournalLines($company, $document, $inventoryJournalIds, 'inventory_document');
         $this->assertTrialBalanceContainsJournalAccounts($company, $inventoryJournalIds, 'inventory_document', $document);
+        $this->assertGeneralLedgerIntegrity($company, $inventoryJournalIds, 'inventory_document', $document);
 
         $this->recordSuccess('accounting_integrity.inventory_validated', Document::class, $document->id, $company->id, $userId, [
             'document_number' => $document->document_number,
@@ -437,6 +440,37 @@ class AccountingIntegrityService
             $this->fail($context, 'Trial balance is missing one or more impacted accounts.', [
                 'document_number' => $document->document_number,
                 'missing_account_codes' => $missingCodes,
+            ]);
+        }
+    }
+
+    private function assertGeneralLedgerIntegrity(Company $company, array $journalIds, string $context, Document $document): void
+    {
+        $journalTotals = JournalEntryLine::query()
+            ->whereIn('journal_entry_id', $journalIds)
+            ->selectRaw('COALESCE(SUM(debit), 0) as debit_total, COALESCE(SUM(credit), 0) as credit_total')
+            ->first();
+
+        $trialSlice = DB::table('journal_entry_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+            ->where('journal_entries.company_id', $company->id)
+            ->whereIn('journal_entry_lines.journal_entry_id', $journalIds)
+            ->selectRaw('COALESCE(SUM(journal_entry_lines.debit), 0) as debit_total, COALESCE(SUM(journal_entry_lines.credit), 0) as credit_total')
+            ->first();
+
+        $journalDebit = BigDecimal::of((string) ($journalTotals->debit_total ?? '0'))->toScale(2, RoundingMode::HALF_UP);
+        $journalCredit = BigDecimal::of((string) ($journalTotals->credit_total ?? '0'))->toScale(2, RoundingMode::HALF_UP);
+        $trialDebit = BigDecimal::of((string) ($trialSlice->debit_total ?? '0'))->toScale(2, RoundingMode::HALF_UP);
+        $trialCredit = BigDecimal::of((string) ($trialSlice->credit_total ?? '0'))->toScale(2, RoundingMode::HALF_UP);
+
+        if (! $journalDebit->isEqualTo($trialDebit) || ! $journalCredit->isEqualTo($trialCredit)) {
+            $this->fail($context, 'General ledger totals do not reconcile with trial balance totals.', [
+                'document_number' => $document->document_number,
+                'journal_ids' => $journalIds,
+                'journal_debit' => (string) $journalDebit,
+                'journal_credit' => (string) $journalCredit,
+                'trial_debit' => (string) $trialDebit,
+                'trial_credit' => (string) $trialCredit,
             ]);
         }
     }

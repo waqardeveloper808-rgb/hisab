@@ -23,6 +23,7 @@ class Contact extends Model
         'phone',
         'billing_address',
         'currency_code',
+        'origin_country_code',
         'payment_term_id',
         'is_active',
     ];

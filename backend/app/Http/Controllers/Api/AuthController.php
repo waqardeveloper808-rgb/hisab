@@ -112,15 +112,25 @@ class AuthController extends Controller
             ]);
         }
 
+        $activeCompany = $this->resolveDefaultCompanyContext($user);
+
         return response()->json([
             'data' => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 'platform_role' => $user->platform_role,
-                'workspace_context' => [
-                    'active_company' => $this->resolveDefaultCompanyContext($user),
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'platform_role' => $user->platform_role,
                 ],
+                'workspace_context' => [
+                    'active_company' => $activeCompany,
+                ],
+                'company_id' => $activeCompany['id'] ?? null,
+                'active_company_id' => $activeCompany['id'] ?? null,
             ],
         ]);
     }

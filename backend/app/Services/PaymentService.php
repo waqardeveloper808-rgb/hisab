@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Accounting\Services\BalanceService;
 use App\Models\AuditLog;
 use App\Models\Company;
 use App\Models\Contact;
@@ -19,6 +20,7 @@ class PaymentService
     public function __construct(
         private readonly LedgerService $ledgerService,
         private readonly AccountingIntegrityService $accountingIntegrityService,
+        private readonly BalanceService $balanceService,
     )
     {
     }
@@ -188,9 +190,14 @@ class PaymentService
 
                 $paidTotal = BigDecimal::of((string) $document->paid_total)->plus($allocation['amount']);
                 $allocationDiscount = BigDecimal::of((string) $allocationDiscounts->get((string) $document->id, '0'))->toScale(2);
-                $netOpenValue = BigDecimal::of((string) $document->grand_total)
-                    ->minus(BigDecimal::of((string) $document->credited_total));
-                $balanceDue = $netOpenValue->minus($paidTotal)->minus($allocationDiscount);
+                $balance = $this->balanceService->calculate([
+                    'invoices' => (string) $document->grand_total,
+                    'payments_received' => (string) $paidTotal,
+                    'credit_notes' => (string) $document->credited_total,
+                    'debit_notes' => '0.00',
+                    'adjustments' => (string) $allocationDiscount->multipliedBy(-1),
+                ]);
+                $balanceDue = BigDecimal::of((string) $balance['balance'])->toScale(2);
 
                 if ($balanceDue->isLessThan(BigDecimal::zero())) {
                     $balanceDue = BigDecimal::zero();
@@ -479,9 +486,14 @@ class PaymentService
             );
 
             $paidTotal = BigDecimal::of((string) $document->paid_total)->plus($amount);
-            $netOpenValue = BigDecimal::of((string) $document->grand_total)
-                ->minus(BigDecimal::of((string) $document->credited_total));
-            $newBalance = $netOpenValue->minus($paidTotal);
+            $balance = $this->balanceService->calculate([
+                'invoices' => (string) $document->grand_total,
+                'payments_received' => (string) $paidTotal,
+                'credit_notes' => (string) $document->credited_total,
+                'debit_notes' => '0.00',
+                'adjustments' => '0.00',
+            ]);
+            $newBalance = BigDecimal::of((string) $balance['balance'])->toScale(2);
 
             if ($newBalance->isLessThan(BigDecimal::zero())) {
                 $newBalance = BigDecimal::zero();
@@ -722,9 +734,14 @@ class PaymentService
     private function applySettlementToDocument(Document $document, BigDecimal $amount): void
     {
         $paidTotal = BigDecimal::of((string) $document->paid_total)->plus($amount);
-        $netOpenValue = BigDecimal::of((string) $document->grand_total)
-            ->minus(BigDecimal::of((string) $document->credited_total));
-        $balanceDue = $netOpenValue->minus($paidTotal);
+        $balance = $this->balanceService->calculate([
+            'invoices' => (string) $document->grand_total,
+            'payments_received' => (string) $paidTotal,
+            'credit_notes' => (string) $document->credited_total,
+            'debit_notes' => '0.00',
+            'adjustments' => '0.00',
+        ]);
+        $balanceDue = BigDecimal::of((string) $balance['balance'])->toScale(2);
 
         if ($balanceDue->isLessThan(BigDecimal::zero())) {
             $balanceDue = BigDecimal::zero();

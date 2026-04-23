@@ -32,6 +32,10 @@ class AccessProfileController extends Controller
                     'platform_role' => $user->platform_role,
                     'is_platform_active' => $user->is_platform_active,
                 ],
+                'user_id' => $user->id,
+                'company_id' => $company->id,
+                'role' => $membership?->pivot->role ?? null,
+                'permissions' => $membership ? $this->normalizePermissions($membership->pivot->permissions) : [],
                 'platform_abilities' => $user->platformAbilities(),
                 'company' => [
                     'id' => $company->id,

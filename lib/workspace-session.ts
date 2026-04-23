@@ -12,6 +12,12 @@ export type WorkspaceBackendContext = {
   accessStatus: WorkspaceAccessStatus;
 };
 
+const workspacePathAliases: Record<string, string> = {
+  invoices: "sales-documents",
+  customers: "contacts",
+  products: "products",
+};
+
 export function getWorkspaceBackendBaseUrl() {
   const baseUrl = process.env.GULF_HISAB_API_BASE_URL ?? process.env.NEXT_PUBLIC_GULF_HISAB_API_BASE_URL;
   return baseUrl?.replace(/\/$/, "") ?? null;
@@ -43,6 +49,17 @@ export function resolveSessionWorkspaceCompanyId(session: AuthSession | null) {
   }
 
   return null;
+}
+
+export function resolveWorkspaceBackendPath(slug: string[]) {
+  if (!slug.length) {
+    return slug;
+  }
+
+  const [root, ...rest] = slug;
+  const backendRoot = workspacePathAliases[root] ?? root;
+
+  return [backendRoot, ...rest];
 }
 
 function isSessionReady(session: AuthSession | null): session is AuthSession {

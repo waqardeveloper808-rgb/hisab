@@ -24,7 +24,20 @@ export async function GET(request: NextRequest) {
   const session = sessionResult.session;
 
   return NextResponse.json({
+    user: {
+      id: session.id,
+      name: session.name,
+      email: session.email,
+      platform_role: session.platformRole ?? null,
+    },
+    active_company_id: backendContext.activeCompanyId,
     data: {
+      user: {
+        id: session.id,
+        name: session.name,
+        email: session.email,
+        platform_role: session.platformRole ?? null,
+      },
       ...session,
       user_id: session.userId,
       company_id: backendContext.activeCompanyId,

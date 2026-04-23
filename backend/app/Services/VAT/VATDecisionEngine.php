@@ -20,6 +20,9 @@ class VATDecisionEngine
         $rate = (float) ($taxCategory?->rate ?? 0);
         $scope = (string) ($taxCategory?->scope ?? 'taxable');
         $country = strtolower((string) $company->country_code ?: (string) $company->locale);
+        $customerOrigin = strtoupper((string) ($line['customer_origin'] ?? 'KSA'));
+        $supplyLocation = strtoupper((string) ($line['supply_location'] ?? 'KSA'));
+        $vatApplicability = strtolower((string) ($line['vat_applicability'] ?? 'taxable'));
         $classification = 'standard_rated';
         $reason = 'Standard VAT treatment applied from the selected tax category.';
         $confidence = 82;
@@ -48,6 +51,15 @@ class VATDecisionEngine
             $confidence += 4;
         }
 
+        if ($vatApplicability === 'not_applicable') {
+            $classification = 'out_of_scope';
+            $reason = 'VAT applicability explicitly marks this line as not applicable.';
+            $confidence = 99;
+        } elseif ($customerOrigin !== 'KSA' || $supplyLocation !== 'KSA') {
+            $reason .= ' Cross-border context detected; VAT retained based on applicability and tax category, not origin alone.';
+            $confidence = min(100, $confidence + 6);
+        }
+
         if (str_contains($country, 'fr')) {
             $reason .= ' Country-aware hooks remain compatible with France expansion.';
         }
@@ -56,6 +68,9 @@ class VATDecisionEngine
             'classification' => $classification,
             'scope' => $scope,
             'rate' => round($rate, 2),
+            'customer_origin' => $customerOrigin,
+            'supply_location' => $supplyLocation,
+            'vat_applicability' => $vatApplicability,
             'reason' => $reason,
             'confidence' => max(0, min(100, $confidence)),
             'report_bucket' => $context === 'purchase' ? 'input_vat' : 'output_vat',

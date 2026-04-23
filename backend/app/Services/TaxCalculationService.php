@@ -10,6 +10,7 @@ use App\Models\TaxCategory;
 use App\Services\VAT\VATCalculationService;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class TaxCalculationService
@@ -108,6 +109,34 @@ class TaxCalculationService
             }
 
             $taxRate = BigDecimal::of((string) $taxCategory->rate);
+            $vatType = strtolower((string) ($line['vat_type'] ?? ($taxRate->isGreaterThan(BigDecimal::zero()) ? 'standard' : ($taxCategory->scope === 'exempt' ? 'exempt' : 'zero'))));
+            if (! in_array($vatType, ['standard', 'zero', 'exempt'], true)) {
+                throw ValidationException::withMessages([
+                    "lines.$index.vat_type" => 'VAT type must be one of: standard, zero, exempt.',
+                ]);
+            }
+
+            if ($vatType !== 'standard' && $taxRate->isGreaterThan(BigDecimal::zero())) {
+                throw ValidationException::withMessages([
+                    "lines.$index.vat_type" => 'VAT type is inconsistent with a non-zero VAT rate.',
+                ]);
+            }
+
+            if (($line['vat_override'] ?? false) === true) {
+                Log::warning('vat.override_attempt', [
+                    'company_id' => $company->id,
+                    'line_index' => $index,
+                    'context' => $context,
+                    'line' => [
+                        'vat_type' => $vatType,
+                        'tax_rate' => (string) $taxRate,
+                        'customer_origin' => $line['customer_origin'] ?? null,
+                        'supply_location' => $line['supply_location'] ?? null,
+                        'vat_applicability' => $line['vat_applicability'] ?? null,
+                    ],
+                ]);
+            }
+
             $taxAmount = $netAmount->multipliedBy($taxRate)
                 ->dividedBy('100', 2, RoundingMode::HALF_UP);
             $grossAmount = $netAmount->plus($taxAmount);
@@ -130,12 +159,18 @@ class TaxCalculationService
                 'discount_amount' => $this->decimal($discount),
                 'net_amount' => $this->decimal($netAmount),
                 'tax_rate' => $this->decimal($taxRate),
+                'vat_type' => $vatType,
                 'tax_amount' => $this->decimal($taxAmount),
                 'gross_amount' => $this->decimal($grossAmount),
                 'metadata' => [
                     'tax_scope' => $taxCategory->scope,
                     'zatca_code' => $taxCategory->zatca_code,
                     'vat_decision' => $vatDecision,
+                    'vat_context' => [
+                        'customer_origin' => $line['customer_origin'] ?? null,
+                        'supply_location' => $line['supply_location'] ?? null,
+                        'vat_applicability' => $line['vat_applicability'] ?? null,
+                    ],
                     'custom_fields' => $line['custom_fields'] ?? null,
                 ],
             ];

@@ -72,9 +72,7 @@ class JournalPostingService
             ];
         }
 
-        if (round($debitTotal, 2) !== round($creditTotal, 2)) {
-            throw new AccountingControlException('ACC-001', 'Total debit must equal total credit.');
-        }
+        $this->validateBalancedEntry($normalizedEntries);
 
         try {
             return DB::transaction(function () use ($company, $actor, $sourceType, $sourceId, $postingDate, $description, $normalizedEntries) {
@@ -134,5 +132,20 @@ class JournalPostingService
         $count = DB::table('journal_entries')->where('company_id', $company->id)->lockForUpdate()->count() + 1;
 
         return sprintf('JE-%d-%05d', $company->id, $count);
+    }
+
+    public function validateBalancedEntry(array $entries): void
+    {
+        $debitTotal = 0.0;
+        $creditTotal = 0.0;
+
+        foreach ($entries as $entry) {
+            $debitTotal = round($debitTotal + (float) ($entry['debit'] ?? 0), 2);
+            $creditTotal = round($creditTotal + (float) ($entry['credit'] ?? 0), 2);
+        }
+
+        if (round($debitTotal, 2) !== round($creditTotal, 2)) {
+            throw new AccountingControlException('ACC-001', 'Total debit must equal total credit.');
+        }
     }
 }

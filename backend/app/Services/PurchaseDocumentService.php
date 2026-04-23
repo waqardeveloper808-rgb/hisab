@@ -37,9 +37,10 @@ class PurchaseDocumentService
         return DB::transaction(function () use ($company, $user, $payload): Document {
             $issueDate = Carbon::parse($payload['issue_date'] ?? now()->toDateString());
             $this->accountingPeriodService->ensureDateOpen($company, $issueDate);
-            $calculation = $this->taxCalculationService->calculate($company, $payload['lines'], 'purchase');
             $settings = $company->settings()->firstOrFail();
             $contact = Contact::query()->where('company_id', $company->id)->findOrFail($payload['contact_id']);
+            $vatScopedLines = $this->withVatContextLines($payload['lines'], $contact, $payload);
+            $calculation = $this->taxCalculationService->calculate($company, $vatScopedLines, 'purchase');
             $template = $this->templateEngineRuntime->requireTemplate($company, $payload['template_id'] ?? null, (string) ($payload['type'] ?? 'vendor_bill'));
 
             if (! in_array($contact->type, ['supplier', 'vendor'], true)) {
@@ -60,6 +61,8 @@ class PurchaseDocumentService
                     'exchange_rate' => $payload['exchange_rate'] ?? 1,
                     'issue_date' => $issueDate->toDateString(),
                     'supply_date' => $payload['supply_date'] ?? $issueDate->toDateString(),
+                    'supply_location' => $payload['supply_location'] ?? ($contact->billing_address['country'] ?? $company->country_code),
+                    'vat_applicability' => $payload['vat_applicability'] ?? 'taxable',
                     'due_date' => $payload['due_date'] ?? $issueDate->toDateString(),
                     'compliance_metadata' => [
                         'purchase_document' => true,
@@ -106,8 +109,9 @@ class PurchaseDocumentService
         return DB::transaction(function () use ($company, $document, $user, $payload): Document {
             $document = Document::query()->whereKey($document->id)->lockForUpdate()->firstOrFail();
             $before = $document->load('lines')->toArray();
-            $calculation = $this->taxCalculationService->calculate($company, $payload['lines'], 'purchase');
             $contact = Contact::query()->where('company_id', $company->id)->findOrFail($payload['contact_id']);
+            $vatScopedLines = $this->withVatContextLines($payload['lines'], $contact, array_merge($document->toArray(), $payload));
+            $calculation = $this->taxCalculationService->calculate($company, $vatScopedLines, 'purchase');
             $template = $this->templateEngineRuntime->requireTemplate($company, $payload['template_id'] ?? null, (string) ($payload['type'] ?? $document->type));
 
             if (! in_array($contact->type, ['supplier', 'vendor'], true)) {
@@ -125,6 +129,8 @@ class PurchaseDocumentService
                 [
                     'issue_date' => $issueDate->toDateString(),
                     'supply_date' => $payload['supply_date'] ?? $document->supply_date,
+                    'supply_location' => $payload['supply_location'] ?? $document->supply_location,
+                    'vat_applicability' => $payload['vat_applicability'] ?? $document->vat_applicability,
                     'due_date' => $payload['due_date'] ?? $document->due_date,
                     'compliance_metadata' => array_merge($document->compliance_metadata ?? [], [
                         'purchase_context' => $payload['purchase_context'] ?? (($document->compliance_metadata ?? [])['purchase_context'] ?? []),
@@ -406,6 +412,21 @@ class PurchaseDocumentService
                 'cost_center_id' => $sourceLine->cost_center_id,
             ];
         })->all();
+    }
+
+    private function withVatContextLines(array $lines, Contact $contact, array $payload): array
+    {
+        $origin = strtoupper((string) ($payload['customer_origin'] ?? $contact->origin_country_code ?? 'KSA'));
+        $supplyLocation = strtoupper((string) ($payload['supply_location'] ?? $contact->billing_address['country'] ?? 'KSA'));
+        $vatApplicability = strtolower((string) ($payload['vat_applicability'] ?? 'taxable'));
+
+        return array_map(function (array $line) use ($origin, $supplyLocation, $vatApplicability) {
+            $line['customer_origin'] = strtoupper((string) ($line['customer_origin'] ?? $origin));
+            $line['supply_location'] = strtoupper((string) ($line['supply_location'] ?? $supplyLocation));
+            $line['vat_applicability'] = strtolower((string) ($line['vat_applicability'] ?? $vatApplicability));
+
+            return $line;
+        }, $lines);
     }
 
     private function availableCreditQuantity(DocumentLine $sourceLine): BigDecimal

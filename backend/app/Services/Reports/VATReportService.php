@@ -11,40 +11,91 @@ class VATReportService
 {
     public function summary(Company $company): array
     {
-        return DB::table('document_lines')
-            ->join('documents', 'documents.id', '=', 'document_lines.document_id')
-            ->join('tax_categories', 'tax_categories.id', '=', 'document_lines.tax_category_id')
-            ->where('documents.company_id', $company->id)
-            ->whereIn('documents.type', ['tax_invoice', 'credit_note', 'debit_note', 'vendor_bill', 'purchase_invoice', 'purchase_credit_note'])
-            ->whereIn('documents.status', ['finalized', 'partially_paid', 'paid', 'partially_credited', 'credited', 'credit_owed'])
-            ->groupBy('tax_categories.code', 'tax_categories.name', 'document_lines.tax_rate')
-            ->selectRaw("tax_categories.code, tax_categories.name, document_lines.tax_rate,
-                SUM(CASE WHEN documents.type IN ('tax_invoice', 'debit_note') THEN document_lines.net_amount WHEN documents.type = 'credit_note' THEN -document_lines.net_amount ELSE 0 END) as taxable_amount,
-                SUM(CASE WHEN documents.type IN ('tax_invoice', 'debit_note') THEN document_lines.tax_amount WHEN documents.type = 'credit_note' THEN -document_lines.tax_amount ELSE 0 END) as tax_amount,
-                SUM(CASE WHEN documents.type IN ('tax_invoice', 'debit_note') THEN document_lines.tax_amount WHEN documents.type = 'credit_note' THEN -document_lines.tax_amount ELSE 0 END) as output_tax_amount,
-                SUM(CASE WHEN documents.type IN ('vendor_bill', 'purchase_invoice') THEN document_lines.tax_amount WHEN documents.type = 'purchase_credit_note' THEN -document_lines.tax_amount ELSE 0 END) as input_tax_amount,
-                SUM(CASE WHEN documents.type IN ('tax_invoice', 'debit_note') THEN document_lines.tax_amount WHEN documents.type = 'credit_note' THEN -document_lines.tax_amount ELSE 0 END)
-                -
-                SUM(CASE WHEN documents.type IN ('vendor_bill', 'purchase_invoice') THEN document_lines.tax_amount WHEN documents.type = 'purchase_credit_note' THEN -document_lines.tax_amount ELSE 0 END) as net_tax_amount")
-            ->get()
-            ->all();
+        $settings = $company->settings()->firstOrFail();
+
+        $vatReceived = (float) DB::table('journal_entry_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+            ->join('accounts', 'accounts.id', '=', 'journal_entry_lines.account_id')
+            ->where('journal_entries.company_id', $company->id)
+            ->where('accounts.code', $settings->default_vat_payable_account_code)
+            ->selectRaw('COALESCE(SUM(journal_entry_lines.credit - journal_entry_lines.debit), 0) as total')
+            ->value('total');
+
+        $vatPaid = (float) DB::table('journal_entry_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+            ->join('accounts', 'accounts.id', '=', 'journal_entry_lines.account_id')
+            ->where('journal_entries.company_id', $company->id)
+            ->where('accounts.code', $settings->default_vat_receivable_account_code)
+            ->selectRaw('COALESCE(SUM(journal_entry_lines.debit - journal_entry_lines.credit), 0) as total')
+            ->value('total');
+
+        $invoiceVat = (float) DB::table('documents')
+            ->where('company_id', $company->id)
+            ->whereIn('type', ['tax_invoice', 'debit_note'])
+            ->whereIn('status', ['finalized', 'partially_paid', 'paid', 'partially_credited', 'credited', 'credit_owed'])
+            ->sum('tax_total');
+
+        $creditVat = (float) DB::table('documents')
+            ->where('company_id', $company->id)
+            ->where('type', 'credit_note')
+            ->whereIn('status', ['finalized', 'partially_paid', 'paid', 'partially_credited', 'credited', 'credit_owed'])
+            ->sum('tax_total');
+
+        $purchasesVat = (float) DB::table('documents')
+            ->where('company_id', $company->id)
+            ->whereIn('type', ['vendor_bill', 'purchase_invoice'])
+            ->whereIn('status', ['finalized', 'partially_paid', 'paid', 'partially_credited', 'credited', 'credit_owed'])
+            ->sum('tax_total');
+
+        $purchaseCreditsVat = (float) DB::table('documents')
+            ->where('company_id', $company->id)
+            ->where('type', 'purchase_credit_note')
+            ->whereIn('status', ['finalized', 'partially_paid', 'paid', 'partially_credited', 'credited', 'credit_owed'])
+            ->sum('tax_total');
+
+        $expectedOutput = round($invoiceVat - $creditVat, 2);
+        $expectedInput = round($purchasesVat - $purchaseCreditsVat, 2);
+
+        return [
+            'vat_received' => number_format(round($vatReceived, 2), 2, '.', ''),
+            'vat_paid' => number_format(round($vatPaid, 2), 2, '.', ''),
+            'vat_payable' => number_format(round($vatReceived - $vatPaid, 2), 2, '.', ''),
+            'expected_output_vat_from_documents' => number_format($expectedOutput, 2, '.', ''),
+            'expected_input_vat_from_documents' => number_format($expectedInput, 2, '.', ''),
+            'output_vat_mismatch' => number_format(round($vatReceived - $expectedOutput, 2), 2, '.', ''),
+            'input_vat_mismatch' => number_format(round($vatPaid - $expectedInput, 2), 2, '.', ''),
+            'validation_status' => abs(round($vatReceived - $expectedOutput, 2)) <= 0.01 && abs(round($vatPaid - $expectedInput, 2)) <= 0.01
+                ? 'matched'
+                : 'mismatch',
+        ];
     }
 
     public function detail(Company $company): array
     {
-        return DB::table('document_lines')
-            ->join('documents', 'documents.id', '=', 'document_lines.document_id')
-            ->join('tax_categories', 'tax_categories.id', '=', 'document_lines.tax_category_id')
-            ->where('documents.company_id', $company->id)
-            ->whereIn('documents.type', ['tax_invoice', 'credit_note', 'debit_note', 'vendor_bill', 'purchase_invoice', 'purchase_credit_note'])
-            ->whereIn('documents.status', ['finalized', 'partially_paid', 'paid', 'partially_credited', 'credited', 'credit_owed'])
-            ->groupBy('tax_categories.code', 'tax_categories.name', 'document_lines.tax_rate')
-            ->selectRaw("tax_categories.code, tax_categories.name, document_lines.tax_rate,
-                SUM(CASE WHEN documents.type IN ('tax_invoice', 'debit_note') THEN document_lines.net_amount WHEN documents.type = 'credit_note' THEN -document_lines.net_amount ELSE 0 END) as output_taxable_amount,
-                SUM(CASE WHEN documents.type IN ('tax_invoice', 'debit_note') THEN document_lines.tax_amount WHEN documents.type = 'credit_note' THEN -document_lines.tax_amount ELSE 0 END) as output_tax_amount,
-                SUM(CASE WHEN documents.type IN ('vendor_bill', 'purchase_invoice') THEN document_lines.net_amount WHEN documents.type = 'purchase_credit_note' THEN -document_lines.net_amount ELSE 0 END) as input_taxable_amount,
-                SUM(CASE WHEN documents.type IN ('vendor_bill', 'purchase_invoice') THEN document_lines.tax_amount WHEN documents.type = 'purchase_credit_note' THEN -document_lines.tax_amount ELSE 0 END) as input_tax_amount")
+        $settings = $company->settings()->firstOrFail();
+
+        return DB::table('journal_entry_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+            ->join('accounts', 'accounts.id', '=', 'journal_entry_lines.account_id')
+            ->leftJoin('documents', 'documents.id', '=', 'journal_entry_lines.document_id')
+            ->where('journal_entries.company_id', $company->id)
+            ->whereIn('accounts.code', [$settings->default_vat_payable_account_code, $settings->default_vat_receivable_account_code])
+            ->orderByDesc('journal_entries.entry_date')
+            ->selectRaw('journal_entries.entry_number, journal_entries.entry_date, journal_entries.source_type, journal_entries.source_id, accounts.code as account_code, accounts.name as account_name, documents.document_number, documents.type as document_type, journal_entry_lines.debit, journal_entry_lines.credit')
             ->get()
+            ->map(fn ($row) => [
+                'entry_number' => $row->entry_number,
+                'entry_date' => $row->entry_date,
+                'source_type' => $row->source_type,
+                'source_id' => $row->source_id,
+                'account_code' => $row->account_code,
+                'account_name' => $row->account_name,
+                'document_number' => $row->document_number,
+                'document_type' => $row->document_type,
+                'vat_received' => round((float) $row->credit, 2),
+                'vat_paid' => round((float) $row->debit, 2),
+            ])
+            ->values()
             ->all();
     }
 

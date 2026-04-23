@@ -888,7 +888,7 @@ class LedgerService
                 ->where('company_id', $company->id)
                 ->findOrFail($line['account_id']);
 
-            if (! $account->allows_posting) {
+            if (! $account->allows_posting || ! $account->is_active) {
                 throw ValidationException::withMessages([
                     "lines.$index.account_id" => 'Journal entries must use posting accounts only.',
                 ]);
@@ -924,6 +924,8 @@ class LedgerService
                 'journal' => sprintf('Unbalanced journal entry. Debits %s must equal credits %s.', $debitTotal, $creditTotal),
             ]);
         }
+
+        $this->validateDeterministicPostingRules($company, $entryAttributes, $lines);
 
         $documentIds = collect($lines)
             ->pluck('document_id')
@@ -1004,5 +1006,108 @@ class LedgerService
         $entry->lines()->createMany($lines);
 
         return $entry->load('lines');
+    }
+
+    private function validateDeterministicPostingRules(Company $company, array $entryAttributes, array $lines): void
+    {
+        $sourceType = (string) ($entryAttributes['source_type'] ?? '');
+        $sourceId = (int) ($entryAttributes['source_id'] ?? 0);
+
+        $accountIds = collect($lines)->pluck('account_id')->filter()->unique()->values();
+        $accounts = Account::query()
+            ->where('company_id', $company->id)
+            ->whereIn('id', $accountIds)
+            ->get(['id', 'code', 'type'])
+            ->keyBy('id');
+
+        $settings = $company->settings()->firstOrFail();
+
+        if ($sourceType === 'document' && $sourceId > 0) {
+            $document = Document::query()->where('company_id', $company->id)->find($sourceId);
+            if (! $document) {
+                return;
+            }
+
+            if (in_array($document->type, ['tax_invoice', 'cash_invoice', 'api_invoice', 'debit_note'], true)) {
+                $hasReceivableDebit = $this->hasPostingSide($lines, $accounts, [$settings->default_receivable_account_code], 'debit');
+                $hasRevenueCredit = $this->hasPostingByType($lines, $accounts, ['income', 'revenue', 'contra'], 'credit');
+                $hasVatCredit = BigDecimal::of((string) $document->tax_total)->isLessThanOrEqualTo(BigDecimal::zero())
+                    || $this->hasPostingSide($lines, $accounts, [$settings->default_vat_payable_account_code], 'credit');
+
+                if (! $hasReceivableDebit || ! $hasRevenueCredit || ! $hasVatCredit) {
+                    throw ValidationException::withMessages([
+                        'journal' => 'Sales invoice posting rule violated: expected Dr Accounts Receivable, Cr Sales Revenue, and Cr VAT Payable when VAT exists.',
+                    ]);
+                }
+            }
+
+            if (in_array($document->type, ['vendor_bill', 'purchase_invoice'], true)) {
+                $hasExpenseDebit = $this->hasPostingByType($lines, $accounts, ['expense', 'asset', 'cost_of_sales'], 'debit');
+                $hasVatDebit = BigDecimal::of((string) $document->tax_total)->isLessThanOrEqualTo(BigDecimal::zero())
+                    || $this->hasPostingSide($lines, $accounts, [$settings->default_vat_receivable_account_code], 'debit');
+                $hasPayableCredit = $this->hasPostingSide($lines, $accounts, [$settings->default_payable_account_code], 'credit');
+
+                if (! $hasExpenseDebit || ! $hasVatDebit || ! $hasPayableCredit) {
+                    throw ValidationException::withMessages([
+                        'journal' => 'Purchase posting rule violated: expected Dr Expense/Inventory, Dr VAT Recoverable when VAT exists, and Cr Accounts Payable.',
+                    ]);
+                }
+            }
+        }
+
+        if ($sourceType === 'payment' && $sourceId > 0) {
+            $payment = Payment::query()->where('company_id', $company->id)->find($sourceId);
+            if (! $payment) {
+                return;
+            }
+
+            $cashCode = $payment->received_into_account_id
+                ? (string) optional($accounts->get((int) $payment->received_into_account_id))->code
+                : (string) $settings->default_cash_account_code;
+
+            if ($payment->direction === 'incoming') {
+                $hasCashDebit = $this->hasPostingSide($lines, $accounts, [$cashCode], 'debit');
+                $hasReceivableCredit = $this->hasPostingSide($lines, $accounts, [$settings->default_receivable_account_code], 'credit');
+                if (! $hasCashDebit || ! $hasReceivableCredit) {
+                    throw ValidationException::withMessages([
+                        'journal' => 'Incoming payment posting rule violated: expected Dr Cash/Bank and Cr Accounts Receivable.',
+                    ]);
+                }
+            }
+
+            if ($payment->direction === 'outgoing') {
+                $hasPayableDebit = $this->hasPostingSide($lines, $accounts, [$settings->default_payable_account_code], 'debit');
+                $hasCashCredit = $this->hasPostingSide($lines, $accounts, [$cashCode], 'credit');
+                if (! $hasPayableDebit || ! $hasCashCredit) {
+                    throw ValidationException::withMessages([
+                        'journal' => 'Outgoing payment posting rule violated: expected Dr Accounts Payable and Cr Cash/Bank.',
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function hasPostingSide(array $lines, \Illuminate\Support\Collection $accounts, array $accountCodes, string $side): bool
+    {
+        return collect($lines)->contains(function (array $line) use ($accounts, $accountCodes, $side) {
+            $account = $accounts->get((int) ($line['account_id'] ?? 0));
+            if (! $account || ! in_array((string) $account->code, $accountCodes, true)) {
+                return false;
+            }
+
+            return BigDecimal::of((string) ($line[$side] ?? '0'))->isGreaterThan(BigDecimal::zero());
+        });
+    }
+
+    private function hasPostingByType(array $lines, \Illuminate\Support\Collection $accounts, array $types, string $side): bool
+    {
+        return collect($lines)->contains(function (array $line) use ($accounts, $types, $side) {
+            $account = $accounts->get((int) ($line['account_id'] ?? 0));
+            if (! $account || ! in_array((string) $account->type, $types, true)) {
+                return false;
+            }
+
+            return BigDecimal::of((string) ($line[$side] ?? '0'))->isGreaterThan(BigDecimal::zero());
+        });
     }
 }

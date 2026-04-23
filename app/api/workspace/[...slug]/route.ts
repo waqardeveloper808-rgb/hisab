@@ -3,6 +3,7 @@ import { authSessionCookieName, readAuthSessionOutcome } from "@/lib/auth-sessio
 import { defaultChartOfAccounts, searchAccounts as searchLocalAccounts, type Attachment, type AttachmentDocumentTag } from "@/lib/accounting-engine";
 import {
   resolveWorkspaceBackendContext,
+  resolveWorkspaceBackendPath,
 } from "@/lib/workspace-session";
 import {
   buildDocumentHtml as buildUnifiedDocumentHtml,
@@ -81,7 +82,9 @@ const allowedRoots = new Set([
   "agents",
   "access-profile",
   "intelligence",
+  "invoices",
   "contacts",
+  "customers",
   "products",
   "items",
   "services",
@@ -165,13 +168,14 @@ function mapBackendCompany(settings: BackendCompanySettingsEnvelope, assets: Com
   };
 }
 
-async function fetchBackendJson<T>(targetUrl: string, actorId: number, apiToken: string) {
+async function fetchBackendJson<T>(targetUrl: string, actorId: number, apiToken: string, activeCompanyId?: number | null) {
   const response = await fetch(targetUrl, {
     cache: "no-store",
     headers: {
       Accept: "application/json",
       "X-Gulf-Hisab-Actor-Id": String(actorId),
       "X-Gulf-Hisab-Workspace-Token": apiToken,
+      ...(typeof activeCompanyId === "number" && activeCompanyId > 0 ? { "X-Gulf-Hisab-Active-Company-Id": String(activeCompanyId) } : {}),
     },
   });
 
@@ -187,14 +191,15 @@ async function renderAuthenticatedDocumentEngine(params: {
   companyId: string;
   actorId: number;
   apiToken: string;
+  activeCompanyId: number | null;
   documentId: number;
 }) {
   const [settingsResponse, assetsResponse] = await Promise.all([
-    fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken),
-    fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken),
+    fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken, params.activeCompanyId),
+    fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken, params.activeCompanyId),
   ]);
 
-  const documentResponse = await fetchBackendJson<BackendDocumentDetail>(`${params.baseUrl}/api/companies/${params.companyId}/documents/${params.documentId}`, params.actorId, params.apiToken);
+  const documentResponse = await fetchBackendJson<BackendDocumentDetail>(`${params.baseUrl}/api/companies/${params.companyId}/documents/${params.documentId}`, params.actorId, params.apiToken, params.activeCompanyId);
 
   const assets = assetsResponse.data.map((asset) => ({ id: asset.id, usage: asset.usage, publicUrl: asset.public_url, isActive: asset.is_active }));
   const company = mapBackendCompany(settingsResponse.data, assets);
@@ -242,11 +247,12 @@ async function renderAuthenticatedTemplatePreview(params: {
   companyId: string;
   actorId: number;
   apiToken: string;
+  activeCompanyId: number | null;
   payload: Record<string, unknown>;
 }) {
   const [settingsResponse, assetsResponse] = await Promise.all([
-    fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken),
-    fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken),
+    fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken, params.activeCompanyId),
+    fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken, params.activeCompanyId),
   ]);
   const assets = assetsResponse.data.map((asset) => ({ id: asset.id, usage: asset.usage, publicUrl: asset.public_url, isActive: asset.is_active }));
   const company = mapBackendCompany(settingsResponse.data, assets);
@@ -475,10 +481,11 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   const companyId = backendContext.companyId;
   const actorId = backendContext.actorId;
   const apiToken = backendContext.workspaceToken;
+  const backendPath = resolveWorkspaceBackendPath(slug);
 
   const search = request.nextUrl.search;
   const invoiceImpact = readInvoiceImpactFilter(request.nextUrl.searchParams);
-  const targetUrl = `${backendBaseUrl}/api/companies/${companyId}/${slug.join("/")}${search}`;
+  const targetUrl = `${backendBaseUrl}/api/companies/${companyId}/${backendPath.join("/")}${search}`;
   const body = request.method === "GET" || request.method === "HEAD"
     ? undefined
     : await request.arrayBuffer();
@@ -495,6 +502,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
         ...(request.headers.get("content-type") ? { "Content-Type": request.headers.get("content-type") as string } : {}),
         "X-Gulf-Hisab-Actor-Id": String(actorId),
         "X-Gulf-Hisab-Workspace-Token": apiToken,
+        "X-Gulf-Hisab-Active-Company-Id": String(backendContext.activeCompanyId),
       },
     });
   } catch (error) {
@@ -546,7 +554,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
     }
 
     if (slug[0] === "reports" && slug[1] === "general-ledger") {
-      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${backendBaseUrl}/api/companies/${companyId}/journals`, actorId, apiToken);
+      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${backendBaseUrl}/api/companies/${companyId}/journals`, actorId, apiToken, backendContext.activeCompanyId);
       const filteredEntries = filterJournalsForInvoice(journalPayload.data, invoiceImpact.invoiceId);
       const ledgerRows = buildLedgerImpactRowsFromJournals(filteredEntries, invoiceImpact.invoiceNumber);
       headers.set("X-Workspace-Impact", `invoice:${invoiceImpact.invoiceId}`);
@@ -554,7 +562,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
     }
 
     if (slug[0] === "reports" && slug[1] === "trial-balance") {
-      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${backendBaseUrl}/api/companies/${companyId}/journals`, actorId, apiToken);
+      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${backendBaseUrl}/api/companies/${companyId}/journals`, actorId, apiToken, backendContext.activeCompanyId);
       const filteredEntries = filterJournalsForInvoice(journalPayload.data, invoiceImpact.invoiceId);
       const trialDelta = buildTrialBalanceDeltaFromJournals(filteredEntries);
       headers.set("X-Workspace-Impact", `invoice:${invoiceImpact.invoiceId}`);

@@ -39,9 +39,10 @@ class SalesDocumentService
         return DB::transaction(function () use ($company, $user, $payload): Document {
             $issueDate = Carbon::parse($payload['issue_date'] ?? now()->toDateString());
             $this->accountingPeriodService->ensureDateOpen($company, $issueDate);
-            $calculation = $this->taxCalculationService->calculate($company, $payload['lines']);
+            $contact = Contact::query()->where('company_id', $company->id)->findOrFail($payload['contact_id']);
+            $vatScopedLines = $this->withVatContextLines($payload['lines'], $contact, $payload);
+            $calculation = $this->taxCalculationService->calculate($company, $vatScopedLines);
             $settings = $company->settings()->firstOrFail();
-            Contact::query()->where('company_id', $company->id)->findOrFail($payload['contact_id']);
             $sourceDocument = $this->resolveSalesAdjustmentSource($company, $payload);
             $template = $this->templateEngineRuntime->requireTemplate($company, $payload['template_id'] ?? null, (string) ($payload['type'] ?? 'tax_invoice'));
 
@@ -57,6 +58,8 @@ class SalesDocumentService
                     'exchange_rate' => $payload['exchange_rate'] ?? 1,
                     'issue_date' => $issueDate->toDateString(),
                     'supply_date' => $payload['supply_date'] ?? $issueDate->toDateString(),
+                    'supply_location' => $payload['supply_location'] ?? ($contact->billing_address['country'] ?? $company->country_code),
+                    'vat_applicability' => $payload['vat_applicability'] ?? 'taxable',
                     'due_date' => $payload['due_date'] ?? $issueDate->toDateString(),
                     'compliance_metadata' => [
                         'zatca_ready' => true,
@@ -105,8 +108,9 @@ class SalesDocumentService
         return DB::transaction(function () use ($company, $document, $user, $payload): Document {
             $document = Document::query()->whereKey($document->id)->lockForUpdate()->firstOrFail();
             $before = $document->load('lines')->toArray();
-            $calculation = $this->taxCalculationService->calculate($company, $payload['lines']);
-            Contact::query()->where('company_id', $company->id)->findOrFail($payload['contact_id']);
+            $contact = Contact::query()->where('company_id', $company->id)->findOrFail($payload['contact_id']);
+            $vatScopedLines = $this->withVatContextLines($payload['lines'], $contact, array_merge($document->toArray(), $payload));
+            $calculation = $this->taxCalculationService->calculate($company, $vatScopedLines);
             $sourceDocument = $this->resolveSalesAdjustmentSource($company, array_merge($document->toArray(), $payload));
             $template = $this->templateEngineRuntime->requireTemplate($company, $payload['template_id'] ?? null, (string) ($payload['type'] ?? $document->type));
 
@@ -119,6 +123,8 @@ class SalesDocumentService
                 [
                     'issue_date' => $issueDate->toDateString(),
                     'supply_date' => $payload['supply_date'] ?? $document->supply_date,
+                    'supply_location' => $payload['supply_location'] ?? $document->supply_location,
+                    'vat_applicability' => $payload['vat_applicability'] ?? $document->vat_applicability,
                     'due_date' => $payload['due_date'] ?? $document->due_date,
                     'compliance_metadata' => array_merge($document->compliance_metadata ?? [], [
                         'source_invoice_uuid' => $sourceDocument?->uuid,
@@ -314,6 +320,21 @@ class SalesDocumentService
         }
 
         return $document->lines->contains(fn (DocumentLine $line) => ($line->item?->type ?? null) === 'product');
+    }
+
+    private function withVatContextLines(array $lines, Contact $contact, array $payload): array
+    {
+        $origin = strtoupper((string) ($payload['customer_origin'] ?? $contact->origin_country_code ?? 'KSA'));
+        $supplyLocation = strtoupper((string) ($payload['supply_location'] ?? $contact->billing_address['country'] ?? 'KSA'));
+        $vatApplicability = strtolower((string) ($payload['vat_applicability'] ?? 'taxable'));
+
+        return array_map(function (array $line) use ($origin, $supplyLocation, $vatApplicability) {
+            $line['customer_origin'] = strtoupper((string) ($line['customer_origin'] ?? $origin));
+            $line['supply_location'] = strtoupper((string) ($line['supply_location'] ?? $supplyLocation));
+            $line['vat_applicability'] = strtolower((string) ($line['vat_applicability'] ?? $vatApplicability));
+
+            return $line;
+        }, $lines);
     }
 
     public function issueCreditNote(Company $company, Document $sourceDocument, User $user, array $payload): Document

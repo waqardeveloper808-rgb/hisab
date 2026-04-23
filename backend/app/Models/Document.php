@@ -30,6 +30,8 @@ class Document extends Model
         'exchange_rate',
         'issue_date',
         'supply_date',
+        'supply_location',
+        'vat_applicability',
         'due_date',
         'subtotal',
         'discount_total',

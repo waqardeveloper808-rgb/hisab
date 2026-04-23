@@ -36,6 +36,9 @@ export type MasterDesignControlPointRecord = StandardsControlPoint & {
   linked_workflows: StandardsControlPoint["linked_project_modules"];
   evidence_required: StandardsControlPoint["evidence_requirement"];
   measurable_fields: string[];
+  expected_state: string;
+  failure_condition: string;
+  cross_validation_sources: string[];
   master_design_reference: MasterDesignControlPointReference;
   state: MasterDesignControlPointState;
 };
@@ -123,7 +126,31 @@ export const masterDesignControlPoints: MasterDesignControlPointRecord[] = stand
     controlPoint.source_standard_clause,
     controlPoint.evaluation_frequency,
     controlPoint.control_owner,
+    ...(controlPoint.module_code === 'ACC' ? ['sum(debit)', 'sum(credit)', 'trial_balance_delta'] : []),
+    ...(controlPoint.module_code === 'TAX' ? ['vat_received', 'vat_paid', 'vat_payable', 'vat_mismatch'] : []),
+    ...(controlPoint.module_code === 'INV' ? ['inventory_book_value', 'inventory_ledger_value', 'inventory_value_delta'] : []),
   ],
+  expected_state: controlPoint.module_code === 'ACC'
+    ? 'Journal postings remain balanced and traceable for all accounting events.'
+    : (controlPoint.module_code === 'TAX'
+      ? 'VAT received, paid, and payable reconcile between journals and VAT reports.'
+      : (controlPoint.module_code === 'INV'
+        ? 'Inventory movements reconcile with accounting inventory accounts and never create negative stock.'
+        : controlPoint.scoring_logic)),
+  failure_condition: controlPoint.module_code === 'ACC'
+    ? 'Any debit-credit imbalance, missing account mapping, or trial-balance mismatch.'
+    : (controlPoint.module_code === 'TAX'
+      ? 'Any VAT mismatch, invalid VAT applicability decision, or missing VAT classification.'
+      : (controlPoint.module_code === 'INV'
+        ? 'Any negative stock event or mismatch between stock valuation and inventory account balances.'
+        : controlPoint.nonconformity)),
+  cross_validation_sources: controlPoint.module_code === 'ACC'
+    ? ['journal_entries', 'journal_entry_lines', 'trial_balance', 'profit_loss', 'balance_sheet']
+    : (controlPoint.module_code === 'TAX'
+      ? ['document_lines', 'documents', 'journal_entry_lines', 'vat_summary', 'vat_detail']
+      : (controlPoint.module_code === 'INV'
+        ? ['inventory_items', 'inventory_transactions', 'journal_entry_lines', 'inventory_snapshot']
+        : ['standards-control-registry'])),
   master_design_reference: getReference(controlPoint),
   state: buildControlPointState(controlPoint),
 }));

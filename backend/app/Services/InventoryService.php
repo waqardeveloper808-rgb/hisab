@@ -45,6 +45,60 @@ class InventoryService
             ->get();
     }
 
+    public function reconciliationSnapshot(Company $company): array
+    {
+        $inventoryRows = InventoryItem::query()
+            ->where('company_id', $company->id)
+            ->get(['id', 'code', 'product_name', 'inventory_account_id', 'quantity_on_hand', 'average_unit_cost']);
+
+        $byAccount = $inventoryRows
+            ->groupBy('inventory_account_id')
+            ->map(function ($rows, $accountId) {
+                $amount = $rows->reduce(function (BigDecimal $carry, InventoryItem $row) {
+                    return $carry->plus(
+                        BigDecimal::of((string) $row->quantity_on_hand)
+                            ->multipliedBy((string) $row->average_unit_cost)
+                            ->toScale(2, RoundingMode::HALF_UP)
+                    );
+                }, BigDecimal::zero())->toScale(2, RoundingMode::HALF_UP);
+
+                return [
+                    'inventory_account_id' => (int) $accountId,
+                    'inventory_book_value' => (string) $amount,
+                ];
+            })
+            ->values();
+
+        $accountingByAccount = DB::table('journal_entry_lines')
+            ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+            ->where('journal_entries.company_id', $company->id)
+            ->whereIn('journal_entry_lines.account_id', $byAccount->pluck('inventory_account_id')->all())
+            ->groupBy('journal_entry_lines.account_id')
+            ->selectRaw('journal_entry_lines.account_id, COALESCE(SUM(journal_entry_lines.debit - journal_entry_lines.credit), 0) as ledger_value')
+            ->get()
+            ->keyBy('account_id');
+
+        $lines = $byAccount->map(function (array $row) use ($accountingByAccount) {
+            $ledgerValue = (string) round((float) ($accountingByAccount->get($row['inventory_account_id'])->ledger_value ?? 0), 2);
+            $bookValue = (string) round((float) $row['inventory_book_value'], 2);
+            $difference = round((float) $bookValue - (float) $ledgerValue, 2);
+
+            return [
+                'inventory_account_id' => $row['inventory_account_id'],
+                'inventory_book_value' => number_format((float) $bookValue, 2, '.', ''),
+                'ledger_value' => number_format((float) $ledgerValue, 2, '.', ''),
+                'difference' => number_format($difference, 2, '.', ''),
+                'status' => abs($difference) <= 0.01 ? 'matched' : 'mismatch',
+            ];
+        })->values()->all();
+
+        return [
+            'items_count' => $inventoryRows->count(),
+            'reconciliation_lines' => $lines,
+            'overall_status' => collect($lines)->contains(fn (array $line) => $line['status'] === 'mismatch') ? 'mismatch' : 'matched',
+        ];
+    }
+
     public function createReceipt(Company $company, User $actor, array $payload): InventoryItem
     {
         return DB::transaction(function () use ($company, $actor, $payload) {
