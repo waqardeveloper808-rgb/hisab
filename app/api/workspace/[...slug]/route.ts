@@ -476,69 +476,6 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   const actorId = backendContext.actorId;
   const apiToken = backendContext.workspaceToken;
 
-  if (slug[0] === "templates" && request.method === "POST" && slug[1] === "preview") {
-    try {
-      const payload = await request.json() as Record<string, unknown>;
-      const html = await renderAuthenticatedTemplatePreview({
-        baseUrl: backendBaseUrl,
-        companyId,
-        actorId,
-        apiToken,
-        payload,
-      });
-
-      return NextResponse.json({ data: { html } });
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : "Template preview rendering failed.";
-
-      return NextResponse.json({ message: "Template preview rendering failed.", detail }, { status: 500 });
-    }
-  }
-
-  if (slug[0] === "documents" && request.method === "GET" && slug[2] === "preview") {
-    try {
-      const html = await renderAuthenticatedDocumentEngine({
-        baseUrl: backendBaseUrl,
-        companyId,
-        actorId,
-        apiToken,
-        documentId: Number(slug[1]),
-      });
-
-      return NextResponse.json({ data: { html } });
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : "Document preview rendering failed.";
-
-      return NextResponse.json({ message: "Document preview rendering failed.", detail }, { status: 500 });
-    }
-  }
-
-  if (slug[0] === "documents" && request.method === "GET" && (slug[2] === "export-pdf" || slug[2] === "pdf")) {
-    try {
-      const html = await renderAuthenticatedDocumentEngine({
-        baseUrl: backendBaseUrl,
-        companyId,
-        actorId,
-        apiToken,
-        documentId: Number(slug[1]),
-      });
-      const bytes = await renderDocumentPdf(html);
-
-      return new NextResponse(Buffer.from(bytes), {
-        status: 200,
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="document-${slug[1]}.pdf"`,
-          "Cache-Control": "no-store",
-        },
-      });
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : "Document PDF rendering failed.";
-
-      return NextResponse.json({ message: "Document PDF rendering failed.", detail }, { status: 500 });
-    }
-  }
-
   const search = request.nextUrl.search;
   const invoiceImpact = readInvoiceImpactFilter(request.nextUrl.searchParams);
   const targetUrl = `${backendBaseUrl}/api/companies/${companyId}/${slug.join("/")}${search}`;

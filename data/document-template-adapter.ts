@@ -1,12 +1,13 @@
 import type { DocumentTemplateRecord } from "@/lib/workspace-api";
+import { documentTemplateTypes } from "@/lib/document-platform/schema";
 
 export const templateDocumentTypes = [
-  { value: "tax_invoice", label: "Tax Invoice" },
-  { value: "quotation", label: "Quotation" },
-  { value: "proforma_invoice", label: "Proforma Invoice" },
+  { value: documentTemplateTypes[0], label: "Tax Invoice" },
+  { value: documentTemplateTypes[1], label: "Proforma Invoice" },
+  { value: documentTemplateTypes[2], label: "Quotation" },
+  { value: documentTemplateTypes[3], label: "Credit Note" },
+  { value: documentTemplateTypes[4], label: "Debit Note" },
   { value: "purchase_order", label: "Purchase Order" },
-  { value: "credit_note", label: "Credit Note" },
-  { value: "debit_note", label: "Debit Note" },
   { value: "delivery_note", label: "Delivery Note" },
   { value: "receipt_voucher", label: "Receipt Voucher" },
   { value: "payment_voucher", label: "Payment Voucher" },

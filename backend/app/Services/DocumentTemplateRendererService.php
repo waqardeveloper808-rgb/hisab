@@ -276,27 +276,33 @@ SVG;
         $titleSize = max((int) ($settings['title_font_size'] ?? 24), 22);
         $theme = $this->themePalette($family, $accentColor);
 
-        $headerSection = $this->renderHeaderSection($company, $document, $logo, $theme, $fontSize, $spacingScale);
-        $titleSection = $this->renderTitleSection($documentTitle, $document, $titleSize, 'center', $theme, $fontSize);
-        $documentInfoSection = $this->renderDocumentInfoSection($document, $theme, $fontSize, $spacingScale);
-        $deliverySection = $this->renderDeliverySection($document, $theme, $fontSize, $spacingScale);
-        $customerSection = $this->renderCustomerSection($document, $contactLabel, $theme, $fontSize, $spacingScale);
-        $itemsSection = $this->renderItemsSection($document, $theme, $fontSize, $spacingScale, $showCommercialTotals);
-        $totalsSection = $showCommercialTotals ? $this->renderTotalsSection($document, $theme, $fontSize, $spacingScale, $showVatSection) : '';
-        $notesSection = filled($document->notes ?: $defaultNote) ? $this->renderNotesSection($document->notes ?: $defaultNote, $theme, $fontSize, $spacingScale) : '';
-        $footerSection = $this->renderFooterSection($company, $document, $theme, $fontSize, $spacingScale, $isTaxComplianceDocument, $stampUrl, $signatureUrl);
+        $sectionOrder = $this->buildSectionOrder((string) ($settings['section_order'] ?? ''));
+        $hiddenSections = collect(explode(',', (string) ($settings['hidden_sections'] ?? '')))
+            ->map(fn (string $value) => trim($value))
+            ->filter(fn (string $value) => in_array($value, self::CANONICAL_SECTIONS, true))
+            ->all();
+
+        $sectionMap = [
+            'header' => $this->renderHeaderSection($company, $document, $logo, $theme, $fontSize, $spacingScale, $settings),
+            'title' => $this->renderTitleSection($documentTitle, $document, $titleSize, 'center', $theme, $fontSize),
+            'document-info' => $this->renderDocumentInfoSection($document, $theme, $fontSize, $spacingScale, $settings),
+            'delivery' => $this->renderDeliverySection($document, $theme, $fontSize, $spacingScale, $settings),
+            'customer' => $this->renderCustomerSection($document, $contactLabel, $theme, $fontSize, $spacingScale, $settings),
+            'items' => $this->renderItemsSection($document, $theme, $fontSize, $spacingScale, $showCommercialTotals, $settings),
+            'totals' => $showCommercialTotals ? $this->renderTotalsSection($document, $theme, $fontSize, $spacingScale, $showVatSection, $settings) : '',
+            'notes' => filled($document->notes ?: $defaultNote) ? $this->renderNotesSection($document->notes ?: $defaultNote, $theme, $fontSize, $spacingScale) : '',
+            'footer' => $this->renderFooterSection($company, $document, $theme, $fontSize, $spacingScale, $isTaxComplianceDocument, $stampUrl, $signatureUrl, $settings),
+        ];
+
+        $sections = collect($sectionOrder)
+            ->reject(fn (string $section) => in_array($section, $hiddenSections, true))
+            ->map(fn (string $section) => $sectionMap[$section] ?? '')
+            ->filter(fn (string $html) => $html !== '')
+            ->implode('');
 
         return '<div style="max-width:980px;margin:0 auto;padding:'.self::SPACE_16.'px;background:#ffffff;">'
             .'<article data-doc-root="true" style="background:#ffffff;border:1px solid '.$theme['frame'].';font-family:'.$fontFamily.',Tahoma,Arial,sans-serif;color:'.$theme['text'].';padding:'.self::SPACE_16.'px;">'
-            .$headerSection
-            .$titleSection
-            .$documentInfoSection
-            .$deliverySection
-            .$customerSection
-            .$itemsSection
-            .$totalsSection
-            .$notesSection
-            .$footerSection
+            .$sections
             .'</article></div>';
     }
 
@@ -413,7 +419,7 @@ SVG;
         return self::DOCUMENT_TITLE_MAP[$documentType] ?? [Str::headline(str_replace('_', ' ', $documentType)), 'مستند مالي'];
     }
 
-    private function renderHeaderSection(Company $company, Document $document, string $logo, array $theme, int $fontSize, float $spacingScale): string
+    private function renderHeaderSection(Company $company, Document $document, string $logo, array $theme, int $fontSize, float $spacingScale, array $settings): string
     {
         $custom = (array) ($document->custom_fields ?? []);
         $sellerNameEn = (string) ($custom['seller_name_en'] ?? $company->legal_name ?? '');
@@ -425,13 +431,16 @@ SVG;
         $sellerVat = (string) ($custom['seller_vat_number'] ?? $company->tax_number ?? '');
         $sellerCr = (string) ($custom['seller_cr_number'] ?? $company->registration_number ?? '');
 
-        return '<section data-doc-section="header" style="display:grid;grid-template-columns:40% 20% 40%;gap:0;align-items:start;padding-bottom:'.self::SPACE_16.'px;border-bottom:1px solid '.$theme['frame'].';margin-bottom:'.self::SPACE_16.'px;">'
+        $logoMaxWidth = max(72, min(260, (int) ($settings['logo_max_width'] ?? 160)));
+        $logoMaxHeight = max(44, min(160, (int) ($settings['logo_max_height'] ?? 62)));
+
+        return '<section data-doc-section="header" style="display:grid;grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr);gap:0;align-items:start;padding-bottom:'.self::SPACE_16.'px;border-bottom:1px solid '.$theme['frame'].';margin-bottom:'.self::SPACE_16.'px;">'
             .'<div style="display:grid;gap:'.self::SPACE_4.'px;align-content:start;text-align:left;font-size:'.$fontSize.'px;line-height:1.5;color:'.$theme['text'].';padding-right:'.self::SPACE_12.'px;">'
             .'<div style="font-size:'.($fontSize + 6).'px;font-weight:800;line-height:1.15;">'.e($sellerNameEn).'</div>'
             .($sellerAddressEn !== '' ? '<div>'.e($sellerAddressEn).'</div>' : '')
             .(($sellerEmail !== '' || $sellerPhone !== '') ? '<div>'.e(trim(implode(' / ', array_filter([$sellerEmail, $sellerPhone])))).'</div>' : '')
             .'</div>'
-            .'<div style="display:flex;justify-content:center;align-items:flex-start;min-height:72px;padding:0 '.self::SPACE_8.'px;"><img src="'.e($logo).'" alt="Logo" style="max-width:160px;max-height:62px;object-fit:contain;display:block;" /></div>'
+            .'<div style="display:flex;justify-content:center;align-items:flex-start;min-height:72px;padding:0 '.self::SPACE_8.'px;"><img src="'.e($logo).'" alt="Logo" style="max-width:'.$logoMaxWidth.'px;max-height:'.$logoMaxHeight.'px;object-fit:contain;display:block;" /></div>'
             .'<div dir="rtl" style="display:grid;gap:'.self::SPACE_4.'px;align-content:start;font-size:'.$fontSize.'px;line-height:1.6;color:'.$theme['text'].';padding-left:'.self::SPACE_12.'px;font-family:'.self::ARABIC_FONT_STACK.';direction:rtl;unicode-bidi:isolate;text-align:right;">'
             .($sellerNameAr !== '' ? '<div style="font-size:'.($fontSize + 6).'px;font-weight:800;line-height:1.2;">'.e($sellerNameAr).'</div>' : '')
             .($sellerAddressAr !== '' ? '<div>'.e($sellerAddressAr).'</div>' : '')
@@ -458,24 +467,31 @@ SVG;
             .'</section>';
     }
 
-    private function renderDocumentInfoSection(Document $document, array $theme, int $fontSize, float $spacingScale): string
+    private function renderDocumentInfoSection(Document $document, array $theme, int $fontSize, float $spacingScale, array $settings): string
     {
         $documentLabel = $this->documentTypeNumberLabel((string) $document->type);
         $supplyDate = (string) data_get($document->custom_fields, 'supply_date', optional($document->issue_date)?->toDateString() ?? '');
+        $labelColorEn = (string) ($settings['label_color_en'] ?? $theme['muted']);
+        $labelColorAr = (string) ($settings['label_color_ar'] ?? $theme['muted']);
+        $documentNumberLabels = $this->resolveLabelPair($settings, 'invoice_number', $documentLabel['en'], $documentLabel['ar']);
+        $issueDateLabels = $this->resolveLabelPair($settings, 'issue_date', 'Issue Date', 'تاريخ الإصدار');
+        $supplyDateLabels = $this->resolveLabelPair($settings, 'supply_date', 'Supply Date', 'تاريخ التوريد');
+        $dueDateLabels = $this->resolveLabelPair($settings, 'due_date', 'Due Date', 'تاريخ الاستحقاق');
+        $referenceLabels = $this->resolveLabelPair($settings, 'reference', 'Reference', 'المرجع');
         $rows = array_filter([
-            [$documentLabel['en'], $documentLabel['ar'], $document->document_number ?: 'Draft'],
-            ['Issue Date', 'تاريخ الإصدار', optional($document->issue_date)?->toDateString()],
-            ['Supply Date', 'تاريخ التوريد', $supplyDate],
-            ['Due Date', 'تاريخ الاستحقاق', optional($document->due_date)?->toDateString()],
-            ['Reference', 'المرجع', (string) data_get($document->custom_fields, 'reference', '')],
+            [$documentNumberLabels['en'], $documentNumberLabels['ar'], $document->document_number ?: 'Draft'],
+            [$issueDateLabels['en'], $issueDateLabels['ar'], optional($document->issue_date)?->toDateString()],
+            [$supplyDateLabels['en'], $supplyDateLabels['ar'], $supplyDate],
+            [$dueDateLabels['en'], $dueDateLabels['ar'], optional($document->due_date)?->toDateString()],
+            [$referenceLabels['en'], $referenceLabels['ar'], (string) data_get($document->custom_fields, 'reference', '')],
         ], fn (array $row) => filled($row[2]));
 
         return '<section data-doc-section="document-info" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:'.self::SPACE_12.'px;margin-bottom:'.self::SPACE_16.'px;">'
-            .collect($rows)->map(function (array $row) use ($fontSize, $theme): string {
+            .collect($rows)->map(function (array $row) use ($fontSize, $labelColorEn, $labelColorAr, $theme): string {
                 return '<div data-doc-meta-card="true" style="display:grid;min-width:0;border:1px solid '.$theme['frame'].';background:#fff;padding:'.self::SPACE_12.'px;gap:'.self::SPACE_8.'px;">'
                     .'<div data-doc-meta-labels="true" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:'.self::SPACE_12.'px;align-items:start;">'
-                    .'<div data-doc-label="en" style="font-size:'.($fontSize - 2).'px;line-height:1.25;font-weight:700;color:'.$theme['muted'].';text-transform:uppercase;letter-spacing:.06em;overflow-wrap:anywhere;">'.e($row[0]).'</div>'
-                    .'<div data-doc-label="ar" dir="rtl" style="font-size:'.($fontSize - 2).'px;font-weight:700;color:'.$theme['muted'].';font-family:'.self::ARABIC_FONT_STACK.';direction:rtl;unicode-bidi:isolate;text-align:right;line-height:1.35;overflow-wrap:anywhere;">'.e($row[1]).'</div>'
+                    .'<div data-doc-label="en" style="font-size:'.($fontSize - 2).'px;line-height:1.25;font-weight:700;color:'.$labelColorEn.';text-transform:uppercase;letter-spacing:.06em;overflow-wrap:anywhere;">'.e($row[0]).'</div>'
+                    .'<div data-doc-label="ar" dir="rtl" style="font-size:'.($fontSize - 2).'px;font-weight:700;color:'.$labelColorAr.';font-family:'.self::ARABIC_FONT_STACK.';direction:rtl;unicode-bidi:isolate;text-align:right;line-height:1.35;overflow-wrap:anywhere;">'.e($row[1]).'</div>'
                     .'</div>'
                     .'<div data-doc-meta-value="true" style="min-width:0;border-top:1px solid '.$theme['frame'].';padding-top:'.self::SPACE_8.'px;font-size:'.($fontSize + 1).'px;font-weight:800;color:'.$theme['text'].';line-height:1.35;overflow-wrap:anywhere;word-break:break-word;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate;text-align:left;">'.e((string) $row[2]).'</div>'
                     .'</div>';
@@ -483,13 +499,16 @@ SVG;
             .'</section>';
     }
 
-    private function renderDeliverySection(Document $document, array $theme, int $fontSize, float $spacingScale): string
+    private function renderDeliverySection(Document $document, array $theme, int $fontSize, float $spacingScale, array $settings): string
     {
+        $supplyDateLabels = $this->resolveLabelPair($settings, 'supply_date', 'Supply Date', 'تاريخ التوريد');
+        $orderNumberLabels = $this->resolveLabelPair($settings, 'order_number', 'Order Number', 'رقم الطلب');
+        $projectLabels = $this->resolveLabelPair($settings, 'project', 'Project', 'المشروع');
         $rows = array_filter([
-            ['Supply Date', 'تاريخ التوريد', (string) data_get($document->custom_fields, 'supply_date', '')],
+            [$supplyDateLabels['en'], $supplyDateLabels['ar'], (string) data_get($document->custom_fields, 'supply_date', '')],
             ['Delivery Note', 'رقم إشعار التسليم', (string) data_get($document->custom_fields, 'linked_delivery_note_number', '')],
-            ['Order Number', 'رقم الطلب', (string) data_get($document->custom_fields, 'order_number', '')],
-            ['Project', 'المشروع', (string) data_get($document->custom_fields, 'project', '')],
+            [$orderNumberLabels['en'], $orderNumberLabels['ar'], (string) data_get($document->custom_fields, 'order_number', '')],
+            [$projectLabels['en'], $projectLabels['ar'], (string) data_get($document->custom_fields, 'project', '')],
         ], fn (array $row) => filled($row[2]));
 
         if ($rows === []) {
@@ -503,7 +522,7 @@ SVG;
             .'</div></section>';
     }
 
-    private function renderCustomerSection(Document $document, string $contactLabel, array $theme, int $fontSize, float $spacingScale): string
+    private function renderCustomerSection(Document $document, string $contactLabel, array $theme, int $fontSize, float $spacingScale, array $settings): string
     {
         $custom = (array) ($document->custom_fields ?? []);
         $contact = $document->contact;
@@ -531,19 +550,21 @@ SVG;
             $country,
         ], fn (?string $value) => filled($value)));
 
-        return '<section data-doc-section="customer" style="display:grid;grid-template-columns:30% 45% 25%;gap:0;border:1px solid '.$theme['frame'].';margin-bottom:'.self::SPACE_16.'px;">'
+        return '<section data-doc-section="customer" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0;border:1px solid '.$theme['frame'].';margin-bottom:'.self::SPACE_16.'px;">'
             .'<div style="padding:'.self::SPACE_12.'px;border-right:1px solid '.$theme['frame'].';font-size:'.$fontSize.'px;line-height:1.45;">'
             .($buyerNameEn !== '' ? '<div data-doc-party="en" style="font-size:'.($fontSize + 1).'px;font-weight:800;line-height:1.25;">'.e($buyerNameEn).'</div>' : '')
             .($buyerNameAr !== '' ? '<div data-doc-party="ar" dir="rtl" style="margin-top:'.self::SPACE_4.'px;font-family:'.self::ARABIC_FONT_STACK.';font-size:'.($fontSize + 1).'px;font-weight:800;line-height:1.35;text-align:right;">'.e($buyerNameAr).'</div>' : '')
             .'</div>'
-            .'<div style="padding:'.self::SPACE_12.'px;border-right:1px solid '.$theme['frame'].';font-size:'.$fontSize.'px;line-height:1.45;">'
+            .'<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:'.self::SPACE_12.'px;font-size:'.$fontSize.'px;line-height:1.45;">'
+            .'<div style="padding-right:'.self::SPACE_12.'px;border-right:1px solid '.$theme['frame'].';">'
             .collect($addressLines)->map(fn (string $line) => '<div>'.e($line).'</div>')->implode('')
             .($buyerAddressAr !== '' ? '<div dir="rtl" style="margin-top:'.self::SPACE_4.'px;font-family:'.self::ARABIC_FONT_STACK.';text-align:right;">'.e($buyerAddressAr).'</div>' : '')
             .'</div>'
-            .'<div style="padding:'.self::SPACE_12.'px;font-size:'.$fontSize.'px;line-height:1.45;">'
-            .($buyerVat !== '' ? '<div><strong>VAT:</strong> '.e($buyerVat).'</div>' : '')
-            .($buyerCr !== '' ? '<div><strong>CR:</strong> '.e($buyerCr).'</div>' : '')
-            .($phone !== '' ? '<div><strong>Phone:</strong> '.e($phone).'</div>' : '')
+            .'<div style="padding-left:'.self::SPACE_12.'px;">'
+            .($buyerVat !== '' ? '<div style="display:grid;gap:2px;"><div>VAT</div><strong>'.e($buyerVat).'</strong></div>' : '')
+            .($buyerCr !== '' ? '<div style="display:grid;gap:2px;margin-top:'.self::SPACE_8.'px;"><div>CR</div><strong>'.e($buyerCr).'</strong></div>' : '')
+            .($phone !== '' ? '<div style="display:grid;gap:2px;margin-top:'.self::SPACE_8.'px;"><div>Phone</div><strong>'.e($phone).'</strong></div>' : '')
+            .'</div>'
             .'</div>'
             .'</section>';
     }
@@ -557,38 +578,69 @@ SVG;
             .'</div></div>';
     }
 
-    private function renderItemsSection(Document $document, array $theme, int $fontSize, float $spacingScale, bool $showCommercialTotals): string
+    private function renderItemsSection(Document $document, array $theme, int $fontSize, float $spacingScale, bool $showCommercialTotals, array $settings): string
     {
-        $rows = $document->lines->map(function (DocumentLine $line, int $index) use ($fontSize, $spacingScale, $showCommercialTotals, $theme): string {
+        $columns = $this->resolveItemTableColumns($settings);
+        $bilingualTableHeadings = filter_var($settings['table_heading_bilingual'] ?? false, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? false;
+        $labelQuantity = $this->resolveLabelPair($settings, 'quantity', 'Qty', 'الكمية');
+        $labelUnitPrice = $this->resolveLabelPair($settings, 'unit_price', 'Unit Price', 'سعر الوحدة');
+        $labelTaxable = $this->resolveLabelPair($settings, 'taxable', 'Taxable', 'الخاضع للضريبة');
+        $labelVat = $this->resolveLabelPair($settings, 'vat', 'VAT', 'الضريبة');
+        $labelTotal = $this->resolveLabelPair($settings, 'total', 'Total', 'الإجمالي');
+
+        $labelMap = [
+            'serial' => ['en' => '#', 'ar' => '#'],
+            'description' => ['en' => 'Description', 'ar' => 'الوصف'],
+            'quantity' => $labelQuantity,
+            'unit_price' => $labelUnitPrice,
+            'taxable' => $labelTaxable,
+            'vat' => $labelVat,
+            'total' => $labelTotal,
+        ];
+
+        $rows = $document->lines->map(function (DocumentLine $line, int $index) use ($columns, $fontSize, $spacingScale, $showCommercialTotals, $theme): string {
             $vatAmount = (float) ($line->tax_amount ?? 0);
             $taxableAmount = (float) (($line->gross_amount ?? null) !== null ? $line->gross_amount : ((float) $line->quantity * (float) $line->unit_price));
             $lineTotal = $showCommercialTotals ? $taxableAmount + $vatAmount : $taxableAmount;
 
             $arabicDescription = (string) data_get($line->metadata, 'custom_fields.description_ar', '');
 
-            return '<tr>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;text-align:center;vertical-align:top;">'.($index + 1).'</td>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;vertical-align:top;line-height:1.35;"><div>'.e((string) $line->description).'</div>'.($arabicDescription !== '' ? '<div dir="rtl" style="margin-top:2px;text-align:right;">'.e($arabicDescription).'</div>' : '').'</td>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;text-align:right;font-variant-numeric:tabular-nums;vertical-align:top;">'.number_format((float) $line->quantity, 2).'</td>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;text-align:right;font-variant-numeric:tabular-nums;vertical-align:top;">'.number_format((float) $line->unit_price, 2).'</td>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;text-align:right;font-variant-numeric:tabular-nums;vertical-align:top;">'.number_format($taxableAmount, 2).'</td>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;text-align:right;font-variant-numeric:tabular-nums;vertical-align:top;">'.number_format($vatAmount, 2).'</td>'
-                .'<td style="border:1px solid '.$theme['frame'].';padding:6px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;vertical-align:top;">'.number_format($lineTotal, 2).'</td>'
-                .'</tr>';
+            $rowValues = [
+                'serial' => (string) ($index + 1),
+                'description' => '<div>'.e((string) $line->description).'</div>'.($arabicDescription !== '' ? '<div dir="rtl" style="margin-top:2px;text-align:right;">'.e($arabicDescription).'</div>' : ''),
+                'quantity' => number_format((float) $line->quantity, 2),
+                'unit_price' => number_format((float) $line->unit_price, 2),
+                'taxable' => number_format($taxableAmount, 2),
+                'vat' => number_format($vatAmount, 2),
+                'total' => number_format($lineTotal, 2),
+            ];
+
+            return '<tr>'.$columns->map(function (array $column) use ($rowValues, $theme): string {
+                $key = $column['key'];
+                $alignment = in_array($key, ['serial'], true) ? 'center' : (in_array($key, ['description'], true) ? 'left' : 'right');
+                $fontWeight = $key === 'total' ? '700' : '400';
+
+                return '<td style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:6px;text-align:'.$alignment.';font-variant-numeric:tabular-nums;vertical-align:top;font-weight:'.$fontWeight.';">'.($rowValues[$key] ?? '').'</td>';
+            })->implode('').'</tr>';
         })->implode('');
 
         return '<section data-doc-section="items" style="margin-bottom:'.self::SPACE_16.'px;">'
             .'<table style="width:100%;border-collapse:collapse;font-size:'.$fontSize.'px;line-height:1.3;">'
             .'<thead>'
-            .'<tr>'
-            .'<th style="width:5%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:center;font-weight:800;background:'.$theme['header'].';">#</th>'
-            .'<th style="width:37%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:left;font-weight:800;background:'.$theme['header'].';">Description</th>'
-            .'<th style="width:9%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:right;font-weight:800;background:'.$theme['header'].';">Qty</th>'
-            .'<th style="width:13%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:right;font-weight:800;background:'.$theme['header'].';">Unit Price</th>'
-            .'<th style="width:13%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:right;font-weight:800;background:'.$theme['header'].';">Taxable</th>'
-            .'<th style="width:10%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:right;font-weight:800;background:'.$theme['header'].';">VAT</th>'
-            .'<th style="width:13%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:right;font-weight:800;background:'.$theme['header'].';">Total</th>'
-            .'</tr>'
+            .'<tr>'.$columns->map(function (array $column) use ($bilingualTableHeadings, $theme, $labelMap): string {
+                $key = $column['key'];
+                $labels = $labelMap[$key] ?? ['en' => ucfirst($key), 'ar' => ucfirst($key)];
+                $alignment = in_array($key, ['serial'], true) ? 'center' : (in_array($key, ['description'], true) ? 'left' : 'right');
+
+                if (! $bilingualTableHeadings) {
+                    return '<th style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:'.$alignment.';font-weight:800;background:'.$theme['header'].';">'.e((string) $labels['en']).'</th>';
+                }
+
+                return '<th style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:'.$alignment.';font-weight:800;background:'.$theme['header'].';">'
+                    .'<div>'.e((string) $labels['en']).'</div>'
+                    .'<div dir="rtl" style="font-family:'.self::ARABIC_FONT_STACK.';text-align:right;font-size:11px;font-weight:700;">'.e((string) $labels['ar']).'</div>'
+                    .'</th>';
+            })->implode('').'</tr>'
             .'</thead>'
             .'<tbody>'
             .$rows
@@ -597,22 +649,26 @@ SVG;
             .'</section>';
     }
 
-    private function renderTotalsSection(Document $document, array $theme, int $fontSize, float $spacingScale, bool $showVatSection): string
+    private function renderTotalsSection(Document $document, array $theme, int $fontSize, float $spacingScale, bool $showVatSection, array $settings): string
     {
+        $subtotalLabel = $this->resolveLabelPair($settings, 'subtotal', 'Subtotal', 'الإجمالي الفرعي');
+        $taxableLabel = $this->resolveLabelPair($settings, 'taxable', 'Taxable Amount', 'المبلغ الخاضع للضريبة');
+        $vatLabel = $this->resolveLabelPair($settings, 'vat', 'VAT', 'الضريبة');
+        $grandTotalLabel = $this->resolveLabelPair($settings, 'grand_total', 'Total Due', 'الإجمالي');
         $rows = [
-            ['Subtotal', 'الإجمالي الفرعي', number_format((float) $document->subtotal, 2)],
+            [$subtotalLabel['en'], $subtotalLabel['ar'], number_format((float) $document->subtotal, 2)],
         ];
 
         if ($showVatSection) {
-            $rows[] = ['Taxable Amount', 'المبلغ الخاضع للضريبة', number_format((float) $document->taxable_total, 2)];
-            $rows[] = ['VAT', 'الضريبة', number_format((float) $document->tax_total, 2)];
+            $rows[] = [$taxableLabel['en'], $taxableLabel['ar'], number_format((float) $document->taxable_total, 2)];
+            $rows[] = [$vatLabel['en'], $vatLabel['ar'], number_format((float) $document->tax_total, 2)];
         }
 
         return '<section data-doc-section="totals" style="display:flex;justify-content:flex-end;margin-bottom:'.self::SPACE_16.'px;">'
             .'<div data-doc-total-block="true" style="width:360px;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_12.'px;background:linear-gradient(180deg,#ffffff 0%,'.$theme['header'].' 100%);">'
             .collect($rows)->map(fn (array $row) => '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:'.self::SPACE_12.'px;padding:'.self::SPACE_8.'px 0;border-bottom:1px solid '.$theme['frame'].';font-size:'.$fontSize.'px;line-height:1.3;"><span>'.e($row[0]).'</span><strong style="text-align:right;font-variant-numeric:tabular-nums;">'.e($row[2]).'</strong></div>')->implode('')
             .'<div data-doc-total-row="true" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:'.self::SPACE_16.'px;padding:'.self::SPACE_12.'px 0 '.self::SPACE_8.'px;font-size:'.($fontSize + 5).'px;line-height:1.1;font-weight:900;border-top:2px solid '.$theme['accent'].';margin-top:'.self::SPACE_8.'px;">'
-            .'<span style="display:grid;gap:'.self::SPACE_4.'px;"><span>TOTAL</span><span dir="rtl" style="font-family:'.self::ARABIC_FONT_STACK.';font-size:'.($fontSize + 1).'px;line-height:1.2;text-align:right;">الإجمالي</span></span>'
+                .'<span style="display:grid;gap:'.self::SPACE_4.'px;"><span>'.e($grandTotalLabel['en']).'</span><span dir="rtl" style="font-family:'.self::ARABIC_FONT_STACK.';font-size:'.($fontSize + 1).'px;line-height:1.2;text-align:right;">'.e($grandTotalLabel['ar']).'</span></span>'
             .'<strong data-doc-total-value="true" style="text-align:right;font-variant-numeric:tabular-nums;">'.number_format((float) $document->grand_total, 2).' '.e((string) $document->currency_code).'</strong></div>'
             .'</div></section>';
     }
@@ -639,8 +695,12 @@ SVG;
         };
     }
 
-    private function renderFooterSection(Company $company, Document $document, array $theme, int $fontSize, float $spacingScale, bool $isTaxComplianceDocument, ?string $stampUrl, ?string $signatureUrl): string
+    private function renderFooterSection(Company $company, Document $document, array $theme, int $fontSize, float $spacingScale, bool $isTaxComplianceDocument, ?string $stampUrl, ?string $signatureUrl, array $settings): string
     {
+        if (! (filter_var($settings['show_footer'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? true)) {
+            return '';
+        }
+
         $right = collect([
             $stampUrl ? '<img src="'.e($stampUrl).'" alt="Stamp" style="max-width:96px;max-height:72px;object-fit:contain;" />' : '',
             $signatureUrl ? '<img src="'.e($signatureUrl).'" alt="Signature" style="max-width:132px;max-height:44px;object-fit:contain;" />' : '',
@@ -650,6 +710,62 @@ SVG;
             .'<div style="font-size:'.($fontSize - 1).'px;color:'.$theme['muted'].';">'.e($company->legal_name).($isTaxComplianceDocument ? ' · VAT '.e((string) ($company->tax_number ?: 'Not set')) : '').'</div>'
             .'<div style="display:flex;align-items:center;gap:10px;">'.$right.'</div>'
             .'</section>';
+    }
+
+    private function resolveLabelPair(array $settings, string $key, string $defaultEn, string $defaultAr): array
+    {
+        $en = $this->decodeJsonMapValue((string) ($settings['label_overrides_en'] ?? ''), $key);
+        $ar = $this->decodeJsonMapValue((string) ($settings['label_overrides_ar'] ?? ''), $key);
+
+        return [
+            'en' => $en !== null && $en !== '' ? $en : $defaultEn,
+            'ar' => $ar !== null && $ar !== '' ? $ar : $defaultAr,
+        ];
+    }
+
+    private function decodeJsonMapValue(string $raw, string $key): ?string
+    {
+        $decoded = json_decode($raw, true);
+        if (! is_array($decoded)) {
+            return null;
+        }
+
+        $value = $decoded[$key] ?? null;
+        return is_string($value) ? trim($value) : null;
+    }
+
+    private function resolveItemTableColumns(array $settings): Collection
+    {
+        $fallback = collect([
+            ['key' => 'serial', 'width' => 5, 'visible' => true],
+            ['key' => 'description', 'width' => 37, 'visible' => true],
+            ['key' => 'quantity', 'width' => 9, 'visible' => true],
+            ['key' => 'unit_price', 'width' => 13, 'visible' => true],
+            ['key' => 'taxable', 'width' => 13, 'visible' => true],
+            ['key' => 'vat', 'width' => 10, 'visible' => true],
+            ['key' => 'total', 'width' => 13, 'visible' => true],
+        ]);
+
+        $decoded = json_decode((string) ($settings['item_table_columns'] ?? ''), true);
+        if (! is_array($decoded)) {
+            return $fallback;
+        }
+
+        $allowed = collect(['serial', 'description', 'quantity', 'unit_price', 'taxable', 'vat', 'total']);
+
+        $normalized = collect($decoded)
+            ->filter(fn ($entry) => is_array($entry) && in_array((string) ($entry['key'] ?? ''), $allowed->all(), true))
+            ->map(function (array $entry): array {
+                return [
+                    'key' => (string) ($entry['key'] ?? 'description'),
+                    'width' => max(5, min(60, (int) ($entry['width'] ?? 10))),
+                    'visible' => filter_var($entry['visible'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? true,
+                ];
+            })
+            ->filter(fn (array $entry) => $entry['visible'])
+            ->values();
+
+        return $normalized->isNotEmpty() ? $normalized : $fallback;
     }
 
     private function defaultLogoDataUri(): string

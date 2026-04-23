@@ -7,6 +7,7 @@ import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { ImportExportControls } from "@/components/workspace/ImportExportControls";
 import { buildTemplateRegister } from "@/data/document-template-adapter";
+import { buildDefaultSchemaSettings } from "@/lib/document-platform/schema";
 import {
   createDocumentTemplate,
   listCompanyAssets,
@@ -151,6 +152,65 @@ function parseHiddenSections(template: DocumentTemplateRecord) {
 
 function stringifyHiddenSections(hidden: Set<string>) {
   return sectionChoices.filter((section) => hidden.has(section)).join(",");
+}
+
+function parseLabelOverrides(template: DocumentTemplateRecord, language: "en" | "ar") {
+  const raw = getSettingValue(template, `label_overrides_${language}`, "{}");
+
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    return Object.entries(parsed).reduce<Record<string, string>>((accumulator, [key, value]) => {
+      if (typeof value === "string") {
+        accumulator[key] = value;
+      }
+      return accumulator;
+    }, {});
+  } catch {
+    return {};
+  }
+}
+
+function stringifyLabelOverrides(overrides: Record<string, string>) {
+  return JSON.stringify(overrides);
+}
+
+type ItemColumnConfig = {
+  key: string;
+  width: number;
+  visible: boolean;
+};
+
+const fallbackItemColumnConfig: ItemColumnConfig[] = [
+  { key: "serial", width: 5, visible: true },
+  { key: "description", width: 37, visible: true },
+  { key: "quantity", width: 9, visible: true },
+  { key: "unit_price", width: 13, visible: true },
+  { key: "taxable", width: 13, visible: true },
+  { key: "vat", width: 10, visible: true },
+  { key: "total", width: 13, visible: true },
+];
+
+function parseItemColumnConfig(template: DocumentTemplateRecord): ItemColumnConfig[] {
+  const raw = getSettingValue(template, "item_table_columns", "");
+  if (!raw.trim()) {
+    return fallbackItemColumnConfig;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Array<Partial<ItemColumnConfig>>;
+
+    const normalized = parsed
+      .filter((entry): entry is Partial<ItemColumnConfig> & { key: string } => typeof entry?.key === "string")
+      .map((entry) => ({
+        key: entry.key,
+        width: Math.max(5, Math.min(60, Number(entry.width) || 10)),
+        visible: typeof entry.visible === "boolean" ? entry.visible : true,
+      }));
+
+    return normalized.length ? normalized : fallbackItemColumnConfig;
+  } catch {
+    return fallbackItemColumnConfig;
+  }
 }
 
 function formatLocale(localeMode: string) {
@@ -507,6 +567,41 @@ export function DocumentTemplatesRegister(props?: {
     });
   }
 
+  function updateLabelOverride(language: "en" | "ar", key: string, value: string) {
+    if (!draft) {
+      return;
+    }
+
+    const current = parseLabelOverrides(draft, language);
+    if (value.trim()) {
+      current[key] = value;
+    } else {
+      delete current[key];
+    }
+
+    updateDraftSettings({ [`label_overrides_${language}`]: stringifyLabelOverrides(current) });
+  }
+
+  function updateItemColumn(key: string, patch: Partial<ItemColumnConfig>) {
+    if (!draft) {
+      return;
+    }
+
+    const nextColumns = parseItemColumnConfig(draft).map((column) => {
+      if (column.key !== key) {
+        return column;
+      }
+
+      return {
+        ...column,
+        width: patch.width !== undefined ? Math.max(5, Math.min(60, patch.width || 10)) : column.width,
+        visible: patch.visible !== undefined ? patch.visible : column.visible,
+      };
+    });
+
+    updateDraftSettings({ item_table_columns: JSON.stringify(nextColumns) });
+  }
+
   async function handleCreateTemplate() {
     setSaving(true);
     setFeedback(null);
@@ -514,6 +609,11 @@ export function DocumentTemplatesRegister(props?: {
 
     try {
       const documentType = initialDocumentType ?? draft?.documentTypes[0] ?? "tax_invoice";
+      const schemaDefaults = buildDefaultSchemaSettings(
+        ["tax_invoice", "proforma_invoice", "quotation", "credit_note", "debit_note"].includes(documentType)
+          ? documentType as "tax_invoice" | "proforma_invoice" | "quotation" | "credit_note" | "debit_note"
+          : "tax_invoice",
+      );
       const created = await createDocumentTemplate({
         name: `New ${documentType.replaceAll("_", " ")} template`,
         documentTypes: [documentType],
@@ -522,7 +622,7 @@ export function DocumentTemplatesRegister(props?: {
         watermarkText: "",
         headerHtml: "",
         footerHtml: "",
-        settings: { ...templatePresets[0].settings },
+        settings: { ...schemaDefaults },
         logoAssetId: null,
         isDefault: false,
         isActive: true,
@@ -625,6 +725,9 @@ export function DocumentTemplatesRegister(props?: {
   const hiddenSectionList = sectionChoices.filter((section) => hiddenSections.has(section));
   const draftGridColumns = draft ? Math.max(1, Number(getSettingValue(draft, "section_grid_columns", "2")) || 2) : 2;
   const draftSectionLayout = draft ? parseSectionLayout(draft) : buildDefaultSectionLayout(2);
+  const englishLabels = draft ? parseLabelOverrides(draft, "en") : {};
+  const arabicLabels = draft ? parseLabelOverrides(draft, "ar") : {};
+  const itemColumnConfig = draft ? parseItemColumnConfig(draft) : fallbackItemColumnConfig;
 
   return (
     <div className="space-y-2" data-inspector-split-view="true">
@@ -938,6 +1041,68 @@ export function DocumentTemplatesRegister(props?: {
                       <option value="center">Center</option>
                       <option value="right">Right</option>
                     </select>
+                  </div>
+                </div>
+                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
+                  <p className="text-xs font-semibold text-ink">Bilingual labels</p>
+                  <p className="mt-1 text-[11px] text-muted">Edit EN and AR labels on the schema. Preview and PDF consume the same settings.</p>
+                  <div className="mt-2 grid gap-3 grid-cols-2">
+                    <Input label="EN label color" value={getSettingValue(draft, "label_color_en", "#5f6e68")} onChange={(event) => updateDraftSettings({ label_color_en: event.target.value })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
+                    <Input label="AR label color" value={getSettingValue(draft, "label_color_ar", "#5f6e68")} onChange={(event) => updateDraftSettings({ label_color_ar: event.target.value })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
+                  </div>
+                  <div className="mt-2 grid gap-2">
+                    {[
+                      ["invoice_number", "Invoice Number"],
+                      ["issue_date", "Issue Date"],
+                      ["supply_date", "Supply Date"],
+                      ["due_date", "Due Date"],
+                      ["reference", "Reference"],
+                      ["order_number", "Order Number"],
+                      ["project", "Project"],
+                      ["quantity", "Qty"],
+                      ["unit_price", "Unit Price"],
+                      ["taxable", "Taxable"],
+                      ["vat", "VAT"],
+                      ["total", "Total"],
+                      ["subtotal", "Subtotal"],
+                      ["grand_total", "Grand Total"],
+                    ].map(([key, label]) => (
+                      <div key={`label-edit-${key}`} className="rounded-lg border border-line bg-white px-2.5 py-2">
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted">{label}</p>
+                        <div className="grid gap-2 grid-cols-2">
+                          <input value={englishLabels[key] ?? ""} onChange={(event) => updateLabelOverride("en", key, event.target.value)} placeholder="English override" className="h-8 rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
+                          <input value={arabicLabels[key] ?? ""} onChange={(event) => updateLabelOverride("ar", key, event.target.value)} placeholder="Arabic override" className="h-8 rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
+                  <p className="text-xs font-semibold text-ink">Logo constraints</p>
+                  <p className="mt-1 text-[11px] text-muted">Constrain logo box so neighboring seller blocks adapt cleanly without overlap.</p>
+                  <div className="mt-2 grid gap-3 grid-cols-2">
+                    <Input label="Logo max width" value={getSettingValue(draft, "logo_max_width", "160")} onChange={(event) => updateDraftSettings({ logo_max_width: Number(event.target.value) || 160 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
+                    <Input label="Logo max height" value={getSettingValue(draft, "logo_max_height", "62")} onChange={(event) => updateDraftSettings({ logo_max_height: Number(event.target.value) || 62 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
+                  </div>
+                </div>
+                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
+                  <p className="text-xs font-semibold text-ink">Item table columns</p>
+                  <p className="mt-1 text-[11px] text-muted">Configure visible columns and widths for parity-safe preview/PDF table rendering.</p>
+                  <label className="mt-2 inline-flex items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink">
+                    <input type="checkbox" checked={getBooleanSetting(draft, "table_heading_bilingual", true)} onChange={(event) => updateDraftSettings({ table_heading_bilingual: event.target.checked })} />
+                    Bilingual item headings
+                  </label>
+                  <div className="mt-2 grid gap-1.5">
+                    {itemColumnConfig.map((column) => (
+                      <div key={`item-col-${column.key}`} className="grid items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-2 grid-cols-[1fr_5rem_auto]">
+                        <span className="text-xs font-semibold text-ink">{column.key.replaceAll("_", " ")}</span>
+                        <input type="number" min="5" max="60" value={column.width} onChange={(event) => updateItemColumn(column.key, { width: Number(event.target.value) || column.width })} className="h-8 rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
+                        <label className="inline-flex items-center gap-1 text-xs font-semibold text-ink">
+                          <input type="checkbox" checked={column.visible} onChange={(event) => updateItemColumn(column.key, { visible: event.target.checked })} />
+                          Visible
+                        </label>
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="rounded-xl border border-line bg-surface-soft p-2.5">
