@@ -13,7 +13,7 @@ export function validateEvidence(control: RegistryControlPoint, evidence: Eviden
     const match = evidence.find((artifact) => matchesRequirement(requirement, artifact));
     if (match) {
       found.add(requirement);
-      traceable = traceable && Boolean(match.traceableTo?.length) && match.traceableTo.includes(control.source_clause_id);
+      traceable = traceable && Boolean(match.traceableTo?.length) && (match.traceableTo ?? []).includes(control.source_clause_id);
     } else {
       missing.push(requirement);
     }

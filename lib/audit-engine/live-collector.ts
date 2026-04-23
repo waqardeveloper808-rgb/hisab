@@ -329,8 +329,8 @@ function buildControlObservedValues(control: RegistryControlPoint, facts: LiveCo
     case "CP-DOC-002":
       return {
         ...base,
-        preview_pdf_truth_parity: facts.documentPreviewAvailable && facts.documentPdfAvailable,
-        preview_pdf_match: facts.documentPreviewAvailable && facts.documentPdfAvailable,
+        preview_pdf_truth_parity: facts.document_preview_available && facts.document_pdf_available,
+        preview_pdf_match: facts.document_preview_available && facts.document_pdf_available,
         debug_content_absent: true,
         page_count_equal: true,
       };
@@ -499,7 +499,7 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
   const sessionResult = await readAuthSessionOutcome(cookieHeader);
   const backendContext = resolveWorkspaceBackendContext(sessionResult);
   const controlPointRegistry = registry ?? await loadControlPointRegistry();
-  const cookieHeaders = cookieHeader ? { cookie: cookieHeader } : {};
+  const cookieHeaders: HeadersInit = cookieHeader ? { cookie: cookieHeader } : {};
 
   const [
     authSessionResponse,
@@ -616,7 +616,7 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
 
   const sessionReady = sessionResult.status === "ready" && Boolean(sessionResult.session);
   const workspaceAuditPageReady = adminAuditPage.ok && adminAuditPage.text.includes("Audit Engine");
-  const workspaceCompatibilityRouteReady = workspaceAuditResponse.ok && String((workspaceAuditResponse.data ?? {})?.status ?? "").includes("compatibility-shell");
+  const workspaceCompatibilityRouteReady = workspaceAuditResponse.ok && String((workspaceAuditResponse.data as Record<string, unknown> | null)?.status ?? "").includes("compatibility-shell");
   const auditSummaryReady = auditSummaryResponse.ok && Boolean(auditSummaryResponse.data);
   const retestQueueReady = retestQueueResponse.ok && Boolean(retestQueueResponse.data);
   const accessProfileData = accessProfileResponse.data && typeof accessProfileResponse.data === "object"
@@ -654,10 +654,10 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
     anomalies_warn_before_save: true,
     autonomous_mutation: false,
     pattern_traceable: true,
-    invoice_register_count,
-    general_ledger_count,
-    vat_summary_count,
-    inventory_stock_count,
+    invoice_register_count: invoiceRegisterCount,
+    general_ledger_count: generalLedgerCount,
+    vat_summary_count: vatSummaryCount,
+    inventory_stock_count: inventoryStockCount,
     dashboard_open_invoices: Number((dashboardData as Record<string, unknown> | null)?.open_invoices ?? 0),
     dashboard_vat_lines: Number((dashboardData as Record<string, unknown> | null)?.vat_lines ?? 0),
     backend_invoice_count: dbAudit.accounting.invoice_count,

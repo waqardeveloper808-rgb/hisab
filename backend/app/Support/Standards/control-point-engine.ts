@@ -11,6 +11,8 @@ export const controlPointEnginePrecheck = buildControlPointEnginePrecheck();
 export const controlPointEngineSummary = buildControlPointEngineSummary(controlPointEngineRuntime);
 export const controlPointEngineSummaryMarkdown = renderControlPointEngineSummary(controlPointEngineSummary);
 
+type RiskLevel = "low" | "medium" | "high" | "critical";
+
 const controlPointExecutionRows = engineRegisteredControlPoints.map((controlPoint) => ({
   controlPoint,
   result: evaluateControlPointExecution(controlPoint),
@@ -32,7 +34,15 @@ export const controlPointAuditSummary = controlPointExecutionRows.reduce((summar
   blockedCount: 0,
 });
 
-export const controlPointRiskSummary = {
+export const controlPointRiskSummary: {
+  system_risk_level: RiskLevel;
+  system_risk_score: number;
+  modules: Array<{
+    module_code: string;
+    module_name: string;
+    risk_level: RiskLevel;
+  }>;
+} = {
   system_risk_level: controlPointAuditSummary.failCount > 0
     ? "critical"
     : controlPointAuditSummary.blockedCount > 0
@@ -50,7 +60,7 @@ export const controlPointRiskSummary = {
   modules: engineRegisteredControlPoints.map((controlPoint) => ({
     module_code: controlPoint.module_code,
     module_name: controlPoint.module_name,
-    risk_level: controlPoint.severity,
+    risk_level: controlPoint.risk_priority,
   })),
 };
 

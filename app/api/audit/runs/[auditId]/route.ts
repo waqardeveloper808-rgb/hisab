@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAuditSession, getAuditSummary } from "@/lib/audit-engine/store";
 
-export async function GET(_request: Request, { params }: { params: { auditId: string } }) {
+export async function GET(_request: Request, context: { params: Promise<{ auditId: string }> }) {
+  const { auditId } = await context.params;
   const [session, summary] = await Promise.all([
-    getAuditSession(params.auditId),
-    getAuditSummary(params.auditId),
+    getAuditSession(auditId),
+    getAuditSummary(auditId),
   ]);
 
   if (!session && !summary) {

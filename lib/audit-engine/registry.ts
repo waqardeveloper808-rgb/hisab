@@ -5,11 +5,11 @@ import type { ControlPointRegistry, RegistryControlPoint, PredicateGroup } from 
 const REGISTRY_PATH = path.join(process.cwd(), "docs", "governance", "control-point-registry.json");
 
 function isPredicateLeaf(value: unknown): value is { lhs: string; operator: string; rhs?: unknown; rhs_type?: string } {
-  return Boolean(value) && typeof value === "object" && "lhs" in value && "operator" in value;
+  return value !== null && value !== undefined && typeof value === "object" && "lhs" in value && "operator" in value;
 }
 
 function isPredicateGroup(value: unknown): value is PredicateGroup {
-  return Boolean(value) && typeof value === "object" && "logic" in value && "predicates" in value;
+  return value !== null && value !== undefined && typeof value === "object" && "logic" in value && "predicates" in value;
 }
 
 function normalizeGroup(value: unknown, fallbackSummary: string): PredicateGroup {

@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { getAuditSession, getControlResult } from "@/lib/audit-engine/store";
 
-export async function GET(_request: Request, { params }: { params: { auditId: string; controlId: string } }) {
+export async function GET(_request: Request, context: { params: Promise<{ auditId: string; controlId: string }> }) {
+  const { auditId, controlId } = await context.params;
   const [session, result] = await Promise.all([
-    getAuditSession(params.auditId),
-    getControlResult(params.auditId, params.controlId),
+    getAuditSession(auditId),
+    getControlResult(auditId, controlId),
   ]);
 
   if (!session || !result) {
@@ -12,7 +13,7 @@ export async function GET(_request: Request, { params }: { params: { auditId: st
   }
 
   return NextResponse.json({
-    audit_id: params.auditId,
+    audit_id: auditId,
     control_result: result,
   });
 }
