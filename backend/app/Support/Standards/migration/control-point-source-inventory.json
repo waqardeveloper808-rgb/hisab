@@ -1,0 +1,57 @@
+{
+  "legacy_total": 162,
+  "master_inventory_total": 648,
+  "prefix_distribution": {
+    "ACC": 22,
+    "INV": 15,
+    "VAT": 24,
+    "DOC": 14,
+    "TMP": 12,
+    "UIX": 11,
+    "FRM": 12,
+    "VAL": 18,
+    "SEC": 15,
+    "BRD": 9,
+    "XMD": 10
+  },
+  "duplicate_id_count": 0,
+  "collision_risks": [
+    {
+      "legacy_prefix": "VAT",
+      "target_module": "TAX",
+      "risk": "Prefix changes from VAT to TAX in v2."
+    },
+    {
+      "legacy_prefix": "UIX",
+      "target_module": "UX",
+      "risk": "Legacy UIX short code is replaced by UX in v2."
+    },
+    {
+      "legacy_prefix": "DOC",
+      "target_module": "IVC",
+      "risk": "Document controls move under the invoice control module in v2."
+    },
+    {
+      "legacy_prefix": "INV",
+      "target_module": "INV",
+      "risk": "No collision after reserving IVC for invoice controls."
+    }
+  ],
+  "conflicting_target_prefixes": [
+    {
+      "legacy_prefix": "VAT",
+      "target_module": "TAX",
+      "risk": "Prefix changes from VAT to TAX in v2."
+    },
+    {
+      "legacy_prefix": "UIX",
+      "target_module": "UX",
+      "risk": "Legacy UIX short code is replaced by UX in v2."
+    },
+    {
+      "legacy_prefix": "DOC",
+      "target_module": "IVC",
+      "risk": "Document controls move under the invoice control module in v2."
+    }
+  ]
+}

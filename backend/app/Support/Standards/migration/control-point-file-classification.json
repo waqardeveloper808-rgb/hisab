@@ -1,0 +1,3362 @@
+[
+  {
+    "path": ".vscode/tasks.json",
+    "absolutePath": "C:\\hisab\\.vscode\\tasks.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: .vscode/tasks.json"
+  },
+  {
+    "path": "AGENTS.md",
+    "absolutePath": "C:\\hisab\\AGENTS.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "app/api/workspace/[...slug]/route.ts",
+    "absolutePath": "C:\\hisab\\app\\api\\workspace\\[...slug]\\route.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/api/workspace/audit/route.ts",
+    "absolutePath": "C:\\hisab\\app\\api\\workspace\\audit\\route.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "app/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/workspace/admin/audit/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\admin\\audit\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "app/workspace/admin/review/accounting/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\admin\\review\\accounting\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/workspace/admin/review/documents/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\admin\\review\\documents\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/workspace/admin/review/evidence/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\admin\\review\\evidence\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/workspace/admin/review/inventory/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\admin\\review\\inventory\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/workspace/help/ai/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\help\\ai\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "app/workspace/user/finished-materials/page.tsx",
+    "absolutePath": "C:\\hisab\\app\\workspace\\user\\finished-materials\\page.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "artifacts/accounting_engine_proof_20260419_091634/api/30-flow3-credit-note.json",
+    "absolutePath": "C:\\hisab\\artifacts\\accounting_engine_proof_20260419_091634\\api\\30-flow3-credit-note.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/accounting_engine_proof_20260419_091634/api/31-flow3-credit-note-document.json",
+    "absolutePath": "C:\\hisab\\artifacts\\accounting_engine_proof_20260419_091634\\api\\31-flow3-credit-note-document.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/accounting_engine_proof_20260419_091634/db/audit_logs.json",
+    "absolutePath": "C:\\hisab\\artifacts\\accounting_engine_proof_20260419_091634\\db\\audit_logs.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/accounting_engine_proof_20260419_091634/db/documents.json",
+    "absolutePath": "C:\\hisab\\artifacts\\accounting_engine_proof_20260419_091634\\db\\documents.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/accounting_engine_proof_20260419_091634/reports/summary.json",
+    "absolutePath": "C:\\hisab\\artifacts\\accounting_engine_proof_20260419_091634\\reports\\summary.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/accounting_engine_proof_20260419_091634/reports/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\accounting_engine_proof_20260419_091634\\reports\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_20260419_01/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_20260419_01\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_20260419_01/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_20260419_01\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_20260419_01/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_20260419_01\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_20260419_01/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_20260419_01\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_20260419_01/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_20260419_01\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/before_audit/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\before_audit\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/before_audit/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\before_audit\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/before_audit/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\before_audit\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/before_audit/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\before_audit\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/before_audit/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\before_audit\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/reports/correction-report.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\reports\\correction-report.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_20260419_170232/runtime-control-point-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_20260419_170232\\runtime-control-point-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_debug/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_debug\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_debug/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_debug\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_debug/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_debug\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_debug/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_debug\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_debug/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_debug\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_corrected_debug/runtime-control-point-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_corrected_debug\\runtime-control-point-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_expanded_20260419_124500/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_expanded_20260419_124500\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_expanded_20260419_124500/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_expanded_20260419_124500\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_expanded_20260419_124500/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_expanded_20260419_124500\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_expanded_20260419_124500/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_expanded_20260419_124500\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/audit_engine_expanded_20260419_124500/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\audit_engine_expanded_20260419_124500\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/compliance-mapping.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\compliance-mapping.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/control-point-categories.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\control-point-categories.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/control-point-mapping.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\control-point-mapping.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/control-point-registry.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\control-point-registry.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/control-point-summary.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\control-point-summary.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/control-point-validation.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\control-point-validation.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/control-points.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\control-points.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/coverage-report.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\coverage-report.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/logs/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\logs\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/mapping.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\mapping.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212319/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212319\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/compliance-mapping.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\compliance-mapping.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/control-point-categories.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\control-point-categories.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/control-point-mapping.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\control-point-mapping.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/control-point-registry.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\control-point-registry.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/control-point-summary.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\control-point-summary.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/control-point-validation.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\control-point-validation.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/control-points.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\control-points.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/coverage-report.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\coverage-report.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/logs/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\logs\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/mapping.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\mapping.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212356/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212356\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/compliance-mapping.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\compliance-mapping.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/control-point-categories.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\control-point-categories.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/control-point-mapping.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\control-point-mapping.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/control-point-registry.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\control-point-registry.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/control-point-summary.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\control-point-summary.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/control-point-validation.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\control-point-validation.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/control-points.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\control-points.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/coverage-report.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\coverage-report.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/logs/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\logs\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/mapping.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\mapping.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_apply_20260419_212947/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_apply_20260419_212947\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_build_20260419_145525/control-points.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_build_20260419_145525\\control-points.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_build_20260419_145525/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_build_20260419_145525\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_build_20260419_145525/mapping.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_build_20260419_145525\\mapping.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_build_20260419_145525/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_build_20260419_145525\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_extraction_20260419_213635/control-points-master.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_extraction_20260419_213635\\control-points-master.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_extraction_20260419_213635/control-points-master.ts",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_extraction_20260419_213635\\control-points-master.ts",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_extraction_20260419_213635/control-points-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_extraction_20260419_213635\\control-points-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_extraction_20260419_213635/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_extraction_20260419_213635\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_integration_20260419_01/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_integration_20260419_01\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_integration_20260419_01/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_integration_20260419_01\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_integration_20260419_01/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_integration_20260419_01\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_integration_20260419_01/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_integration_20260419_01\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214452/control-points-canonical-review.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214452\\control-points-canonical-review.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214452/control-points-conflicts.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214452\\control-points-conflicts.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214452/control-points-normalization-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214452\\control-points-normalization-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214452/control-points-source-map.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214452\\control-points-source-map.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214452/control-points-unique-id-inventory.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214452\\control-points-unique-id-inventory.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214452/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214452\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214526/control-points-canonical-review.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214526\\control-points-canonical-review.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214526/control-points-conflicts.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214526\\control-points-conflicts.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214526/control-points-normalization-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214526\\control-points-normalization-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214526/control-points-source-map.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214526\\control-points-source-map.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214526/control-points-unique-id-inventory.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214526\\control-points-unique-id-inventory.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/control_points_normalization_review_20260419_214526/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\control_points_normalization_review_20260419_214526\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_172710/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_172710\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_172710/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_172710\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_172710/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_172710\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_172710/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_172710\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_172710/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_172710\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_172710/runtime-control-point-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_172710\\runtime-control-point-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_173203/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_173203\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_173203/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_173203\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_173203/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_173203\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_173203/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_173203\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_173203/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_173203\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/final_fix_20260419_173203/runtime-control-point-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\final_fix_20260419_173203\\runtime-control-point-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_control_surface_refinement_20260419_080927/reports/master-design-control-surface-report.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_control_surface_refinement_20260419_080927\\reports\\master-design-control-surface-report.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_control_surface_refinement_20260419_080927/reports/master-design-control-surface-validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_control_surface_refinement_20260419_080927\\reports\\master-design-control-surface-validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_control_surface_refinement_20260419_080927/reports/master-design-engine-output-current.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_control_surface_refinement_20260419_080927\\reports\\master-design-engine-output-current.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_control_surface_refinement_20260419_080927/reports/master-design-engine-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_control_surface_refinement_20260419_080927\\reports\\master-design-engine-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_control_surface_refinement_20260419_080927/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_control_surface_refinement_20260419_080927\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_01/hierarchy-export.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_01\\hierarchy-export.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_01/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_01\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_01/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_01\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_01/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_01\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_144756/hierarchy-export.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_144756\\hierarchy-export.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_144756/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_144756\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_144756/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_144756\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_ui_only_20260419_144756/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_ui_only_20260419_144756\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140053/hierarchy-export.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140053\\hierarchy-export.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140053/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140053\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140053/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140053\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140053/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140053\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140153/hierarchy-export.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140153\\hierarchy-export.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140153/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140153\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140153/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140153\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/master_design_visual_layout_20260419_140153/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\master_design_visual_layout_20260419_140153\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072434/api/22-create-credit-note.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072434\\api\\22-create-credit-note.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072434/logs/failure.txt",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072434\\logs\\failure.txt",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/api/22-create-credit-note.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\api\\22-create-credit-note.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/db/audit-logs.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\db\\audit-logs.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/db/documents.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\db\\documents.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/docs/execution-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\docs\\execution-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/reports/document-preview-validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\reports\\document-preview-validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/reports/summary.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\reports\\summary.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/reports/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\reports\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072631/reports/validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072631\\reports\\validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/api/22-create-credit-note.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\api\\22-create-credit-note.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/db/audit-logs.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\db\\audit-logs.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/db/documents.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\db\\documents.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/docs/execution-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\docs\\execution-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/reports/document-preview-validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\reports\\document-preview-validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/reports/summary.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\reports\\summary.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/reports/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\reports\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_final_20260419072804/reports/validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_final_20260419072804\\reports\\validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_run_20260419_01/proof/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_run_20260419_01\\proof\\ui-api-proof.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_run_20260419_01/reports/ui-api-proof-final.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_run_20260419_01\\reports\\ui-api-proof-final.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_closure_run_20260419_01/reports/ui-api-proof-initial.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_closure_run_20260419_01\\reports\\ui-api-proof-initial.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_document_ui_cleanup_20260419_050039/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_document_ui_cleanup_20260419_050039\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/api/22-create-credit-note.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\api\\22-create-credit-note.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/db/audit-logs.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\db\\audit-logs.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/db/documents.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\db\\documents.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/docs/execution-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\docs\\execution-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/reports/document-preview-validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\reports\\document-preview-validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/reports/summary.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\reports\\summary.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/reports/summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\reports\\summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_final_upgrade_20260419_112635/reports/validation.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_final_upgrade_20260419_112635\\reports\\validation.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_freeze_baseline_20260419_01/reports/phase1-live-proof.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_01\\reports\\phase1-live-proof.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_freeze_baseline_20260419_02_recovery/docs/recovery-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\docs\\recovery-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_freeze_baseline_20260419_02_recovery/proof/accounting_ui_workflow_20260419030720/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\accounting_ui_workflow_20260419030720\\ui-api-proof.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_purification_20260419_074934/engine/after-engine-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_purification_20260419_074934\\engine\\after-engine-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_purification_20260419_074934/engine/before-engine-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_purification_20260419_074934\\engine\\before-engine-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/phase1_purification_20260419_074934/reports/engine-delta-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\phase1_purification_20260419_074934\\reports\\engine-delta-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/product_design_dominance_20260419_01/page-captures/page-capture-report.json",
+    "absolutePath": "C:\\hisab\\artifacts\\product_design_dominance_20260419_01\\page-captures\\page-capture-report.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/product_design_dominance_20260419_01/reports/workflow-proof-blocker.json",
+    "absolutePath": "C:\\hisab\\artifacts\\product_design_dominance_20260419_01\\reports\\workflow-proof-blocker.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/after_audit/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\after_audit\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/after_audit/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\after_audit\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/after_audit/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\after_audit\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/after_audit/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\after_audit\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/after_audit/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\after_audit\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/before_audit/evaluated-control-points.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\before_audit\\evaluated-control-points.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/before_audit/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\before_audit\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/before_audit/mapping-output.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\before_audit\\mapping-output.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/before_audit/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\before_audit\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/before_audit/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\before_audit\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/reports/fix-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\reports\\fix-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_fix_pass_20260419_160509/runtime-control-point-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_fix_pass_20260419_160509\\runtime-control-point-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/logs/blocker-log.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\logs\\blocker-log.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/logs/button-log.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\logs\\button-log.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/reports/page-index.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\reports\\page-index.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/reports/usability-report.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\reports\\usability-report.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/reports/usability-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\reports\\usability-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/system_visibility_audit_20260419_114004/workflows/workflow-log.json",
+    "absolutePath": "C:\\hisab\\artifacts\\system_visibility_audit_20260419_114004\\workflows\\workflow-log.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_132604/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_132604\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_132604/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_132604\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_132604/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_132604\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_132903/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_132903\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_132903/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_132903\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_132903/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_132903\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133129/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133129\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133129/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133129\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133129/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133129\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133356/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133356\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133454/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133454\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133454/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133454\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133454/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133454\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133611/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133611\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133611/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133611\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133611/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133611\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133746/logs/execution-log.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133746\\logs\\execution-log.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133746/reports/validation-results.json",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133746\\reports\\validation-results.json",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "artifacts/workspace_master_design_fix_20260419_133746/reports/validation-summary.md",
+    "absolutePath": "C:\\hisab\\artifacts\\workspace_master_design_fix_20260419_133746\\reports\\validation-summary.md",
+    "classification": "generated",
+    "runtimeAffecting": false,
+    "reason": "Generated artifact history only; not active runtime source of truth."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/AuthController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\AuthController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/CompanyUserController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\CompanyUserController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/ContactController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\ContactController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/DocumentCenterController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\DocumentCenterController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/DocumentTemplateController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\DocumentTemplateController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/InventoryController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\InventoryController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/ItemController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\ItemController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/JournalPostingController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\JournalPostingController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/ManualJournalController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\ManualJournalController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/PlatformCustomerController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\PlatformCustomerController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/PurchaseDocumentController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\PurchaseDocumentController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/ReportController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\ReportController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Http/Controllers/Api/SupportAccountController.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Http\\Controllers\\Api\\SupportAccountController.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Models/AuditLog.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Models\\AuditLog.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "backend/app/Models/SubscriptionPlan.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Models\\SubscriptionPlan.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Models/User.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Models\\User.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/AccountingIntegrityService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\AccountingIntegrityService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/DocumentTemplateRendererService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\DocumentTemplateRendererService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/InventoryService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\InventoryService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/JournalPostingService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\JournalPostingService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/LedgerService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\LedgerService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/PaymentService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\PaymentService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/PurchaseDocumentService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\PurchaseDocumentService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/ReversalService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\ReversalService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/SalesDocumentService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\SalesDocumentService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Services/TaxCalculationService.php",
+    "absolutePath": "C:\\hisab\\backend\\app\\Services\\TaxCalculationService.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-point-categories.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-point-categories.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-point-mapping.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-point-mapping.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-point-registry.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-point-registry.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-point-summary.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-point-summary.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-point-validation.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-point-validation.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-canonical-review.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-canonical-review.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-conflicts.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-conflicts.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-master.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-master.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-master.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-master.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Documents the consolidated control point inventory."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-normalization-summary.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-normalization-summary.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-source-map.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-source-map.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-summary.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-summary.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points-unique-id-inventory.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points-unique-id-inventory.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/app/Support/Standards/control-points.ts",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\control-points.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "backend/app/Support/Standards/execution-log.md",
+    "absolutePath": "C:\\hisab\\backend\\app\\Support\\Standards\\execution-log.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "backend/bootstrap/cache/services.php",
+    "absolutePath": "C:\\hisab\\backend\\bootstrap\\cache\\services.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/config/auth.php",
+    "absolutePath": "C:\\hisab\\backend\\config\\auth.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/config/cache.php",
+    "absolutePath": "C:\\hisab\\backend\\config\\cache.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/config/database.php",
+    "absolutePath": "C:\\hisab\\backend\\config\\database.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/config/mail.php",
+    "absolutePath": "C:\\hisab\\backend\\config\\mail.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/config/queue.php",
+    "absolutePath": "C:\\hisab\\backend\\config\\queue.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/database/factories/UserFactory.php",
+    "absolutePath": "C:\\hisab\\backend\\database\\factories\\UserFactory.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/database/migrations/0001_01_01_000000_create_users_table.php",
+    "absolutePath": "C:\\hisab\\backend\\database\\migrations\\0001_01_01_000000_create_users_table.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/database/migrations/0001_01_01_000002_create_jobs_table.php",
+    "absolutePath": "C:\\hisab\\backend\\database\\migrations\\0001_01_01_000002_create_jobs_table.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/database/migrations/2026_04_13_000100_create_gulf_hisab_core_tables.php",
+    "absolutePath": "C:\\hisab\\backend\\database\\migrations\\2026_04_13_000100_create_gulf_hisab_core_tables.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/database/migrations/2026_04_13_000600_add_admin_access_control.php",
+    "absolutePath": "C:\\hisab\\backend\\database\\migrations\\2026_04_13_000600_add_admin_access_control.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/database/seeders/SandboxSeeder.php",
+    "absolutePath": "C:\\hisab\\backend\\database\\seeders\\SandboxSeeder.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/package-lock.json",
+    "absolutePath": "C:\\hisab\\backend\\package-lock.json",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/public/build/assets/app-CgFVGmkD.js",
+    "absolutePath": "C:\\hisab\\backend\\public\\build\\assets\\app-CgFVGmkD.js",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/routes/api.php",
+    "absolutePath": "C:\\hisab\\backend\\routes\\api.php",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "backend/tests/Feature/AccountingIntegrityEnforcementTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\AccountingIntegrityEnforcementTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/AdminAccessControlTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\AdminAccessControlTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/AuthApiTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\AuthApiTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/CoreAccountingEngineExecutionTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\CoreAccountingEngineExecutionTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/CoreAccountingValidationTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\CoreAccountingValidationTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/InventoryAccountingWorkflowTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\InventoryAccountingWorkflowTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/JournalPostingServiceTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\JournalPostingServiceTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/Phase1ClosureWorkflowTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\Phase1ClosureWorkflowTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/PlanTrialEnforcementTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\PlanTrialEnforcementTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/ProductSalesSystemTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\ProductSalesSystemTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/SalesTaxInvoiceFlowTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\SalesTaxInvoiceFlowTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "backend/tests/Feature/WorkspaceSettingsAndBooksApiTest.php",
+    "absolutePath": "C:\\hisab\\backend\\tests\\Feature\\WorkspaceSettingsAndBooksApiTest.php",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "build.prompt.md",
+    "absolutePath": "C:\\hisab\\build.prompt.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "components/audit/SystemAuditDashboard.tsx",
+    "absolutePath": "C:\\hisab\\components\\audit\\SystemAuditDashboard.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "components/auth/LoginForm.tsx",
+    "absolutePath": "C:\\hisab\\components\\auth\\LoginForm.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/auth/RegisterForm.tsx",
+    "absolutePath": "C:\\hisab\\components\\auth\\RegisterForm.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/FloatingAiAssistant.tsx",
+    "absolutePath": "C:\\hisab\\components\\FloatingAiAssistant.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/help/PublicHelpCenter.tsx",
+    "absolutePath": "C:\\hisab\\components\\help\\PublicHelpCenter.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/Navbar.tsx",
+    "absolutePath": "C:\\hisab\\components\\Navbar.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workflow/LineItemsEditor.tsx",
+    "absolutePath": "C:\\hisab\\components\\workflow\\LineItemsEditor.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workflow/TransactionForm.tsx",
+    "absolutePath": "C:\\hisab\\components\\workflow\\TransactionForm.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "components/workspace/AccountingOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\AccountingOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/AccountingReportPage.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\AccountingReportPage.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "components/workspace/AdminWorkspaceHome.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\AdminWorkspaceHome.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/AssistantWorkspaceHome.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\AssistantWorkspaceHome.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/AuditTrailPanel.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\AuditTrailPanel.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "components/workspace/BooksOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\BooksOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/BranchesRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\BranchesRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/ChartOfAccountsRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\ChartOfAccountsRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/CompanyUsersOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\CompanyUsersOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/CustomersRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\CustomersRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/DirectoryImportPanel.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\DirectoryImportPanel.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/DocumentCenterOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\DocumentCenterOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/DocumentLinkPreviewModal.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\DocumentLinkPreviewModal.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/DocumentTemplatesRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\DocumentTemplatesRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/HelpAssistant.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\HelpAssistant.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/ImportExportControls.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\ImportExportControls.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "components/workspace/InvoiceDetailWorkspace.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\InvoiceDetailWorkspace.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/InvoiceRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\InvoiceRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/JournalEntriesRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\JournalEntriesRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/LayoutEditorProvider.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\LayoutEditorProvider.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/MasterDesignDashboard.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\MasterDesignDashboard.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Displays control point or standards status in a dashboard view."
+  },
+  {
+    "path": "components/workspace/OpeningBalancesPage.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\OpeningBalancesPage.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/ProductsServicesRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\ProductsServicesRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/ReconciliationPage.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\ReconciliationPage.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/ReportsOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\ReportsOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/ReviewDashboard.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\ReviewDashboard.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Displays control point or standards status in a dashboard view."
+  },
+  {
+    "path": "components/workspace/SettingsOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\SettingsOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/StockRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\StockRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/SupplierPaymentsRegister.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\SupplierPaymentsRegister.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/SupportAccountsOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\SupportAccountsOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/TemplatesOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\TemplatesOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/VatOverview.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\VatOverview.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "components/workspace/WorkspaceShell.tsx",
+    "absolutePath": "C:\\hisab\\components\\workspace\\WorkspaceShell.tsx",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/audit-runtime/control-point-runtime-results.json",
+    "absolutePath": "C:\\hisab\\data\\audit-runtime\\control-point-runtime-results.json",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "data/help-center.ts",
+    "absolutePath": "C:\\hisab\\data\\help-center.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/master-design/france-readiness.ts",
+    "absolutePath": "C:\\hisab\\data\\master-design\\france-readiness.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Maps or renders control point data for the master design review surfaces."
+  },
+  {
+    "path": "data/master-design/hierarchy.ts",
+    "absolutePath": "C:\\hisab\\data\\master-design\\hierarchy.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Maps or renders control point data for the master design review surfaces."
+  },
+  {
+    "path": "data/master-design/ksa-phase1.ts",
+    "absolutePath": "C:\\hisab\\data\\master-design\\ksa-phase1.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Maps or renders control point data for the master design review surfaces."
+  },
+  {
+    "path": "data/preview-asset-store.json",
+    "absolutePath": "C:\\hisab\\data\\preview-asset-store.json",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/preview-document-store.json",
+    "absolutePath": "C:\\hisab\\data\\preview-document-store.json",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/preview-item-store.json",
+    "absolutePath": "C:\\hisab\\data\\preview-item-store.json",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/product.ts",
+    "absolutePath": "C:\\hisab\\data\\product.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/role-workspace.ts",
+    "absolutePath": "C:\\hisab\\data\\role-workspace.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/standards/control-points.ts",
+    "absolutePath": "C:\\hisab\\data\\standards\\control-points.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "data/system-map/actual-map.ts",
+    "absolutePath": "C:\\hisab\\data\\system-map\\actual-map.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "data/workspace.ts",
+    "absolutePath": "C:\\hisab\\data\\workspace.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "docs/architecture-comparison-2026-04-17.md",
+    "absolutePath": "C:\\hisab\\docs\\architecture-comparison-2026-04-17.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "docs/governance/master-design-vnext-phase1.md",
+    "absolutePath": "C:\\hisab\\docs\\governance\\master-design-vnext-phase1.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "docs/governance/phase1-task-queue.json",
+    "absolutePath": "C:\\hisab\\docs\\governance\\phase1-task-queue.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: docs/governance/phase1-task-queue.json"
+  },
+  {
+    "path": "docs/governance/prompt-engine-v4-phase1.md",
+    "absolutePath": "C:\\hisab\\docs\\governance\\prompt-engine-v4-phase1.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "docs/master-design-vnext.md",
+    "absolutePath": "C:\\hisab\\docs\\master-design-vnext.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "docs/master-design.md",
+    "absolutePath": "C:\\hisab\\docs\\master-design.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "docs/prompt-engine-v4.md",
+    "absolutePath": "C:\\hisab\\docs\\prompt-engine-v4.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "gh_qa_config.json",
+    "absolutePath": "C:\\hisab\\gh_qa_config.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: gh_qa_config.json"
+  },
+  {
+    "path": "lib/audit-collector.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-collector.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/audit-model-adapter.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-model-adapter.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/audit-prompt-generator.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-prompt-generator.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/audit-rules.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-rules.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/audit-runner.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-runner.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/audit-store.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-store.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/audit-types.ts",
+    "absolutePath": "C:\\hisab\\lib\\audit-types.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/auth-session.ts",
+    "absolutePath": "C:\\hisab\\lib\\auth-session.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "lib/comparison-engine.ts",
+    "absolutePath": "C:\\hisab\\lib\\comparison-engine.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "lib/control-point-audit-engine.ts",
+    "absolutePath": "C:\\hisab\\lib\\control-point-audit-engine.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Evaluates control points or stores audit result status and evidence."
+  },
+  {
+    "path": "lib/directory-import.ts",
+    "absolutePath": "C:\\hisab\\lib\\directory-import.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "lib/intelligence-layer.test.ts",
+    "absolutePath": "C:\\hisab\\lib\\intelligence-layer.test.ts",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "lib/intelligence-layer.ts",
+    "absolutePath": "C:\\hisab\\lib\\intelligence-layer.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "lib/mapping-engine.ts",
+    "absolutePath": "C:\\hisab\\lib\\mapping-engine.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  },
+  {
+    "path": "lib/master-design-control-points.ts",
+    "absolutePath": "C:\\hisab\\lib\\master-design-control-points.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Defines or re-exports control point standards and identifiers."
+  },
+  {
+    "path": "lib/master-design-engine.ts",
+    "absolutePath": "C:\\hisab\\lib\\master-design-engine.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Maps or renders control point data for the master design review surfaces."
+  },
+  {
+    "path": "lib/reconciliation-import.ts",
+    "absolutePath": "C:\\hisab\\lib\\reconciliation-import.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "lib/report-analytics.test.ts",
+    "absolutePath": "C:\\hisab\\lib\\report-analytics.test.ts",
+    "classification": "test",
+    "runtimeAffecting": false,
+    "reason": "Test or proof path; not a production runtime entry point."
+  },
+  {
+    "path": "lib/subscription-access.ts",
+    "absolutePath": "C:\\hisab\\lib\\subscription-access.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "lib/workspace-api.ts",
+    "absolutePath": "C:\\hisab\\lib\\workspace-api.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "lib/workspace-preview.ts",
+    "absolutePath": "C:\\hisab\\lib\\workspace-preview.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "lib/zatca-engine.ts",
+    "absolutePath": "C:\\hisab\\lib\\zatca-engine.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: References control point, standards, or audit metadata in project code or docs."
+  },
+  {
+    "path": "logs/master-design-control-surface-refinement.json",
+    "absolutePath": "C:\\hisab\\logs\\master-design-control-surface-refinement.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: logs/master-design-control-surface-refinement.json"
+  },
+  {
+    "path": "logs/system_runs/2026-04-18_03-18-58/agent_log.json",
+    "absolutePath": "C:\\hisab\\logs\\system_runs\\2026-04-18_03-18-58\\agent_log.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: logs/system_runs/2026-04-18_03-18-58/agent_log.json"
+  },
+  {
+    "path": "logs/system_runs/2026-04-18_03-18-58/prompt_engine_log.json",
+    "absolutePath": "C:\\hisab\\logs\\system_runs\\2026-04-18_03-18-58\\prompt_engine_log.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: logs/system_runs/2026-04-18_03-18-58/prompt_engine_log.json"
+  },
+  {
+    "path": "logs/system_runs/2026-04-18_03-18-58/summary.txt",
+    "absolutePath": "C:\\hisab\\logs\\system_runs\\2026-04-18_03-18-58\\summary.txt",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "master_design/master_design_vNext.json",
+    "absolutePath": "C:\\hisab\\master_design\\master_design_vNext.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: master_design/master_design_vNext.json"
+  },
+  {
+    "path": "package-lock.json",
+    "absolutePath": "C:\\hisab\\package-lock.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: package-lock.json"
+  },
+  {
+    "path": "qa_reports/accounting_stability_suite_20260417220900/stability-suite-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_stability_suite_20260417220900\\stability-suite-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260417205330/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260417205330\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260417210731/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260417210731\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260417211144/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260417211144\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260418230619/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260418230619\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260418230939/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260418230939\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260418233355/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260418233355\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260419030243/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260419030243\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/accounting_ui_workflow_20260419030720/ui-api-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\accounting_ui_workflow_20260419030720\\ui-api-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/audit_loop_1_1776381041155.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\audit_loop_1_1776381041155.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/audit_loop_1_1776381647644.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\audit_loop_1_1776381647644.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/audit_loop_1_1776381682349.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\audit_loop_1_1776381682349.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/audit_loop_1_1776518044237.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\audit_loop_1_1776518044237.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/core_validation_20260417/real-accounting-validation.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\core_validation_20260417\\real-accounting-validation.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/document_validation_20260418/document-validation-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\document_validation_20260418\\document-validation-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/fixer_report_20260413_220131.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\fixer_report_20260413_220131.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/invoice_stability_suite/stability-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\invoice_stability_suite\\stability-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/invoice-workflow-validation.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\invoice-workflow-validation.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_closure_20260418/final-closure-report.md",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_closure_20260418\\final-closure-report.md",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_closure_20260418/phase1-workflow-proof.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_closure_20260418\\phase1-workflow-proof.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_final_control_20260418/phase1-final-evidence.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_final_control_20260418\\phase1-final-evidence.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_finalization_report_20260418.md",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_finalization_report_20260418.md",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance_20260418/agent-log.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance_20260418\\agent-log.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance_20260418/final-report.md",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance_20260418\\final-report.md",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance_20260418/master-design-log.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance_20260418\\master-design-log.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance_20260418/prompt-engine-log.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance_20260418\\prompt-engine-log.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance_20260418/testing-law-results.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance_20260418\\testing-law-results.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance/agent-log.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance\\agent-log.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_governance/prompt-engine-log.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_governance\\prompt-engine-log.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_hardening_20260418/final-phase1-hardening-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_hardening_20260418\\final-phase1-hardening-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_hardening_20260418/import-proof-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_hardening_20260418\\import-proof-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_hardening_20260418/master-design-compliance-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_hardening_20260418\\master-design-compliance-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase1_hardening_20260418/test-cycle-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase1_hardening_20260418\\test-cycle-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/phase2_init_20260418.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\phase2_init_20260418.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/qa_report_20260413_205359.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\qa_report_20260413_205359.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/qa_report_20260413_205713.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\qa_report_20260413_205713.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/qa_report_20260413_212427.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\qa_report_20260413_212427.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/qa_report_20260413_213419.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\qa_report_20260413_213419.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/qa_report_20260413_220153.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\qa_report_20260413_220153.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/sales_workflow_20260417/browser-workflow-report.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\sales_workflow_20260417\\browser-workflow-report.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/scope_evidence_20260417/route-checks.json",
+    "absolutePath": "C:\\hisab\\qa_reports\\scope_evidence_20260417\\route-checks.json",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "qa_reports/template_rebuild_20260418/template-rebuild-summary.md",
+    "absolutePath": "C:\\hisab\\qa_reports\\template_rebuild_20260418\\template-rebuild-summary.md",
+    "classification": "report",
+    "runtimeAffecting": false,
+    "reason": "QA reporting artifact retained for traceability only."
+  },
+  {
+    "path": "review.prompt.md",
+    "absolutePath": "C:\\hisab\\review.prompt.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "system/prompt_engine_v4.json",
+    "absolutePath": "C:\\hisab\\system\\prompt_engine_v4.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: system/prompt_engine_v4.json"
+  },
+  {
+    "path": "tools/apply-control-points.ts",
+    "absolutePath": "C:\\hisab\\tools\\apply-control-points.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/apply-control-points.ts"
+  },
+  {
+    "path": "tools/build-accounting-proof-summary.mjs",
+    "absolutePath": "C:\\hisab\\tools\\build-accounting-proof-summary.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/build-accounting-proof-summary.mjs"
+  },
+  {
+    "path": "tools/build-control-points-artifact.ts",
+    "absolutePath": "C:\\hisab\\tools\\build-control-points-artifact.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/build-control-points-artifact.ts"
+  },
+  {
+    "path": "tools/capture-accounting-validation-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-accounting-validation-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-accounting-validation-evidence.mjs"
+  },
+  {
+    "path": "tools/capture-control-point-audit-engine.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-control-point-audit-engine.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-control-point-audit-engine.mjs"
+  },
+  {
+    "path": "tools/capture-control-points-integration.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-control-points-integration.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-control-points-integration.mjs"
+  },
+  {
+    "path": "tools/capture-document-engine-proof.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-document-engine-proof.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-document-engine-proof.mjs"
+  },
+  {
+    "path": "tools/capture-document-validation.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-document-validation.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-document-validation.mjs"
+  },
+  {
+    "path": "tools/capture-final-product-polish.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-final-product-polish.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-final-product-polish.mjs"
+  },
+  {
+    "path": "tools/capture-master-design-control-surface.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-master-design-control-surface.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-master-design-control-surface.mjs"
+  },
+  {
+    "path": "tools/capture-phase1-final-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-phase1-final-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-phase1-final-evidence.mjs"
+  },
+  {
+    "path": "tools/capture-phase1-hardening-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-phase1-hardening-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-phase1-hardening-evidence.mjs"
+  },
+  {
+    "path": "tools/capture-product-design-pages.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-product-design-pages.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-product-design-pages.mjs"
+  },
+  {
+    "path": "tools/capture-sales-workflow-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-sales-workflow-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-sales-workflow-evidence.mjs"
+  },
+  {
+    "path": "tools/capture-scope-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-scope-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-scope-evidence.mjs"
+  },
+  {
+    "path": "tools/capture-system-fix-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\capture-system-fix-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/capture-system-fix-evidence.mjs"
+  },
+  {
+    "path": "tools/extract-control-points.ts",
+    "absolutePath": "C:\\hisab\\tools\\extract-control-points.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/extract-control-points.ts"
+  },
+  {
+    "path": "tools/generate-control-point-inventory.ts",
+    "absolutePath": "C:\\hisab\\tools\\generate-control-point-inventory.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/generate-control-point-inventory.ts"
+  },
+  {
+    "path": "tools/generate-core-accounting-evidence.mjs",
+    "absolutePath": "C:\\hisab\\tools\\generate-core-accounting-evidence.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/generate-core-accounting-evidence.mjs"
+  },
+  {
+    "path": "tools/inspector/five-whys.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\five-whys.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/five-whys.ts"
+  },
+  {
+    "path": "tools/inspector/page-rules.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\page-rules.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/page-rules.ts"
+  },
+  {
+    "path": "tools/inspector/report-writer.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\report-writer.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/report-writer.ts"
+  },
+  {
+    "path": "tools/inspector/reports/combined-summary.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\combined-summary.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/combined-summary.json"
+  },
+  {
+    "path": "tools/inspector/reports/combined-summary.md",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\combined-summary.md",
+    "classification": "docs",
+    "runtimeAffecting": false,
+    "reason": "Documentation or narrative reference to control points."
+  },
+  {
+    "path": "tools/inspector/reports/workspace-invoices-new.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-invoices-new.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-invoices-new.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-bills.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-bills.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-bills.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-branches.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-branches.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-branches.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-chart-of-accounts.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-chart-of-accounts.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-chart-of-accounts.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-cost-centers.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-cost-centers.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-cost-centers.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-customers.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-customers.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-customers.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-document-templates.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-document-templates.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-document-templates.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-expenses.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-expenses.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-expenses.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-invoices.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-invoices.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-invoices.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-journal-entries.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-journal-entries.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-journal-entries.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-payments.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-payments.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-payments.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-products.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-products.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-products.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-proforma-invoices.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-proforma-invoices.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-proforma-invoices.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-projects.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-projects.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-projects.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-purchase-orders.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-purchase-orders.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-purchase-orders.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-quotations.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-quotations.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-quotations.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-reports.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-reports.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-reports.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-vat.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-vat.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-vat.json"
+  },
+  {
+    "path": "tools/inspector/reports/workspace-user-vendors.json",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\reports\\workspace-user-vendors.json",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/reports/workspace-user-vendors.json"
+  },
+  {
+    "path": "tools/inspector/root-cause.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\root-cause.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/root-cause.ts"
+  },
+  {
+    "path": "tools/inspector/route-catalog.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\route-catalog.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/route-catalog.ts"
+  },
+  {
+    "path": "tools/inspector/run-inspector.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\run-inspector.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/run-inspector.ts"
+  },
+  {
+    "path": "tools/inspector/runtime-debug.ts",
+    "absolutePath": "C:\\hisab\\tools\\inspector\\runtime-debug.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/inspector/runtime-debug.ts"
+  },
+  {
+    "path": "tools/master-design-visual-layout.mjs",
+    "absolutePath": "C:\\hisab\\tools\\master-design-visual-layout.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/master-design-visual-layout.mjs"
+  },
+  {
+    "path": "tools/prepare-control-point-normalization-review.ts",
+    "absolutePath": "C:\\hisab\\tools\\prepare-control-point-normalization-review.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/prepare-control-point-normalization-review.ts"
+  },
+  {
+    "path": "tools/prove-accounting-ui-workflow.mjs",
+    "absolutePath": "C:\\hisab\\tools\\prove-accounting-ui-workflow.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/prove-accounting-ui-workflow.mjs"
+  },
+  {
+    "path": "tools/run-accounting-proof.mjs",
+    "absolutePath": "C:\\hisab\\tools\\run-accounting-proof.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/run-accounting-proof.mjs"
+  },
+  {
+    "path": "tools/run-accounting-stability-suite.mjs",
+    "absolutePath": "C:\\hisab\\tools\\run-accounting-stability-suite.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/run-accounting-stability-suite.mjs"
+  },
+  {
+    "path": "tools/run-audit.ts",
+    "absolutePath": "C:\\hisab\\tools\\run-audit.ts",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/run-audit.ts"
+  },
+  {
+    "path": "tools/run-invoice-stability-suite.mjs",
+    "absolutePath": "C:\\hisab\\tools\\run-invoice-stability-suite.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/run-invoice-stability-suite.mjs"
+  },
+  {
+    "path": "tools/run-phase1-closure-proof.mjs",
+    "absolutePath": "C:\\hisab\\tools\\run-phase1-closure-proof.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/run-phase1-closure-proof.mjs"
+  },
+  {
+    "path": "tools/system-visibility-audit.mjs",
+    "absolutePath": "C:\\hisab\\tools\\system-visibility-audit.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/system-visibility-audit.mjs"
+  },
+  {
+    "path": "tools/validate-invoice-workflow.mjs",
+    "absolutePath": "C:\\hisab\\tools\\validate-invoice-workflow.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/validate-invoice-workflow.mjs"
+  },
+  {
+    "path": "tools/workspace-master-design-fix.mjs",
+    "absolutePath": "C:\\hisab\\tools\\workspace-master-design-fix.mjs",
+    "classification": "historical",
+    "runtimeAffecting": false,
+    "reason": "Historical or supporting file: tools/workspace-master-design-fix.mjs"
+  },
+  {
+    "path": "types/master-design.ts",
+    "absolutePath": "C:\\hisab\\types\\master-design.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Maps or renders control point data for the master design review surfaces."
+  },
+  {
+    "path": "types/system-map.ts",
+    "absolutePath": "C:\\hisab\\types\\system-map.ts",
+    "classification": "runtime",
+    "runtimeAffecting": true,
+    "reason": "Active code path: Contains control point audit status, evidence, or scoring data."
+  }
+]

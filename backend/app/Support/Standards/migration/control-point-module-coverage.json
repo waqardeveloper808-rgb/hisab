@@ -1,0 +1,121 @@
+[
+  {
+    "module_code": "UX",
+    "module_name": "User Experience",
+    "legacy_mapped_count": 11,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 11
+  },
+  {
+    "module_code": "IVC",
+    "module_name": "Invoice Control",
+    "legacy_mapped_count": 14,
+    "migrated_v2_count": 4,
+    "remaining_legacy_count": 10
+  },
+  {
+    "module_code": "ACC",
+    "module_name": "Accounting Control",
+    "legacy_mapped_count": 22,
+    "migrated_v2_count": 5,
+    "remaining_legacy_count": 17
+  },
+  {
+    "module_code": "INV",
+    "module_name": "Inventory Control",
+    "legacy_mapped_count": 15,
+    "migrated_v2_count": 2,
+    "remaining_legacy_count": 13
+  },
+  {
+    "module_code": "TAX",
+    "module_name": "VAT / Tax Control",
+    "legacy_mapped_count": 24,
+    "migrated_v2_count": 14,
+    "remaining_legacy_count": 10
+  },
+  {
+    "module_code": "AUD",
+    "module_name": "Audit Control",
+    "legacy_mapped_count": 0,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 0
+  },
+  {
+    "module_code": "USR",
+    "module_name": "User Workspace Control",
+    "legacy_mapped_count": 0,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 0
+  },
+  {
+    "module_code": "ADM",
+    "module_name": "Admin Workspace Control",
+    "legacy_mapped_count": 0,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 0
+  },
+  {
+    "module_code": "AST",
+    "module_name": "Assistant Workspace Control",
+    "legacy_mapped_count": 0,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 0
+  },
+  {
+    "module_code": "ACP",
+    "module_name": "Accountant / Partner Workspace Control",
+    "legacy_mapped_count": 0,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 0
+  },
+  {
+    "module_code": "DOC",
+    "module_name": "Document Engine Control",
+    "legacy_mapped_count": 0,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 0
+  },
+  {
+    "module_code": "TMP",
+    "module_name": "Template Engine Control",
+    "legacy_mapped_count": 12,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 12
+  },
+  {
+    "module_code": "VAL",
+    "module_name": "Validation Control",
+    "legacy_mapped_count": 18,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 18
+  },
+  {
+    "module_code": "SEC",
+    "module_name": "Security Control",
+    "legacy_mapped_count": 15,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 15
+  },
+  {
+    "module_code": "BRD",
+    "module_name": "Branding Control",
+    "legacy_mapped_count": 9,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 9
+  },
+  {
+    "module_code": "XMD",
+    "module_name": "Cross-Module Dependency Control",
+    "legacy_mapped_count": 10,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 10
+  },
+  {
+    "module_code": "FRM",
+    "module_name": "Forms and Registers Control",
+    "legacy_mapped_count": 12,
+    "migrated_v2_count": 0,
+    "remaining_legacy_count": 12
+  }
+]

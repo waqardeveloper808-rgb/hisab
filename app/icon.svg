@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="gulf-hisab-icon" x1="16" y1="12" x2="112" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F7A53"/>
+      <stop offset="1" stop-color="#0F5B41"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="10" width="108" height="108" rx="28" fill="url(#gulf-hisab-icon)"/>
+  <path d="M37 39h17v18h20V39h17v50H74V72H54v17H37V39Z" fill="#F7FBF8"/>
+  <path d="M31 99c11-6.8 22.7-10.2 35-10.2 11.8 0 22.9 3.3 33 9.8" stroke="#D7EBDD" stroke-width="6" stroke-linecap="round"/>
+</svg>

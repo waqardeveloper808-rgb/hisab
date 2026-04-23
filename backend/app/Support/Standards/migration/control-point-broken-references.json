@@ -1,0 +1,63 @@
+{
+  "direct_legacy_runtime_imports": [],
+  "old_prefix_runtime_files": [
+    "backend/app/Http/Controllers/Api/JournalPostingController.php",
+    "backend/app/Services/JournalPostingService.php",
+    "backend/app/Support/Standards/control-points-master.ts",
+    "backend/app/Support/Standards/v2/control-point-migration-map.json",
+    "backend/app/Support/Standards/v2/control-points.v2.ts",
+    "backend/bootstrap/app.php",
+    "backend/tests/Feature/AccountingIntegrityEnforcementTest.php",
+    "backend/tests/Feature/CoreAccountingValidationTest.php",
+    "backend/tests/Feature/JournalPostingServiceTest.php",
+    "backend/tests/Feature/Phase1ClosureWorkflowTest.php",
+    "data/audit-runtime/control-point-runtime-results.json",
+    "lib/control-point-audit-engine.ts",
+    "lib/zatca-engine.test.ts"
+  ],
+  "dashboard_files_with_control_point_status": [
+    "app/workspace/dashboard/page.tsx",
+    "components/audit/SystemAuditDashboard.tsx",
+    "components/workspace/DashboardOverview.tsx",
+    "components/workspace/MasterDesignDashboard.tsx",
+    "components/workspace/ReviewDashboard.tsx"
+  ],
+  "audit_engine_inputs_with_old_registry_dependencies": [
+    "app/api/workspace/audit/route.ts",
+    "app/workspace/admin/audit/page.tsx",
+    "backend/app/Models/AuditLog.php",
+    "components/audit/SystemAuditDashboard.tsx",
+    "components/workspace/AuditTrailPanel.tsx",
+    "data/audit-runtime/control-point-runtime-results.json",
+    "lib/audit-collector.ts",
+    "lib/audit-model-adapter.ts",
+    "lib/audit-prompt-generator.ts",
+    "lib/audit-rules.ts",
+    "lib/audit-runner.ts",
+    "lib/audit-store.ts",
+    "lib/audit-types.ts",
+    "lib/control-point-audit-engine.ts"
+  ],
+  "files_showing_old_status_labels": [
+    "backend/app/Services/DocumentTemplateRendererService.php",
+    "backend/app/Support/Standards/control-points-master.ts",
+    "backend/config/auth.php",
+    "backend/config/cache.php",
+    "backend/config/database.php",
+    "backend/config/mail.php",
+    "backend/config/queue.php",
+    "backend/tests/Feature/AccountingIntegrityEnforcementTest.php",
+    "backend/tests/Feature/CoreAccountingValidationTest.php",
+    "components/workspace/MasterDesignDashboard.tsx",
+    "data/audit-runtime/control-point-runtime-results.json",
+    "data/master-design/hierarchy.ts",
+    "data/preview-asset-store.json",
+    "data/system-map/actual-map.ts",
+    "lib/audit-prompt-generator.ts",
+    "lib/comparison-engine.ts",
+    "lib/control-point-audit-engine.ts",
+    "lib/mapping-engine.ts",
+    "lib/master-design-control-points.ts",
+    "types/system-map.ts"
+  ]
+}

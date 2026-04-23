@@ -1,0 +1,33 @@
+export type ControlMigrationAction = "migrate" | "merge" | "split" | "retire" | "replace";
+export type ControlLifecycleStatus = "draft" | "active" | "migrated" | "archived" | "retired";
+
+export type V2ControlPoint = {
+  id: string;
+  version: string;
+  module_code: string;
+  module_name: string;
+  chapter_number: string;
+  title: string;
+  source_standard_clause: string;
+  source_standard_document: string;
+  description: string;
+  control_rule: string;
+  applicability: string[];
+  conditions: string[];
+  evaluation_method: string;
+  scoring_logic: string;
+  evidence_requirement: string[];
+  nonconformity: string;
+  control_weight: number;
+  risk_priority: "low" | "medium" | "high" | "critical";
+  evaluation_frequency: string;
+  control_owner: string;
+  evaluator: string;
+  reviewer: string;
+  linked_project_modules: string[];
+  linked_files: string[];
+  linked_legacy_ids?: string[];
+  migration_action: ControlMigrationAction;
+  implementation_status: string;
+  status: ControlLifecycleStatus;
+};

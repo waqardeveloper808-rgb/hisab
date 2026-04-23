@@ -1,0 +1,23 @@
+{
+  "duplicate_new_ids": false,
+  "empty_required_fields": false,
+  "module_prefix_collision": false,
+  "all_old_control_points_mapped": true,
+  "all_new_control_points_clause_mapped": true,
+  "all_new_control_points_module_mapped": true,
+  "direct_legacy_runtime_imports_remaining": 0,
+  "runtime_critical_files_count": 134,
+  "prefix_distribution": {
+    "ACC": 22,
+    "INV": 15,
+    "VAT": 24,
+    "DOC": 14,
+    "TMP": 12,
+    "UIX": 11,
+    "FRM": 12,
+    "VAL": 18,
+    "SEC": 15,
+    "BRD": 9,
+    "XMD": 10
+  }
+}
