@@ -147,14 +147,14 @@ export function parseImportTable(source: string): ParsedImportTable {
 export function suggestFieldFromHeader(header: string): ImportField | null {
   const normalized = normalizeHeader(header);
 
-  if (["transaction_date", "date", "posting_date", "statement_date"].includes(normalized)) return "transactionDate";
-  if (["value_date", "settlement_date"].includes(normalized)) return "valueDate";
-  if (["reference", "ref", "document_number", "statement_reference"].includes(normalized)) return "reference";
-  if (["invoice_number", "invoice_no", "document_no"].includes(normalized)) return "invoiceNumber";
-  if (["payment_reference", "payment_ref", "receipt_reference"].includes(normalized)) return "paymentReference";
-  if (["description", "memo", "details", "narration", "note"].includes(normalized)) return "description";
-  if (["customer", "customer_name", "contact", "contact_name", "party", "counterparty"].includes(normalized)) return "customer";
-  if (["company", "company_name", "business_name"].includes(normalized)) return "company";
+  if (["transaction_date", "date", "posting_date", "statement_date", "document_date", "transaction_on"].includes(normalized)) return "transactionDate";
+  if (["value_date", "settlement_date", "value_on"].includes(normalized)) return "valueDate";
+  if (["reference", "ref", "document_number", "document_no", "statement_reference", "voucher_number", "voucher_no"].includes(normalized)) return "reference";
+  if (["invoice_number", "invoice_no", "bill_number", "bill_no"].includes(normalized)) return "invoiceNumber";
+  if (["payment_reference", "payment_ref", "receipt_reference", "receipt_no", "receipt_number", "transaction_reference"].includes(normalized)) return "paymentReference";
+  if (["description", "memo", "details", "narration", "note", "particulars", "remarks"].includes(normalized)) return "description";
+  if (["customer", "customer_name", "contact", "contact_name", "contact_full_name", "full_name", "party", "counterparty", "supplier", "supplier_name", "vendor", "vendor_name", "legal_name"].includes(normalized)) return "customer";
+  if (["company", "company_name", "business_name", "legal_entity", "entity_name"].includes(normalized)) return "company";
   if (["debit", "withdrawal", "outflow", "money_out"].includes(normalized)) return "debit";
   if (["credit", "deposit", "inflow", "money_in"].includes(normalized)) return "credit";
   if (["amount", "net_amount", "transaction_amount", "gross_amount"].includes(normalized)) return "amount";

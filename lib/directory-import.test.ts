@@ -12,7 +12,10 @@ import {
 
 describe("directory import", () => {
   it("maps and previews customer imports", () => {
-    const table = parseImportTable("customer,email,city\nAcme Trading,ops@acme.test,Riyadh");
+    const table = parseImportTable([
+      "customer,email,phone,city,country,vat_number,street,building_number,district,postal_code,secondary_number",
+      "Acme Trading,ops@acme.test,+966500000001,Riyadh,Saudi Arabia,312345678900003,King Fahd Road,1234,Al Olaya,12345,5678",
+    ].join("\n"));
     const mapping = buildDirectoryImportMapping(table.headers, getCustomerImportFields());
     const analysis = analyzeDirectoryImportMapping(table.headers, mapping, getDirectoryImportRequiredFields("customer"));
     const preview = buildCustomerImportPreview(table, mapping, []);
@@ -20,6 +23,20 @@ describe("directory import", () => {
     expect(analysis.missingRequiredTargets).toHaveLength(0);
     expect(preview.rows).toHaveLength(1);
     expect(preview.rows[0]?.displayName).toBe("Acme Trading");
+  });
+
+  it("understands contact and supplier name variants", () => {
+    const table = parseImportTable([
+      "supplier_name,email_address,phone_number,city,country,vat_number,street,building_number,district,postal_code,secondary_number",
+      "Alpha Gulf,ops@alpha.test,+966500000001,Riyadh,Saudi Arabia,312345678900003,King Fahd Road,1234,Al Olaya,12345,5678",
+    ].join("\n"));
+    const mapping = buildDirectoryImportMapping(table.headers, getCustomerImportFields());
+    const preview = buildCustomerImportPreview(table, mapping, []);
+
+    expect(mapping.displayName).toBe("supplier_name");
+    expect(mapping.email).toBe("email_address");
+    expect(mapping.phone).toBe("phone_number");
+    expect(preview.rows).toHaveLength(1);
   });
 
   it("blocks invalid customer emails", () => {

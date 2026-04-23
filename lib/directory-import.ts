@@ -71,24 +71,44 @@ const fieldLabels: Record<DirectoryImportField, string> = {
 };
 
 const fieldSuggestions: Record<DirectoryImportField, string[]> = {
-  displayName: ["customer", "customer_name", "display_name", "name", "contact", "contact_name", "company", "company_name"],
+  displayName: [
+    "customer",
+    "customer_name",
+    "customer_full_name",
+    "display_name",
+    "full_name",
+    "name",
+    "contact",
+    "contact_name",
+    "contact_full_name",
+    "party",
+    "counterparty",
+    "company",
+    "company_name",
+    "supplier",
+    "supplier_name",
+    "vendor",
+    "vendor_name",
+    "legal_name",
+    "entity_name",
+  ],
   email: ["email", "email_address"],
-  phone: ["phone", "mobile", "telephone", "contact_number"],
+  phone: ["phone", "phone_number", "mobile", "mobile_number", "telephone", "telephone_number", "contact_number", "whatsapp", "cell"],
   city: ["city", "town"],
-  country: ["country", "country_name"],
-  vatNumber: ["vat", "vat_number", "tax_number", "tax_no", "trn"],
-  street: ["street", "address", "line_1", "billing_address"],
-  buildingNumber: ["building_number", "building", "building_no"],
-  district: ["district", "area", "neighborhood"],
-  postalCode: ["postal_code", "zip", "zip_code"],
-  secondaryNumber: ["secondary_number", "additional_number", "additional_no"],
-  sku: ["sku", "code", "item_code", "product_code"],
-  name: ["name", "item", "item_name", "product", "product_name", "service_name"],
-  kind: ["type", "kind", "item_type"],
-  salePrice: ["sale_price", "selling_price", "unit_price", "price"],
-  purchasePrice: ["purchase_price", "cost_price", "buy_price", "unit_cost"],
-  taxLabel: ["tax", "tax_label", "vat", "vat_label"],
-  category: ["category", "group", "family"],
+  country: ["country", "country_name", "nation"],
+  vatNumber: ["vat", "vat_number", "vat_registration_number", "tax_number", "tax_no", "trn", "tax_registration_no"],
+  street: ["street", "address", "address_line_1", "line_1", "billing_address", "mailing_address"],
+  buildingNumber: ["building_number", "building", "building_no", "building_number_no"],
+  district: ["district", "area", "neighborhood", "quarter"],
+  postalCode: ["postal_code", "zip", "zip_code", "postcode"],
+  secondaryNumber: ["secondary_number", "additional_number", "additional_no", "additional"],
+  sku: ["sku", "code", "item_code", "product_code", "inventory_code"],
+  name: ["name", "item", "item_name", "product", "product_name", "service_name", "display_name"],
+  kind: ["type", "kind", "item_type", "record_type"],
+  salePrice: ["sale_price", "selling_price", "unit_price", "price", "sales_price"],
+  purchasePrice: ["purchase_price", "cost_price", "buy_price", "unit_cost", "purchase_cost"],
+  taxLabel: ["tax", "tax_label", "vat", "vat_label", "tax_category"],
+  category: ["category", "group", "family", "segment"],
 };
 
 function normalizeComparableHeader(value: string) {
@@ -96,8 +116,11 @@ function normalizeComparableHeader(value: string) {
     .replace(/\b(no|num|number)\b/g, "number")
     .replace(/\baddr\b/g, "address")
     .replace(/\bcust\b/g, "customer")
+    .replace(/\bsupp\b/g, "supplier")
+    .replace(/\bvend\b/g, "vendor")
     .replace(/\bprod\b/g, "product")
     .replace(/\bsvc\b/g, "service")
+    .replace(/\bfull[_-]?name\b/g, "name")
     .replace(/_+/g, "_")
     .trim();
 }

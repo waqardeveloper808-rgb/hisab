@@ -21,6 +21,20 @@ describe("reconciliation import analysis", () => {
     expect(preview.issues.filter((issue) => issue.severity === "error")).toHaveLength(0);
   });
 
+  it("maps contact style headers into the transaction import model", () => {
+    const table = parseImportTable([
+      "document_date,supplier_name,document_number,receipt_number",
+      "2026-04-18,Alpha Gulf,INV-1001,RCPT-9001",
+    ].join("\n"));
+
+    const mapping = buildSuggestedMapping(table.headers);
+
+    expect(mapping.transactionDate).toBe("document_date");
+    expect(mapping.customer).toBe("supplier_name");
+    expect(mapping.reference).toBe("document_number");
+    expect(mapping.paymentReference).toBe("receipt_number");
+  });
+
   it("detects missing required columns", () => {
     const table = parseImportTable([
       "reference,description,amount",
