@@ -39,7 +39,7 @@ export function WorkspaceAccessProvider({
   useEffect(() => {
     let active = true;
 
-    fetch("/api/auth/session", { cache: "no-store", credentials: "same-origin" })
+    fetch("/api/auth/session", { cache: "no-store", credentials: "include" })
       .then(async (response) => {
         if (!response.ok) {
           throw new Error(`session:${response.status}`);

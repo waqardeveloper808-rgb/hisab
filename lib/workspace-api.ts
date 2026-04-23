@@ -1318,6 +1318,7 @@ async function request<T>(path: string, init?: WorkspaceRequestInit): Promise<T>
 
   const response = await fetch(`${getWorkspaceApiBase()}/${path}`, {
     ...fetchInit,
+    credentials: fetchInit.credentials ?? "include",
     cache: "no-store",
     headers,
   });
@@ -1371,6 +1372,7 @@ function dedupeWorkspaceRead<T>(key: string, factory: () => Promise<T>) {
 async function platformRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${getPlatformApiBase()}/${path}`, {
     ...init,
+    credentials: init?.credentials ?? "same-origin",
     cache: "no-store",
     headers: {
       "Accept": "application/json",

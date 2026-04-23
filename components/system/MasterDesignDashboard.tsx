@@ -95,26 +95,26 @@ function buildTreeNodes(systemState: SystemState): MasterDesignTreeNode[] {
   });
 }
 
-export function MasterDesignDashboard({ initialState }: { initialState: SystemState }) {
+export function ArchitectDashboard({ initialState }: { initialState: SystemState }) {
   const treeNodes = useMemo(() => buildTreeNodes(initialState), [initialState]);
   const progress = initialState.audit.total > 0
     ? Math.round((initialState.audit.pass / initialState.audit.total) * 100)
     : 0;
 
   return (
-    <main className="bg-canvas px-4 py-5 sm:px-6 lg:px-8" data-inspector-system-master-design-page="true">
+    <main className="bg-canvas px-4 py-5 sm:px-6 lg:px-8" data-inspector-architect-dashboard-page="true">
       <div className="mx-auto max-w-7xl space-y-4">
         <section className="rounded-2xl border border-line bg-white p-4 shadow-xs">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">System Master Design</p>
-              <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold" data-inspector-system-master-design-header-metrics="true">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Architect Dashboard</p>
+              <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold" data-inspector-architect-dashboard-header-metrics="true">
                 <span className="rounded-full border border-line bg-surface-soft/70 px-2.5 py-1 text-ink">Progress {progress}%</span>
                 <span className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-red-800">Fail {initialState.audit.fail}</span>
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-amber-800">Partial {initialState.audit.partial}</span>
               </div>
             </div>
-            <div className="grid gap-2 sm:grid-cols-5" data-inspector-system-master-design-summary="true">
+            <div className="grid gap-2 sm:grid-cols-5" data-inspector-architect-dashboard-summary="true">
               <div className="rounded-xl border border-line bg-surface-soft/70 px-3 py-2.5"><p className="text-[10px] uppercase tracking-[0.14em] text-muted">Pass</p><p className="mt-1 text-base font-semibold text-ink">{initialState.audit.pass}</p></div>
               <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5"><p className="text-[10px] uppercase tracking-[0.14em] text-red-700">Fail</p><p className="mt-1 text-base font-semibold text-red-800">{initialState.audit.fail}</p></div>
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5"><p className="text-[10px] uppercase tracking-[0.14em] text-amber-700">Partial</p><p className="mt-1 text-base font-semibold text-amber-800">{initialState.audit.partial}</p></div>
@@ -129,11 +129,11 @@ export function MasterDesignDashboard({ initialState }: { initialState: SystemSt
             <MasterDesignTree nodes={treeNodes} />
           </div>
           <div className="space-y-4">
-            <div className="rounded-2xl border border-line bg-white p-4 shadow-xs" data-inspector-system-master-design-failures="true">
+            <div className="rounded-2xl border border-line bg-white p-4 shadow-xs" data-inspector-architect-dashboard-failures="true">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Failing Areas</p>
               <div className="mt-3 space-y-2">
                 {initialState.failingAreas.length ? initialState.failingAreas.slice(0, 8).map((failure) => (
-                  <div key={failure.controlPointId} className="rounded-xl border border-line bg-surface-soft/70 px-3 py-2.5" data-inspector-system-master-design-failure={failure.controlPointId}>
+                  <div key={failure.controlPointId} className="rounded-xl border border-line bg-surface-soft/70 px-3 py-2.5" data-inspector-architect-dashboard-failure={failure.controlPointId}>
                     <p className="text-sm font-semibold text-ink">{failure.title}</p>
                     <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted">{failure.status}</p>
                     <p className="mt-1 text-xs text-muted">{failure.exactCauses[0] ?? "No exact root cause available."}</p>
@@ -143,7 +143,7 @@ export function MasterDesignDashboard({ initialState }: { initialState: SystemSt
                 )}
               </div>
             </div>
-            <div className="rounded-2xl border border-line bg-white p-4 shadow-xs" data-inspector-system-master-design-priority="true">
+            <div className="rounded-2xl border border-line bg-white p-4 shadow-xs" data-inspector-architect-dashboard-priority="true">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Priority Modules</p>
               <div className="mt-3 space-y-2">
                 {initialState.priorityModules.slice(0, 4).map((module) => (
@@ -160,3 +160,5 @@ export function MasterDesignDashboard({ initialState }: { initialState: SystemSt
     </main>
   );
 }
+
+export { ArchitectDashboard as MasterDesignDashboard };

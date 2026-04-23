@@ -1,0 +1,107 @@
+{
+  "url": "http://127.0.0.1:3000/workspace/user",
+  "cookieNames": [
+    "gulf_hisab_session"
+  ],
+  "loginResult": {
+    "ok": true,
+    "status": 200,
+    "text": "{\"data\":{\"id\":999001,\"user_id\":999001,\"name\":\"Demo User\",\"email\":\"demo@gulfhisab.local\",\"auth_token\":\"diag-proxy-token\",\"company_id\":2,\"platform_role\":\"admin\",\"workspace_context\":{\"active_company\":{\"id\":2,\"legal_name\":\"Gulf Hisab Demo Company\",\"role\":\"owner\",\"abilities\":[\"*\"]}},\"dummy_login\":true}}"
+  },
+  "browserSession": {
+    "status": 200,
+    "text": "{\"data\":{\"id\":999001,\"userId\":999001,\"name\":\"Demo User\",\"email\":\"demo@gulfhisab.local\",\"authToken\":\"diag-proxy-token\",\"companyId\":2,\"platformRole\":\"admin\",\"workspaceContext\":{\"activeCompany\":{\"id\":2,\"legalName\":\"Gulf Hisab Demo Company\",\"role\":\"owner\",\"abilities\":[\"*\"]}},\"user_id\":999001,\"company_id\":2,\"active_company_id\":2,\"actor_id\":999001,\"backend_base_url\":\"http://127.0.0.1:8000\",\"backend_configured\":true,\"access_status\":\"ready\",\"auth_token\":\"diag-proxy-token\",\"workspace_backend_context\":{\"backendBaseUrl\":\"http://127.0.0.1:8000\",\"activeCompanyId\":2,\"companyId\":\"2\",\"actorId\":999001,\"workspaceToken\":\"diag-proxy-token\",\"backendConfigured\":true,\"accessStatus\":\"ready\"}}}"
+  },
+  "browserDashboard": {
+    "status": 200,
+    "text": "{\"data\":{\"open_invoices\":7,\"open_bills\":20,\"receivables_total\":\"2530.00\",\"payables_total\":\"5169.25\",\"vat_lines\":1,\"recent_invoices\":[{\"id\":151,\"contact_id\":105,\"document_number\":\"TINV-00027\",\"status\":\"paid\",\"issue_date\":\"2026-04-18T21:00:00.000000Z\",\"grand_total\":\"655.50\",\"balance_due\":\"0.00\",\"contact\":{\"id\":105,\"display_name\":\"CDM-20260422085843 Customer 10\"}},{\"id\":149,\"contact_id\":103,\"document_number\":\"TINV-00026\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"621.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":103,\"display_name\":\"CDM-20260422085843 Customer 09\"}},{\"id\":9,\"contact_id\":9,\"document_number\":\"TINV-00009\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"1725.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":9,\"display_name\":\"Recovery Imported Customer 1776519332-5\"}},{\"id\":8,\"contact_id\":8,\"document_number\":\"TINV-00008\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"1725.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":8,\"display_name\":\"Recovery Imported Customer 1776519326-4\"}},{\"id\":7,\"contact_id\":7,\"document_number\":\"TINV-00007\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"1725.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":7,\"display_name\":\"Recovery Imported Customer 1776519319-3\"}}],\"recent_bills\":[{\"id\":152,\"contact_id\":106,\"document_number\":\"BILL-00015\",\"status\":\"finalized\",\"issue_date\":\"2026-04-20T21:00:00.000000Z\",\"grand_total\":\"204.70\",\"balance_due\":\"204.70\",\"contact\":{\"id\":106,\"display_name\":\"CDM-20260422085843 Supplier 10\"}},{\"id\":150,\"contact_id\":104,\"document_number\":\"BILL-00014\",\"status\":\"finalized\",\"issue_date\":\"2026-04-19T21:00:00.000000Z\",\"grand_total\":\"196.65\",\"balance_due\":\"196.65\",\"contact\":{\"id\":104,\"display_name\":\"CDM-20260422085843 Supplier 09\"}},{\"id\":148,\"contact_id\":102,\"document_number\":\"BILL-00013\",\"status\":\"finalized\",\"issue_date\":\"2026-04-18T21:00:00.000000Z\",\"grand_total\":\"188.60\",\"balance_due\":\"188.60\",\"contact\":{\"id\":102,\"display_name\":\"CDM-20260422085843 Supplier 08\"}},{\"id\":146,\"contact_id\":100,\"document_number\":\"BILL-00012\",\"status\":\"finalized\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"180.55\",\"balance_due\":\"180.55\",\"contact\":{\"id\":100,\"display_name\":\"CDM-20260422085843 Supplier 07\"}},{\"id\":144,\"contact_id\":98,\"document_number\":\"BILL-00011\",\"status\":\"finalized\",\"issue_date\":\"2026-04-16T21:00:00.000000Z\",\"grand_total\":\"172.50\",\"balance_due\":\"172.50\",\"contact\":{\"id\":98,\"display_name\":\"CDM-20260422085843 Supplier 06\"}}],\"recent_payments\":[{\"id\":66,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00037\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-092243\"},{\"id\":67,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00038\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-093429\"},{\"id\":68,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00039\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-094139\"},{\"id\":69,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00040\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-094902\"},{\"id\":70,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00041\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-095601\"}]}}"
+  },
+  "browserReports": {
+    "status": 200,
+    "text": "{\"data\":[{\"code\":\"1100\",\"name\":\"Accounts Receivable\",\"type\":\"asset\",\"debit_total\":32717.5,\"credit_total\":30187.5,\"balance\":2530},{\"code\":\"1152\",\"name\":\"Inventory \\u2014 Finished Goods\",\"type\":\"asset\",\"debit_total\":102360,\"credit_total\":2700,\"balance\":99660},{\"code\":\"1200\",\"name\":\"Main Bank Account\",\"type\":\"asset\",\"debit_total\":30383,\"credit_total\":3484.5,\"balance\":26898.5},{\"code\":\"1300\",\"name\":\"VAT Receivable (Input VAT)\",\"type\":\"asset\",\"debit_total\":17928.75,\"credit_total\":5400,\"balance\":12528.75},{\"code\":\"2000\",\"name\":\"Accounts Payable\",\"type\":\"liability\",\"debit_total\":3484.5,\"credit_total\":127813.75,\"balance\":-124329.25},{\"code\":\"2200\",\"name\":\"VAT Payable (Output VAT)\",\"type\":\"liability\",\"debit_total\":281.25,\"credit_total\":4293,\"balance\":-4011.75},{\"code\":\"2300\",\"name\":\"Customer Advances\",\"type\":\"liability\",\"debit_total\":0,\"credit_total\":2156.25,\"balance\":-2156.25},{\"code\":\"4000\",\"name\":\"Sales Revenue\",\"type\":\"income\",\"debit_total\":1875,\"credit_total\":28620,\"balance\":-26745},{\"code\":\"5000\",\"name\":\"Cost of Goods Sold\",\"type\":\"cost_of_sales\",\"debit_total\":14160,\"credit_total\":0,\"balance\":14160},{\"code\":\"6900\",\"name\":\"Miscellaneous Expense\",\"type\":\"expense\",\"debit_total\":1465,\"credit_total\":0,\"balance\":1465}]}"
+  },
+  "events": [
+    {
+      "type": "request",
+      "url": "http://127.0.0.1:3000/api/auth/login",
+      "method": "POST",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "http://127.0.0.1:3000/login",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.7727.15 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "content-type": "application/json",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:3000/api/auth/login",
+      "status": 200,
+      "headers": {
+        "transfer-encoding": "chunked",
+        "keep-alive": "timeout=5",
+        "date": "Thu, 23 Apr 2026 09:47:54 GMT",
+        "content-type": "application/json",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "connection": "keep-alive"
+      },
+      "body": "{\"data\":{\"id\":999001,\"user_id\":999001,\"name\":\"Demo User\",\"email\":\"demo@gulfhisab.local\",\"auth_token\":\"diag-proxy-token\",\"company_id\":2,\"platform_role\":\"admin\",\"workspace_context\":{\"active_company\":{\"id\":2,\"legal_name\":\"Gulf Hisab Demo Company\",\"role\":\"owner\",\"abilities\":[\"*\"]}},\"dummy_login\":true}}"
+    },
+    {
+      "type": "request",
+      "url": "http://127.0.0.1:3000/api/auth/session",
+      "method": "GET",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "http://127.0.0.1:3000/workspace/user",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.7727.15 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:3000/api/auth/session",
+      "status": 200,
+      "headers": {
+        "transfer-encoding": "chunked",
+        "keep-alive": "timeout=5",
+        "date": "Thu, 23 Apr 2026 09:47:58 GMT",
+        "x-workspace-mode": "backend",
+        "content-type": "application/json",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+        "connection": "keep-alive"
+      },
+      "body": "{\"data\":{\"id\":999001,\"userId\":999001,\"name\":\"Demo User\",\"email\":\"demo@gulfhisab.local\",\"authToken\":\"diag-proxy-token\",\"companyId\":2,\"platformRole\":\"admin\",\"workspaceContext\":{\"activeCompany\":{\"id\":2,\"legalName\":\"Gulf Hisab Demo Company\",\"role\":\"owner\",\"abilities\":[\"*\"]}},\"user_id\":999001,\"company_id\":2,\"active_company_id\":2,\"actor_id\":999001,\"backend_base_url\":\"http://127.0.0.1:8000\",\"backend_configured\":true,\"access_status\":\"ready\",\"auth_token\":\"diag-proxy-token\",\"workspace_backend_context\":{\"backendBaseUrl\":\"http://127.0.0.1:8000\",\"activeCompanyId\":2,\"companyId\":\"2\",\"actorId\":999001,\"workspaceToken\":\"diag-proxy-token\",\"backendConfigured\":true,\"accessStatus\":\"ready\"}}}"
+    },
+    {
+      "type": "request",
+      "url": "http://127.0.0.1:3000/api/workspace/reports/dashboard-summary",
+      "method": "GET",
+      "headers": {
+        "sec-ch-ua-platform": "\"Windows\"",
+        "referer": "http://127.0.0.1:3000/workspace/user",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/147.0.7727.15 Safari/537.36",
+        "sec-ch-ua": "\"HeadlessChrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"",
+        "sec-ch-ua-mobile": "?0"
+      }
+    },
+    {
+      "type": "response",
+      "url": "http://127.0.0.1:3000/api/workspace/reports/dashboard-summary",
+      "status": 200,
+      "headers": {
+        "transfer-encoding": "chunked",
+        "cache-control": "no-cache, private",
+        "x-workspace-mode": "backend",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "date": "Thu, 23 Apr 2026 09:47:58 GMT",
+        "content-type": "application/json",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "body": "{\"data\":{\"open_invoices\":7,\"open_bills\":20,\"receivables_total\":\"2530.00\",\"payables_total\":\"5169.25\",\"vat_lines\":1,\"recent_invoices\":[{\"id\":151,\"contact_id\":105,\"document_number\":\"TINV-00027\",\"status\":\"paid\",\"issue_date\":\"2026-04-18T21:00:00.000000Z\",\"grand_total\":\"655.50\",\"balance_due\":\"0.00\",\"contact\":{\"id\":105,\"display_name\":\"CDM-20260422085843 Customer 10\"}},{\"id\":149,\"contact_id\":103,\"document_number\":\"TINV-00026\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"621.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":103,\"display_name\":\"CDM-20260422085843 Customer 09\"}},{\"id\":9,\"contact_id\":9,\"document_number\":\"TINV-00009\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"1725.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":9,\"display_name\":\"Recovery Imported Customer 1776519332-5\"}},{\"id\":8,\"contact_id\":8,\"document_number\":\"TINV-00008\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"1725.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":8,\"display_name\":\"Recovery Imported Customer 1776519326-4\"}},{\"id\":7,\"contact_id\":7,\"document_number\":\"TINV-00007\",\"status\":\"paid\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"1725.00\",\"balance_due\":\"0.00\",\"contact\":{\"id\":7,\"display_name\":\"Recovery Imported Customer 1776519319-3\"}}],\"recent_bills\":[{\"id\":152,\"contact_id\":106,\"document_number\":\"BILL-00015\",\"status\":\"finalized\",\"issue_date\":\"2026-04-20T21:00:00.000000Z\",\"grand_total\":\"204.70\",\"balance_due\":\"204.70\",\"contact\":{\"id\":106,\"display_name\":\"CDM-20260422085843 Supplier 10\"}},{\"id\":150,\"contact_id\":104,\"document_number\":\"BILL-00014\",\"status\":\"finalized\",\"issue_date\":\"2026-04-19T21:00:00.000000Z\",\"grand_total\":\"196.65\",\"balance_due\":\"196.65\",\"contact\":{\"id\":104,\"display_name\":\"CDM-20260422085843 Supplier 09\"}},{\"id\":148,\"contact_id\":102,\"document_number\":\"BILL-00013\",\"status\":\"finalized\",\"issue_date\":\"2026-04-18T21:00:00.000000Z\",\"grand_total\":\"188.60\",\"balance_due\":\"188.60\",\"contact\":{\"id\":102,\"display_name\":\"CDM-20260422085843 Supplier 08\"}},{\"id\":146,\"contact_id\":100,\"document_number\":\"BILL-00012\",\"status\":\"finalized\",\"issue_date\":\"2026-04-17T21:00:00.000000Z\",\"grand_total\":\"180.55\",\"balance_due\":\"180.55\",\"contact\":{\"id\":100,\"display_name\":\"CDM-20260422085843 Supplier 07\"}},{\"id\":144,\"contact_id\":98,\"document_number\":\"BILL-00011\",\"status\":\"finalized\",\"issue_date\":\"2026-04-16T21:00:00.000000Z\",\"grand_total\":\"172.50\",\"balance_due\":\"172.50\",\"contact\":{\"id\":98,\"display_name\":\"CDM-20260422085843 Supplier 06\"}}],\"recent_payments\":[{\"id\":66,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00037\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-092243\"},{\"id\":67,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00038\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-093429\"},{\"id\":68,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00039\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-094139\"},{\"id\":69,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00040\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-094902\"},{\"id\":70,\"contact_id\":87,\"direction\":\"incoming\",\"payment_number\":\"PAY-00041\",\"payment_date\":\"2026-04-21T21:00:00.000000Z\",\"amount\":\"690.00\",\"status\":\"posted\",\"reference\":\"PAY-UI-095601\"}]}}"
+    }
+  ]
+}
