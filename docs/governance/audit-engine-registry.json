@@ -1,0 +1,75 @@
+{
+  "schema": "gulf-hisab.audit-engine-registry.v1",
+  "audit_types": [
+    "constitutional",
+    "workflow",
+    "structural",
+    "financial",
+    "compliance",
+    "traceability",
+    "ux_route_truth",
+    "data_integrity",
+    "evidence"
+  ],
+  "supported_modules": [
+    "workspace",
+    "document",
+    "template",
+    "accounting",
+    "vat",
+    "inventory",
+    "reporting",
+    "reconciliation",
+    "intelligence",
+    "hr",
+    "payroll",
+    "timesheet"
+  ],
+  "severity_model": [
+    "critical",
+    "high",
+    "medium",
+    "low",
+    "informational"
+  ],
+  "rca_layers": [
+    "workspace shell",
+    "route ownership",
+    "template composition",
+    "preview renderer",
+    "pdf generator",
+    "mapping layer",
+    "posting service",
+    "journal engine",
+    "vat resolver",
+    "report aggregation",
+    "inventory movement",
+    "valuation layer",
+    "payroll calculation",
+    "traceability metadata",
+    "control-point binding",
+    "audit binding"
+  ],
+  "corrective_action_states": [
+    "proposed",
+    "assigned",
+    "in_progress",
+    "blocked",
+    "ready_for_retest",
+    "retested",
+    "reopened",
+    "closed"
+  ],
+  "retest_states": [
+    "pending",
+    "passed",
+    "failed",
+    "reopen_required"
+  ],
+  "closure_states": [
+    "open",
+    "closure_pending",
+    "closed",
+    "reopened"
+  ]
+}

@@ -1,7 +1,6 @@
 import { standardsControlPoints, type StandardsControlPoint } from "@/data/standards/control-points";
-import { getControlPointAuditResult, type ControlPointAuditResult, type ControlPointAuditStatus } from "@/lib/control-point-audit-engine";
 
-export type ControlPointImplementationStatus = ControlPointAuditStatus;
+export type ControlPointImplementationStatus = "PASS" | "FAIL" | "PARTIAL" | "BLOCKED";
 export type ControlPointSeverity = "low" | "medium" | "high" | "critical";
 
 export type MasterDesignControlPointReference = {
@@ -85,26 +84,14 @@ function getReference(controlPoint: StandardsControlPoint): MasterDesignControlP
 }
 
 function buildControlPointState(controlPoint: StandardsControlPoint): MasterDesignControlPointState {
-  const auditResult = getControlPointAuditResult(controlPoint.id) ?? buildFallbackAuditResult();
-  return {
-    status: auditResult.status,
-    score: auditResult.score,
-    last_checked_at: auditResult.last_checked_at,
-    audit_reason: auditResult.audit_reason,
-    checked_items: auditResult.checked_items,
-    evidence: auditResult.evidence,
-    severity: getSeverity(controlPoint),
-  };
-}
-
-function buildFallbackAuditResult(): ControlPointAuditResult {
   return {
     status: "BLOCKED",
     score: 0,
     last_checked_at: new Date().toISOString(),
-    audit_reason: "Audit result was unavailable while building the Master Design control point state.",
-    checked_items: ["Checked whether the audit result was available at render time."],
-    evidence: ["Audit result was unavailable while building the Master Design control point state."],
+    audit_reason: `Compatibility shell: the legacy master-design control-point view no longer evaluates audit state for ${controlPoint.id}.`,
+    checked_items: ["Legacy audit state was retired in favor of the new registry-backed audit engine."],
+    evidence: ["This record is now a compatibility shell only."],
+    severity: getSeverity(controlPoint),
   };
 }
 

@@ -1,14 +1,22 @@
-/* ─── Gulf Hisab AI Review Assistant — Audit API Route ─── */
 import { NextResponse } from "next/server";
+import { loadAuditStore } from "@/lib/audit-engine/store";
 
+/**
+ * Legacy compatibility endpoint.
+ * The operational audit engine now lives under /api/audit/*.
+ */
 export async function GET() {
+  const store = await loadAuditStore();
   return NextResponse.json({
-    service: "Gulf Hisab AI Review Assistant",
-    version: "1.0.0",
+    service: "gulf-hisab-audit-engine",
+    status: "compatibility-shell",
     endpoints: {
-      "GET /api/workspace/audit": "This endpoint - service info",
+      "POST /api/audit/runs": "Execute a new audit run",
+      "GET /api/audit/summary": "Read latest audit summary",
+      "GET /api/audit/retest-queue": "Read current retest queue",
     },
-    status: "operational",
+    latest_summary: store.summaries[0] ?? null,
+    latest_session: store.sessions[0] ?? null,
     timestamp: new Date().toISOString(),
   });
 }

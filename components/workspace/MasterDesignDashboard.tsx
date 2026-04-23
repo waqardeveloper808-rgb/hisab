@@ -9,14 +9,35 @@ import {
   type ControlPointImplementationStatus,
   type MasterDesignControlPointRecord,
 } from "@/lib/master-design-control-points";
-import { controlPointAuditSummary, controlPointRiskSummary } from "@/lib/control-point-audit-engine";
 import type { MasterDesignHierarchyNodeSpec } from "@/types/master-design";
 import type { MasterDesignSnapshot } from "@/lib/master-design-engine";
 import type { ComparisonModuleResult, ModuleExecutionStatus, ModuleProgressGroup, SystemBlocker } from "@/types/system-map";
+import { masterDesignControlPoints } from "@/lib/master-design-control-points";
 
 const refreshIntervalMs = 30000;
 const groupOrder: ModuleProgressGroup[] = ["Core platform", "Commercial flows", "Accounting / inventory / VAT", "Reports / import / proof", "Country readiness"];
 const nodeStatusOrder: ModuleExecutionStatus[] = ["BLOCKED", "FAKE-COMPLETE", "MISSING", "PARTIAL", "COMPLETE"];
+
+const controlPointAuditSummary = {
+  totalCount: masterDesignControlPoints.length,
+  evaluatedCount: 0,
+  passCount: 0,
+  failCount: 0,
+  partialCount: 0,
+  blockedCount: masterDesignControlPoints.length,
+  systemRiskLevel: "critical" as const,
+  systemRiskScore: 100,
+  criticalFailureCount: masterDesignControlPoints.filter((controlPoint) => controlPoint.severity === "critical").length,
+  weakModuleCount: new Set(masterDesignControlPoints.map((controlPoint) => controlPoint.module_code)).size,
+};
+
+const controlPointRiskSummary = {
+  modules: masterDesignControlPoints.map((controlPoint) => ({
+    module_code: controlPoint.module_code,
+    module_name: controlPoint.module_name,
+    risk_level: controlPoint.severity,
+  })),
+};
 
 type SortKey = "group" | "module" | "submodulesTotal" | "submodulesComplete" | "status" | "completion" | "structural" | "runtime" | "proof" | "confidence" | "assigned" | "completed" | "failed";
 

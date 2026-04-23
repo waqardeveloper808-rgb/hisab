@@ -1,5 +1,5 @@
-import { SystemAuditDashboard } from "@/components/audit/SystemAuditDashboard";
+import { AuditEngineDashboard } from "@/components/audit/AuditEngineDashboard";
 
 export default function AdminAuditPage() {
-  return <SystemAuditDashboard />;
+  return <AuditEngineDashboard />;
 }
