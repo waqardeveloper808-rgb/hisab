@@ -60,7 +60,7 @@ export function buildAiMonitorReport(input: {
       observed_behavior: `pass=${input.auditStatus.pass} fail=${input.auditStatus.fail} partial=${input.auditStatus.partial}`,
       drift_detected: input.auditStatus.fail > 0 || input.auditStatus.partial > 0,
       probable_root_cause: input.auditStatus.fail > 0 || input.auditStatus.partial > 0 ? "Some control points still rely on weaker route/API probes than the live UI evidence." : "none",
-      recommended_correction_path: ["lib/control-point-audit-engine.ts", "backend/app/Support/Standards/control-point-registry.ts", "lib/root-cause-engine.ts"],
+      recommended_correction_path: ["lib/audit-engine/orchestrator.ts", "lib/audit-engine/live-collector.ts", "backend/app/Support/Standards/control-point-registry.ts"],
     },
     {
       engine: "accounting-engine",

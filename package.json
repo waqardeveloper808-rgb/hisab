@@ -9,9 +9,9 @@
     "lint": "eslint app components data lib",
     "test": "vitest run",
     "inspect:workspace": "tsx tools/inspector/run-inspector.ts",
-    "audit:control-points:stable": "node tools/run-stable-control-point-audit.mjs",
-    "audit:control-points:runtime": "npx tsx -e \"import { evaluateControlPoints } from './lib/control-point-audit-engine'; console.log(JSON.stringify(evaluateControlPoints(), null, 2));\"",
-    "audit:control-points:ui": "node tools/capture-control-point-audit-engine.mjs"
+    "audit:control-points:stable": "tsx tools/run-audit-engine.ts --scope=full_system",
+    "audit:control-points:runtime": "tsx tools/run-audit-engine.ts --scope=full_system",
+    "audit:control-points:ui": "tsx tools/run-audit-engine.ts --scope=route --route=/workspace/admin/audit"
   },
   "dependencies": {
     "jimp": "^1.6.1",

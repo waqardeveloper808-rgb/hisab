@@ -1,5 +1,6 @@
 import type { ControlLifecycleStatus } from "@/backend/app/Support/Standards/v2/control-point-schema";
-import type { ControlPointAuditStatus } from "@/lib/control-point-audit-engine";
+
+export type ControlPointAuditStatus = "PASS" | "FAIL" | "PARTIAL" | "BLOCKED" | "UNEVALUATED";
 
 export type ControlPointEngineStatusCounts = Record<string, number>;
 

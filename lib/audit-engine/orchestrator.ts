@@ -84,8 +84,6 @@ function collectSources(control: RegistryControlPoint, contextSources: Record<st
 }
 
 function summarizeResult(resultStatus: AuditResultStatus, validationType: RegistryControlPoint["validation_type"]): AuditResultStatus {
-  if (validationType === "warning") return "warning";
-  if (validationType === "soft_block") return resultStatus === "pass" ? "warning" : resultStatus;
   if (validationType === "advisory") return resultStatus;
   return resultStatus;
 }
@@ -124,8 +122,6 @@ function computeResultStatus(
   if (crossValidationResult.status === "failed") return "fail";
   if (crossValidationResult.status === "blocked") return "blocked";
   if (!expectedOk || failureTriggered) return "fail";
-  if (control.validation_type === "warning") return "warning";
-  if (control.validation_type === "soft_block") return "warning";
   if (control.validation_type === "advisory") return "pass";
   return "pass";
 }
@@ -157,6 +153,9 @@ export async function runAuditExecution(options: AuditExecutionOptions) {
     const resultStatus = computeResultStatus(control, expectedState.result, failureCondition.result, evidenceStatus, antiCheatStatus, crossValidationStatus);
     const machineSummary = buildMachineSummary(control, resultStatus, evidenceStatus, antiCheatStatus, crossValidationStatus);
     const humanSummary = buildHumanSummary(control, resultStatus, evidenceStatus, antiCheatStatus, crossValidationStatus);
+    const predicateTrace = [...expectedState.trace, ...failureCondition.trace];
+    const evidenceSummary = evidenceStatus.evidence_rejection_reason ?? `Found ${evidenceStatus.evidence_items_found.length}/${control.evidence_requirements.length} required evidence items.`;
+    const sourceReferences = [...new Set([control.source_document, ...control.cross_validation_sources])];
 
     return {
       audit_id,
@@ -170,14 +169,22 @@ export async function runAuditExecution(options: AuditExecutionOptions) {
       failure_condition_result: failureCondition,
       failed_predicates: [...expectedState.failed_predicates, ...failureCondition.passed_predicates],
       passed_predicates: [...expectedState.passed_predicates, ...failureCondition.failed_predicates],
+      predicate_trace: predicateTrace,
       measurable_field_values: Object.fromEntries(control.measurable_fields.map((field) => [field, observed[field] ?? evidence.find((item) => item.fields[field] !== undefined)?.fields[field] ?? sources.find((source) => source.data[field] !== undefined)?.data[field] ?? null])),
       evidence_status: evidenceStatus,
       missing_evidence: evidenceStatus.evidence_items_missing,
+      evidence_summary: evidenceSummary,
       anti_cheat_result: antiCheatStatus,
       cross_validation_result: crossValidationStatus,
       likely_root_cause_zones: control.likely_root_cause_zones,
       corrective_action_type: control.corrective_action_type,
       retest_requirement: control.retest_requirement,
+      source_references: sourceReferences,
+      failure_reason: resultStatus === "pass" ? null : failureCondition.result
+        ? `Failure condition triggered for ${control.id}.`
+        : evidenceStatus.evidence_rejection_reason
+          ?? (antiCheatStatus.status === "failed" ? `Anti-cheat rejection for ${control.id}.` : crossValidationStatus.status === "failed" ? `Cross-validation failed for ${control.id}.` : null),
+      retry_eligible: resultStatus !== "pass",
       human_summary: humanSummary,
       machine_summary: JSON.stringify(machineSummary),
       severity: control.severity,
@@ -273,9 +280,7 @@ export function buildAuditSummary(audit_id: string, scope: AuditRequest["scope"]
     ? "failed"
     : blocked_count > 0 || not_executable_count > 0
       ? "blocked"
-      : warning_count > 0
-        ? "warning"
-        : "passed";
+      : "passed";
 
   return {
     audit_id,

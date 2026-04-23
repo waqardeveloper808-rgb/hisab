@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { saveAuditRun, loadAuditStore } from "@/lib/audit-engine/store";
 import { runAuditExecution } from "@/lib/audit-engine/orchestrator";
 import type { AuditExecutionOptions, AuditRequest } from "@/lib/audit-engine/types";
+import { collectLiveAuditRuntimeContext } from "@/lib/audit-engine/live-collector";
 
 export async function GET() {
   const store = await loadAuditStore();
@@ -19,9 +20,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Audit scope is required." }, { status: 400 });
   }
 
+  const origin = new URL(request.url).origin;
+  const cookieHeader = request.headers.get("cookie");
+  const liveContext = await collectLiveAuditRuntimeContext(origin, cookieHeader, payload.request as AuditRequest);
   const execution = await runAuditExecution({
     request: payload.request as AuditRequest,
-    context: payload.context,
+    context: {
+      ...(liveContext ?? {}),
+      ...(payload.context ?? {}),
+    },
     audit_id: payload.audit_id,
   });
   await saveAuditRun(execution.session, execution.summary, execution.control_results, execution.retest_queue);

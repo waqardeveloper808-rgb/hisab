@@ -1,70 +1,219 @@
-# ================================
-# Node / Next.js
-# ================================
-node_modules/
-.next/
-out/
-dist/
-build/
-coverage/
+# =========================================
+
+# GULF HISAB - MASTER .GITIGNORE
+
+# =========================================
+
+# -----------------------------
+
+# OS / SYSTEM FILES
+
+# -----------------------------
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# -----------------------------
+
+# ENV / SECRETS
+
+# -----------------------------
+
+.env
+.env.*
+!.env.example
+
+# -----------------------------
+
+# LOGS
+
+# -----------------------------
+
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# ================================
-# Laravel / PHP
-# ================================
-vendor/
-storage/*.key
-bootstrap/cache/*.php
+# -----------------------------
 
-# Laravel storage (keep structure, ignore contents)
-storage/app/*
-storage/framework/cache/*
-storage/framework/sessions/*
-storage/framework/views/*
-storage/logs/*
+# TEMP / CACHE
 
-# ================================
-# Environment Files
-# ================================
-.env
-.env.*
-!.env.example
+# -----------------------------
 
-# ================================
-# Project Temp / Runtime
-# ================================
 tmp/
-logs/
-*.err.log
-*.out.log
+temp/
+.cache/
+*.tmp
 
-# ================================
-# Artifacts / Generated
-# ================================
+# -----------------------------
+
+# ARTIFACTS / DEBUG OUTPUTS
+
+# -----------------------------
+
 artifacts/
+qa_reports/
 *.zip
 *.tar
 *.gz
+*.rar
+*.7z
 
-# ================================
-# OS / Editor
-# ================================
-.DS_Store
-Thumbs.db
+# -----------------------------
 
-# VS Code
+# QA / TEST OUTPUTS (ONLY IF NOT USED IN CODE)
+
+# -----------------------------
+
+# Uncomment ONLY if qa is not used in runtime
+
+# qa/
+
+# -----------------------------
+
+# NODE / FRONTEND
+
+# -----------------------------
+
+node_modules/
+.next/
+dist/
+build/
+out/
+.vite/
+coverage/
+
+# -----------------------------
+
+# VSCODE / IDE
+
+# -----------------------------
+
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
-!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
-# ================================
-# Misc
-# ================================
-*.pid
-*.seed
-*.lock
+# -----------------------------
+
+# LARAVEL CORE
+
+# -----------------------------
+
+/vendor/
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+/storage/*.key
+/storage/debugbar/
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
+# -----------------------------
+
+# PUBLIC BUILDS
+
+# -----------------------------
+
+/public/build
+/public/hot
+
+# -----------------------------
+
+# DATABASE
+
+# -----------------------------
+
+*.sqlite
+*.sqlite3
+*.db
+
+# -----------------------------
+
+# TESTING
+
+# -----------------------------
+
+.phpunit.result.cache
+
+# -----------------------------
+
+# DOCKER (IF USED)
+
+# -----------------------------
+
+docker-compose.override.yml
+
+# -----------------------------
+
+# NEXT.JS / REACT SPECIFIC
+
+# -----------------------------
+
+.next/
+.vercel/
+
+# -----------------------------
+
+# TYPESCRIPT
+
+# -----------------------------
+
+*.tsbuildinfo
+
+# -----------------------------
+
+# BACKUPS / EXPORTS
+
+# -----------------------------
+
+*.bak
+*.backup
+*.old
+
+# -----------------------------
+
+# UPLOADS (OPTIONAL - DEPENDS ON STRATEGY)
+
+# -----------------------------
+
+# If storing user uploads locally, ignore:
+
+# public/uploads/
+
+# storage/uploads/
+
+# -----------------------------
+
+# SECURITY / CERTS
+
+# -----------------------------
+
+*.pem
+*.key
+*.crt
+
+# -----------------------------
+
+# MISC
+
+# -----------------------------
+
+*.swp
+*.swo
+
+# =========================================
+
+# END
+
+# =========================================
