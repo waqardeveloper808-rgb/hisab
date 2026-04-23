@@ -16,6 +16,25 @@ export type AuthSession = {
   };
 };
 
+export type AuthSessionReadStatus = "guest" | "invalid_session" | "ready";
+
+export type AuthSessionReadResult =
+  | {
+      status: "guest";
+      session: null;
+      reason: "missing";
+    }
+  | {
+      status: "invalid_session";
+      session: null;
+      reason: "malformed" | "invalid_signature" | "invalid_payload";
+    }
+  | {
+      status: "ready";
+      session: AuthSession;
+      reason: null;
+    };
+
 type LegacyAuthSession = {
   id: number;
   userId?: number;
@@ -31,6 +50,7 @@ type LegacyAuthSession = {
     active_company?: {
       id?: number;
       legal_name?: string;
+      legalName?: string;
       role?: string;
       abilities?: string[];
     };
@@ -100,65 +120,93 @@ export async function createAuthSessionValue(session: AuthSession) {
   return `${payload}.${signature}`;
 }
 
-export async function readAuthSession(cookieValue?: string | null): Promise<AuthSession | null> {
-  if (! cookieValue) {
+function isNonEmptyString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+function isPositiveInteger(value: unknown) {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession | null {
+  const activeCompany = parsed.workspaceContext?.activeCompany ?? parsed.workspace_context?.active_company;
+  const normalizedCompanyId = typeof parsed.companyId === "number"
+    ? parsed.companyId
+    : typeof parsed.company_id === "number"
+      ? parsed.company_id
+      : null;
+  const activeCompanyLegalName = typeof activeCompany?.legalName === "string"
+    ? activeCompany.legalName
+    : typeof activeCompany?.legal_name === "string"
+      ? activeCompany.legal_name
+      : null;
+
+  if (!isPositiveInteger(parsed.id) || !isPositiveInteger(parsed.userId) || !isNonEmptyString(parsed.name) || !isNonEmptyString(parsed.email)) {
     return null;
+  }
+
+  if (!isNonEmptyString(parsed.authToken) || !isPositiveInteger(activeCompany?.id) || !isNonEmptyString(activeCompanyLegalName)) {
+    return null;
+  }
+
+  if (normalizedCompanyId !== null && normalizedCompanyId !== activeCompany.id) {
+    return null;
+  }
+
+  return {
+    id: parsed.id,
+    userId: parsed.userId,
+    name: parsed.name,
+    email: parsed.email,
+    authToken: parsed.authToken,
+    companyId: activeCompany.id,
+    platformRole: typeof parsed.platformRole === "string" ? parsed.platformRole : undefined,
+    workspaceContext: {
+      activeCompany: {
+        id: activeCompany.id,
+        legalName: activeCompanyLegalName,
+        role: typeof activeCompany.role === "string" ? activeCompany.role : undefined,
+        abilities: Array.isArray(activeCompany.abilities)
+          ? activeCompany.abilities.filter((ability): ability is string => typeof ability === "string")
+          : undefined,
+      },
+    },
+  };
+}
+
+export async function readAuthSessionOutcome(cookieValue?: string | null): Promise<AuthSessionReadResult> {
+  if (! cookieValue) {
+    return { status: "guest", session: null, reason: "missing" };
   }
 
   const [payload, signature] = cookieValue.split(".");
 
   if (! payload || ! signature) {
-    return null;
+    return { status: "invalid_session", session: null, reason: "malformed" };
   }
 
   const expectedSignature = await sign(payload);
 
   if (! await timingSafeEqual(signature, expectedSignature)) {
-    return null;
+    return { status: "invalid_session", session: null, reason: "invalid_signature" };
   }
 
   try {
     const decoded = new TextDecoder().decode(fromBase64Url(payload));
     const parsed = JSON.parse(decoded) as Partial<LegacyAuthSession>;
+    const session = normalizeAuthSession(parsed);
 
-    if (typeof parsed.id !== "number" || ! parsed.name || ! parsed.email) {
-      return null;
+    if (! session) {
+      return { status: "invalid_session", session: null, reason: "invalid_payload" };
     }
 
-    const activeCompany = parsed.workspaceContext?.activeCompany ?? parsed.workspace_context?.active_company;
-
-    return {
-      id: parsed.id,
-      userId: typeof parsed.userId === "number" ? parsed.userId : parsed.id,
-      name: parsed.name,
-      email: parsed.email,
-      authToken: typeof parsed.authToken === "string"
-        ? parsed.authToken
-        : typeof parsed.auth_token === "string"
-          ? parsed.auth_token
-          : undefined,
-      companyId: typeof parsed.companyId === "number"
-        ? parsed.companyId
-        : typeof parsed.company_id === "number"
-          ? parsed.company_id
-          : typeof activeCompany?.id === "number"
-            ? activeCompany.id
-            : undefined,
-      platformRole: typeof parsed.platformRole === "string" ? parsed.platformRole : undefined,
-      workspaceContext: typeof activeCompany?.id === "number" && typeof activeCompany?.legal_name === "string"
-        ? {
-            activeCompany: {
-              id: activeCompany.id,
-              legalName: activeCompany.legal_name,
-              role: typeof activeCompany.role === "string" ? activeCompany.role : undefined,
-              abilities: Array.isArray(activeCompany.abilities)
-                ? activeCompany.abilities.filter((ability): ability is string => typeof ability === "string")
-                : undefined,
-            },
-          }
-        : parsed.workspaceContext,
-    };
+    return { status: "ready", session, reason: null };
   } catch {
-    return null;
+    return { status: "invalid_session", session: null, reason: "invalid_payload" };
   }
+}
+
+export async function readAuthSession(cookieValue?: string | null): Promise<AuthSession | null> {
+  const result = await readAuthSessionOutcome(cookieValue);
+  return result.status === "ready" ? result.session : null;
 }

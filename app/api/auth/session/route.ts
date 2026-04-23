@@ -3,35 +3,54 @@ import {
   authSessionCookieName,
   authSessionMaxAge,
   createAuthSessionValue,
-  readAuthSession,
+  readAuthSessionOutcome,
 } from "@/lib/auth-session";
-import { getWorkspaceApiToken } from "@/lib/workspace-session";
+import { resolveWorkspaceBackendContext } from "@/lib/workspace-session";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const session = await readAuthSession(request.cookies.get(authSessionCookieName)?.value);
+  const sessionResult = await readAuthSessionOutcome(request.cookies.get(authSessionCookieName)?.value);
+  const backendContext = resolveWorkspaceBackendContext(sessionResult);
 
-  if (! session) {
-    return NextResponse.json({ data: null }, { status: 401 });
+  if (sessionResult.status !== "ready" || ! sessionResult.session) {
+    return NextResponse.json({
+      data: null,
+      access_status: sessionResult.status,
+      reason: sessionResult.reason,
+    }, { status: 401, headers: { "X-Workspace-Mode": "backend" } });
   }
+
+  const session = sessionResult.session;
 
   return NextResponse.json({
     data: {
       ...session,
       user_id: session.userId,
-      company_id: session.companyId ?? session.workspaceContext?.activeCompany?.id ?? null,
-      auth_token: session.authToken ?? getWorkspaceApiToken(session),
+      company_id: backendContext.activeCompanyId,
+      active_company_id: backendContext.activeCompanyId,
+      actor_id: backendContext.actorId,
+      backend_base_url: backendContext.backendBaseUrl,
+      backend_configured: backendContext.backendConfigured,
+      access_status: backendContext.accessStatus,
+      auth_token: session.authToken,
+      workspace_backend_context: backendContext,
     },
-  });
+  }, { headers: { "X-Workspace-Mode": "backend" } });
 }
 
 export async function PATCH(request: NextRequest) {
-  const session = await readAuthSession(request.cookies.get(authSessionCookieName)?.value);
+  const sessionResult = await readAuthSessionOutcome(request.cookies.get(authSessionCookieName)?.value);
 
-  if (! session) {
-    return NextResponse.json({ message: "Workspace session is required." }, { status: 401 });
+  if (sessionResult.status !== "ready" || ! sessionResult.session) {
+    return NextResponse.json({
+      message: sessionResult.status === "guest" ? "Workspace session is required." : "Invalid workspace session.",
+      access_status: sessionResult.status,
+      reason: sessionResult.reason,
+    }, { status: 401, headers: { "X-Workspace-Mode": "backend" } });
   }
+
+  const session = sessionResult.session;
 
   const body = await request.json().catch(() => null) as {
     activeCompanyId?: number;
@@ -41,7 +60,7 @@ export async function PATCH(request: NextRequest) {
   } | null;
 
   if (typeof body?.activeCompanyId !== "number" || ! body.activeCompanyLegalName) {
-    return NextResponse.json({ message: "Active company payload is required." }, { status: 400 });
+    return NextResponse.json({ message: "Active company payload is required." }, { status: 400, headers: { "X-Workspace-Mode": "backend" } });
   }
 
   const nextSession = {
@@ -58,7 +77,24 @@ export async function PATCH(request: NextRequest) {
     },
   };
 
-  const response = NextResponse.json({ data: nextSession });
+  const backendContext = resolveWorkspaceBackendContext(nextSession);
+  const response = NextResponse.json({
+    data: {
+      ...nextSession,
+      user_id: nextSession.userId,
+      company_id: backendContext.activeCompanyId,
+      active_company_id: backendContext.activeCompanyId,
+      actor_id: backendContext.actorId,
+      backend_base_url: backendContext.backendBaseUrl,
+      backend_configured: backendContext.backendConfigured,
+      access_status: backendContext.accessStatus,
+      auth_token: nextSession.authToken,
+      workspace_backend_context: backendContext,
+    },
+  }, {
+    headers: { "X-Workspace-Mode": "backend" },
+  });
+
   response.cookies.set(authSessionCookieName, await createAuthSessionValue(nextSession), {
     httpOnly: true,
     sameSite: "lax",

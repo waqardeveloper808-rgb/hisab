@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authSessionCookieName, readAuthSession } from "@/lib/auth-session";
+import { authSessionCookieName, readAuthSessionOutcome } from "@/lib/auth-session";
 import { defaultChartOfAccounts, searchAccounts as searchLocalAccounts, type Attachment, type AttachmentDocumentTag } from "@/lib/accounting-engine";
 import {
-  getWorkspaceApiToken,
-  getWorkspaceBackendBaseUrl,
-  resolveSessionWorkspaceCompanyId,
+  resolveWorkspaceBackendContext,
 } from "@/lib/workspace-session";
 import {
   buildDocumentHtml as buildUnifiedDocumentHtml,
@@ -105,18 +103,6 @@ const allowedRoots = new Set([
   "reconciliation",
   "inventory",
 ]);
-
-function getBackendConfig() {
-  const baseUrl = getWorkspaceBackendBaseUrl();
-
-  if (! baseUrl) {
-    return null;
-  }
-
-  return {
-    baseUrl: baseUrl.replace(/\/$/, ""),
-  };
-}
 
 function isExplicitPreviewRequest(request: NextRequest) {
   return request.nextUrl.searchParams.get("mode")?.toLowerCase() === "preview"
@@ -452,15 +438,15 @@ async function handle(request: NextRequest, context: { params: Promise<{ slug: s
 }
 
 async function handleWorkspaceRequest(request: NextRequest, context: { params: Promise<{ slug: string[] }> }) {
-  const config = getBackendConfig();
-  const session = await readAuthSession(request.cookies.get(authSessionCookieName)?.value);
+  const sessionOutcome = await readAuthSessionOutcome(request.cookies.get(authSessionCookieName)?.value);
+  const backendContext = resolveWorkspaceBackendContext(sessionOutcome);
   const { slug } = await context.params;
 
   if (! slug.length || ! allowedRoots.has(slug[0])) {
     return NextResponse.json({ message: "Unsupported workspace path." }, { status: 404 });
   }
 
-  if (! session) {
+  if (sessionOutcome.status === "guest") {
     if (isExplicitPreviewRequest(request)) {
       return enforceWorkspaceMode(await handlePreviewRequest(request, slug), "preview");
     }
@@ -471,30 +457,32 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
     );
   }
 
-  if (! config) {
+  if (sessionOutcome.status === "invalid_session") {
+    return NextResponse.json(
+      { message: "Invalid workspace session." },
+      { status: 401 },
+    );
+  }
+
+  if (! backendContext.backendConfigured || ! backendContext.backendBaseUrl || ! backendContext.companyId || ! backendContext.actorId || ! backendContext.workspaceToken) {
     return NextResponse.json(
       { message: "Workspace backend is not configured." },
       { status: 503 },
     );
   }
 
-  const companyId = resolveSessionWorkspaceCompanyId(session);
-  const apiToken = getWorkspaceApiToken(session);
-
-  if (! companyId || ! apiToken) {
-    return NextResponse.json(
-      { message: "A valid workspace session with company and auth token is required." },
-      { status: 409 },
-    );
-  }
+  const backendBaseUrl = backendContext.backendBaseUrl;
+  const companyId = backendContext.companyId;
+  const actorId = backendContext.actorId;
+  const apiToken = backendContext.workspaceToken;
 
   if (slug[0] === "templates" && request.method === "POST" && slug[1] === "preview") {
     try {
       const payload = await request.json() as Record<string, unknown>;
       const html = await renderAuthenticatedTemplatePreview({
-        baseUrl: config.baseUrl,
+        baseUrl: backendBaseUrl,
         companyId,
-        actorId: session.userId ?? session.id,
+        actorId,
         apiToken,
         payload,
       });
@@ -510,9 +498,9 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   if (slug[0] === "documents" && request.method === "GET" && slug[2] === "preview") {
     try {
       const html = await renderAuthenticatedDocumentEngine({
-        baseUrl: config.baseUrl,
+        baseUrl: backendBaseUrl,
         companyId,
-        actorId: session.userId ?? session.id,
+        actorId,
         apiToken,
         documentId: Number(slug[1]),
       });
@@ -528,9 +516,9 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   if (slug[0] === "documents" && request.method === "GET" && (slug[2] === "export-pdf" || slug[2] === "pdf")) {
     try {
       const html = await renderAuthenticatedDocumentEngine({
-        baseUrl: config.baseUrl,
+        baseUrl: backendBaseUrl,
         companyId,
-        actorId: session.userId ?? session.id,
+        actorId,
         apiToken,
         documentId: Number(slug[1]),
       });
@@ -553,7 +541,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
 
   const search = request.nextUrl.search;
   const invoiceImpact = readInvoiceImpactFilter(request.nextUrl.searchParams);
-  const targetUrl = `${config.baseUrl}/api/companies/${companyId}/${slug.join("/")}${search}`;
+  const targetUrl = `${backendBaseUrl}/api/companies/${companyId}/${slug.join("/")}${search}`;
   const body = request.method === "GET" || request.method === "HEAD"
     ? undefined
     : await request.arrayBuffer();
@@ -568,7 +556,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
       headers: {
         "Accept": slug[slug.length - 1] === "export-pdf" || slug[slug.length - 1] === "pdf" ? "application/pdf,application/octet-stream;q=0.9,*/*;q=0.8" : "application/json",
         ...(request.headers.get("content-type") ? { "Content-Type": request.headers.get("content-type") as string } : {}),
-        "X-Gulf-Hisab-Actor-Id": String(session.userId ?? session.id),
+        "X-Gulf-Hisab-Actor-Id": String(actorId),
         "X-Gulf-Hisab-Workspace-Token": apiToken,
       },
     });
@@ -621,7 +609,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
     }
 
     if (slug[0] === "reports" && slug[1] === "general-ledger") {
-      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${config.baseUrl}/api/companies/${companyId}/journals`, session.userId ?? session.id, apiToken);
+      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${backendBaseUrl}/api/companies/${companyId}/journals`, actorId, apiToken);
       const filteredEntries = filterJournalsForInvoice(journalPayload.data, invoiceImpact.invoiceId);
       const ledgerRows = buildLedgerImpactRowsFromJournals(filteredEntries, invoiceImpact.invoiceNumber);
       headers.set("X-Workspace-Impact", `invoice:${invoiceImpact.invoiceId}`);
@@ -629,7 +617,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
     }
 
     if (slug[0] === "reports" && slug[1] === "trial-balance") {
-      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${config.baseUrl}/api/companies/${companyId}/journals`, session.userId ?? session.id, apiToken);
+      const journalPayload = await fetchBackendJson<ImpactJournalEntry[]>(`${backendBaseUrl}/api/companies/${companyId}/journals`, actorId, apiToken);
       const filteredEntries = filterJournalsForInvoice(journalPayload.data, invoiceImpact.invoiceId);
       const trialDelta = buildTrialBalanceDeltaFromJournals(filteredEntries);
       headers.set("X-Workspace-Impact", `invoice:${invoiceImpact.invoiceId}`);

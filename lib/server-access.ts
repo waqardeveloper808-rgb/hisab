@@ -1,10 +1,11 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { authSessionCookieName, readAuthSession, type AuthSession } from "@/lib/auth-session";
+import { authSessionCookieName, readAuthSessionOutcome, type AuthSession } from "@/lib/auth-session";
 import { canAccessWorkspaceArea } from "@/lib/access-control";
 import type { WorkspaceAccessProfile } from "@/lib/workspace-api";
 import {
   resolveWorkspaceBackendContext,
+  type WorkspaceAccessStatus,
 } from "@/lib/workspace-session";
 
 const guestWorkspaceSession: AuthSession = {
@@ -14,8 +15,6 @@ const guestWorkspaceSession: AuthSession = {
   email: "preview@gulfhisab.local",
   platformRole: "guest",
 };
-
-export type WorkspaceAccessStatus = "guest" | "backend_unconfigured" | "backend_unavailable" | "ready";
 
 type WorkspaceAccessProfileResult = {
   access: WorkspaceAccessProfile | null;
@@ -32,20 +31,32 @@ export function hasAnyAbility(abilities: string[], expected: string[]) {
 
 export async function getWorkspaceSessionAccess() {
   const cookieStore = await cookies();
-  const authenticatedSession = await readAuthSession(cookieStore.get(authSessionCookieName)?.value);
+  const sessionResult = await readAuthSessionOutcome(cookieStore.get(authSessionCookieName)?.value);
+  const sessionStatus = sessionResult.status;
 
-  if (!authenticatedSession) {
+  if (sessionResult.status === "guest") {
     return {
       session: guestWorkspaceSession,
       access: null,
+      sessionStatus: "guest" as const,
       accessStatus: "guest" as const,
     };
   }
 
-  const result = await fetchWorkspaceAccessProfileResult(authenticatedSession);
+  if (sessionResult.status === "invalid_session") {
+    return {
+      session: guestWorkspaceSession,
+      access: null,
+      sessionStatus: "invalid_session" as const,
+      accessStatus: "invalid_session" as const,
+    };
+  }
+
+  const result = await fetchWorkspaceAccessProfileResult(sessionResult.session);
 
   return {
-    session: authenticatedSession,
+    session: sessionResult.session,
+    sessionStatus,
     access: result.access,
     accessStatus: result.status,
   };
@@ -56,23 +67,27 @@ export async function fetchWorkspaceAccessProfile(session: AuthSession): Promise
 }
 
 async function fetchWorkspaceAccessProfileResult(session: AuthSession): Promise<WorkspaceAccessProfileResult> {
-  if (session.id <= 0) {
+  const backendContext = resolveWorkspaceBackendContext(session);
+
+  if (backendContext.accessStatus === "guest") {
     return { access: null, status: "guest" };
   }
 
-  const backendContext = resolveWorkspaceBackendContext(session);
+  if (backendContext.accessStatus === "invalid_session") {
+    return { access: null, status: "invalid_session" };
+  }
 
-  if (!backendContext) {
+  if (! backendContext.backendConfigured || !backendContext.backendBaseUrl || !backendContext.companyId || !backendContext.actorId || !backendContext.workspaceToken) {
     return { access: null, status: "backend_unconfigured" };
   }
 
   try {
-    const response = await fetch(`${backendContext.baseUrl}/api/companies/${backendContext.companyId}/access-profile`, {
+    const response = await fetch(`${backendContext.backendBaseUrl}/api/companies/${backendContext.companyId}/access-profile`, {
       cache: "no-store",
       headers: {
         Accept: "application/json",
         "X-Gulf-Hisab-Actor-Id": String(backendContext.actorId),
-        "X-Gulf-Hisab-Workspace-Token": backendContext.apiToken,
+        "X-Gulf-Hisab-Workspace-Token": backendContext.workspaceToken,
       },
     });
 
@@ -88,10 +103,14 @@ async function fetchWorkspaceAccessProfileResult(session: AuthSession): Promise<
 }
 
 export async function requireWorkspaceAccess(requirements?: { platform?: string[]; company?: string[] }) {
-  const { session, access, accessStatus } = await getWorkspaceSessionAccess();
+  const { session, access, sessionStatus, accessStatus } = await getWorkspaceSessionAccess();
 
-  if (accessStatus === "guest") {
+  if (sessionStatus === "guest" || accessStatus === "invalid_session") {
     redirect("/login");
+  }
+
+  if (accessStatus === "backend_unconfigured" || accessStatus === "backend_unavailable") {
+    redirect("/workspace/user?access_status=" + accessStatus);
   }
 
   if (! canAccessWorkspaceArea(access, requirements)) {
