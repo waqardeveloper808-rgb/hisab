@@ -1,0 +1,33 @@
+{
+  "status": 200,
+  "payload": {
+    "data": {
+      "id": 2,
+      "name": "Omar Al Qahtani",
+      "email": "sandbox.admin@gulfhisab.sa",
+      "platformRole": "super_admin",
+      "workspaceContext": {
+        "activeCompany": {
+          "id": 2,
+          "legalName": "Recovery Strike Trading LLC",
+          "abilities": [
+            "company.settings.manage",
+            "company.users.manage",
+            "company.subscription.view",
+            "company.referral.view",
+            "workspace.contacts.manage",
+            "workspace.items.manage",
+            "workspace.sales.manage",
+            "workspace.purchases.manage",
+            "workspace.payments.manage",
+            "workspace.reports.view",
+            "workspace.accounting.view",
+            "workspace.vat.view",
+            "workspace.help.view",
+            "workspace.agents.view"
+          ]
+        }
+      }
+    }
+  }
+}

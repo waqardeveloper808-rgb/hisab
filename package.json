@@ -1,0 +1,49 @@
+{
+  "name": "hisab",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint app components data lib",
+    "test": "vitest run",
+    "inspect:workspace": "tsx tools/inspector/run-inspector.ts",
+    "audit:control-points:stable": "node tools/run-stable-control-point-audit.mjs",
+    "audit:control-points:runtime": "npx tsx -e \"import { evaluateControlPoints } from './lib/control-point-audit-engine'; console.log(JSON.stringify(evaluateControlPoints(), null, 2));\"",
+    "audit:control-points:ui": "node tools/capture-control-point-audit-engine.mjs"
+  },
+  "dependencies": {
+    "jimp": "^1.6.1",
+    "next": "16.2.3",
+    "pdf-lib": "^1.17.1",
+    "qrcode": "^1.5.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jsdom": "^28.0.1",
+    "@types/node": "^20",
+    "@types/pngjs": "^6.0.5",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.3",
+    "jsdom": "^29.0.2",
+    "jsqr": "^1.4.0",
+    "laravel-vite-plugin": "^3.0.1",
+    "playwright": "^1.59.1",
+    "pngjs": "^7.0.0",
+    "postcss": "^8.5.9",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.1.4"
+  }
+}

@@ -1,0 +1,536 @@
+{
+  "generatedAt": "2026-04-19T03:07:21.536Z",
+  "baseUrl": "http://127.0.0.1:3006",
+  "backendBaseUrl": "http://127.0.0.1:8000",
+  "companyId": "2",
+  "actorId": "2",
+  "product": {
+    "id": 16,
+    "name": "UI Proof Product 20260419030720",
+    "sku": "UIP030720",
+    "salePrice": 200,
+    "purchasePrice": 120
+  },
+  "inventory": {
+    "id": 7,
+    "code": "UI-PROOF-PRODUCT-20260419030720-TRADING-80MM-GEN",
+    "quantityOnHand": 10,
+    "journalEntryNumber": "JE-2-00035",
+    "inventoryAccountCode": "1300"
+  },
+  "invoice": {
+    "id": 22,
+    "number": "TINV-00014",
+    "issueDate": "2026-04-12T21:00:00.000000Z",
+    "grandTotal": 690,
+    "balanceDue": 690
+  },
+  "payment": {
+    "id": 18,
+    "number": "PAY-00014",
+    "reference": "PAY-UI-030720",
+    "amount": 690,
+    "paymentDate": "2026-04-18T21:00:00.000000Z"
+  },
+  "uiValidation": {
+    "invoiceNumber": "TINV-00014",
+    "paymentReference": "PAY-UI-030720",
+    "journalEntryNumbers": [
+      "JE-2-00038",
+      "JE-2-00036",
+      "JE-2-00037"
+    ],
+    "arDebitExists": true,
+    "revenueCreditExists": true,
+    "vatCreditExists": true,
+    "cogsDebitExists": true,
+    "inventoryReduced": true,
+    "paymentClearsReceivable": true
+  },
+  "apiValidation": {
+    "journalEntries": [
+      {
+        "id": 62,
+        "entryNumber": "JE-2-00038",
+        "sourceType": "payment",
+        "reference": "TINV-00014",
+        "memo": null,
+        "lines": [
+          {
+            "accountCode": "1200",
+            "accountName": "Main Bank Account",
+            "documentNumber": null,
+            "debit": 690,
+            "credit": 0
+          },
+          {
+            "accountCode": "1100",
+            "accountName": "Accounts Receivable",
+            "documentNumber": "TINV-00014",
+            "debit": 0,
+            "credit": 690
+          }
+        ]
+      },
+      {
+        "id": 60,
+        "entryNumber": "JE-2-00036",
+        "sourceType": "document_inventory",
+        "reference": "TINV-00014",
+        "memo": "Tax invoice inventory issue",
+        "lines": [
+          {
+            "accountCode": "5000",
+            "accountName": "Cost of Goods Sold",
+            "documentNumber": "TINV-00014",
+            "debit": 360,
+            "credit": 0
+          },
+          {
+            "accountCode": "1300",
+            "accountName": "VAT Receivable (Input VAT)",
+            "documentNumber": "TINV-00014",
+            "debit": 0,
+            "credit": 360
+          }
+        ]
+      },
+      {
+        "id": 61,
+        "entryNumber": "JE-2-00037",
+        "sourceType": "document",
+        "reference": "TINV-00014",
+        "memo": null,
+        "lines": [
+          {
+            "accountCode": "1100",
+            "accountName": "Accounts Receivable",
+            "documentNumber": "TINV-00014",
+            "debit": 690,
+            "credit": 0
+          },
+          {
+            "accountCode": "4000",
+            "accountName": "Sales Revenue",
+            "documentNumber": "TINV-00014",
+            "debit": 0,
+            "credit": 600
+          },
+          {
+            "accountCode": "2200",
+            "accountName": "VAT Payable (Output VAT)",
+            "documentNumber": "TINV-00014",
+            "debit": 0,
+            "credit": 90
+          }
+        ]
+      }
+    ],
+    "ledgerRows": [
+      {
+        "entryNumber": "JE-2-00037",
+        "accountCode": "1100",
+        "accountName": "Accounts Receivable",
+        "documentNumber": "TINV-00014",
+        "debit": 690,
+        "credit": 0,
+        "runningBalance": 690
+      },
+      {
+        "entryNumber": "JE-2-00037",
+        "accountCode": "4000",
+        "accountName": "Sales Revenue",
+        "documentNumber": "TINV-00014",
+        "debit": 0,
+        "credit": 600,
+        "runningBalance": 90
+      },
+      {
+        "entryNumber": "JE-2-00037",
+        "accountCode": "2200",
+        "accountName": "VAT Payable (Output VAT)",
+        "documentNumber": "TINV-00014",
+        "debit": 0,
+        "credit": 90,
+        "runningBalance": 0
+      },
+      {
+        "entryNumber": "JE-2-00036",
+        "accountCode": "5000",
+        "accountName": "Cost of Goods Sold",
+        "documentNumber": "TINV-00014",
+        "debit": 360,
+        "credit": 0,
+        "runningBalance": 360
+      },
+      {
+        "entryNumber": "JE-2-00036",
+        "accountCode": "1300",
+        "accountName": "VAT Receivable (Input VAT)",
+        "documentNumber": "TINV-00014",
+        "debit": 0,
+        "credit": 360,
+        "runningBalance": 0
+      },
+      {
+        "entryNumber": "JE-2-00038",
+        "accountCode": "1100",
+        "accountName": "Accounts Receivable",
+        "documentNumber": "TINV-00014",
+        "debit": 0,
+        "credit": 690,
+        "runningBalance": 0
+      }
+    ],
+    "trialBalance": {
+      "accounts": {
+        "accountsReceivable": {
+          "code": "1100",
+          "name": "Accounts Receivable",
+          "type": "asset",
+          "debit_total": 18975,
+          "credit_total": 18975,
+          "balance": 0
+        },
+        "salesRevenue": {
+          "code": "4000",
+          "name": "Sales Revenue",
+          "type": "income",
+          "debit_total": 0,
+          "credit_total": 16500,
+          "balance": -16500
+        },
+        "vatPayable": {
+          "code": "2200",
+          "name": "VAT Payable (Output VAT)",
+          "type": "liability",
+          "debit_total": 0,
+          "credit_total": 2475,
+          "balance": -2475
+        },
+        "cogs": {
+          "code": "5000",
+          "name": "Cost of Goods Sold",
+          "type": "cost_of_sales",
+          "debit_total": 1800,
+          "credit_total": 0,
+          "balance": 1800
+        },
+        "inventory": {
+          "code": "1300",
+          "name": "VAT Receivable (Input VAT)",
+          "type": "asset",
+          "debit_total": 6000,
+          "credit_total": 1800,
+          "balance": 4200
+        }
+      },
+      "debitTotal": 45750,
+      "creditTotal": 45750
+    }
+  },
+  "screenshots": {
+    "product": "qa_reports/accounting_ui_workflow_20260419030720/01-product-screen.png",
+    "inventory": "qa_reports/accounting_ui_workflow_20260419030720/02-inventory-screen.png",
+    "invoice": "qa_reports/accounting_ui_workflow_20260419030720/03-invoice-screen.png",
+    "payment": "qa_reports/accounting_ui_workflow_20260419030720/04-payment-screen.png",
+    "journalRegister": "qa_reports/accounting_ui_workflow_20260419030720/05-journal-register.png",
+    "journalDetail": "qa_reports/accounting_ui_workflow_20260419030720/06-journal-detail.png",
+    "ledger": "qa_reports/accounting_ui_workflow_20260419030720/07-ledger-view.png",
+    "trialBalance": "qa_reports/accounting_ui_workflow_20260419030720/08-trial-balance.png"
+  },
+  "failedResponses": [],
+  "browserConsole": [
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected",
+    "[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold",
+    "[log] [HMR] connected"
+  ],
+  "fixed": [],
+  "remaining": [],
+  "requestResponseTrace": {
+    "invoiceCreateRequest": {
+      "type": "tax_invoice",
+      "title": null,
+      "template_id": null,
+      "cost_center_id": null,
+      "language_code": "en",
+      "custom_fields": {
+        "supply_date": "2026-04-19",
+        "currency": "SAR",
+        "seller_name_en": "",
+        "seller_name_ar": "",
+        "seller_vat_number": "",
+        "seller_cr_number": "CR-RECOVERY-001",
+        "seller_phone": "",
+        "seller_email": "",
+        "seller_address_en": "",
+        "seller_address_ar": "",
+        "buyer_name_en": "Recovery Imported Customer",
+        "buyer_name_ar": "",
+        "buyer_vat_number": "300111111100003",
+        "buyer_address_en": "Riyadh",
+        "buyer_address_ar": "",
+        "adjustment_reason": null,
+        "source_invoice_number": null,
+        "payment_status": "Unpaid",
+        "temporary_accounting_reference": null,
+        "vat_decision_summary": "Cross-border tax invoice",
+        "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+        "zatca_qr_required": true,
+        "reference": null
+      },
+      "attachments": [],
+      "contact_id": 1,
+      "issue_date": "2026-04-13",
+      "supply_date": "2026-04-19",
+      "due_date": "2026-04-20",
+      "source_document_id": null,
+      "reversal_of_document_id": null,
+      "status_reason": null,
+      "notes": "",
+      "lines": [
+        {
+          "item_id": 16,
+          "description": "UI Proof Product 20260419030720",
+          "quantity": 3,
+          "unit_price": 200,
+          "cost_center_id": null,
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "UIP030720",
+            "item_category": "Products"
+          }
+        }
+      ]
+    },
+    "invoiceCreateResponse": {
+      "data": {
+        "contact_id": 1,
+        "notes": null,
+        "title": null,
+        "template_id": null,
+        "language_code": "en",
+        "custom_fields": {
+          "supply_date": "2026-04-19",
+          "currency": "SAR",
+          "seller_name_en": null,
+          "seller_name_ar": null,
+          "seller_vat_number": null,
+          "seller_cr_number": "CR-RECOVERY-001",
+          "seller_phone": null,
+          "seller_email": null,
+          "seller_address_en": null,
+          "seller_address_ar": null,
+          "buyer_name_en": "Recovery Imported Customer",
+          "buyer_name_ar": null,
+          "buyer_vat_number": "300111111100003",
+          "buyer_address_en": "Riyadh",
+          "buyer_address_ar": null,
+          "adjustment_reason": null,
+          "source_invoice_number": null,
+          "payment_status": "Unpaid",
+          "temporary_accounting_reference": null,
+          "vat_decision_summary": "Cross-border tax invoice",
+          "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+          "zatca_qr_required": true,
+          "reference": null
+        },
+        "source_document_id": null,
+        "reversal_of_document_id": null,
+        "status_reason": null,
+        "attachments": [],
+        "type": "tax_invoice",
+        "subtotal": "600.00",
+        "discount_total": "0.00",
+        "taxable_total": "600.00",
+        "tax_total": "90.00",
+        "grand_total": "690.00",
+        "paid_total": "0.00",
+        "balance_due": "690.00",
+        "uuid": "c7714495-9953-42e1-aa8c-440fe58eb4ae",
+        "company_id": 2,
+        "branch_id": 2,
+        "status": "draft",
+        "currency_code": "SAR",
+        "exchange_rate": "1.000000",
+        "issue_date": "2026-04-12T21:00:00.000000Z",
+        "supply_date": "2026-04-18T21:00:00.000000Z",
+        "due_date": "2026-04-19T21:00:00.000000Z",
+        "compliance_metadata": {
+          "zatca_ready": true,
+          "xml_ready": true,
+          "document_mode": "tax_invoice",
+          "source_invoice_uuid": null
+        },
+        "updated_at": "2026-04-19T03:08:04.000000Z",
+        "created_at": "2026-04-19T03:08:04.000000Z",
+        "id": 22,
+        "lines": [
+          {
+            "id": 22,
+            "document_id": 22,
+            "line_number": 1,
+            "item_id": 16,
+            "tax_category_id": 6,
+            "ledger_account_id": 120,
+            "description": "UI Proof Product 20260419030720",
+            "quantity": "3.0000",
+            "unit_price": "200.0000",
+            "discount_amount": "0.00",
+            "net_amount": "600.00",
+            "tax_rate": "15.00",
+            "tax_amount": "90.00",
+            "gross_amount": "690.00",
+            "metadata": {
+              "tax_scope": "taxable",
+              "zatca_code": "S",
+              "custom_fields": {
+                "vat_rate": 15,
+                "item_code": "UIP030720",
+                "item_category": "Products"
+              }
+            },
+            "created_at": "2026-04-19T03:08:04.000000Z",
+            "updated_at": "2026-04-19T03:08:04.000000Z",
+            "source_line_id": null,
+            "cost_center_id": null
+          }
+        ]
+      }
+    },
+    "invoiceFinalizeResponse": {
+      "data": {
+        "id": 22,
+        "uuid": "c7714495-9953-42e1-aa8c-440fe58eb4ae",
+        "company_id": 2,
+        "branch_id": 2,
+        "contact_id": 1,
+        "source_document_id": null,
+        "type": "tax_invoice",
+        "status": "finalized",
+        "sequence_number": 14,
+        "document_number": "TINV-00014",
+        "currency_code": "SAR",
+        "exchange_rate": "1.000000",
+        "issue_date": "2026-04-12T21:00:00.000000Z",
+        "supply_date": "2026-04-18T21:00:00.000000Z",
+        "due_date": "2026-04-19T21:00:00.000000Z",
+        "subtotal": "600.00",
+        "discount_total": "0.00",
+        "taxable_total": "600.00",
+        "tax_total": "90.00",
+        "grand_total": "690.00",
+        "paid_total": "0.00",
+        "balance_due": "690.00",
+        "notes": null,
+        "compliance_uuid": "c913d7b8-23f2-4e67-822d-ec292cd8c8f8",
+        "compliance_status": "pending_submission",
+        "compliance_metadata": {
+          "zatca_ready": true,
+          "xml_ready": true,
+          "document_mode": "tax_invoice",
+          "source_invoice_uuid": null
+        },
+        "finalized_at": "2026-04-19T03:08:04.000000Z",
+        "finalized_by": 2,
+        "cancelled_at": null,
+        "posted_journal_entry_id": 61,
+        "posted_at": "2026-04-19T03:08:04.000000Z",
+        "version": 2,
+        "created_at": "2026-04-19T03:08:04.000000Z",
+        "updated_at": "2026-04-19T03:08:04.000000Z",
+        "credited_total": "0.00",
+        "sent_at": null,
+        "status_reason": null,
+        "locked_at": null,
+        "reversal_of_document_id": null,
+        "template_id": null,
+        "language_code": "en",
+        "title": null,
+        "custom_fields": {
+          "supply_date": "2026-04-19",
+          "currency": "SAR",
+          "seller_name_en": null,
+          "seller_name_ar": null,
+          "seller_vat_number": null,
+          "seller_cr_number": "CR-RECOVERY-001",
+          "seller_phone": null,
+          "seller_email": null,
+          "seller_address_en": null,
+          "seller_address_ar": null,
+          "buyer_name_en": "Recovery Imported Customer",
+          "buyer_name_ar": null,
+          "buyer_vat_number": "300111111100003",
+          "buyer_address_en": "Riyadh",
+          "buyer_address_ar": null,
+          "adjustment_reason": null,
+          "source_invoice_number": null,
+          "payment_status": "Unpaid",
+          "temporary_accounting_reference": null,
+          "vat_decision_summary": "Cross-border tax invoice",
+          "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+          "zatca_qr_required": true,
+          "reference": null,
+          "inventory_journal_entry_ids": [
+            60
+          ]
+        },
+        "attachments": [],
+        "sent_to_email": null,
+        "sent_via": null,
+        "cost_center_id": null,
+        "lines": [
+          {
+            "id": 22,
+            "document_id": 22,
+            "line_number": 1,
+            "item_id": 16,
+            "tax_category_id": 6,
+            "ledger_account_id": 120,
+            "description": "UI Proof Product 20260419030720",
+            "quantity": "3.0000",
+            "unit_price": "200.0000",
+            "discount_amount": "0.00",
+            "net_amount": "600.00",
+            "tax_rate": "15.00",
+            "tax_amount": "90.00",
+            "gross_amount": "690.00",
+            "metadata": {
+              "tax_scope": "taxable",
+              "zatca_code": "S",
+              "custom_fields": {
+                "vat_rate": 15,
+                "item_code": "UIP030720",
+                "item_category": "Products"
+              }
+            },
+            "created_at": "2026-04-19T03:08:04.000000Z",
+            "updated_at": "2026-04-19T03:08:04.000000Z",
+            "source_line_id": null,
+            "cost_center_id": null
+          }
+        ]
+      }
+    },
+    "submitErrorText": null,
+    "lineValidationText": null,
+    "successHeading": "TINV-00014 is ready.",
+    "documentNumber": "TINV-00014",
+    "urlAfterSubmit": "http://127.0.0.1:3006/workspace/invoices/new?documentType=tax_invoice"
+  }
+}

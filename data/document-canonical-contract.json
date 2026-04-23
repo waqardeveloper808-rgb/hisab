@@ -1,0 +1,40 @@
+{
+  "sectionOrder": [
+    "header",
+    "title",
+    "document-info",
+    "delivery",
+    "customer",
+    "items",
+    "totals",
+    "notes",
+    "footer"
+  ],
+  "documentTitles": {
+    "tax_invoice": { "en": "Tax Invoice", "ar": "فاتورة ضريبية" },
+    "quotation": { "en": "Quotation", "ar": "عرض سعر" },
+    "proforma_invoice": { "en": "Proforma Invoice", "ar": "فاتورة مبدئية" },
+    "delivery_note": { "en": "Delivery Note", "ar": "إشعار تسليم" },
+    "credit_note": { "en": "Credit Note", "ar": "إشعار دائن" },
+    "debit_note": { "en": "Debit Note", "ar": "إشعار مدين" },
+    "cash_invoice": { "en": "Cash Invoice", "ar": "فاتورة نقدية" },
+    "api_invoice": { "en": "API Invoice", "ar": "فاتورة نظامية" },
+    "recurring_invoice": { "en": "Recurring Invoice", "ar": "فاتورة دورية" },
+    "vendor_bill": { "en": "Vendor Bill", "ar": "فاتورة مورد" },
+    "purchase_invoice": { "en": "Purchase Invoice", "ar": "فاتورة شراء" },
+    "purchase_order": { "en": "Purchase Order", "ar": "أمر شراء" },
+    "purchase_credit_note": { "en": "Purchase Credit Note", "ar": "إشعار دائن للمشتريات" }
+  },
+  "documentNumberLabels": {
+    "tax_invoice": { "en": "Invoice Number", "ar": "رقم الفاتورة" },
+    "quotation": { "en": "Quotation Number", "ar": "رقم عرض السعر" },
+    "proforma_invoice": { "en": "Proforma Number", "ar": "رقم الفاتورة المبدئية" },
+    "delivery_note": { "en": "Delivery Note Number", "ar": "رقم إشعار التسليم" },
+    "credit_note": { "en": "Credit Note Number", "ar": "رقم إشعار الدائن" },
+    "debit_note": { "en": "Debit Note Number", "ar": "رقم إشعار المدين" },
+    "purchase_order": { "en": "Purchase Order Number", "ar": "رقم أمر الشراء" },
+    "purchase_credit_note": { "en": "Purchase Credit Note Number", "ar": "رقم الإشعار الدائن للمشتريات" },
+    "vendor_bill": { "en": "Purchase Invoice Number", "ar": "رقم فاتورة الشراء" },
+    "purchase_invoice": { "en": "Purchase Invoice Number", "ar": "رقم فاتورة الشراء" }
+  }
+}

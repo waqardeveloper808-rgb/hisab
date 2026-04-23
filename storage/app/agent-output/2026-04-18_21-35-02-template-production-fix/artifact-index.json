@@ -1,0 +1,29 @@
+{
+  "outputDir": "c:\\hisab\\storage\\app\\agent-output\\2026-04-18_21-35-02-template-production-fix",
+  "reportPath": "c:\\hisab\\storage\\app\\agent-output\\2026-04-18_21-35-02-template-production-fix\\document-validation-report.json",
+  "generatedAt": "2026-04-18T18:47:32.859Z",
+  "files": [
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice.pdf",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/quotation.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/quotation-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma.pdf",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note.pdf",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note.pdf",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/delivery-note.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/delivery-note-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/purchase-order.html",
+    "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/purchase-order-preview-page.png"
+  ]
+}

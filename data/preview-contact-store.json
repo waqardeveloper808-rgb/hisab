@@ -1,0 +1,209 @@
+[
+  {
+    "id": 101,
+    "type": "customer",
+    "display_name": "Sahara Business Systems Co.",
+    "display_name_ar": "شركة أنظمة الصحراء للأعمال",
+    "email": "finance@saharabusiness.sa",
+    "phone": "+966112345870",
+    "vat_number": "310122393500003",
+    "cr_number": "1010894576",
+    "billing_address": {
+      "city": "Riyadh",
+      "district": "Al Olaya District",
+      "line_1": "Building 7421, King Fahd Road, Al Olaya District",
+      "line_2": "Unit 12, Additional No. 3184",
+      "postal_code": "12214",
+      "building_number": "7421",
+      "additional_number": "3184",
+      "country": "Saudi Arabia",
+      "line_1_ar": "مبنى 7421، طريق الملك فهد، حي العليا",
+      "line_2_ar": "الوحدة 12، الرقم الإضافي 3184",
+      "district_ar": "حي العليا"
+    }
+  },
+  {
+    "id": 102,
+    "type": "customer",
+    "display_name": "Riyadh Retail Operations Company",
+    "display_name_ar": "شركة عمليات الرياض للتجزئة",
+    "email": "ap@riyadhretail.sa",
+    "phone": "+966126458320",
+    "vat_number": "311456782300003",
+    "cr_number": "4030427819",
+    "billing_address": {
+      "city": "Jeddah",
+      "district": "Al Zahra District",
+      "line_1": "Building 5512, Prince Sultan Road, Al Zahra District",
+      "line_2": "Unit 8, Additional No. 7621",
+      "postal_code": "23522",
+      "building_number": "5512",
+      "additional_number": "7621",
+      "country": "Saudi Arabia",
+      "line_1_ar": "مبنى 5512، طريق الأمير سلطان، حي الزهراء",
+      "line_2_ar": "الوحدة 8، الرقم الإضافي 7621",
+      "district_ar": "حي الزهراء"
+    }
+  },
+  {
+    "id": 201,
+    "type": "supplier",
+    "display_name": "Dammam Packaging Materials Establishment",
+    "display_name_ar": "مؤسسة الدمام لمواد التغليف",
+    "email": "accounts@dammampack.sa",
+    "phone": "+966138529410",
+    "vat_number": "312998174200003",
+    "cr_number": "2052216847",
+    "billing_address": {
+      "city": "Dammam",
+      "district": "Al Shati District",
+      "line_1": "Building 88, Corniche Road, Al Shati District",
+      "line_2": "Additional No. 4410",
+      "postal_code": "32413",
+      "building_number": "88",
+      "additional_number": "4410",
+      "country": "Saudi Arabia",
+      "line_1_ar": "مبنى 88، طريق الكورنيش، حي الشاطئ",
+      "line_2_ar": "الرقم الإضافي 4410",
+      "district_ar": "حي الشاطئ"
+    }
+  },
+  {
+    "id": 202,
+    "type": "supplier",
+    "display_name": "Dammam Packaging Materials Establishment",
+    "display_name_ar": "مؤسسة الدمام لمواد التغليف",
+    "email": "accounts@dammampack.sa",
+    "phone": "+966138529410",
+    "vat_number": "312998174200003",
+    "cr_number": "2052216847",
+    "billing_address": {
+      "city": "Dammam",
+      "district": "Al Shati District",
+      "line_1": "Building 88, Corniche Road, Al Shati District",
+      "line_2": "Additional No. 4410",
+      "postal_code": "32413",
+      "building_number": "88",
+      "additional_number": "4410",
+      "country": "Saudi Arabia",
+      "line_1_ar": "مبنى 88، طريق الكورنيش، حي الشاطئ",
+      "line_2_ar": "الرقم الإضافي 4410",
+      "district_ar": "حي الشاطئ"
+    }
+  },
+  {
+    "id": 203,
+    "type": "customer",
+    "display_name": "Diagnostic Customer",
+    "email": "diag@example.com",
+    "phone": "+966500000000",
+    "billing_address": {
+      "city": "Riyadh",
+      "district": "Al Olaya",
+      "line_1": "King Fahd Rd",
+      "line_2": "Suite 14",
+      "postal_code": "12211",
+      "building_number": "12",
+      "additional_number": "3104",
+      "country": "Saudi Arabia"
+    },
+    "vat_number": "310001000000005",
+    "cr_number": "1000000005"
+  },
+  {
+    "id": 204,
+    "type": "customer",
+    "display_name": "PW Diagnostic Customer 3",
+    "email": "customer.204@gulfhisab.example",
+    "phone": "+966510000006",
+    "billing_address": {
+      "city": "Riyadh",
+      "district": null,
+      "line_1": null,
+      "line_2": "Suite 15",
+      "postal_code": null,
+      "building_number": null,
+      "additional_number": "3105",
+      "country": "Saudi Arabia"
+    },
+    "vat_number": "310001000000006",
+    "cr_number": "1000000006"
+  },
+  {
+    "id": 205,
+    "type": "customer",
+    "display_name": "PW Diagnostic Customer Fixed",
+    "email": "customer.205@gulfhisab.example",
+    "phone": "+966510000007",
+    "billing_address": {
+      "city": "Riyadh",
+      "district": null,
+      "line_1": null,
+      "line_2": "Suite 16",
+      "postal_code": null,
+      "building_number": null,
+      "additional_number": "3106",
+      "country": "Saudi Arabia"
+    },
+    "vat_number": "310001000000007",
+    "cr_number": "1000000007"
+  },
+  {
+    "id": 206,
+    "type": "customer",
+    "display_name": "Verification Customer 1",
+    "email": "customer.206@gulfhisab.example",
+    "phone": "+966510000008",
+    "billing_address": {
+      "city": "Riyadh",
+      "district": null,
+      "line_1": null,
+      "line_2": "Suite 17",
+      "postal_code": null,
+      "building_number": null,
+      "additional_number": "3107",
+      "country": "Saudi Arabia"
+    },
+    "vat_number": "310001000000008",
+    "cr_number": "1000000008"
+  },
+  {
+    "id": 207,
+    "type": "customer",
+    "display_name": "Verification Customer 2",
+    "email": "customer.207@gulfhisab.example",
+    "phone": "+966510000009",
+    "billing_address": {
+      "city": "Riyadh",
+      "district": null,
+      "line_1": null,
+      "line_2": "Suite 18",
+      "postal_code": null,
+      "building_number": null,
+      "additional_number": "3108",
+      "country": "Saudi Arabia"
+    },
+    "vat_number": "310001000000009",
+    "cr_number": "1000000009"
+  },
+  {
+    "id": 208,
+    "type": "supplier",
+    "display_name": "Najd Industrial Supplies LLC",
+    "display_name_ar": null,
+    "email": "najd.industrial.supplies.llc@example.sa",
+    "phone": "+966510000108",
+    "vat_number": "310001000000108",
+    "cr_number": "1000000108",
+    "billing_address": {
+      "city": "Jeddah",
+      "district": "Commercial District",
+      "line_1": "Building 7208, King Abdullah Road",
+      "line_2": "Office 128",
+      "postal_code": "12408",
+      "building_number": "7208",
+      "additional_number": "4208",
+      "country": "Saudi Arabia"
+    }
+  }
+]

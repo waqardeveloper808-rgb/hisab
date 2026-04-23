@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-04-13T22:01:31.792287Z",
+  "project_root": "C:\\hisab",
+  "qa_report_path": "C:\\hisab\\qa_reports\\qa_report_20260413_212427.json",
+  "applied_count": 0,
+  "skipped_count": 0,
+  "failed_count": 0,
+  "actions": [],
+  "escalations": [
+    "Escalate [LOW] structure: No H2 sections found",
+    "Escalate [MEDIUM] structure: Multiple H1 headings",
+    "Escalate [HIGH] routes: Route contains forbidden shell content",
+    "Escalate [HIGH] links: Page returned error status",
+    "Escalate [MEDIUM] architecture: Potential architecture anti-patterns found"
+  ]
+}

@@ -1,0 +1,203 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "phase1-document-validation-recovery",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set BASE_URL=http://127.0.0.1:3006 && set OUTPUT_DIR=c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation && node tools\\capture-document-validation.mjs > c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log 2>&1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-sales-workflow-recovery",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set BASE_URL=http://127.0.0.1:3006 && set OUTPUT_DIR=c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\sales_workflow && node tools\\capture-sales-workflow-evidence.mjs > c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log 2>&1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-accounting-ui-recovery",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set BASE_URL=http://127.0.0.1:3006 && set BACKEND_BASE_URL=http://127.0.0.1:8000 && node tools\\prove-accounting-ui-workflow.mjs > c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\prove-accounting-ui-workflow.log 2>&1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-document-validation-recovery-rerun",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set \"BASE_URL=http://127.0.0.1:3006\" && set \"OUTPUT_DIR=c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation\" && node tools\\capture-document-validation.mjs > c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log 2>&1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-sales-workflow-recovery-rerun",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set \"BASE_URL=http://127.0.0.1:3006\" && set \"OUTPUT_DIR=c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\sales_workflow\" && node tools\\capture-sales-workflow-evidence.mjs > c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log 2>&1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-accounting-ui-recovery-rerun",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"set \"BASE_URL=http://127.0.0.1:3006\" && set \"BACKEND_BASE_URL=http://127.0.0.1:8000\" && node tools\\prove-accounting-ui-workflow.mjs > c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\prove-accounting-ui-workflow.log 2>&1"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-recovery-backend-server",
+			"type": "shell",
+			"command": "php",
+			"args": [
+				"artisan",
+				"serve",
+				"--host=127.0.0.1",
+				"--port=8000"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "phase1-recovery-frontend-server",
+			"type": "shell",
+			"command": "npm",
+			"args": [
+				"run",
+				"dev",
+				"--",
+				"--hostname",
+				"127.0.0.1",
+				"--port",
+				"3006"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "phase1-recovery-backend-server-rerun",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"cd /d c:\\hisab\\backend && php artisan serve --host=127.0.0.1 --port=8000"
+			],
+			"isBackground": true
+		},
+		{
+			"label": "phase1-document-validation-recovery-pwsh",
+			"type": "shell",
+			"command": "pwsh",
+			"args": [
+				"-NoLogo",
+				"-Command",
+				"$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation'; node tools/capture-document-validation.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log'"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "phase1-document-validation-recovery-shell",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation'; node tools/capture-document-validation.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-sales-workflow-recovery-shell",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\sales_workflow'; node tools/capture-sales-workflow-evidence.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-accounting-ui-recovery-shell",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:BACKEND_BASE_URL='http://127.0.0.1:8000'; node tools/prove-accounting-ui-workflow.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\prove-accounting-ui-workflow.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-document-validation-final-recovery",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation'; node tools/capture-document-validation.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-sales-workflow-final-recovery",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\sales_workflow'; node tools/capture-sales-workflow-evidence.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-accounting-ui-final-recovery",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:BACKEND_BASE_URL='http://127.0.0.1:8000'; node tools/prove-accounting-ui-workflow.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\prove-accounting-ui-workflow-rerun.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-document-validation-final-pass",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation'; node tools/capture-document-validation.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-sales-workflow-final-pass",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\sales_workflow'; node tools/capture-sales-workflow-evidence.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-document-validation-success-check",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:BACKEND_BASE_URL='http://127.0.0.1:8000'; $env:COMPANY_ID='2'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\document_validation'; node tools/capture-document-validation.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-sales-workflow-success-check",
+			"type": "shell",
+			"command": "$env:BASE_URL='http://127.0.0.1:3006'; $env:OUTPUT_DIR='c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\sales_workflow'; node tools/capture-sales-workflow-evidence.mjs 2>&1 | Tee-Object -FilePath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log'",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-copy-accounting-proof-into-artifact",
+			"type": "shell",
+			"command": "Copy-Item -Path 'c:\\hisab\\qa_reports\\accounting_ui_workflow_20260419030720' -Destination 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof\\accounting_ui_workflow_20260419030720' -Recurse -Force",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-recovery-full-zip",
+			"type": "shell",
+			"command": "if (Test-Path 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_full.zip') { Remove-Item 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_full.zip' -Force }; Compress-Archive -Path 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\*' -DestinationPath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_full.zip' -Force",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-recovery-logs-zip",
+			"type": "shell",
+			"command": "if (Test-Path 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_logs.zip') { Remove-Item 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_logs.zip' -Force }; Compress-Archive -Path 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\*' -DestinationPath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_logs.zip' -Force",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-recovery-full-zip-clean",
+			"type": "shell",
+			"command": "$paths = @('c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\docs','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\proof','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\reports','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\prove-accounting-ui-workflow-rerun.log'); if (Test-Path 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_full.zip') { Remove-Item 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_full.zip' -Force }; Compress-Archive -Path $paths -DestinationPath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_full.zip' -Force",
+			"isBackground": false
+		},
+		{
+			"label": "phase1-recovery-logs-zip-clean",
+			"type": "shell",
+			"command": "$paths = @('c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\document-validation.log','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\sales-workflow-capture.log','c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery\\logs\\prove-accounting-ui-workflow-rerun.log'); if (Test-Path 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_logs.zip') { Remove-Item 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_logs.zip' -Force }; Compress-Archive -Path $paths -DestinationPath 'c:\\hisab\\artifacts\\phase1_freeze_baseline_20260419_02_recovery_logs.zip' -Force",
+			"isBackground": false
+		}
+	]
+}

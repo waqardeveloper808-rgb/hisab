@@ -1,0 +1,250 @@
+{
+  "generatedAt": "2026-04-18T20:26:56.043Z",
+  "baseUrl": "http://127.0.0.1:3028",
+  "requiredSectionOrder": [
+    "header",
+    "title",
+    "invoice information",
+    "optional delivery info",
+    "purchaser info",
+    "product info",
+    "totals"
+  ],
+  "routesChecked": [
+    "/workspace/invoices/1101",
+    "/workspace/user/quotations",
+    "/workspace/user/proforma-invoices",
+    "/workspace/user/credit-notes",
+    "/workspace/user/debit-notes",
+    "/workspace/sales",
+    "/workspace/user/purchase-orders"
+  ],
+  "routeResults": [
+    {
+      "key": "invoice",
+      "type": "tax_invoice",
+      "route": "/workspace/invoices/1101",
+      "documentId": 1101,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/invoice-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/invoice.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/1101/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/invoice.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/invoice-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1010825,
+          "nonWhiteRatio": 0.506075458851095
+        }
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "quotation",
+      "type": "quotation",
+      "route": "/workspace/user/quotations",
+      "documentId": 2106,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/quotation-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/quotation.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/2106/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#152720;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #cfddd7; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#152720; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/quotation.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/quotation-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1006024,
+          "nonWhiteRatio": 0.5036718100711932
+        }
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "proforma",
+      "type": "proforma_invoice",
+      "route": "/workspace/user/proforma-invoices",
+      "documentId": 2107,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/proforma-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/proforma.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/2107/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/proforma.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/proforma-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1008924,
+          "nonWhiteRatio": 0.5051237120628023
+        }
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "credit-note",
+      "type": "credit_note",
+      "route": "/workspace/user/credit-notes",
+      "documentId": 1201,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/credit-note-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/credit-note.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/1201/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/credit-note.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/credit-note-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1007577,
+          "nonWhiteRatio": 0.5044493286204929
+        }
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "debit-note",
+      "type": "debit_note",
+      "route": "/workspace/user/debit-notes",
+      "documentId": 1301,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/debit-note-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/debit-note.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/1301/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/debit-note.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/debit-note-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1007468,
+          "nonWhiteRatio": 0.5043947571318427
+        }
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "delivery-note",
+      "type": "delivery_note",
+      "route": "/workspace/sales",
+      "documentId": 2132,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/delivery-note-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/delivery-note.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/2132/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#13231b; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/delivery-note.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/delivery-note-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1007199,
+          "nonWhiteRatio": 0.5042600807057245
+        }
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "purchase-order",
+      "type": "purchase_order",
+      "route": "/workspace/user/purchase-orders",
+      "documentId": 2103,
+      "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/purchase-order-preview-page.png",
+      "html": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/purchase-order.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3028/api/workspace/documents/2103/export-pdf",
+      "htmlExcerpt": "<html><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#12232c;\"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style=\"max-width:980px; margin:0 auto; padding:12px; background:#ffffff;\"><article data-doc-root=\"true\" style=\"background:#ffffff; border:1px solid #aebbc3; font-family:&#39;Segoe UI&#39;, &#39;Noto Naskh Arabic&#39;, Tahoma, Arial, sans-serif; color:#12232c; padding:14px 16px 12px;\"><section data-doc-section=\"header\" style=\"display:grid; grid-template-columns:40% 20% 40%; gap:8px; align-items:start; padding-",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/purchase-order.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/purchase-order-pdf-proof.png",
+        "pageCount": 1,
+        "proofAnalysis": {
+          "width": 1540,
+          "height": 1297,
+          "opaquePixels": 1997380,
+          "nonWhitePixels": 1003167,
+          "nonWhiteRatio": 0.5022414362815288
+        }
+      },
+      "pdfIssues": []
+    }
+  ],
+  "templateEngine": {
+    "listingCount": 3,
+    "defaultTemplateId": 801,
+    "previewReturnedHtml": true,
+    "updateReturnedId": 801,
+    "persistedAccentColor": "#1f7a53",
+    "persistedFileAccentColor": "#1f7a53",
+    "defaultStillSelected": true,
+    "noDeadEndActions": true
+  },
+  "templateEvidence": {
+    "register": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/template-register.png",
+    "studio": "storage/app/agent-output/2026-04-18_23-45-00_top-tier-document-engine-pass/template-studio.png"
+  },
+  "matrix": [
+    {
+      "type": "tax_invoice",
+      "route": "/workspace/invoices/1101",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "quotation",
+      "route": "/workspace/user/quotations",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "proforma_invoice",
+      "route": "/workspace/user/proforma-invoices",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "credit_note",
+      "route": "/workspace/user/credit-notes",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "debit_note",
+      "route": "/workspace/user/debit-notes",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "delivery_note",
+      "route": "/workspace/sales",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "purchase_order",
+      "route": "/workspace/user/purchase-orders",
+      "preview": "PASS",
+      "pdf": "PASS"
+    }
+  ]
+}

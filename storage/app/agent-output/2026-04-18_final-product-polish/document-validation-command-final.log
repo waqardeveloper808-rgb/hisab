@@ -1,0 +1,57 @@
+{
+  "reportPath": "c:\\hisab\\storage\\app\\agent-output\\2026-04-18_final-product-polish\\document-validation-report.json",
+  "matrix": [
+    {
+      "type": "tax_invoice",
+      "route": "/workspace/invoices/1101",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    },
+    {
+      "type": "quotation",
+      "route": "/workspace/user/quotations",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    },
+    {
+      "type": "proforma_invoice",
+      "route": "/workspace/user/proforma-invoices",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    },
+    {
+      "type": "credit_note",
+      "route": "/workspace/user/credit-notes",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    },
+    {
+      "type": "debit_note",
+      "route": "/workspace/user/debit-notes",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    },
+    {
+      "type": "delivery_note",
+      "route": "/workspace/sales",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    },
+    {
+      "type": "purchase_order",
+      "route": "/workspace/user/purchase-orders",
+      "preview": "FAIL",
+      "pdf": "PASS"
+    }
+  ],
+  "templateEngine": {
+    "listingCount": 3,
+    "defaultTemplateId": 801,
+    "previewReturnedHtml": true,
+    "updateReturnedId": 801,
+    "persistedAccentColor": "#1f7a53",
+    "persistedFileAccentColor": "#1f7a53",
+    "defaultStillSelected": true,
+    "noDeadEndActions": true
+  }
+}

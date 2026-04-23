@@ -1,0 +1,2982 @@
+{
+  "generated_at": "2026-04-22T12:47:31.309Z",
+  "summary": {
+    "total": 90,
+    "pass": 0,
+    "fail": 0,
+    "partial": 90,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "control_point_id": "INV-001",
+      "module": "Invoice",
+      "name": "Invoice Creation Validation",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice exists in DB with valid totals"
+    },
+    {
+      "control_point_id": "INV-002",
+      "module": "Invoice",
+      "name": "Draft Invoice Persistence",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Draft invoice is persisted with draft status"
+    },
+    {
+      "control_point_id": "INV-003",
+      "module": "Invoice",
+      "name": "Invoice Number Assignment",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Finalized invoice has a generated document number"
+    },
+    {
+      "control_point_id": "INV-004",
+      "module": "Invoice",
+      "name": "Invoice Totals Accuracy",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Stored totals equal the sum of invoice lines and VAT"
+    },
+    {
+      "control_point_id": "INV-005",
+      "module": "Invoice",
+      "name": "Invoice Customer Link",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice references an existing customer record"
+    },
+    {
+      "control_point_id": "INV-006",
+      "module": "Invoice",
+      "name": "Invoice Payment Status",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice balance and status reflect recorded payments"
+    },
+    {
+      "control_point_id": "INV-007",
+      "module": "Invoice",
+      "name": "Invoice Finalization Guard",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Finalized invoices cannot be edited without a correction flow"
+    },
+    {
+      "control_point_id": "INV-008",
+      "module": "Invoice",
+      "name": "Invoice Ledger Posting",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "A journal entry exists for each finalized invoice"
+    },
+    {
+      "control_point_id": "INV-009",
+      "module": "Invoice",
+      "name": "Invoice Route Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice create, show, and finalize routes return success"
+    },
+    {
+      "control_point_id": "INV-010",
+      "module": "Invoice",
+      "name": "Invoice Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data: [], meta }",
+        "expected_invariant": "Invoice register accepts [] as a valid empty state without rendering a fake outage.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice workflow proof shows draft to paid completion"
+    },
+    {
+      "control_point_id": "ACC-001",
+      "module": "Accounting",
+      "name": "Chart Of Accounts Availability",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Required chart of accounts codes are present"
+    },
+    {
+      "control_point_id": "ACC-002",
+      "module": "Accounting",
+      "name": "Journal Entry Creation",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Journal entries are stored with source references"
+    },
+    {
+      "control_point_id": "ACC-003",
+      "module": "Accounting",
+      "name": "Balanced Journal Lines",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Each journal entry balances to zero"
+    },
+    {
+      "control_point_id": "ACC-004",
+      "module": "Accounting",
+      "name": "Payment Ledger Posting",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Payment posting creates journal evidence"
+    },
+    {
+      "control_point_id": "ACC-005",
+      "module": "Accounting",
+      "name": "Manual Journal Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Manual journal list and create routes are available"
+    },
+    {
+      "control_point_id": "ACC-006",
+      "module": "Accounting",
+      "name": "Trial Balance Availability",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Trial balance API responds with report data"
+    },
+    {
+      "control_point_id": "ACC-007",
+      "module": "Accounting",
+      "name": "Profit Loss Availability",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Profit and loss API responds with report data"
+    },
+    {
+      "control_point_id": "ACC-008",
+      "module": "Accounting",
+      "name": "Account Period Support",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Posting occurs inside an open accounting period"
+    },
+    {
+      "control_point_id": "ACC-009",
+      "module": "Accounting",
+      "name": "Audit Trail Persistence",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Journal entries retain source type and source id"
+    },
+    {
+      "control_point_id": "ACC-010",
+      "module": "Accounting",
+      "name": "Accounting Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "invariant_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/trial-balance' -> /api/companies/2/reports/trial-balance [401]",
+        "failing_target": "/api/companies/2/reports/trial-balance :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "{ success: true, data: { trialBalance, ledger, auditTrail } }",
+        "expected_invariant": "Accounting views must handle zero rows as a valid empty ledger state.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/BooksOverview.tsx",
+          "components/workspace/AccountingOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Workflow proof confirms journal and report updates"
+    },
+    {
+      "control_point_id": "STK-001",
+      "module": "Inventory",
+      "name": "Inventory Receipt Persistence",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory stock receipt rows exist in DB"
+    },
+    {
+      "control_point_id": "STK-002",
+      "module": "Inventory",
+      "name": "Inventory Stock Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory stock list and create routes are reachable"
+    },
+    {
+      "control_point_id": "STK-003",
+      "module": "Inventory",
+      "name": "Inventory Quantity Tracking",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory quantity reflects receipts, adjustments, and sales"
+    },
+    {
+      "control_point_id": "STK-004",
+      "module": "Inventory",
+      "name": "Inventory Sale Posting",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory sale creates linked journal entries"
+    },
+    {
+      "control_point_id": "STK-005",
+      "module": "Inventory",
+      "name": "Inventory Adjustment Posting",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory adjustment creates journal evidence"
+    },
+    {
+      "control_point_id": "STK-006",
+      "module": "Inventory",
+      "name": "Inventory Document Links",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory records store related invoice and delivery links"
+    },
+    {
+      "control_point_id": "STK-007",
+      "module": "Inventory",
+      "name": "Inventory Reduction On Invoice",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory quantity decreases after sale workflow"
+    },
+    {
+      "control_point_id": "STK-008",
+      "module": "Inventory",
+      "name": "Inventory Account Mapping",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory journals contain expected account codes"
+    },
+    {
+      "control_point_id": "STK-009",
+      "module": "Inventory",
+      "name": "Inventory Dummy Data Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Seeded inventory dataset contains ten or more rows"
+    },
+    {
+      "control_point_id": "STK-010",
+      "module": "Inventory",
+      "name": "Inventory Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "database",
+        "probe_type": "db_probe",
+        "db_rows": 71,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "InventoryAccountingWorkflowTest",
+        "route_reference": "Route::post('/inventory/sales' -> /api/companies/2/inventory/sales [401]",
+        "failing_target": "/api/companies/2/inventory/sales :: inventory_transactions",
+        "db_metric": "inventory_transactions",
+        "expected_schema": "{ success: true, data: [] }",
+        "expected_invariant": "Inventory register must render rows when present and a non-error empty state when absent.",
+        "evidence_collector": "tools/prove-accounting-ui-workflow.mjs",
+        "probable_fix_files": [
+          "components/workspace/StockRegister.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter InventoryAccountingWorkflowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Workflow proof shows receipt, adjustment, and sale completion"
+    },
+    {
+      "control_point_id": "VAT-001",
+      "module": "VAT",
+      "name": "VAT Category Availability",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "VAT15 category exists for active companies"
+    },
+    {
+      "control_point_id": "VAT-002",
+      "module": "VAT",
+      "name": "Output VAT Calculation",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice tax totals match configured VAT rate"
+    },
+    {
+      "control_point_id": "VAT-003",
+      "module": "VAT",
+      "name": "VAT Ledger Recording",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Compliance metadata records output VAT evidence"
+    },
+    {
+      "control_point_id": "VAT-004",
+      "module": "VAT",
+      "name": "VAT Summary Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "VAT summary API returns data"
+    },
+    {
+      "control_point_id": "VAT-005",
+      "module": "VAT",
+      "name": "VAT Detail Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "VAT detail API returns data"
+    },
+    {
+      "control_point_id": "VAT-006",
+      "module": "VAT",
+      "name": "Buyer VAT Capture",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Buyer VAT metadata is stored on taxable invoices"
+    },
+    {
+      "control_point_id": "VAT-007",
+      "module": "VAT",
+      "name": "Seller VAT Capture",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Seller VAT number exists in compliance metadata"
+    },
+    {
+      "control_point_id": "VAT-008",
+      "module": "VAT",
+      "name": "VAT Dummy Data Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Seeded documents contain taxable totals and VAT totals"
+    },
+    {
+      "control_point_id": "VAT-009",
+      "module": "VAT",
+      "name": "VAT Payment Linkage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Paid invoices still retain VAT ledger metadata"
+    },
+    {
+      "control_point_id": "VAT-010",
+      "module": "VAT",
+      "name": "VAT Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "invariant_probe",
+        "db_rows": 89,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/vat-summary' -> /api/companies/2/reports/vat-summary [401]",
+        "failing_target": "/api/companies/2/reports/vat-summary :: vat_related_records",
+        "db_metric": "vat_related_records",
+        "expected_schema": "{ success: true, data: { output_vat, input_vat, net_vat_payable } }",
+        "expected_invariant": "VAT zero values must remain valid and must not trigger an error state.",
+        "evidence_collector": "tools/capture-document-validation.mjs",
+        "probable_fix_files": [
+          "components/workspace/VatOverview.tsx",
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Workflow proof confirms VAT calculation and reporting"
+    },
+    {
+      "control_point_id": "UX-001",
+      "module": "UX",
+      "name": "Invoice Workspace Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice workspace UI route is reachable"
+    },
+    {
+      "control_point_id": "UX-002",
+      "module": "UX",
+      "name": "Inventory Workspace Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Inventory workspace UI route is reachable"
+    },
+    {
+      "control_point_id": "UX-003",
+      "module": "UX",
+      "name": "Accounting Workspace Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Accounting workspace UI route is reachable"
+    },
+    {
+      "control_point_id": "UX-004",
+      "module": "UX",
+      "name": "Reports Workspace Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Reports workspace UI route is reachable"
+    },
+    {
+      "control_point_id": "UX-005",
+      "module": "UX",
+      "name": "Document Validation Surface",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Document validation surface loads without blockers"
+    },
+    {
+      "control_point_id": "UX-006",
+      "module": "UX",
+      "name": "Sales Workflow Surface",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Sales workflow UI loads and supports evidence capture"
+    },
+    {
+      "control_point_id": "UX-007",
+      "module": "UX",
+      "name": "Accounting Workflow Surface",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Accounting workflow UI loads and supports evidence capture"
+    },
+    {
+      "control_point_id": "UX-008",
+      "module": "UX",
+      "name": "Navigation Health",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Workflow routes can be opened without 404s"
+    },
+    {
+      "control_point_id": "UX-009",
+      "module": "UX",
+      "name": "Audit Dashboard Health",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Audit UI displays runtime results"
+    },
+    {
+      "control_point_id": "UX-010",
+      "module": "UX",
+      "name": "UX Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "ui",
+        "probe_type": "ui_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/sales-documents' -> /api/companies/2/sales-documents [401]",
+        "failing_target": "/api/companies/2/sales-documents :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "UI list state backed by sales document envelope",
+        "expected_invariant": "UI must distinguish loading, auth-limited, empty, and error states.",
+        "evidence_collector": "tools/capture-sales-workflow-evidence.mjs",
+        "probable_fix_files": [
+          "components/workspace/InvoiceRegister.tsx",
+          "components/workspace/WorkspaceShell.tsx"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Captured UI proof confirms reachable workflow surfaces"
+    },
+    {
+      "control_point_id": "AUD-001",
+      "module": "Audit",
+      "name": "Audit Engine Runtime",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Audit engine returns evidence-based statuses"
+    },
+    {
+      "control_point_id": "AUD-002",
+      "module": "Audit",
+      "name": "Audit Artifact Output",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "engine-audit-report.json is generated"
+    },
+    {
+      "control_point_id": "AUD-003",
+      "module": "Audit",
+      "name": "Root Cause Output",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "root-cause-report.json is generated with classifications"
+    },
+    {
+      "control_point_id": "AUD-004",
+      "module": "Audit",
+      "name": "Control Point Inventory Output",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "control-point-inventory.json is generated"
+    },
+    {
+      "control_point_id": "AUD-005",
+      "module": "Audit",
+      "name": "Execution Log Output",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "execution-log.md records step timings"
+    },
+    {
+      "control_point_id": "AUD-006",
+      "module": "Audit",
+      "name": "Execution Time Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "execution-time-report.md is generated"
+    },
+    {
+      "control_point_id": "AUD-007",
+      "module": "Audit",
+      "name": "Audit Retry Loop",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "At least three audit cycles can be executed"
+    },
+    {
+      "control_point_id": "AUD-008",
+      "module": "Audit",
+      "name": "Critical Failure Detection",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Critical failures are surfaced as FAIL or BLOCKED"
+    },
+    {
+      "control_point_id": "AUD-009",
+      "module": "Audit",
+      "name": "Evidence Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Audit records include evidence details"
+    },
+    {
+      "control_point_id": "AUD-010",
+      "module": "Audit",
+      "name": "Audit Final Status",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 179,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/health' -> /api/health [200]",
+        "failing_target": "/api/health :: journal_entries",
+        "db_metric": "journal_entries",
+        "expected_schema": "HTTP 200 health payload",
+        "expected_invariant": "Audit health route must remain live before interpreting downstream control points.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "backend/routes",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Audit summary reflects real counts from results"
+    },
+    {
+      "control_point_id": "IMP-001",
+      "module": "Import",
+      "name": "Contact Import Readiness",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Import data contracts include contact fields"
+    },
+    {
+      "control_point_id": "IMP-002",
+      "module": "Import",
+      "name": "Item Import Readiness",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Import data contracts include item fields"
+    },
+    {
+      "control_point_id": "IMP-003",
+      "module": "Import",
+      "name": "Invoice Import Readiness",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Import data contracts include invoice fields"
+    },
+    {
+      "control_point_id": "IMP-004",
+      "module": "Import",
+      "name": "Import Route Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Implemented import routes return expected responses"
+    },
+    {
+      "control_point_id": "IMP-005",
+      "module": "Import",
+      "name": "Import Validation Rules",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Import validation surfaces field-level errors"
+    },
+    {
+      "control_point_id": "IMP-006",
+      "module": "Import",
+      "name": "Import Artifact Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Audit evidence references import readiness checks"
+    },
+    {
+      "control_point_id": "IMP-007",
+      "module": "Import",
+      "name": "Template Import Mapping",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Template imports map known fields correctly"
+    },
+    {
+      "control_point_id": "IMP-008",
+      "module": "Import",
+      "name": "Bulk Data Integrity",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Imported counts match accepted records"
+    },
+    {
+      "control_point_id": "IMP-009",
+      "module": "Import",
+      "name": "Import User Access",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Unauthorized import calls are rejected"
+    },
+    {
+      "control_point_id": "IMP-010",
+      "module": "Import",
+      "name": "Import Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "service",
+        "probe_type": "api_probe",
+        "db_rows": 30,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/contacts' -> /api/companies/2/contacts [401]",
+        "failing_target": "/api/companies/2/contacts :: customers",
+        "db_metric": "customers",
+        "expected_schema": "Structured contact creation response",
+        "expected_invariant": "Import workflows must reject invalid rows and create valid ones.",
+        "evidence_collector": "tools/run-compliant-master-data-seed.mjs",
+        "probable_fix_files": [
+          "lib/workspace-api.ts",
+          "backend/app"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Audit proof captures import validations or missing implementations"
+    },
+    {
+      "control_point_id": "REP-001",
+      "module": "Reports",
+      "name": "Invoice Register Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Invoice register API returns data"
+    },
+    {
+      "control_point_id": "REP-002",
+      "module": "Reports",
+      "name": "Payment Register Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Payments register API returns data"
+    },
+    {
+      "control_point_id": "REP-003",
+      "module": "Reports",
+      "name": "VAT Summary Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "VAT summary API returns data"
+    },
+    {
+      "control_point_id": "REP-004",
+      "module": "Reports",
+      "name": "Trial Balance Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Trial balance API returns data"
+    },
+    {
+      "control_point_id": "REP-005",
+      "module": "Reports",
+      "name": "General Ledger Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "General ledger API returns data"
+    },
+    {
+      "control_point_id": "REP-006",
+      "module": "Reports",
+      "name": "Profit Loss Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Profit and loss API returns data"
+    },
+    {
+      "control_point_id": "REP-007",
+      "module": "Reports",
+      "name": "Balance Sheet Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Balance sheet API returns data"
+    },
+    {
+      "control_point_id": "REP-008",
+      "module": "Reports",
+      "name": "Dashboard Summary Report",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Dashboard summary API returns data"
+    },
+    {
+      "control_point_id": "REP-009",
+      "module": "Reports",
+      "name": "Report Data Freshness",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Reports show newly posted workflow records"
+    },
+    {
+      "control_point_id": "REP-010",
+      "module": "Reports",
+      "name": "Report Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "api",
+        "probe_type": "api_probe",
+        "db_rows": 35,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::get('/reports/profit-loss' -> /api/companies/2/reports/profit-loss [401]",
+        "failing_target": "/api/companies/2/reports/profit-loss :: invoices",
+        "db_metric": "invoices",
+        "expected_schema": "{ success: true, data }",
+        "expected_invariant": "Report routes must return structured data for the active company.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "lib/workspace-api.ts"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "The API response or status does not match the schema expected by the control point.",
+      "fix_required": true,
+      "expected": "Workflow proof confirms reporting outputs updated"
+    },
+    {
+      "control_point_id": "USR-001",
+      "module": "Users",
+      "name": "User Registration Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Registration API returns success for valid payloads"
+    },
+    {
+      "control_point_id": "USR-002",
+      "module": "Users",
+      "name": "User Login Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Login API returns success for valid credentials"
+    },
+    {
+      "control_point_id": "USR-003",
+      "module": "Users",
+      "name": "Workspace Access Control",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Unauthorized access is rejected"
+    },
+    {
+      "control_point_id": "USR-004",
+      "module": "Users",
+      "name": "Company User Listing",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Company users API returns data"
+    },
+    {
+      "control_point_id": "USR-005",
+      "module": "Users",
+      "name": "Support Account Listing",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Support account API returns data"
+    },
+    {
+      "control_point_id": "USR-006",
+      "module": "Users",
+      "name": "Role Update Route",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "User update API returns success for authorized callers"
+    },
+    {
+      "control_point_id": "USR-007",
+      "module": "Users",
+      "name": "Audit Actor Capture",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Workflow records retain acting user identifiers"
+    },
+    {
+      "control_point_id": "USR-008",
+      "module": "Users",
+      "name": "Session Health",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Authenticated API calls succeed for workspace routes"
+    },
+    {
+      "control_point_id": "USR-009",
+      "module": "Users",
+      "name": "User Dummy Data Coverage",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Workflow tests create an acting user"
+    },
+    {
+      "control_point_id": "USR-010",
+      "module": "Users",
+      "name": "User Workflow Proof",
+      "status": "PARTIAL",
+      "score": 70,
+      "evidence": {
+        "layer": "route",
+        "probe_type": "api_probe",
+        "db_rows": 22,
+        "api_status": 200,
+        "route_ok": true,
+        "workflow_test_ok": false,
+        "payload_present": true,
+        "workflow_test_name": "SalesTaxInvoiceFlowTest",
+        "route_reference": "Route::post('/login' -> /api/auth/login [200]",
+        "failing_target": "/api/auth/login :: companies",
+        "db_metric": "companies",
+        "expected_schema": "HTTP auth response with structured validation or success envelope",
+        "expected_invariant": "Auth routes must reject invalid input and preserve session flows.",
+        "evidence_collector": "lib/control-point-audit-engine.ts",
+        "probable_fix_files": [
+          "app/api",
+          "backend/routes"
+        ],
+        "details": [
+          "Command failed: php artisan test --filter SalesTaxInvoiceFlowTest\n"
+        ]
+      },
+      "root_cause": "A dependent service or workflow execution failed before the control point could complete.",
+      "fix_required": true,
+      "expected": "Audit proof captures authenticated workflow execution"
+    }
+  ]
+}

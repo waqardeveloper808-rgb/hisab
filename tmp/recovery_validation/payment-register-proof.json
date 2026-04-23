@@ -1,0 +1,20 @@
+{
+  "register": "payments",
+  "route": "/workspace/user/payments",
+  "selector": "[data-inspector-real-register=\"payments\"]",
+  "visibleRowCount": 33,
+  "meetsThreshold": true,
+  "firstRows": [
+    "PAY-00037 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-092243 690.00 SAR Journal Ledger",
+    "PAY-00038 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-093429 690.00 SAR Journal Ledger",
+    "PAY-00039 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-094139 690.00 SAR Journal Ledger",
+    "PAY-00040 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-094902 690.00 SAR Journal Ledger",
+    "PAY-00041 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-095601 690.00 SAR Journal Ledger",
+    "PAY-00042 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-100631 690.00 SAR Journal Ledger",
+    "PAY-00043 2026-04-21T21:00:00.000000Z bank_transfer PAY-UI-122504 690.00 SAR Journal Ledger",
+    "PAY-00015 2026-04-19T21:00:00.000000Z bank_transfer PAY-UI-185355 690.00 SAR Journal Ledger",
+    "PAY-00016 2026-04-19T21:00:00.000000Z bank_transfer PAY-UI-185631 690.00 SAR Journal Ledger",
+    "PAY-00036 2026-04-19T21:00:00.000000Z bank_transfer CDM-20260422085843-PAY-10 655.50 SAR Journal Ledger"
+  ],
+  "screenshot": "C:\\hisab\\artifacts\\register_visibility_20260422123547\\screenshots\\payments-register.png"
+}

@@ -1,0 +1,4177 @@
+[
+  {
+    "id": 2155,
+    "type": "debit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DBN-QMS-0506",
+    "issue_date": "2026-04-18",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-18",
+    "grand_total": 138,
+    "balance_due": 138,
+    "paid_total": 0,
+    "tax_total": 18,
+    "taxable_total": 120,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Phase 1 Preview Debit Note",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "source_invoice_number": "AHN-INV-QMS-5021",
+      "adjustment_reason": "Post-delivery surcharge",
+      "supply_date": "2026-04-18",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_vat_number": "300998877660003",
+      "reference": "AHN-DBN-QMS-0506",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T12:49:25.089Z",
+      "payment_tracking_status": "Open"
+    },
+    "template": null,
+    "notes": "Automated Phase 1 evidence debit note.",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21551,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Additional bookkeeping support",
+        "quantity": 1,
+        "unit_price": 120,
+        "gross_amount": 120,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2154,
+    "type": "credit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-CRN-QMS-0506",
+    "issue_date": "2026-04-18",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-18",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Phase 1 Preview Credit Note",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "source_invoice_number": "AHN-INV-QMS-5021",
+      "adjustment_reason": "Returned sample stock",
+      "supply_date": "2026-04-18",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_vat_number": "300998877660003",
+      "reference": "AHN-CRN-QMS-0506",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T12:49:25.056Z",
+      "payment_tracking_status": "Open"
+    },
+    "template": null,
+    "notes": "Automated Phase 1 evidence credit note.",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21541,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Returned thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "PRD-PAPER-02"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2153,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5023",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 0,
+    "paid_total": 1437.5,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-18",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5009",
+      "linked_proforma_number": "AHN-PRO-QMS-5011",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5022",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": null,
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Paid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5023",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Paid",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T11:30:51.865Z",
+      "linked_proforma_id": 2150,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2151,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2152,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "AHN-PRO-QMS-5011 -> AHN-DLV-QMS-5009 -> AHN-INV-QMS-5022 -> PAY-2026-5013",
+      "amount_received": 1437.5,
+      "receipt_date": "2026-04-18",
+      "linked_payment_number": "PAY-2026-5013"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21531,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2152,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5022",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-18",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5021",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5022",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T10:55:20.269Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2149,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5021"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21521,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2151,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DLV-QMS-5009",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-18",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5021",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-DLV-QMS-5009",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T10:55:16.662Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2149,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5021",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 18 -> 17"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21511,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2150,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5011",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-18",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5021",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "payment_status": "Partial",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "temporary_accounting_reference": "TMP-PAY-20260413-98",
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-PRO-QMS-5011",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T10:55:13.013Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2149,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5021"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21501,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2149,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5021",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-18",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1339.75,
+    "paid_total": 97.75,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-18",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5020",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Partial",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5021",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Partial",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-18T10:55:23.091Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2148,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "AHN-PRO-QMS-5010 -> AHN-DLV-QMS-5008 -> AHN-INV-QMS-5020 -> PAY-2026-5012",
+      "amount_received": 97.75,
+      "receipt_date": "2026-04-18",
+      "linked_payment_number": "PAY-2026-5012"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21491,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2148,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5020",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5019",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5020",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T20:43:17.411Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2147,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5019"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21481,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2147,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5019",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5018",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5019",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T20:39:34.059Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2146,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5018"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21471,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2146,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5018",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5017",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5018",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T20:25:49.544Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2145,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5017"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21461,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2145,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5017",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5016",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5017",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:51:06.030Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2144,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5016"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21451,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2144,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5016",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5015",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5016",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:51:03.318Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2143,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5015"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21441,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2143,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5015",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5014",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5015",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:51:00.338Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2142,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5014"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21431,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2142,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5014",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5013",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5014",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:50:54.904Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2141,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5013"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21421,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2141,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5013",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5012",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5013",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:50:50.875Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2140,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5012"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21411,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2140,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5012",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5011",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5012",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:50:40.897Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2139,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5011"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21401,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2139,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5011",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5010",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5011",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:50:11.337Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2138,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5010"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21391,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2138,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5010",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5009",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5010",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:41:04.568Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2137,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5009"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21381,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar": "مسك دفاتر شهري دعم",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2137,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5009",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5010",
+      "linked_tax_invoice_number": "UI-VALID-001",
+      "receiver_name": "Al Noor Trading",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Cross-border tax invoice",
+      "vat_decision_reason": "Foreign buyer or currency path needs stronger buyer identity and explicit compliance review.",
+      "zatca_qr_required": true,
+      "reference": "AHN-INV-QMS-5009",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:37:12.230Z",
+      "linked_proforma_id": 2135,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2136,
+      "linked_tax_invoice_status": "finalized",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5010 -> delivery note AHN-DLV-QMS-5008 -> tax invoice UI-VALID-001"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21371,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "monthly bookkeeping support",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "description_ar_confirmed": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2136,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "UI-VALID-001",
+    "issue_date": "2026-04-17",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-24",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "UI Validation Invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "UI-VALID-001",
+      "currency": "SAR",
+      "supply_date": "2026-04-17",
+      "buyer_vat_number": "300998877660003",
+      "buyer_address_en": "Riyadh",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Open",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T17:27:06.009Z"
+    },
+    "template": null,
+    "notes": "Created by execution validation",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21361,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "description_ar": "??? ????? ????"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 1102,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 102,
+    "document_number": "INV-2026-1102",
+    "issue_date": "2026-04-12",
+    "due_date": "2026-04-19",
+    "grand_total": 2300,
+    "balance_due": 0,
+    "paid_total": 2300,
+    "tax_total": 300,
+    "taxable_total": 2000,
+    "contact": {
+      "display_name": "Desert Retail Co."
+    },
+    "title": "POS integration setup",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "ap@desertretail.sa",
+    "custom_fields": {
+      "reference": "INV-2026-1102",
+      "linked_credit_total": null,
+      "linked_debit_total": null,
+      "payment_tracking_status": "Paid",
+      "payment_status": "Paid",
+      "amount_received": 2300,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "VERIFY-PAY-001",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T15:48:46.082Z",
+      "linked_payment_number": "PAY-2026-5011",
+      "linked_chain": "INV-2026-1102 -> PAY-2026-5011",
+      "buyer_vat_number": "311456782300003"
+    },
+    "template": {
+      "id": 802,
+      "name": "Compact Invoice"
+    },
+    "notes": "Draft preview invoice.",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 11021,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": 11,
+        "description": "POS integration setup",
+        "quantity": 1,
+        "unit_price": 2000,
+        "gross_amount": 2000,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2135,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5010",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310122393500003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "AHN-PRO-QMS-5009",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5008",
+      "payment_reference_note": "VERIFY-001",
+      "payment_status": "Partial",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "temporary_accounting_reference": "TMP-PAY-20260413-1438",
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-PRO-QMS-5010",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T15:48:43.138Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2134,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2128,
+      "linked_tax_invoice_status": "paid",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5009 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5008"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21351,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2134,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5009",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310122393500003",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5008",
+      "linked_proforma_number": "DIAG-PRO-001",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5008",
+      "payment_reference_note": "PW-DIAG-001",
+      "payment_status": "Partial",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "temporary_accounting_reference": "TMP-PAY-20260413-1438",
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-PRO-QMS-5009",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T15:21:59.011Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2133,
+      "linked_proforma_status": "draft",
+      "linked_delivery_note_id": 2132,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2128,
+      "linked_tax_invoice_status": "paid",
+      "linked_chain": "proforma invoice DIAG-PRO-001 -> delivery note AHN-DLV-QMS-5008 -> tax invoice AHN-INV-QMS-5008"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21341,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Monthly bookkeeping",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "SRV-BOOK-01",
+            "item_category": "Services",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2133,
+    "type": "proforma_invoice",
+    "status": "draft",
+    "contact_id": 101,
+    "document_number": "DIAG-PRO-001",
+    "issue_date": "2026-04-17",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-17",
+    "grand_total": 115,
+    "balance_due": 115,
+    "paid_total": 0,
+    "tax_total": 15,
+    "taxable_total": 100,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Diagnostic Proforma",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "receipt_date": "2026-04-17",
+      "payment_method": "bank_transfer",
+      "payment_reference_note": "DIAG-REF-001",
+      "reference": "DIAG-PRO-001",
+      "amount_received": "50",
+      "payment_status": "Partial",
+      "buyer_vat_number": "310122393500003"
+    },
+    "template": null,
+    "notes": "Diagnostic",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21331,
+        "item_id": 305,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Diagnostic line",
+        "quantity": 1,
+        "unit_price": 100,
+        "gross_amount": 100,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2132,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DLV-QMS-5008",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002132",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5007",
+      "linked_proforma_number": "AHN-PRO-QMS-5007",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5008",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-DLV-QMS-5008",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:47:20.806Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2129,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2130,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2128,
+      "linked_tax_invoice_status": "paid",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5007 -> delivery note AHN-DLV-QMS-5007 -> tax invoice AHN-INV-QMS-5008",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 20 -> 19"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21321,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2131,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5008",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002131",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5007",
+      "linked_proforma_number": "AHN-PRO-QMS-5007",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5008",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "temporary_accounting_reference": "TMP-PAY-20260413-98",
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-PRO-QMS-5008",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:47:15.954Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2129,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2130,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2128,
+      "linked_tax_invoice_status": "paid",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5007 -> delivery note AHN-DLV-QMS-5007 -> tax invoice AHN-INV-QMS-5008"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21311,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2130,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DLV-QMS-5007",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002130",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5006",
+      "linked_proforma_number": "AHN-PRO-QMS-5006",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5008",
+      "payment_reference_note": "Follow AHN-INV-QMS-5008",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "payment_status": "Unpaid",
+      "temporary_accounting_reference": null,
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-DLV-QMS-5007",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:46:20.295Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2126,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2127,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2128,
+      "linked_tax_invoice_status": "paid",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5006 -> delivery note AHN-DLV-QMS-5006 -> tax invoice AHN-INV-QMS-5008",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 22 -> 21"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21301,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2129,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5007",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002129",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5006",
+      "linked_proforma_number": "AHN-PRO-QMS-5006",
+      "linked_tax_invoice_number": "AHN-INV-QMS-5008",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "temporary_accounting_reference": "TMP-PAY-20260413-98",
+      "vat_decision_summary": "Operational workflow only",
+      "vat_decision_reason": "This document type does not create final ZATCA tax reporting on its own.",
+      "zatca_qr_required": false,
+      "reference": "AHN-PRO-QMS-5007",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:46:15.004Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2126,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2127,
+      "linked_delivery_note_status": "posted",
+      "linked_tax_invoice_id": 2128,
+      "linked_tax_invoice_status": "paid",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5006 -> delivery note AHN-DLV-QMS-5006 -> tax invoice AHN-INV-QMS-5008"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21291,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2128,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5008",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 0,
+    "paid_total": 97.75,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002128",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5006",
+      "linked_proforma_number": "AHN-PRO-QMS-5006",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-INV-QMS-5008",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:20:41.806Z",
+      "payment_tracking_status": "Paid",
+      "linked_proforma_id": 2126,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2127,
+      "linked_delivery_note_status": "posted",
+      "linked_chain": "AHN-PRO-QMS-5006 -> AHN-DLV-QMS-5006 -> AHN-INV-QMS-5008 -> PAY-2026-5008",
+      "payment_status": "Paid",
+      "amount_received": 97.75,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "linked_payment_number": "PAY-2026-5008"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21281,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2127,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DLV-QMS-5006",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002127",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5005",
+      "linked_proforma_number": "AHN-PRO-QMS-5006",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-DLV-QMS-5006",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:20:34.897Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2126,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2124,
+      "linked_delivery_note_status": "posted",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5006 -> delivery note AHN-DLV-QMS-5005",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 24 -> 23"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21271,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2126,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5006",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002126",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "linked_delivery_note_number": "AHN-DLV-QMS-5005",
+      "linked_proforma_number": "AHN-PRO-QMS-5005",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-PRO-QMS-5006",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:20:30.411Z",
+      "payment_tracking_status": "Open",
+      "linked_proforma_id": 2123,
+      "linked_proforma_status": "finalized",
+      "linked_delivery_note_id": 2124,
+      "linked_delivery_note_status": "posted",
+      "linked_chain": "proforma invoice AHN-PRO-QMS-5005 -> delivery note AHN-DLV-QMS-5005"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21261,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2125,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5007",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 0,
+    "paid_total": 97.75,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002125",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-INV-QMS-5007",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:17:34.086Z",
+      "payment_tracking_status": "Paid",
+      "payment_status": "Paid",
+      "amount_received": 97.75,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "linked_payment_number": "PAY-2026-5007",
+      "linked_chain": "AHN-INV-QMS-5007 -> PAY-2026-5007"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21251,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2124,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DLV-QMS-5005",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002124",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-DLV-QMS-5005",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:17:26.555Z",
+      "payment_tracking_status": "Open",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 26 -> 25"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21241,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2123,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-5005",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002123",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-PRO-QMS-5005",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:17:21.994Z",
+      "payment_tracking_status": "Open"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21231,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2122,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-0506",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 0,
+    "paid_total": 97.75,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002122",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-INV-QMS-0506",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:11:57.647Z",
+      "payment_tracking_status": "Paid",
+      "payment_status": "Paid",
+      "amount_received": 97.75,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "linked_payment_number": "PAY-2026-5006",
+      "linked_chain": "AHN-INV-QMS-0506 -> PAY-2026-5006"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21221,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2121,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "AHN-DLV-QMS-0506",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002121",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-DLV-QMS-0506",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:11:49.574Z",
+      "payment_tracking_status": "Open",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 28 -> 27"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21211,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2120,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "AHN-PRO-QMS-0506",
+    "issue_date": "2026-04-13",
+    "supply_date": "2026-04-17",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002120",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "AHN-PRO-QMS-0506",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:11:45.231Z",
+      "payment_tracking_status": "Open"
+    },
+    "template": null,
+    "notes": "",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 21201,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2119,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 0,
+    "paid_total": 97.75,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002119",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T11:01:29.638Z",
+      "payment_tracking_status": "Paid",
+      "payment_status": "Paid",
+      "amount_received": 97.75,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "linked_payment_number": "PAY-2026-5005"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21191,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2118,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002118",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T11:01:21.336Z",
+      "payment_tracking_status": "Open",
+      "delivery_status": "Delivered",
+      "inventory_before_after": "THERMAL-INVO-FINISHED-GOO-15-468579: 30 -> 29"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21181,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2117,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002117",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T11:01:16.638Z",
+      "payment_tracking_status": "Open"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21171,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2116,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 0,
+    "paid_total": 97.75,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002116",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21161,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2115,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002115",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21151,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2114,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002114",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21141,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2113,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 0,
+    "paid_total": 97.75,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002113",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21131,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2112,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002112",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21121,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2111,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002111",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21111,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2110,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002110",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21101,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2109,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 97.75,
+    "balance_due": 97.75,
+    "paid_total": 0,
+    "tax_total": 12.75,
+    "taxable_total": 85,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "supply_date": "2026-04-17",
+      "currency": "SAR",
+      "seller_name_en": "",
+      "seller_name_ar": "",
+      "seller_vat_number": "",
+      "seller_address_en": "",
+      "seller_address_ar": "",
+      "buyer_name_en": "Al Noor Trading",
+      "buyer_name_ar": "",
+      "buyer_vat_number": "310001000002109",
+      "buyer_address_en": "Riyadh",
+      "buyer_address_ar": "",
+      "payment_status": "Partially Received",
+      "payment_method": "bank_transfer",
+      "amount_received": "50",
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "ADV-TRACK-BROWSER-001",
+      "adjustment_reason": null,
+      "source_invoice_number": null,
+      "reference": "INV-DRAFT-1001"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Your Company LLC",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21091,
+        "item_id": 302,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Thermal invoice paper",
+        "quantity": 1,
+        "unit_price": 85,
+        "gross_amount": 85,
+        "metadata": {
+          "custom_fields": {
+            "item_code": "PRD-PAPER-02",
+            "item_category": "Products",
+            "vat_rate": 15
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2108,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5004",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 11500,
+    "balance_due": 0,
+    "paid_total": 11500,
+    "tax_total": 1500,
+    "taxable_total": 10000,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Noor",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "AHN-INV-QMS-5004",
+      "payment_status": "Paid",
+      "amount_received": 11500,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "payment_tracking_status": "Paid",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:46:27.961Z",
+      "linked_payment_number": "PAY-2026-5009",
+      "linked_chain": "AHN-INV-QMS-5004 -> PAY-2026-5009",
+      "buyer_vat_number": "310122393500003"
+    },
+    "template": null,
+    "notes": "AHN-INV-QMS-5004",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21081,
+        "item_id": 304,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "QMS Audit",
+        "quantity": 1,
+        "unit_price": 10000,
+        "gross_amount": 10000,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2105,
+    "type": "tax_invoice",
+    "status": "paid",
+    "contact_id": 101,
+    "document_number": "AHN-INV-QMS-5004",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 1495,
+    "balance_due": 0,
+    "paid_total": 1495,
+    "tax_total": 195,
+    "taxable_total": 1300,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "AHN-INV-QMS-5004",
+      "payment_status": "Paid",
+      "amount_received": 1495,
+      "receipt_date": "2026-04-17",
+      "payment_reference_note": "PAY-BROWSER-001",
+      "payment_tracking_status": "Paid",
+      "recorded_by": "Workspace User",
+      "recorded_at": "2026-04-17T12:47:28.231Z",
+      "linked_payment_number": "PAY-2026-5010",
+      "linked_chain": "AHN-INV-QMS-5004 -> PAY-2026-5010",
+      "buyer_vat_number": "310122393500003"
+    },
+    "template": null,
+    "notes": "AHN-INV-QMS-5004",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21051,
+        "item_id": 303,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Inspection Services",
+        "quantity": 1,
+        "unit_price": 1300,
+        "gross_amount": 1300,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2104,
+    "type": "tax_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "INV-DRAFT-1001",
+    "issue_date": "2026-04-13",
+    "due_date": "2026-04-20",
+    "grand_total": 1495,
+    "balance_due": 1495,
+    "paid_total": 0,
+    "tax_total": 195,
+    "taxable_total": 1300,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Preview invoice",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "INV-DRAFT-1001",
+      "buyer_vat_number": "310122393500003"
+    },
+    "template": null,
+    "notes": "INV-DRAFT-1001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21041,
+        "item_id": 303,
+        "ledger_account_id": 4100,
+        "cost_center_id": null,
+        "description": "Inspection Services",
+        "quantity": 1,
+        "unit_price": 1300,
+        "gross_amount": 1300,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2106,
+    "type": "quotation",
+    "status": "draft",
+    "contact_id": 102,
+    "document_number": "QUO-2026-2106",
+    "issue_date": "2026-04-14",
+    "due_date": "2026-04-21",
+    "grand_total": 2875,
+    "balance_due": 2875,
+    "paid_total": 0,
+    "tax_total": 375,
+    "taxable_total": 2500,
+    "contact": {
+      "display_name": "Desert Retail Co."
+    },
+    "title": "Warehouse onboarding quotation",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "ap@desertretail.sa",
+    "custom_fields": {
+      "reference": "QUO-2026-2106",
+      "buyer_vat_number": "311456782300003"
+    },
+    "template": {
+      "id": 802,
+      "name": "Compact Invoice"
+    },
+    "notes": "Customer requested pricing before invoice issue.",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading Co.",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21061,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": 11,
+        "description": "Warehouse onboarding quotation",
+        "quantity": 1,
+        "unit_price": 2500,
+        "gross_amount": 2500,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  },
+  {
+    "id": 2107,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "PRO-2026-2107",
+    "issue_date": "2026-04-14",
+    "due_date": "2026-04-21",
+    "grand_total": 5175,
+    "balance_due": 5175,
+    "paid_total": 0,
+    "tax_total": 675,
+    "taxable_total": 4500,
+    "contact": {
+      "display_name": "Al Noor Trading"
+    },
+    "title": "Annual compliance rollout proforma",
+    "language_code": "en",
+    "sent_at": "2026-04-14T09:00:00Z",
+    "sent_to_email": "finance@alnoor.sa",
+    "custom_fields": {
+      "reference": "PRO-2026-2107",
+      "buyer_vat_number": "310122393500003"
+    },
+    "template": {
+      "id": 801,
+      "name": "Standard Tax Invoice"
+    },
+    "notes": "Pre-billing approval document before conversion to tax invoice.",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Gulf Hisab Trading Co.",
+        "vat_number": "300000000000003"
+      }
+    },
+    "lines": [
+      {
+        "id": 21071,
+        "item_id": 301,
+        "ledger_account_id": 4100,
+        "cost_center_id": 11,
+        "description": "Annual compliance rollout proforma",
+        "quantity": 1,
+        "unit_price": 4500,
+        "gross_amount": 4500,
+        "metadata": {
+          "custom_fields": {}
+        }
+      }
+    ]
+  }
+]

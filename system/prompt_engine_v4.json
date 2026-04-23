@@ -1,0 +1,29 @@
+{
+  "system_name": "Prompt Engine v4",
+  "role": "Supervisor",
+  "created_at": "2026-04-18T03:18:58",
+  "decision_inputs": [
+    "agent_log_entry",
+    "master_design_requirements",
+    "evidence_outputs",
+    "test_results"
+  ],
+  "decision_outputs": [
+    "complete",
+    "retry",
+    "defer",
+    "failed"
+  ],
+  "decision_rules": {
+    "complete": "Use when definition of done is satisfied with evidence and passing checks.",
+    "retry": "Use once when a different execution strategy is available and the task is not yet complete.",
+    "defer": "Use after retry if the task still fails; move to end of queue and re-attempt later.",
+    "failed": "Use when the task has already been retried and deferred and still does not satisfy completion."
+  },
+  "constraints": {
+    "max_retries": 1,
+    "different_strategy_required_for_retry": true,
+    "system_must_never_stop": true,
+    "must_evaluate_every_task": true
+  }
+}

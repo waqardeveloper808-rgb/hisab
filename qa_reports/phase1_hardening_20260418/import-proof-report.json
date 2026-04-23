@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-04-18T13:11:19.280Z",
+  "baseUrl": "http://127.0.0.1:3010",
+  "screenshots": [
+    "01-import-upload-screen.png",
+    "02-validation-screen-row-errors.png",
+    "03-validation-screen-format-duplicate.png",
+    "04-mapping-screen.png",
+    "05-successful-import-result.png",
+    "06-import-logs-screen.png",
+    "07-reconciliation-integration-state.png"
+  ],
+  "importedReferences": [
+    "HARDEN-DEP-001",
+    "HARDEN-CHQ-001"
+  ],
+  "runtimeStatementLineCount": 2,
+  "cycleResults": [
+    {
+      "cycle": 1,
+      "name": "Import upload route",
+      "result": "pass",
+      "detail": "Reconciliation import panel opened in preview mode with active bank account context."
+    },
+    {
+      "cycle": 2,
+      "name": "Missing columns validation",
+      "result": "pass",
+      "detail": "Preview blocked import with explicit required-field feedback for missing transaction date mapping."
+    },
+    {
+      "cycle": 3,
+      "name": "Bad format and duplicate warnings",
+      "result": "pass",
+      "detail": "Preview surfaced invalid date and amount formatting plus duplicate-reference warnings before import."
+    },
+    {
+      "cycle": 4,
+      "name": "Good file and pasted table preview",
+      "result": "pass",
+      "detail": "Tabular pasted data parsed successfully with mapping suggestions and valid preview rows."
+    },
+    {
+      "cycle": 5,
+      "name": "Successful import and reconciliation handoff",
+      "result": "pass",
+      "detail": "Imported rows were visible in the live statement register and led back into match-candidate review."
+    }
+  ]
+}

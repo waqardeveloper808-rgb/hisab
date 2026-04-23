@@ -1,0 +1,42 @@
+{
+  "date": "2026-04-18",
+  "mode": "authenticated-next-proxy",
+  "summary": "Five runtime cycles succeeded through the signed frontend session and workspace proxy.",
+  "cycles": [
+    {
+      "cycle": 1,
+      "invoiceNumber": "TINV-00005",
+      "paymentReference": "RECOVERY-PAYMENT-1776519306-1",
+      "reconciledCount": 1,
+      "vatSummaryRows": 1
+    },
+    {
+      "cycle": 2,
+      "invoiceNumber": "TINV-00006",
+      "paymentReference": "RECOVERY-PAYMENT-1776519312-2",
+      "reconciledCount": 1,
+      "vatSummaryRows": 1
+    },
+    {
+      "cycle": 3,
+      "invoiceNumber": "TINV-00007",
+      "paymentReference": "RECOVERY-PAYMENT-1776519319-3",
+      "reconciledCount": 1,
+      "vatSummaryRows": 1
+    },
+    {
+      "cycle": 4,
+      "invoiceNumber": "TINV-00008",
+      "paymentReference": "RECOVERY-PAYMENT-1776519326-4",
+      "reconciledCount": 1,
+      "vatSummaryRows": 1
+    },
+    {
+      "cycle": 5,
+      "invoiceNumber": "TINV-00009",
+      "paymentReference": "RECOVERY-PAYMENT-1776519332-5",
+      "reconciledCount": 1,
+      "vatSummaryRows": 1
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+  "generated_at": "2026-04-20T20:28:29.769Z",
+  "generated_by": "tools/capture-control-point-audit-engine.mjs",
+  "results": {
+    "FRM-001": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Required markers are visibly rendered on sampled business forms before submit.",
+      "checked_items": [
+        "Checked customer create labels for visible required markers.",
+        "Checked company settings labels for visible required markers."
+      ],
+      "evidence": [
+        "Customer required labels with markers: yes.",
+        "Settings required labels with markers: yes."
+      ]
+    },
+    "FRM-002": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Inline validation appears on invalid input and clears on correction in the sampled business forms.",
+      "checked_items": [
+        "Submitted the customer form with invalid values.",
+        "Checked field-level errors near inputs.",
+        "Corrected invalid VAT input and checked that the field error cleared."
+      ],
+      "evidence": [
+        "Customer name error visible after invalid submit: yes.",
+        "Customer VAT error cleared after correction: yes."
+      ]
+    },
+    "FRM-003": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Error banners now explain both the problem and the next recovery step.",
+      "checked_items": [
+        "Triggered an invalid customer submit.",
+        "Checked whether the blocking banner explains both failure and recovery."
+      ],
+      "evidence": [
+        "Customer blocking banner text: Customer was not saved. Fix the highlighted fields, then try again.."
+      ]
+    },
+    "FRM-004": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Save behavior now shows explicit persistence confirmation after a successful settings save.",
+      "checked_items": [
+        "Restored valid company settings data.",
+        "Saved settings and checked for explicit success confirmation."
+      ],
+      "evidence": [
+        "Settings save confirmation visible: Company settings were saved successfully.."
+      ]
+    },
+    "FRM-005": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Sampled business forms now distinguish draft-in-progress state from a clean starting state.",
+      "checked_items": [
+        "Opened a new customer draft.",
+        "Changed a field and checked whether draft-in-progress state became visible."
+      ],
+      "evidence": [
+        "Draft indicator after editing: Draft in progress."
+      ]
+    },
+    "FRM-006": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Blocked states now explain the stop condition and the next recovery move in one place.",
+      "checked_items": [
+        "Triggered blocking states in customer creation and settings save.",
+        "Checked whether the banner explains the block and what to do next."
+      ],
+      "evidence": [
+        "Customer blocking banner: Customer was not saved. Fix the highlighted fields, then try again..",
+        "Settings blocking banner: Settings were not saved. Fix the highlighted company fields, then try again.."
+      ]
+    },
+    "FRM-007": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "VAT fields now expose format guidance and enforce it with inline validation.",
+      "checked_items": [
+        "Checked customer and settings VAT hints.",
+        "Entered invalid VAT input in settings and checked for an inline error.",
+        "Corrected the VAT field and checked that the error cleared."
+      ],
+      "evidence": [
+        "Customer VAT hint: Saudi VAT numbers contain 15 digits.",
+        "Settings VAT hint: Saudi VAT numbers contain 15 digits.",
+        "Settings VAT error cleared after correction: yes."
+      ]
+    },
+    "FRM-008": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "CR number validation now enforces format and clears when corrected.",
+      "checked_items": [
+        "Entered invalid CR input in settings.",
+        "Checked that an inline error appeared and then cleared after correction."
+      ],
+      "evidence": [
+        "CR error before correction: CR number must contain exactly 10 digits..",
+        "CR error after correction cleared: yes."
+      ]
+    },
+    "FRM-009": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Phone fields now expose structure guidance and working inline validation.",
+      "checked_items": [
+        "Checked vendor phone hint text.",
+        "Entered invalid and valid phone values in the vendor form.",
+        "Entered invalid and valid phone values in settings."
+      ],
+      "evidence": [
+        "Vendor phone hint: Use 9 to 15 digits, for example +966512345678.",
+        "Vendor phone error cleared after correction: yes.",
+        "Settings phone error cleared after correction: yes."
+      ]
+    },
+    "FRM-010": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Email fields now enforce valid structure in the sampled business forms.",
+      "checked_items": [
+        "Entered invalid and valid email values in the vendor form.",
+        "Entered invalid and valid email values in settings."
+      ],
+      "evidence": [
+        "Vendor email error cleared after correction: yes.",
+        "Settings email error cleared after correction: yes."
+      ]
+    },
+    "FRM-011": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Postal code validation now enforces length and clears when corrected.",
+      "checked_items": [
+        "Entered invalid and valid postal code values in settings.",
+        "Checked that the inline error cleared after correction."
+      ],
+      "evidence": [
+        "Postal code error before correction: Postal code must contain exactly 5 digits..",
+        "Postal code error cleared after correction: yes."
+      ]
+    },
+    "FRM-012": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "PO Box input is now accessible and enforces format from the live UI.",
+      "checked_items": [
+        "Checked that the PO Box field is visible in settings.",
+        "Entered invalid and valid PO Box values and watched the inline error clear."
+      ],
+      "evidence": [
+        "PO Box hint: Use digits only or PO Box 12345.",
+        "PO Box error cleared after correction: yes."
+      ]
+    },
+    "FRM-013": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Address structure is visibly enforced through separate required fields and blocking validation.",
+      "checked_items": [
+        "Cleared street, city, and country in settings.",
+        "Triggered a blocked save and checked for address-structure guidance."
+      ],
+      "evidence": [
+        "Settings address-structure banner: Settings were not saved. Fix the highlighted company fields, then try again..",
+        "Settings address-structure field message: Complete street, city, and country so the company address is structured before saving.."
+      ]
+    },
+    "FRM-014": {
+      "status": "PASS",
+      "score": 100,
+      "last_checked_at": "2026-04-20T20:28:27.557Z",
+      "audit_reason": "Fax validation now enforces digit structure when a fax number is provided.",
+      "checked_items": [
+        "Entered invalid and valid fax values in settings.",
+        "Checked that the inline error cleared after correction."
+      ],
+      "evidence": [
+        "Fax error before correction: Use a fax number with 9 to 15 digits when fax is provided..",
+        "Fax error cleared after correction: yes."
+      ]
+    },
+    "ACC-001": {
+      "status": "BLOCKED",
+      "score": 18,
+      "last_checked_at": "2026-04-20T20:28:27.562Z",
+      "audit_reason": "/workspace/accounting is not currently accessible from the frontend, so the system cannot proceed into this feature.",
+      "checked_items": [
+        "Tried to open /workspace/accounting from the current frontend."
+      ],
+      "evidence": [
+        "/workspace/accounting could not be verified as accessible during this dynamic pass."
+      ]
+    },
+    "INV-001": {
+      "status": "PARTIAL",
+      "score": 48,
+      "last_checked_at": "2026-04-20T20:28:29.769Z",
+      "audit_reason": "Inventory surfaces are reachable from the frontend, but this pass still treats deeper movement truth validation as partial until workflow evidence expands.",
+      "checked_items": [
+        "Opened /workspace/user/stock from the current frontend.",
+        "Verified that the feature is accessible, so BLOCKED is not appropriate for this control point."
+      ],
+      "evidence": [
+        "/workspace/user/stock is accessible from the current frontend shell."
+      ]
+    }
+  }
+}

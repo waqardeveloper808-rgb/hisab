@@ -1,0 +1,840 @@
+[
+  {
+    "id": 173451,
+    "inventory_record_id": 9004,
+    "date": "2026-04-18",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 2135,
+        "documentNumber": "AHN-PRO-QMS-5010",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2149,
+        "documentNumber": "AHN-INV-QMS-5021",
+        "documentType": "tax_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 173450,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "AHN-DLV-QMS-5009",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2151",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "AHN-DLV-QMS-5001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2127,
+        "documentNumber": "AHN-DLV-QMS-5006",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2126,
+        "documentNumber": "AHN-PRO-QMS-5006",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2129,
+        "documentNumber": "AHN-PRO-QMS-5007",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2128,
+        "documentNumber": "AHN-INV-QMS-5008",
+        "documentType": "tax_invoice",
+        "status": "paid"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2151,
+        "documentNumber": "AHN-DLV-QMS-5009",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 149788,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 2129,
+        "documentNumber": "AHN-PRO-QMS-5007",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2128,
+        "documentNumber": "AHN-INV-QMS-5008",
+        "documentType": "tax_invoice",
+        "status": "paid"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 149787,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "AHN-DLV-QMS-5008",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2132",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "AHN-DLV-QMS-5001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2127,
+        "documentNumber": "AHN-DLV-QMS-5006",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2126,
+        "documentNumber": "AHN-PRO-QMS-5006",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "draft"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 126334,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 2126,
+        "documentNumber": "AHN-PRO-QMS-5006",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "AHN-PRO-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 126333,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "AHN-DLV-QMS-5007",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2130",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "draft"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "AHN-DLV-QMS-5001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "draft"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "draft"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "draft"
+      },
+      {
+        "documentId": 2127,
+        "documentNumber": "AHN-DLV-QMS-5006",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "draft"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 102902,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 102901,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "AHN-DLV-QMS-5006",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2127",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-PREVIEW-9004",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "INV-DRAFT-1001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2127,
+        "documentNumber": "AHN-DLV-QMS-5006",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 79503,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 79502,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "AHN-DLV-QMS-5005",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2124",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-PREVIEW-9004",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "INV-DRAFT-1001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 56137,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 56136,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "AHN-DLV-QMS-0506",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2121",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-PREVIEW-9004",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "INV-DRAFT-1001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 32804,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "SAL-THERMAL-INVO-FINISHED-GOO-15-468579",
+    "reason": "Inventory sale",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": null,
+        "documentNumber": "DN-BROWSER-LINK",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 32803,
+    "inventory_record_id": 9004,
+    "date": "2026-04-13",
+    "reference": "INV-DRAFT-1001",
+    "reason": "Delivery note inventory issue",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 1,
+    "source": "production",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-DLV-2118",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "attachments": [],
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-PREVIEW-9004",
+        "documentType": "delivery_note",
+        "status": "linked"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "INV-DRAFT-1001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ],
+    "transaction_type": "delivery_note"
+  },
+  {
+    "id": 9504,
+    "inventory_record_id": 9004,
+    "date": "2026-04-17",
+    "reference": "ADJ-2026-9504",
+    "reason": "Production intake",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "product_name": "Thermal invoice paper",
+    "quantity": 30,
+    "source": "production",
+    "recorded_by": "Inventory Controller",
+    "journal_entry_number": "JE-PREVIEW-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "DN-PREVIEW-9004",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ]
+  },
+  {
+    "id": 9503,
+    "inventory_record_id": 9003,
+    "date": "2026-04-17",
+    "reference": "ADJ-2026-9503",
+    "reason": "Production intake",
+    "item_count": 1,
+    "status": "posted",
+    "code": "COPPER-COIL-RAW-MATERIAL-10MM-B20260417C",
+    "product_name": "Copper Coil",
+    "quantity": 60,
+    "source": "production"
+  },
+  {
+    "id": 9502,
+    "inventory_record_id": 9002,
+    "date": "2026-04-17",
+    "reference": "ADJ-2026-9502",
+    "reason": "Production intake",
+    "item_count": 1,
+    "status": "posted",
+    "code": "STEEL-PANEL-FINISHED-GOODS-LARGE-B20260417",
+    "product_name": "Steel Panel",
+    "quantity": 24,
+    "source": "production"
+  },
+  {
+    "id": 9501,
+    "inventory_record_id": 9001,
+    "date": "2026-04-17",
+    "reference": "ADJ-2026-9501",
+    "reason": "Purchase receipt",
+    "item_count": 1,
+    "status": "posted",
+    "code": "THERMAL-PAPER-RAW-MATERIAL-80MM-GEN",
+    "product_name": "Thermal Paper Roll",
+    "quantity": 120,
+    "source": "purchase"
+  }
+]

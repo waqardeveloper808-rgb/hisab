@@ -1,0 +1,406 @@
+{
+  "generatedAt": "2026-04-18T12:49:33.790Z",
+  "baseUrl": "http://127.0.0.1:3006",
+  "screenshots": [
+    "01-profit-loss-report.png",
+    "02-vat-summary-report.png",
+    "03-reconciliation-import-preview.png",
+    "04-journal-linking-register.png"
+  ],
+  "pdfs": [
+    "invoice-output.pdf",
+    "proforma-output.pdf",
+    "delivery-note-output.pdf",
+    "credit-note-output.pdf",
+    "debit-note-output.pdf"
+  ],
+  "previewDocuments": {
+    "proforma": 2150,
+    "delivery": 2151,
+    "invoice": 2149,
+    "creditNote": 2154,
+    "debitNote": 2155
+  },
+  "importLogs": [],
+  "reconciliationEvidence": {
+    "importPanelAvailable": false,
+    "blocker": "Preview mode does not expose live bank-account context, so reconciliation import stays disabled without workspace backend credentials."
+  },
+  "reportSnapshot": {
+    "profitLoss": {
+      "data": {
+        "lines": [
+          {
+            "code": "4000",
+            "name": "Sales Revenue",
+            "type": "income",
+            "net_amount": 34880
+          },
+          {
+            "code": "5000",
+            "name": "Cost of Goods Sold",
+            "type": "expense",
+            "net_amount": 852
+          },
+          {
+            "code": "6000",
+            "name": "Rent Expense",
+            "type": "expense",
+            "net_amount": 3800
+          }
+        ],
+        "revenue_total": 34880,
+        "expense_total": 4652,
+        "net_profit": 30228
+      }
+    },
+    "vatSummary": {
+      "data": [
+        {
+          "code": "S15",
+          "name": "Output VAT",
+          "tax_rate": 15,
+          "taxable_amount": 48195,
+          "tax_amount": 7229.25
+        },
+        {
+          "code": "P15",
+          "name": "Input VAT",
+          "tax_rate": 15,
+          "taxable_amount": 7855,
+          "tax_amount": 1178.25
+        }
+      ]
+    },
+    "vatDetail": {
+      "data": [
+        {
+          "code": "S15",
+          "name": "Standard VAT",
+          "tax_rate": 15,
+          "output_taxable_amount": 48195,
+          "output_tax_amount": 7229.25,
+          "input_taxable_amount": 7855,
+          "input_tax_amount": 1178.25
+        }
+      ]
+    },
+    "vatReceived": {
+      "data": [
+        {
+          "id": 2155,
+          "document_number": "AHN-DBN-QMS-0506",
+          "issue_date": "2026-04-18",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 120,
+          "vat_amount": 18
+        },
+        {
+          "id": 2153,
+          "document_number": "AHN-INV-QMS-5023",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2152,
+          "document_number": "AHN-INV-QMS-5022",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2149,
+          "document_number": "AHN-INV-QMS-5021",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2148,
+          "document_number": "AHN-INV-QMS-5020",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2147,
+          "document_number": "AHN-INV-QMS-5019",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2146,
+          "document_number": "AHN-INV-QMS-5018",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2145,
+          "document_number": "AHN-INV-QMS-5017",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2144,
+          "document_number": "AHN-INV-QMS-5016",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2143,
+          "document_number": "AHN-INV-QMS-5015",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2142,
+          "document_number": "AHN-INV-QMS-5014",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2141,
+          "document_number": "AHN-INV-QMS-5013",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2140,
+          "document_number": "AHN-INV-QMS-5012",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2139,
+          "document_number": "AHN-INV-QMS-5011",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2138,
+          "document_number": "AHN-INV-QMS-5010",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2137,
+          "document_number": "AHN-INV-QMS-5009",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2136,
+          "document_number": "UI-VALID-001",
+          "issue_date": "2026-04-17",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 1250,
+          "vat_amount": 187.5
+        },
+        {
+          "id": 2128,
+          "document_number": "AHN-INV-QMS-5008",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2125,
+          "document_number": "AHN-INV-QMS-5007",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2122,
+          "document_number": "AHN-INV-QMS-0506",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2119,
+          "document_number": "AHN-INV-QMS-5001",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2116,
+          "document_number": "AHN-INV-QMS-5002",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2113,
+          "document_number": "AHN-INV-QMS-5003",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 85,
+          "vat_amount": 12.75
+        },
+        {
+          "id": 2108,
+          "document_number": "AHN-INV-QMS-5004",
+          "issue_date": "2026-04-13",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 10000,
+          "vat_amount": 1500
+        },
+        {
+          "id": 1301,
+          "document_number": "DN-2026-1301",
+          "issue_date": "2026-04-15",
+          "customer": "Desert Retail Co.",
+          "taxable_amount": 500,
+          "vat_amount": 75
+        },
+        {
+          "id": 1102,
+          "document_number": "INV-2026-1102",
+          "issue_date": "2026-04-12",
+          "customer": "Desert Retail Co.",
+          "taxable_amount": 2000,
+          "vat_amount": 300
+        },
+        {
+          "id": 1101,
+          "document_number": "INV-2026-1101",
+          "issue_date": "2026-04-10",
+          "customer": "Al Noor Trading",
+          "taxable_amount": 4000,
+          "vat_amount": 600
+        }
+      ]
+    },
+    "vatPaid": {
+      "data": [
+        {
+          "id": 2102,
+          "reference": "PINV-2026-2102",
+          "issue_date": "2026-04-11",
+          "vendor": "Najd Office Systems",
+          "vat_amount": 450,
+          "category": "purchase"
+        },
+        {
+          "id": 2101,
+          "reference": "BILL-2026-2101",
+          "issue_date": "2026-04-08",
+          "vendor": "Eastern Paper Supply",
+          "vat_amount": 120,
+          "category": "expense"
+        }
+      ]
+    },
+    "trialBalance": {
+      "data": [
+        {
+          "code": "1100",
+          "name": "Accounts Receivable",
+          "type": "asset",
+          "debit_total": 41359.75,
+          "credit_total": 21414.5,
+          "balance": 19945.25
+        },
+        {
+          "code": "1150",
+          "name": "Inventory — Trading",
+          "type": "asset",
+          "debit_total": 0,
+          "credit_total": 852,
+          "balance": -852
+        },
+        {
+          "code": "1200",
+          "name": "Main Bank Account",
+          "type": "asset",
+          "debit_total": 20766.75,
+          "credit_total": 0,
+          "balance": 20766.75
+        },
+        {
+          "code": "1300",
+          "name": "VAT Receivable (Input VAT)",
+          "type": "asset",
+          "debit_total": 570,
+          "credit_total": 0,
+          "balance": 570
+        },
+        {
+          "code": "2000",
+          "name": "Accounts Payable",
+          "type": "liability",
+          "debit_total": 0,
+          "credit_total": 4970,
+          "balance": -4970
+        },
+        {
+          "code": "2200",
+          "name": "VAT Payable (Output VAT)",
+          "type": "liability",
+          "debit_total": 162.75,
+          "credit_total": 5394.75,
+          "balance": -5232
+        },
+        {
+          "code": "4000",
+          "name": "Sales Revenue",
+          "type": "income",
+          "debit_total": 1085,
+          "credit_total": 35965,
+          "balance": -34880
+        },
+        {
+          "code": "5000",
+          "name": "Cost of Goods Sold",
+          "type": "expense",
+          "debit_total": 852,
+          "credit_total": 0,
+          "balance": 852
+        },
+        {
+          "code": "6000",
+          "name": "Rent Expense",
+          "type": "expense",
+          "debit_total": 3800,
+          "credit_total": 0,
+          "balance": 3800
+        }
+      ]
+    }
+  },
+  "realWorkflowProof": "../phase1_closure_20260418/phase1-workflow-proof.json"
+}

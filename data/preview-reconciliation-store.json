@@ -1,0 +1,34 @@
+{
+  "statementLines": [
+    {
+      "id": 9701,
+      "bank_account_id": 10,
+      "transaction_date": "2026-04-18",
+      "value_date": null,
+      "reference": "HARDEN-DEP-001",
+      "description": "Receipt for April invoice",
+      "debit": 0,
+      "credit": 1437.5,
+      "running_balance": 1437.5,
+      "status": "unmatched",
+      "matched_journal_line_id": null,
+      "reconciled_at": null,
+      "notes": null
+    },
+    {
+      "id": 9702,
+      "bank_account_id": 10,
+      "transaction_date": "2026-04-19",
+      "value_date": null,
+      "reference": "HARDEN-CHQ-001",
+      "description": "Supplier bank payment",
+      "debit": 420,
+      "credit": 0,
+      "running_balance": 1017.5,
+      "status": "unmatched",
+      "matched_journal_line_id": null,
+      "reconciled_at": null,
+      "notes": null
+    }
+  ]
+}

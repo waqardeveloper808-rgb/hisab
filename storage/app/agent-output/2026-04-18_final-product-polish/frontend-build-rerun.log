@@ -1,0 +1,156 @@
+
+> hisab@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.2.3 (Turbopack)
+- Experiments (use with caution):
+  Γ£ô globalNotFound
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 12.6s
+  Running TypeScript ...
+  Finished TypeScript in 11.2s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/125) ...
+  Generating static pages using 7 workers (31/125) 
+  Generating static pages using 7 workers (62/125) 
+  Generating static pages using 7 workers (93/125) 
+Γ£ô Generating static pages using 7 workers (125/125) in 911ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ ╞Æ /admin
+Γö£ ╞Æ /agents
+Γö£ ╞Æ /api/auth/login
+Γö£ ╞Æ /api/auth/logout
+Γö£ ╞Æ /api/auth/register
+Γö£ ╞Æ /api/platform/[...slug]
+Γö£ ╞Æ /api/workspace/[...slug]
+Γö£ ╞Æ /api/workspace/audit
+Γö£ Γùï /helpdesk-ai
+Γö£ Γùï /icon.svg
+Γö£ ╞Æ /login
+Γö£ Γùï /plans
+Γö£ Γùï /products
+Γö£ ╞Æ /register
+Γö£ ╞Æ /support
+Γö£ ╞Æ /workspace
+Γö£ ╞Æ /workspace/[...slug]
+Γö£ ╞Æ /workspace/accounting
+Γö£ ╞Æ /workspace/accounting/books
+Γö£ ╞Æ /workspace/admin
+Γö£ ╞Æ /workspace/admin/access-management
+Γö£ ╞Æ /workspace/admin/agents
+Γö£ ╞Æ /workspace/admin/audit
+Γö£ ╞Æ /workspace/admin/company-reviews
+Γö£ ╞Æ /workspace/admin/customers
+Γö£ ╞Æ /workspace/admin/document-templates
+Γö£ ╞Æ /workspace/admin/integrations
+Γö£ ╞Æ /workspace/admin/plans
+Γö£ ╞Æ /workspace/admin/review
+Γö£ ╞Æ /workspace/admin/review/accounting
+Γö£ ╞Æ /workspace/admin/review/density
+Γö£ ╞Æ /workspace/admin/review/documents
+Γö£ ╞Æ /workspace/admin/review/evidence
+Γö£ ╞Æ /workspace/admin/review/findings
+Γö£ ╞Æ /workspace/admin/review/history
+Γö£ ╞Æ /workspace/admin/review/inventory
+Γö£ ╞Æ /workspace/admin/review/modules
+Γö£ ╞Æ /workspace/admin/review/prompts
+Γö£ ╞Æ /workspace/admin/review/routes
+Γö£ ╞Æ /workspace/admin/support-accounts
+Γö£ ╞Æ /workspace/admin/system-health
+Γö£ ╞Æ /workspace/agent
+Γö£ ╞Æ /workspace/agent/activity
+Γö£ ╞Æ /workspace/agent/assigned-accounts
+Γö£ ╞Æ /workspace/agent/follow-ups
+Γö£ ╞Æ /workspace/agent/leads
+Γö£ ╞Æ /workspace/agent/pending-outreach
+Γö£ ╞Æ /workspace/agent/pipeline
+Γö£ ╞Æ /workspace/agent/referrals
+Γö£ ╞Æ /workspace/agents
+Γö£ ╞Æ /workspace/assistant
+Γö£ ╞Æ /workspace/assistant/ai-help
+Γö£ ╞Æ /workspace/assistant/customer-accounts
+Γö£ ╞Æ /workspace/assistant/customer-follow-up
+Γö£ ╞Æ /workspace/assistant/help-center
+Γö£ ╞Æ /workspace/assistant/help-queue
+Γö£ ╞Æ /workspace/assistant/invoice-help
+Γö£ ╞Æ /workspace/assistant/onboarding
+Γö£ ╞Æ /workspace/assistant/pending-tasks
+Γö£ ╞Æ /workspace/banking
+Γö£ ╞Æ /workspace/bills/[documentId]
+Γö£ ╞Æ /workspace/bills/new
+Γö£ ╞Æ /workspace/contacts
+Γö£ ╞Æ /workspace/dashboard
+Γö£ ╞Æ /workspace/help
+Γö£ ╞Æ /workspace/help/ai
+Γö£ ╞Æ /workspace/help/articles/[slug]
+Γö£ ╞Æ /workspace/help/faq
+Γö£ ╞Æ /workspace/invoices/[documentId]
+Γö£ ╞Æ /workspace/invoices/[documentId]/pdf
+Γö£ ╞Æ /workspace/invoices/new
+Γö£ ╞Æ /workspace/purchases
+Γö£ ╞Æ /workspace/purchases/cost-centers
+Γö£ ╞Æ /workspace/reconciliation
+Γö£ ╞Æ /workspace/reports
+Γö£ ╞Æ /workspace/reports/registers
+Γö£ ╞Æ /workspace/sales
+Γö£ ╞Æ /workspace/settings
+Γö£ ╞Æ /workspace/settings/accounting
+Γö£ ╞Æ /workspace/settings/company
+Γö£ ╞Æ /workspace/settings/templates
+Γö£ ╞Æ /workspace/settings/users
+Γö£ ╞Æ /workspace/user
+Γö£ ╞Æ /workspace/user/banking
+Γö£ ╞Æ /workspace/user/bills
+Γö£ ╞Æ /workspace/user/branches
+Γö£ ╞Æ /workspace/user/chart-of-accounts
+Γö£ ╞Æ /workspace/user/consumables
+Γö£ ╞Æ /workspace/user/cost-centers
+Γö£ ╞Æ /workspace/user/credit-note-templates
+Γö£ ╞Æ /workspace/user/credit-notes
+Γö£ ╞Æ /workspace/user/customers
+Γö£ ╞Æ /workspace/user/debit-note-templates
+Γö£ ╞Æ /workspace/user/debit-notes
+Γö£ ╞Æ /workspace/user/document-templates
+Γö£ ╞Æ /workspace/user/expenses
+Γö£ ╞Æ /workspace/user/finished-materials
+Γö£ ╞Æ /workspace/user/inventory-adjustments
+Γö£ ╞Æ /workspace/user/invoice-templates
+Γö£ ╞Æ /workspace/user/invoices
+Γö£ ╞Æ /workspace/user/journal-entries
+Γö£ ╞Æ /workspace/user/ledger
+Γö£ ╞Æ /workspace/user/opening-balances
+Γö£ ╞Æ /workspace/user/payments
+Γö£ ╞Æ /workspace/user/products
+Γö£ ╞Æ /workspace/user/proforma-invoices
+Γö£ ╞Æ /workspace/user/proforma-templates
+Γö£ ╞Æ /workspace/user/projects
+Γö£ ╞Æ /workspace/user/purchase-orders
+Γö£ ╞Æ /workspace/user/purchase-templates
+Γö£ ╞Æ /workspace/user/quotation-templates
+Γö£ ╞Æ /workspace/user/quotations
+Γö£ ╞Æ /workspace/user/raw-materials
+Γö£ ╞Æ /workspace/user/reconciliation
+Γö£ ╞Æ /workspace/user/reports
+Γö£ ╞Æ /workspace/user/reports/balance-sheet
+Γö£ ╞Æ /workspace/user/reports/cash-flow
+Γö£ ╞Æ /workspace/user/reports/payables-aging
+Γö£ ╞Æ /workspace/user/reports/profit-loss
+Γö£ ╞Æ /workspace/user/reports/receivables-aging
+Γö£ ╞Æ /workspace/user/reports/trial-balance
+Γö£ ╞Æ /workspace/user/reports/vat-summary
+Γö£ ╞Æ /workspace/user/sold-materials
+Γö£ ╞Æ /workspace/user/stock
+Γö£ ╞Æ /workspace/user/vat
+Γö£ ╞Æ /workspace/user/vendor-payments
+Γö£ ╞Æ /workspace/user/vendors
+Γöö ╞Æ /workspace/vat
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

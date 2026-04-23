@@ -1,0 +1,259 @@
+[
+  {
+    "header_html": null,
+    "is_active": true,
+    "is_default": true,
+    "logo_asset_id": null,
+    "settings": {
+      "canvas_padding": 16,
+      "section_gap": 12,
+      "top_bar_height": 3,
+      "card_style": "none",
+      "spacing_scale": 1,
+      "section_grid_columns": 2,
+      "section_order": "header,title,document-info,delivery,customer,items,totals,notes,footer",
+      "layout": "classic_corporate"
+    },
+    "watermark_text": null,
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "proforma_invoice",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "name": "Classic Corporate",
+    "locale_mode": "bilingual",
+    "footer_html": null,
+    "accent_color": "#1f7a53",
+    "id": 801
+  },
+  {
+    "id": 802,
+    "name": "Modern Carded",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "proforma_invoice",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "bilingual",
+    "accent_color": "#0f766e",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "modern_carded",
+      "section_order": "header,seller-buyer,totals,items,notes,footer,qr",
+      "card_style": "outlined",
+      "watermark_logo_mode": "centered",
+      "watermark_enabled": true
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 803,
+    "name": "Industrial / Supply Chain",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "proforma_invoice",
+      "credit_note",
+      "debit_note",
+      "delivery_note",
+      "purchase_order",
+      "purchase_invoice",
+      "vendor_bill"
+    ],
+    "locale_mode": "bilingual",
+    "accent_color": "#1f4f63",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "industrial_supply",
+      "section_order": "header,seller-buyer,items,notes,totals,footer,qr",
+      "card_style": "solid",
+      "watermark_logo_mode": "full-width",
+      "watermark_enabled": true
+    },
+    "logo_asset_id": null,
+    "logo_asset": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 804,
+    "name": "Retail Counter",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "bilingual",
+    "accent_color": "#1f7a53",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_1",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "outlined"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 805,
+    "name": "Distribution Ledger",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "en",
+    "accent_color": "#0f4c81",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_2",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "solid"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 806,
+    "name": "Service Detail",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "bilingual",
+    "accent_color": "#7a4e1d",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_3",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "outlined"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 807,
+    "name": "Executive Minimal",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "en",
+    "accent_color": "#374151",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_4",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "solid"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 808,
+    "name": "Blue Freight",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "bilingual",
+    "accent_color": "#8b5e3c",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_5",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "outlined"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 809,
+    "name": "Manufacturing Batch",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "en",
+    "accent_color": "#0d9488",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_6",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "solid"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  },
+  {
+    "id": 810,
+    "name": "Professional VAT",
+    "document_types": [
+      "tax_invoice",
+      "quotation",
+      "credit_note",
+      "debit_note",
+      "delivery_note"
+    ],
+    "locale_mode": "bilingual",
+    "accent_color": "#b45309",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "seeded_layout_7",
+      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
+      "card_style": "outlined"
+    },
+    "logo_asset_id": null,
+    "is_default": false,
+    "is_active": true
+  }
+]

@@ -1,0 +1,8 @@
+
+   PASS  Tests\Feature\DocumentTemplatePreviewTest
+  Γ£ô renderer renders blueprint layout for required document types        0.55s  
+  Γ£ô preview endpoint renders supported document types with locked bluepΓÇª 0.15s  
+
+  Tests:    2 passed (326 assertions)
+  Duration: 0.89s
+

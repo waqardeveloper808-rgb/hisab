@@ -1,0 +1,20 @@
+{
+  "register": "quotations",
+  "route": "/workspace/user/quotations",
+  "selector": "[data-inspector-real-register=\"quotations\"]",
+  "visibleRowCount": 10,
+  "meetsThreshold": true,
+  "firstRows": [
+    "QUO-00010 quotation · 2026-03-20T21:00:00.000000Z Workspace User · 2026-03-20 21:00 Recovery Customer 10 — FINALIZED 2,415.00 2,415.00",
+    "QUO-00009 quotation · 2026-03-19T21:00:00.000000Z Workspace User · 2026-03-19 21:00 Recovery Customer 9 — FINALIZED 2,300.00 2,300.00",
+    "QUO-00008 quotation · 2026-03-18T21:00:00.000000Z Workspace User · 2026-03-18 21:00 Recovery Customer 8 — FINALIZED 2,185.00 2,185.00",
+    "QUO-00007 quotation · 2026-03-17T21:00:00.000000Z Workspace User · 2026-03-17 21:00 Recovery Customer 7 — FINALIZED 2,070.00 2,070.00",
+    "QUO-00006 quotation · 2026-03-16T21:00:00.000000Z Workspace User · 2026-03-16 21:00 Recovery Customer 6 — FINALIZED 1,955.00 1,955.00",
+    "QUO-00005 quotation · 2026-03-15T21:00:00.000000Z Workspace User · 2026-03-15 21:00 Recovery Customer 5 — FINALIZED 1,840.00 1,840.00",
+    "QUO-00004 quotation · 2026-03-14T21:00:00.000000Z Workspace User · 2026-03-14 21:00 Recovery Customer 4 — FINALIZED 1,725.00 1,725.00",
+    "QUO-00003 quotation · 2026-03-13T21:00:00.000000Z Workspace User · 2026-03-13 21:00 Recovery Customer 3 — FINALIZED 1,610.00 1,610.00",
+    "QUO-00002 quotation · 2026-03-12T21:00:00.000000Z Workspace User · 2026-03-12 21:00 Recovery Customer 2 — FINALIZED 1,495.00 1,495.00",
+    "QUO-00001 quotation · 2026-03-11T21:00:00.000000Z Workspace User · 2026-03-11 21:00 Recovery Customer 1 — FINALIZED 1,380.00 1,380.00"
+  ],
+  "screenshot": "C:\\hisab\\artifacts\\register_visibility_20260422123547\\screenshots\\quotation-register.png"
+}

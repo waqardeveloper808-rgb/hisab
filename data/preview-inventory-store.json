@@ -1,0 +1,368 @@
+[
+  {
+    "id": 9004,
+    "item_id": 302,
+    "product_name": "Thermal invoice paper",
+    "material": "Paper",
+    "inventory_type": "finished_good",
+    "size": "15",
+    "source": "production",
+    "code": "THERMAL-INVO-FINISHED-GOO-15-468579",
+    "quantity_on_hand": 16,
+    "committed_quantity": 0,
+    "reorder_level": 5,
+    "batch_number": "468579",
+    "production_date": "2026-04-17",
+    "recorded_by": "Workspace User",
+    "journal_entry_number": "JE-SALE-9004",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "AHN-DLV-QMS-5001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2127,
+        "documentNumber": "AHN-DLV-QMS-5006",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2126,
+        "documentNumber": "AHN-PRO-QMS-5006",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2129,
+        "documentNumber": "AHN-PRO-QMS-5007",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2128,
+        "documentNumber": "AHN-INV-QMS-5008",
+        "documentType": "tax_invoice",
+        "status": "paid"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2151,
+        "documentNumber": "AHN-DLV-QMS-5009",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2135,
+        "documentNumber": "AHN-PRO-QMS-5010",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2149,
+        "documentNumber": "AHN-INV-QMS-5021",
+        "documentType": "tax_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ],
+    "created_at": "2026-04-17T02:32:38.364Z",
+    "updated_at": "2026-04-18T09:00:00.000Z",
+    "attachments": []
+  },
+  {
+    "id": 9003,
+    "item_id": null,
+    "product_name": "Copper Coil",
+    "material": "Copper",
+    "inventory_type": "raw_material",
+    "size": "10mm",
+    "source": "production",
+    "code": "COPPER-COIL-RAW-MATERIAL-10MM-B20260417C",
+    "quantity_on_hand": 60,
+    "committed_quantity": 0,
+    "reorder_level": 20,
+    "batch_number": "B20260417C",
+    "production_date": "2026-04-17",
+    "created_at": "2026-04-17T02:23:53.392Z",
+    "updated_at": "2026-04-17T02:23:53.392Z",
+    "document_links": []
+  },
+  {
+    "id": 9002,
+    "item_id": null,
+    "product_name": "Steel Panel",
+    "material": "Steel",
+    "inventory_type": "finished_good",
+    "size": "Large",
+    "source": "production",
+    "code": "STEEL-PANEL-FINISHED-GOODS-LARGE-B20260417",
+    "quantity_on_hand": 24,
+    "committed_quantity": 0,
+    "reorder_level": 8,
+    "batch_number": "B20260417",
+    "production_date": "2026-04-17",
+    "created_at": "2026-04-17T02:21:07.636Z",
+    "updated_at": "2026-04-17T02:21:07.636Z",
+    "document_links": []
+  },
+  {
+    "id": 9001,
+    "item_id": null,
+    "product_name": "Thermal Paper Roll",
+    "material": "Paper",
+    "inventory_type": "raw_material",
+    "size": "80mm",
+    "source": "purchase",
+    "code": "THERMAL-PAPER-RAW-MATERIAL-80MM-GEN",
+    "quantity_on_hand": 120,
+    "committed_quantity": 0,
+    "reorder_level": 40,
+    "batch_number": null,
+    "production_date": null,
+    "created_at": "2026-04-17T02:21:07.062Z",
+    "updated_at": "2026-04-17T02:21:07.062Z",
+    "document_links": []
+  },
+  {
+    "id": 9005,
+    "item_id": 305,
+    "product_name": "papers",
+    "material": "Composite stock",
+    "inventory_type": "finished_good",
+    "size": "10",
+    "source": "purchase",
+    "code": "INV-305-009005",
+    "quantity_on_hand": 15,
+    "committed_quantity": 0,
+    "reorder_level": 5,
+    "batch_number": "469005",
+    "production_date": "2026-04-10",
+    "recorded_by": "System Audit Seeder",
+    "journal_entry_number": "JE-AUD-9005",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "document_links": [
+      {
+        "documentId": 2155,
+        "documentNumber": "AHN-DBN-QMS-0506",
+        "documentType": "debit_note",
+        "status": "posted"
+      }
+    ]
+  },
+  {
+    "id": 9006,
+    "item_id": 304,
+    "product_name": "Audit",
+    "material": "Service package",
+    "inventory_type": "consumable",
+    "size": "11",
+    "source": "production",
+    "code": "INV-304-009006",
+    "quantity_on_hand": 18,
+    "committed_quantity": 1,
+    "reorder_level": 6,
+    "batch_number": "469006",
+    "production_date": "2026-04-11",
+    "recorded_by": "System Audit Seeder",
+    "journal_entry_number": "JE-AUD-9006",
+    "inventory_account_code": "1150",
+    "inventory_account_name": "Inventory - Trading",
+    "document_links": [
+      {
+        "documentId": 2154,
+        "documentNumber": "AHN-CRN-QMS-0506",
+        "documentType": "credit_note",
+        "status": "posted"
+      }
+    ]
+  },
+  {
+    "id": 9007,
+    "item_id": 303,
+    "product_name": "Inspection Services",
+    "material": "Service package",
+    "inventory_type": "consumable",
+    "size": "12",
+    "source": "purchase",
+    "code": "INV-303-009007",
+    "quantity_on_hand": 21,
+    "committed_quantity": 2,
+    "reorder_level": 7,
+    "batch_number": "469007",
+    "production_date": "2026-04-12",
+    "recorded_by": "System Audit Seeder",
+    "journal_entry_number": "JE-AUD-9007",
+    "inventory_account_code": "1150",
+    "inventory_account_name": "Inventory - Trading",
+    "document_links": [
+      {
+        "documentId": 2153,
+        "documentNumber": "AHN-INV-QMS-5023",
+        "documentType": "tax_invoice",
+        "status": "posted"
+      }
+    ]
+  },
+  {
+    "id": 9008,
+    "item_id": 306,
+    "product_name": "Cloud bookkeeping retainer",
+    "material": "Service package",
+    "inventory_type": "consumable",
+    "size": "13",
+    "source": "production",
+    "code": "INV-306-009008",
+    "quantity_on_hand": 24,
+    "committed_quantity": 0,
+    "reorder_level": 8,
+    "batch_number": "469008",
+    "production_date": "2026-04-13",
+    "recorded_by": "System Audit Seeder",
+    "journal_entry_number": "JE-AUD-9008",
+    "inventory_account_code": "1150",
+    "inventory_account_name": "Inventory - Trading",
+    "document_links": [
+      {
+        "documentId": 2152,
+        "documentNumber": "AHN-INV-QMS-5022",
+        "documentType": "tax_invoice",
+        "status": "posted"
+      }
+    ]
+  },
+  {
+    "id": 9009,
+    "item_id": 307,
+    "product_name": "Warehouse label roll",
+    "material": "Composite stock",
+    "inventory_type": "finished_good",
+    "size": "14",
+    "source": "purchase",
+    "code": "INV-307-009009",
+    "quantity_on_hand": 27,
+    "committed_quantity": 1,
+    "reorder_level": 9,
+    "batch_number": "469009",
+    "production_date": "2026-04-14",
+    "recorded_by": "System Audit Seeder",
+    "journal_entry_number": "JE-AUD-9009",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "document_links": [
+      {
+        "documentId": 2151,
+        "documentNumber": "AHN-DLV-QMS-5009",
+        "documentType": "delivery_note",
+        "status": "posted"
+      }
+    ]
+  },
+  {
+    "id": 9010,
+    "item_id": 308,
+    "product_name": "Barcode scanner",
+    "material": "Composite stock",
+    "inventory_type": "finished_good",
+    "size": "15",
+    "source": "production",
+    "code": "INV-308-009010",
+    "quantity_on_hand": 30,
+    "committed_quantity": 2,
+    "reorder_level": 10,
+    "batch_number": "469010",
+    "production_date": "2026-04-15",
+    "recorded_by": "System Audit Seeder",
+    "journal_entry_number": "JE-AUD-9010",
+    "inventory_account_code": "1152",
+    "inventory_account_name": "Inventory - Finished Goods",
+    "document_links": [
+      {
+        "documentId": 2150,
+        "documentNumber": "AHN-PRO-QMS-5011",
+        "documentType": "proforma_invoice",
+        "status": "posted"
+      }
+    ]
+  }
+]

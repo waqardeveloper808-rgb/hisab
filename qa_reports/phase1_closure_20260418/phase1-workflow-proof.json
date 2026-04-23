@@ -1,0 +1,148 @@
+{
+    "status": "pass",
+    "stock_block": {
+        "errors": {
+            "inventory": [
+                "0839e108-9099-4709-bc95-9798200c1d87 exceeds available stock for Phase 1 Product. Add inventory before finalizing."
+            ],
+            "redirect_to": [
+                "/workspace/user/inventory/stock"
+            ],
+            "return_to": [
+                "/workspace/user/tax-invoice"
+            ]
+        },
+        "message": "0839e108-9099-4709-bc95-9798200c1d87 exceeds available stock for Phase 1 Product. Add inventory before finalizing. (and 2 more errors)"
+    },
+    "sales_document_journal": [
+        {
+            "account_code": "1100",
+            "debit": 218.5,
+            "credit": 0,
+            "description": "Receivable created from sales document"
+        },
+        {
+            "account_code": "4500",
+            "debit": 10,
+            "credit": 0,
+            "description": "Sales discount allowed"
+        },
+        {
+            "account_code": "4000",
+            "debit": 0,
+            "credit": 200,
+            "description": "Revenue from sales document"
+        },
+        {
+            "account_code": "2200",
+            "debit": 0,
+            "credit": 28.5,
+            "description": "Output VAT"
+        }
+    ],
+    "payment_journal": [
+        {
+            "account_code": "1200",
+            "debit": 208,
+            "credit": 0,
+            "document_number": null
+        },
+        {
+            "account_code": "4500",
+            "debit": 10.5,
+            "credit": 0,
+            "document_number": null
+        },
+        {
+            "account_code": "1100",
+            "debit": 0,
+            "credit": 218.5,
+            "document_number": "TINV-00001"
+        }
+    ],
+    "invoice": {
+        "document_number": "TINV-00001",
+        "status": "paid",
+        "discount_total": 10,
+        "balance_due": 0
+    },
+    "debit_note": {
+        "document_number": "DBN-00001",
+        "inventory_journal_entry_ids": [
+            6
+        ],
+        "source_invoice_number": "TINV-00001"
+    },
+    "vat_summary": [
+        {
+            "code": "VAT15",
+            "name": "Standard VAT 15%",
+            "tax_rate": 15,
+            "taxable_amount": 290,
+            "tax_amount": 43.5
+        }
+    ],
+    "customer_statement": {
+        "contact": {
+            "id": 1,
+            "uuid": "8de8fb65-7c27-4a45-be38-7492c97f015f",
+            "company_id": 1,
+            "type": "customer",
+            "display_name": "Phase 1 Customer",
+            "legal_name": null,
+            "tax_number": "300000000009991",
+            "email": null,
+            "phone": null,
+            "billing_address": null,
+            "currency_code": null,
+            "payment_term_id": null,
+            "is_active": true,
+            "created_at": "2026-04-18T23:28:32.000000Z",
+            "updated_at": "2026-04-18T23:28:32.000000Z"
+        },
+        "documents": [
+            {
+                "id": 1,
+                "document_number": null,
+                "type": "tax_invoice",
+                "status": "draft",
+                "issue_date": "2026-04-17T21:00:00.000000Z",
+                "grand_total": "11385.00",
+                "paid_total": "0.00",
+                "credited_total": "0.00",
+                "balance_due": "11385.00"
+            },
+            {
+                "id": 2,
+                "document_number": "TINV-00001",
+                "type": "tax_invoice",
+                "status": "paid",
+                "issue_date": "2026-04-17T21:00:00.000000Z",
+                "grand_total": "218.50",
+                "paid_total": "208.00",
+                "credited_total": "0.00",
+                "balance_due": "0.00"
+            },
+            {
+                "id": 3,
+                "document_number": "DBN-00001",
+                "type": "debit_note",
+                "status": "finalized",
+                "issue_date": "2026-04-19T21:00:00.000000Z",
+                "grand_total": "115.00",
+                "paid_total": "0.00",
+                "credited_total": "0.00",
+                "balance_due": "115.00"
+            }
+        ],
+        "payments": [
+            {
+                "id": 1,
+                "payment_number": "PAY-00001",
+                "payment_date": "2026-04-18T21:00:00.000000Z",
+                "amount": "208.00",
+                "reference": "PH1-PAY-001"
+            }
+        ]
+    }
+}

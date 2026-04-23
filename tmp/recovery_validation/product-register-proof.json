@@ -1,0 +1,20 @@
+{
+  "register": "products",
+  "route": "/workspace/user/products",
+  "selector": "[data-inspector-real-register=\"products\"]",
+  "visibleRowCount": 48,
+  "meetsThreshold": true,
+  "firstRows": [
+    "CDM-20260422085843 Product 01 CDM-20260422085843-SKU-01 Product Active 150.00 SAR 90.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 02 CDM-20260422085843-SKU-02 Product Active 165.00 SAR 100.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 03 CDM-20260422085843-SKU-03 Product Active 180.00 SAR 110.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 04 CDM-20260422085843-SKU-04 Product Active 195.00 SAR 120.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 05 CDM-20260422085843-SKU-05 Product Active 210.00 SAR 130.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 06 CDM-20260422085843-SKU-06 Product Active 225.00 SAR 140.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 07 CDM-20260422085843-SKU-07 Product Active 240.00 SAR 150.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 08 CDM-20260422085843-SKU-08 Product Active 255.00 SAR 160.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 09 CDM-20260422085843-SKU-09 Product Active 270.00 SAR 170.00 SAR Standard VAT 15%",
+    "CDM-20260422085843 Product 10 CDM-20260422085843-SKU-10 Product Active 285.00 SAR 180.00 SAR Standard VAT 15%"
+  ],
+  "screenshot": "C:\\hisab\\artifacts\\register_visibility_20260422123547\\screenshots\\products-register.png"
+}

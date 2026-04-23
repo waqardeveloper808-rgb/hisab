@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-04-18T13:18:00.000Z",
+  "baseUrl": "http://127.0.0.1:3010",
+  "cycles": [
+    {
+      "cycle": 1,
+      "focus": "Preview reconciliation runtime activation",
+      "tests": [
+        "GET /api/workspace/reconciliation/bank-accounts on stale 3006 instance",
+        "GET /api/workspace/reconciliation/bank-accounts on fresh 3010 instance"
+      ],
+      "findings": [
+        "The existing 3006 server was serving stale code and returned 403 for preview reconciliation.",
+        "A fresh server on 3010 exposed the new preview bank-account endpoint correctly."
+      ],
+      "fixesApplied": [
+        "Started a fresh Next.js dev server on port 3010 and used it for all remaining runtime cycles."
+      ],
+      "result": "pass"
+    },
+    {
+      "cycle": 2,
+      "focus": "Import-rule coverage",
+      "tests": [
+        "npx vitest run lib/reconciliation-import.test.ts"
+      ],
+      "findings": [
+        "Six targeted import scenarios passed: good file, missing columns, wrong formats, duplicates, mixed rows, pasted tabular data."
+      ],
+      "fixesApplied": [],
+      "result": "pass"
+    },
+    {
+      "cycle": 3,
+      "focus": "Browser import proof run 1",
+      "tests": [
+        "node tools/capture-phase1-hardening-evidence.mjs"
+      ],
+      "findings": [
+        "Evidence runner failed waiting on a transient success notice after import."
+      ],
+      "fixesApplied": [
+        "Updated the evidence runner to wait for durable post-import register state using the imported reference instead of a narrow success-text selector."
+      ],
+      "result": "pass-after-fix"
+    },
+    {
+      "cycle": 4,
+      "focus": "Browser import proof run 2",
+      "tests": [
+        "node tools/capture-phase1-hardening-evidence.mjs"
+      ],
+      "findings": [
+        "Evidence runner failed reopening the import panel because the UI state after commit was not always tied to the expected toolbar button label."
+      ],
+      "fixesApplied": [
+        "Changed the evidence runner to re-enter the import panel through the route deep link ?account=10&import=1 instead of relying on post-import button text."
+      ],
+      "result": "pass-after-fix"
+    },
+    {
+      "cycle": 5,
+      "focus": "Final runtime and integrated validation",
+      "tests": [
+        "node tools/capture-phase1-hardening-evidence.mjs",
+        "npm run lint",
+        "npm run build",
+        "php artisan test --filter=AccountingIntegrityEnforcementTest",
+        "php artisan test --filter=Phase1ClosureWorkflowTest"
+      ],
+      "findings": [
+        "Browser evidence completed and generated all required import screenshots plus import-proof-report.json.",
+        "Frontend lint and production build passed.",
+        "Targeted backend accounting and Phase 1 workflow suites passed."
+      ],
+      "fixesApplied": [],
+      "result": "pass"
+    }
+  ]
+}

@@ -1,0 +1,1202 @@
+{
+  "project_name": "Gulf Hisab",
+  "generated_at": "2026-04-13T20:57:13.213618Z",
+  "environment": "local-production-like",
+  "overall_score": 54.18,
+  "totals": {
+    "checks": 50,
+    "passed_checks": 23,
+    "failed_checks": 27,
+    "critical": 24,
+    "high": 3,
+    "medium": 2,
+    "low": 2
+  },
+  "executive_summary": [
+    "Overall QA health score: 54.18/100.",
+    "Critical blockers detected: 24.",
+    "High-severity issues detected: 3.",
+    "Weakest areas: internal_label_leaks (0.0), placeholder_copy (0.0), logo_presence (0.0), route_availability (0.0)"
+  ],
+  "checks": [
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "gulf hisab",
+          "zatca-compliant invoicing"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001",
+      "passed": false,
+      "score": 65.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 30
+      },
+      "issues": [
+        {
+          "id": "ux-empty-action-element-detected-1776113703924",
+          "category": "ux",
+          "severity": "critical",
+          "title": "Empty action element detected",
+          "description": "A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.",
+          "evidence": {
+            "matches": [
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              },
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              }
+            ],
+            "count": 2
+          },
+          "recommendation": "Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 29
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001",
+      "passed": false,
+      "score": 70.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 6
+      },
+      "issues": [
+        {
+          "id": "ux-internal-or-placeholder-ui-labels-leaked-to-production-ui-1776113720918",
+          "category": "ux",
+          "severity": "high",
+          "title": "Internal or placeholder UI labels leaked to production UI",
+          "description": "Developer shorthand, system tags, or generic placeholders are visible to end users.",
+          "evidence": {
+            "matches": [
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              }
+            ],
+            "count": 5
+          },
+          "recommendation": "Remove internal abbreviations and placeholder badge words from user-facing surfaces.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "card_hygiene",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 85.0,
+      "summary": "Checked card cleanliness and UI noise.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "visuals-repeated-decorative-badge-words-detected-1776113720936",
+          "category": "visuals",
+          "severity": "medium",
+          "title": "Repeated decorative badge words detected",
+          "description": "Visual chip language appears repetitive and noisy.",
+          "evidence": {
+            "matches": [
+              {
+                "class": "relative flex min-h-full flex-col overflow-x-hidden",
+                "module_count": 5,
+                "text_preview": "Products Pricing Help Center Workspace User Workspace Admin Workspace Assistant Workspace Agent Workspace Log In Start free trial ZATCA-Compliant Invoicing For Your Business ZATCA-"
+              },
+              {
+                "class": "py-12 lg:py-16",
+                "module_count": 5,
+                "text_preview": "Features Everything a business needs to understand the product in one scan Five clear blocks. Simple business language. No extra explanation required. IV Invoice creation Create cl"
+              },
+              {
+                "class": "mx-auto w-full max-w-[1180px] px-4 sm:px-6 lg:px-8",
+                "module_count": 5,
+                "text_preview": "Features Everything a business needs to understand the product in one scan Five clear blocks. Simple business language. No extra explanation required. IV Invoice creation Create cl"
+              },
+              {
+                "class": "mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-5",
+                "module_count": 5,
+                "text_preview": "IV Invoice creation Create clean customer invoices in seconds with the right totals and invoice flow already in place. Module Move from draft to sent invoice without Excel template"
+              }
+            ],
+            "count": 4
+          },
+          "recommendation": "Reduce decorative repetition and preserve one strong signal per card.",
+          "owner": "design",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "placeholder_copy",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked rendered HTML for placeholder and draft copy.",
+      "evidence": {},
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "products",
+          "gulf hisab"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 3
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": false,
+      "score": 70.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 6
+      },
+      "issues": [
+        {
+          "id": "ux-internal-or-placeholder-ui-labels-leaked-to-production-ui-1776113721081",
+          "category": "ux",
+          "severity": "high",
+          "title": "Internal or placeholder UI labels leaked to production UI",
+          "description": "Developer shorthand, system tags, or generic placeholders are visible to end users.",
+          "evidence": {
+            "matches": [
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              },
+              {
+                "text": "Module",
+                "tag": "span",
+                "class": "rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary"
+              }
+            ],
+            "count": 5
+          },
+          "recommendation": "Remove internal abbreviations and placeholder badge words from user-facing surfaces.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "pricing",
+          "trial"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": false,
+      "score": 65.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 26
+      },
+      "issues": [
+        {
+          "id": "ux-empty-action-element-detected-1776113721151",
+          "category": "ux",
+          "severity": "critical",
+          "title": "Empty action element detected",
+          "description": "A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.",
+          "evidence": {
+            "matches": [
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              },
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              }
+            ],
+            "count": 2
+          },
+          "recommendation": "Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/helpdesk-ai",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "help",
+          "gulf hisab"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/helpdesk-ai",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 8
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/helpdesk-ai",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "log in"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": false,
+      "score": 65.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 27
+      },
+      "issues": [
+        {
+          "id": "ux-empty-action-element-detected-1776113721603",
+          "category": "ux",
+          "severity": "critical",
+          "title": "Empty action element detected",
+          "description": "A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.",
+          "evidence": {
+            "matches": [
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              },
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              },
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              }
+            ],
+            "count": 3
+          },
+          "recommendation": "Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 92.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 0
+      },
+      "issues": [
+        {
+          "id": "structure-no-h2-sections-found-1776113721798",
+          "category": "structure",
+          "severity": "low",
+          "title": "No H2 sections found",
+          "description": "Page has weak section hierarchy.",
+          "evidence": {},
+          "recommendation": "Break long pages into clearly labeled sections using H2s.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "start free trial"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": false,
+      "score": 65.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 26
+      },
+      "issues": [
+        {
+          "id": "ux-empty-action-element-detected-1776113722517",
+          "category": "ux",
+          "severity": "critical",
+          "title": "Empty action element detected",
+          "description": "A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.",
+          "evidence": {
+            "matches": [
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              },
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              },
+              {
+                "tag": "a",
+                "href": "/",
+                "class": "rounded-2xl pr-2"
+              }
+            ],
+            "count": 3
+          },
+          "recommendation": "Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 92.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 0
+      },
+      "issues": [
+        {
+          "id": "structure-no-h2-sections-found-1776113722771",
+          "category": "structure",
+          "severity": "low",
+          "title": "No H2 sections found",
+          "description": "Page has weak section hierarchy.",
+          "evidence": {},
+          "recommendation": "Break long pages into clearly labeled sections using H2s.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "dashboard",
+          "total sales"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": false,
+      "score": 65.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 60
+      },
+      "issues": [
+        {
+          "id": "links-broken-or-failing-links-detected-1776113791057",
+          "category": "links",
+          "severity": "high",
+          "title": "Broken or failing links detected",
+          "description": "One or more links returned an error or could not be resolved.",
+          "evidence": {
+            "matches": [
+              {
+                "text": "Users Users Manage accountant and admin accounts for the current business.",
+                "href": "http://127.0.0.1:3001/sandbox/user/settings/users",
+                "status": "request_failed"
+              },
+              {
+                "text": "",
+                "href": "http://127.0.0.1:3001/",
+                "status": "request_failed"
+              },
+              {
+                "text": "Products",
+                "href": "http://127.0.0.1:3001/products",
+                "status": "request_failed"
+              },
+              {
+                "text": "Pricing",
+                "href": "http://127.0.0.1:3001/plans",
+                "status": "request_failed"
+              },
+              {
+                "text": "Help center",
+                "href": "http://127.0.0.1:3001/helpdesk-ai",
+                "status": "request_failed"
+              },
+              {
+                "text": "Workspace",
+                "href": "http://127.0.0.1:3001/workspace",
+                "status": "request_failed"
+              },
+              {
+                "text": "Public help center",
+                "href": "http://127.0.0.1:3001/helpdesk-ai",
+                "status": "request_failed"
+              },
+              {
+                "text": "Workspace help",
+                "href": "http://127.0.0.1:3001/workspace/help",
+                "status": "request_failed"
+              },
+              {
+                "text": "Log in",
+                "href": "http://127.0.0.1:3001/login",
+                "status": "request_failed"
+              },
+              {
+                "text": "Create account",
+                "href": "http://127.0.0.1:3001/register",
+                "status": "request_failed"
+              }
+            ],
+            "count": 10
+          },
+          "recommendation": "Fix routes, update URLs, or remove dead destinations.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113793114",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/user (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/user"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "placeholder_copy",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113795149",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/user (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/user"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect logo presence.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113797198",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/user (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/user"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect route availability.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113799230",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113801265",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113803313",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect logo presence.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113805357",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect route availability.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113807366",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/assistant"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113809403",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/assistant"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113811442",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/assistant"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect logo presence.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113813464",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/assistant"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect route availability.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113815516",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/agent"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113817533",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/agent"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113819571",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/agent"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect logo presence.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113821604",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/agent"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect route availability.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113823629",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin/audit"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113825659",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin/audit"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113827698",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin/audit"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "placeholder_copy",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect page.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113829752",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin/audit"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": false,
+      "score": 0.0,
+      "summary": "Could not inspect logo presence.",
+      "evidence": {},
+      "issues": [
+        {
+          "id": "runtime-page-fetch-failed-1776113831778",
+          "category": "runtime",
+          "severity": "critical",
+          "title": "Page fetch failed",
+          "description": "HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/sandbox/admin/audit"
+          },
+          "recommendation": "Check server availability, DNS, auth, or networking.",
+          "owner": "devops",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "architecture_conventions",
+      "target": ".",
+      "passed": true,
+      "score": 75.0,
+      "summary": "Checked architecture shape against conventions.",
+      "evidence": {
+        "expected_paths_checked": 8
+      },
+      "issues": [
+        {
+          "id": "architecture-potential-architecture-anti-patterns-found-1776113833212",
+          "category": "architecture",
+          "severity": "medium",
+          "title": "Potential architecture anti-patterns found",
+          "description": "Some files or patterns suggest architectural drift.",
+          "evidence": {
+            "matches": [
+              "node_modules\\tslib\\CopyrightNotice.txt",
+              "node_modules\\next\\dist\\lib\\recursive-copy.d.ts",
+              "node_modules\\next\\dist\\lib\\recursive-copy.js",
+              "node_modules\\next\\dist\\lib\\recursive-copy.js.map",
+              "node_modules\\next\\dist\\next-devtools\\dev-overlay\\components\\errors\\error-overlay-toolbar\\copy-error-button.d.ts",
+              "node_modules\\next\\dist\\esm\\lib\\recursive-copy.js",
+              "node_modules\\next\\dist\\esm\\lib\\recursive-copy.js.map",
+              "node_modules\\next\\dist\\esm\\build\\webpack\\plugins\\copy-file-plugin.js",
+              "node_modules\\next\\dist\\esm\\build\\webpack\\plugins\\copy-file-plugin.js.map",
+              "node_modules\\next\\dist\\build\\webpack\\plugins\\copy-file-plugin.d.ts",
+              "node_modules\\next\\dist\\build\\webpack\\plugins\\copy-file-plugin.js",
+              "node_modules\\next\\dist\\build\\webpack\\plugins\\copy-file-plugin.js.map",
+              "node_modules\\es-abstract\\2018\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2019\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2020\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2021\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2022\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2023\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2024\\ArrayBufferCopyAndDetach.js",
+              "node_modules\\es-abstract\\2024\\CopyDataProperties.js",
+              "node_modules\\es-abstract\\2025\\ArrayBufferCopyAndDetach.js",
+              "node_modules\\es-abstract\\2025\\CopyDataProperties.js",
+              "node_modules\\@testing-library\\user-event\\dist\\types\\clipboard\\copy.d.ts",
+              "node_modules\\@testing-library\\user-event\\dist\\types\\document\\copySelection.d.ts",
+              "node_modules\\@testing-library\\user-event\\dist\\esm\\clipboard\\copy.js",
+              "node_modules\\@testing-library\\user-event\\dist\\esm\\document\\copySelection.js",
+              "node_modules\\@testing-library\\user-event\\dist\\cjs\\clipboard\\copy.js",
+              "node_modules\\@testing-library\\user-event\\dist\\cjs\\document\\copySelection.js",
+              "backend\\vendor\\symfony\\error-handler\\Resources\\assets\\images\\icon-copy.svg",
+              "backend\\vendor\\psy\\psysh\\src\\Command\\CopyCommand.php"
+            ]
+          },
+          "recommendation": "Review and refactor files that bypass intended layers or boundaries.",
+          "owner": "engineering",
+          "status": "open"
+        }
+      ]
+    }
+  ],
+  "agent_instruction_block": "You are a Senior Product QA Fix Agent working on Gulf Hisab.\n\nRules:\n- Do not ask questions.\n- Do not stop after one fix.\n- Fix highest severity issues first.\n- Remove all user-facing developer artifacts.\n- Preserve architecture and existing working flows.\n- Do not redesign unrelated areas.\n- After each fix, verify the affected flow still works.\n- Prioritize polished SaaS clarity over decorative chips or taxonomy leakage.\n\nPriority issues to resolve:\n1. [CRITICAL] ux: Empty action element detected — A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.\n   Fix guidance: Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.\n2. [CRITICAL] ux: Empty action element detected — A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.\n   Fix guidance: Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.\n3. [CRITICAL] ux: Empty action element detected — A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.\n   Fix guidance: Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.\n4. [CRITICAL] ux: Empty action element detected — A button or link appears to have no visible label, causing a broken CTA or ambiguous interaction.\n   Fix guidance: Add clear labels such as 'Start Free Trial', 'Create Invoice', or 'Talk to Sales'.\n5. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/user (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n6. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/user (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n7. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/user (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n8. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n9. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n10. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n11. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n12. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n13. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n14. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n15. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/assistant (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n16. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n17. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n18. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n19. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/agent (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n20. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n21. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n22. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n23. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n24. [CRITICAL] runtime: Page fetch failed — HTTPConnectionPool(host='127.0.0.1', port=3001): Max retries exceeded with url: /sandbox/admin/audit (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=3001): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))\n   Fix guidance: Check server availability, DNS, auth, or networking.\n25. [HIGH] ux: Internal or placeholder UI labels leaked to production UI — Developer shorthand, system tags, or generic placeholders are visible to end users.\n   Fix guidance: Remove internal abbreviations and placeholder badge words from user-facing surfaces.\n26. [HIGH] ux: Internal or placeholder UI labels leaked to production UI — Developer shorthand, system tags, or generic placeholders are visible to end users.\n   Fix guidance: Remove internal abbreviations and placeholder badge words from user-facing surfaces.\n27. [HIGH] links: Broken or failing links detected — One or more links returned an error or could not be resolved.\n   Fix guidance: Fix routes, update URLs, or remove dead destinations.\n28. [MEDIUM] visuals: Repeated decorative badge words detected — Visual chip language appears repetitive and noisy.\n   Fix guidance: Reduce decorative repetition and preserve one strong signal per card.\n29. [MEDIUM] architecture: Potential architecture anti-patterns found — Some files or patterns suggest architectural drift.\n   Fix guidance: Review and refactor files that bypass intended layers or boundaries.\n30. [LOW] structure: No H2 sections found — Page has weak section hierarchy.\n   Fix guidance: Break long pages into clearly labeled sections using H2s.\n\nDeliverables:\n- Updated code\n- Brief change log\n- Recheck results for each resolved issue\n- Confirm no internal abbreviations, placeholder chips, or broken CTAs remain visible"
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "id": 305,
+    "type": "product",
+    "name": "papers",
+    "sku": "1011",
+    "default_sale_price": 532,
+    "default_purchase_price": 498,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 304,
+    "type": "service",
+    "name": "Audit",
+    "sku": "SKU-0002",
+    "default_sale_price": 285,
+    "default_purchase_price": 208,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 303,
+    "type": "service",
+    "name": "Inspection Services",
+    "sku": "1024",
+    "default_sale_price": 320,
+    "default_purchase_price": 236,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 306,
+    "type": "service",
+    "name": "Cloud bookkeeping retainer",
+    "sku": "SKU-0306",
+    "default_sale_price": 1800,
+    "default_purchase_price": 264,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 307,
+    "type": "product",
+    "name": "Warehouse label roll",
+    "sku": "SKU-0307",
+    "default_sale_price": 95,
+    "default_purchase_price": 65,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 308,
+    "type": "product",
+    "name": "Barcode scanner",
+    "sku": "SKU-0308",
+    "default_sale_price": 650,
+    "default_purchase_price": 510,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 309,
+    "type": "service",
+    "name": "Year-end audit support",
+    "sku": "SKU-0309",
+    "default_sale_price": 2400,
+    "default_purchase_price": 348,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 310,
+    "type": "product",
+    "name": "Thermal printer ribbon",
+    "sku": "SKU-0310",
+    "default_sale_price": 58,
+    "default_purchase_price": 37,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 311,
+    "type": "service",
+    "name": "Inventory counting service",
+    "sku": "SKU-0311",
+    "default_sale_price": 900,
+    "default_purchase_price": 404,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 312,
+    "type": "product",
+    "name": "Packing carton bundle",
+    "sku": "SKU-0312",
+    "default_sale_price": 120,
+    "default_purchase_price": 82,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  }
+]

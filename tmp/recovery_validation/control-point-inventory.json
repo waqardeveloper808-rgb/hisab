@@ -1,0 +1,677 @@
+{
+  "generated_at": "2026-04-22T12:47:31.314Z",
+  "stats": {
+    "total_modules": 9,
+    "total_control_points": 90,
+    "breakdown": [
+      {
+        "module": "Invoice",
+        "count": 10
+      },
+      {
+        "module": "Accounting",
+        "count": 10
+      },
+      {
+        "module": "Inventory",
+        "count": 10
+      },
+      {
+        "module": "VAT",
+        "count": 10
+      },
+      {
+        "module": "UX",
+        "count": 10
+      },
+      {
+        "module": "Audit",
+        "count": 10
+      },
+      {
+        "module": "Import",
+        "count": 10
+      },
+      {
+        "module": "Reports",
+        "count": 10
+      },
+      {
+        "module": "Users",
+        "count": 10
+      }
+    ]
+  },
+  "control_points": [
+    {
+      "id": "INV-001",
+      "name": "Invoice Creation Validation",
+      "module": "Invoice",
+      "description": "Invoice must be created and stored in DB",
+      "expected": "Invoice exists in DB with valid totals"
+    },
+    {
+      "id": "INV-002",
+      "name": "Draft Invoice Persistence",
+      "module": "Invoice",
+      "description": "Draft invoices must persist before finalization",
+      "expected": "Draft invoice is persisted with draft status"
+    },
+    {
+      "id": "INV-003",
+      "name": "Invoice Number Assignment",
+      "module": "Invoice",
+      "description": "Finalized invoices must receive a document number",
+      "expected": "Finalized invoice has a generated document number"
+    },
+    {
+      "id": "INV-004",
+      "name": "Invoice Totals Accuracy",
+      "module": "Invoice",
+      "description": "Taxable, tax, and grand totals must remain consistent",
+      "expected": "Stored totals equal the sum of invoice lines and VAT"
+    },
+    {
+      "id": "INV-005",
+      "name": "Invoice Customer Link",
+      "module": "Invoice",
+      "description": "Invoices must be linked to a valid customer",
+      "expected": "Invoice references an existing customer record"
+    },
+    {
+      "id": "INV-006",
+      "name": "Invoice Payment Status",
+      "module": "Invoice",
+      "description": "Invoice payment status must track open, partial, and paid states",
+      "expected": "Invoice balance and status reflect recorded payments"
+    },
+    {
+      "id": "INV-007",
+      "name": "Invoice Finalization Guard",
+      "module": "Invoice",
+      "description": "Finalized invoices must reject mutable updates",
+      "expected": "Finalized invoices cannot be edited without a correction flow"
+    },
+    {
+      "id": "INV-008",
+      "name": "Invoice Ledger Posting",
+      "module": "Invoice",
+      "description": "Finalized invoices must create ledger entries",
+      "expected": "A journal entry exists for each finalized invoice"
+    },
+    {
+      "id": "INV-009",
+      "name": "Invoice Route Coverage",
+      "module": "Invoice",
+      "description": "Invoice API routes must be reachable",
+      "expected": "Invoice create, show, and finalize routes return success"
+    },
+    {
+      "id": "INV-010",
+      "name": "Invoice Workflow Proof",
+      "module": "Invoice",
+      "description": "Invoice workflow must be executable end to end",
+      "expected": "Invoice workflow proof shows draft to paid completion"
+    },
+    {
+      "id": "ACC-001",
+      "name": "Chart Of Accounts Availability",
+      "module": "Accounting",
+      "description": "Baseline accounts must exist for each company",
+      "expected": "Required chart of accounts codes are present"
+    },
+    {
+      "id": "ACC-002",
+      "name": "Journal Entry Creation",
+      "module": "Accounting",
+      "description": "Journal entries must persist for transactional postings",
+      "expected": "Journal entries are stored with source references"
+    },
+    {
+      "id": "ACC-003",
+      "name": "Balanced Journal Lines",
+      "module": "Accounting",
+      "description": "Debits and credits must remain balanced",
+      "expected": "Each journal entry balances to zero"
+    },
+    {
+      "id": "ACC-004",
+      "name": "Payment Ledger Posting",
+      "module": "Accounting",
+      "description": "Payments must generate accounting lines",
+      "expected": "Payment posting creates journal evidence"
+    },
+    {
+      "id": "ACC-005",
+      "name": "Manual Journal Route",
+      "module": "Accounting",
+      "description": "Manual journal routes must work",
+      "expected": "Manual journal list and create routes are available"
+    },
+    {
+      "id": "ACC-006",
+      "name": "Trial Balance Availability",
+      "module": "Accounting",
+      "description": "Trial balance report must be reachable",
+      "expected": "Trial balance API responds with report data"
+    },
+    {
+      "id": "ACC-007",
+      "name": "Profit Loss Availability",
+      "module": "Accounting",
+      "description": "Profit and loss report must be reachable",
+      "expected": "Profit and loss API responds with report data"
+    },
+    {
+      "id": "ACC-008",
+      "name": "Account Period Support",
+      "module": "Accounting",
+      "description": "Accounting periods must exist for operational posting",
+      "expected": "Posting occurs inside an open accounting period"
+    },
+    {
+      "id": "ACC-009",
+      "name": "Audit Trail Persistence",
+      "module": "Accounting",
+      "description": "Accounting actions must preserve source references",
+      "expected": "Journal entries retain source type and source id"
+    },
+    {
+      "id": "ACC-010",
+      "name": "Accounting Workflow Proof",
+      "module": "Accounting",
+      "description": "Accounting workflow must run end to end",
+      "expected": "Workflow proof confirms journal and report updates"
+    },
+    {
+      "id": "STK-001",
+      "name": "Inventory Receipt Persistence",
+      "module": "Inventory",
+      "description": "Inventory receipts must persist in DB",
+      "expected": "Inventory stock receipt rows exist in DB"
+    },
+    {
+      "id": "STK-002",
+      "name": "Inventory Stock Route",
+      "module": "Inventory",
+      "description": "Inventory stock routes must work",
+      "expected": "Inventory stock list and create routes are reachable"
+    },
+    {
+      "id": "STK-003",
+      "name": "Inventory Quantity Tracking",
+      "module": "Inventory",
+      "description": "On-hand quantities must update after movements",
+      "expected": "Inventory quantity reflects receipts, adjustments, and sales"
+    },
+    {
+      "id": "STK-004",
+      "name": "Inventory Sale Posting",
+      "module": "Inventory",
+      "description": "Inventory sales must post accounting entries",
+      "expected": "Inventory sale creates linked journal entries"
+    },
+    {
+      "id": "STK-005",
+      "name": "Inventory Adjustment Posting",
+      "module": "Inventory",
+      "description": "Adjustments must post write-off or gain entries",
+      "expected": "Inventory adjustment creates journal evidence"
+    },
+    {
+      "id": "STK-006",
+      "name": "Inventory Document Links",
+      "module": "Inventory",
+      "description": "Inventory sales must retain linked documents",
+      "expected": "Inventory records store related invoice and delivery links"
+    },
+    {
+      "id": "STK-007",
+      "name": "Inventory Reduction On Invoice",
+      "module": "Inventory",
+      "description": "Selling stocked items must reduce stock",
+      "expected": "Inventory quantity decreases after sale workflow"
+    },
+    {
+      "id": "STK-008",
+      "name": "Inventory Account Mapping",
+      "module": "Inventory",
+      "description": "Inventory transactions must use mapped accounts",
+      "expected": "Inventory journals contain expected account codes"
+    },
+    {
+      "id": "STK-009",
+      "name": "Inventory Dummy Data Coverage",
+      "module": "Inventory",
+      "description": "Inventory dummy data must include at least ten records",
+      "expected": "Seeded inventory dataset contains ten or more rows"
+    },
+    {
+      "id": "STK-010",
+      "name": "Inventory Workflow Proof",
+      "module": "Inventory",
+      "description": "Inventory workflow must be executable end to end",
+      "expected": "Workflow proof shows receipt, adjustment, and sale completion"
+    },
+    {
+      "id": "VAT-001",
+      "name": "VAT Category Availability",
+      "module": "VAT",
+      "description": "VAT tax categories must exist per company",
+      "expected": "VAT15 category exists for active companies"
+    },
+    {
+      "id": "VAT-002",
+      "name": "Output VAT Calculation",
+      "module": "VAT",
+      "description": "Sales invoices must calculate output VAT",
+      "expected": "Invoice tax totals match configured VAT rate"
+    },
+    {
+      "id": "VAT-003",
+      "name": "VAT Ledger Recording",
+      "module": "VAT",
+      "description": "Finalized invoices must store VAT ledger metadata",
+      "expected": "Compliance metadata records output VAT evidence"
+    },
+    {
+      "id": "VAT-004",
+      "name": "VAT Summary Report",
+      "module": "VAT",
+      "description": "VAT summary report must be reachable",
+      "expected": "VAT summary API returns data"
+    },
+    {
+      "id": "VAT-005",
+      "name": "VAT Detail Report",
+      "module": "VAT",
+      "description": "VAT detail report must be reachable",
+      "expected": "VAT detail API returns data"
+    },
+    {
+      "id": "VAT-006",
+      "name": "Buyer VAT Capture",
+      "module": "VAT",
+      "description": "Tax invoices must retain buyer VAT data when required",
+      "expected": "Buyer VAT metadata is stored on taxable invoices"
+    },
+    {
+      "id": "VAT-007",
+      "name": "Seller VAT Capture",
+      "module": "VAT",
+      "description": "Seller VAT number must be attached to compliance metadata",
+      "expected": "Seller VAT number exists in compliance metadata"
+    },
+    {
+      "id": "VAT-008",
+      "name": "VAT Dummy Data Coverage",
+      "module": "VAT",
+      "description": "Dummy data must include VAT-bearing documents",
+      "expected": "Seeded documents contain taxable totals and VAT totals"
+    },
+    {
+      "id": "VAT-009",
+      "name": "VAT Payment Linkage",
+      "module": "VAT",
+      "description": "Payments against invoices must preserve VAT-ready evidence",
+      "expected": "Paid invoices still retain VAT ledger metadata"
+    },
+    {
+      "id": "VAT-010",
+      "name": "VAT Workflow Proof",
+      "module": "VAT",
+      "description": "VAT workflow must be provable end to end",
+      "expected": "Workflow proof confirms VAT calculation and reporting"
+    },
+    {
+      "id": "UX-001",
+      "name": "Invoice Workspace Route",
+      "module": "UX",
+      "description": "Invoice workspace route must render",
+      "expected": "Invoice workspace UI route is reachable"
+    },
+    {
+      "id": "UX-002",
+      "name": "Inventory Workspace Route",
+      "module": "UX",
+      "description": "Inventory workspace route must render",
+      "expected": "Inventory workspace UI route is reachable"
+    },
+    {
+      "id": "UX-003",
+      "name": "Accounting Workspace Route",
+      "module": "UX",
+      "description": "Accounting workspace route must render",
+      "expected": "Accounting workspace UI route is reachable"
+    },
+    {
+      "id": "UX-004",
+      "name": "Reports Workspace Route",
+      "module": "UX",
+      "description": "Reports workspace route must render",
+      "expected": "Reports workspace UI route is reachable"
+    },
+    {
+      "id": "UX-005",
+      "name": "Document Validation Surface",
+      "module": "UX",
+      "description": "Document validation UI must expose proof controls",
+      "expected": "Document validation surface loads without blockers"
+    },
+    {
+      "id": "UX-006",
+      "name": "Sales Workflow Surface",
+      "module": "UX",
+      "description": "Sales workflow UI must expose evidence capture controls",
+      "expected": "Sales workflow UI loads and supports evidence capture"
+    },
+    {
+      "id": "UX-007",
+      "name": "Accounting Workflow Surface",
+      "module": "UX",
+      "description": "Accounting workflow UI must expose evidence capture controls",
+      "expected": "Accounting workflow UI loads and supports evidence capture"
+    },
+    {
+      "id": "UX-008",
+      "name": "Navigation Health",
+      "module": "UX",
+      "description": "Primary workflow routes must be navigable",
+      "expected": "Workflow routes can be opened without 404s"
+    },
+    {
+      "id": "UX-009",
+      "name": "Audit Dashboard Health",
+      "module": "UX",
+      "description": "Audit dashboard route must render audit results",
+      "expected": "Audit UI displays runtime results"
+    },
+    {
+      "id": "UX-010",
+      "name": "UX Workflow Proof",
+      "module": "UX",
+      "description": "UI proof must exist for the audited workflow",
+      "expected": "Captured UI proof confirms reachable workflow surfaces"
+    },
+    {
+      "id": "AUD-001",
+      "name": "Audit Engine Runtime",
+      "module": "Audit",
+      "description": "Audit engine must execute without static PASS output",
+      "expected": "Audit engine returns evidence-based statuses"
+    },
+    {
+      "id": "AUD-002",
+      "name": "Audit Artifact Output",
+      "module": "Audit",
+      "description": "Audit engine must write a machine-readable report",
+      "expected": "engine-audit-report.json is generated"
+    },
+    {
+      "id": "AUD-003",
+      "name": "Root Cause Output",
+      "module": "Audit",
+      "description": "Root cause engine must classify failures",
+      "expected": "root-cause-report.json is generated with classifications"
+    },
+    {
+      "id": "AUD-004",
+      "name": "Control Point Inventory Output",
+      "module": "Audit",
+      "description": "Control point inventory must be written",
+      "expected": "control-point-inventory.json is generated"
+    },
+    {
+      "id": "AUD-005",
+      "name": "Execution Log Output",
+      "module": "Audit",
+      "description": "Execution log must capture step timings",
+      "expected": "execution-log.md records step timings"
+    },
+    {
+      "id": "AUD-006",
+      "name": "Execution Time Report",
+      "module": "Audit",
+      "description": "Execution time report must capture step durations",
+      "expected": "execution-time-report.md is generated"
+    },
+    {
+      "id": "AUD-007",
+      "name": "Audit Retry Loop",
+      "module": "Audit",
+      "description": "Audit engine must support rerun cycles",
+      "expected": "At least three audit cycles can be executed"
+    },
+    {
+      "id": "AUD-008",
+      "name": "Critical Failure Detection",
+      "module": "Audit",
+      "description": "Critical failures must never be reported as PASS",
+      "expected": "Critical failures are surfaced as FAIL or BLOCKED"
+    },
+    {
+      "id": "AUD-009",
+      "name": "Evidence Coverage",
+      "module": "Audit",
+      "description": "Audit findings must include DB, route, and API evidence where applicable",
+      "expected": "Audit records include evidence details"
+    },
+    {
+      "id": "AUD-010",
+      "name": "Audit Final Status",
+      "module": "Audit",
+      "description": "Audit final state must be computed from findings",
+      "expected": "Audit summary reflects real counts from results"
+    },
+    {
+      "id": "IMP-001",
+      "name": "Contact Import Readiness",
+      "module": "Import",
+      "description": "Contact import data contracts must exist",
+      "expected": "Import data contracts include contact fields"
+    },
+    {
+      "id": "IMP-002",
+      "name": "Item Import Readiness",
+      "module": "Import",
+      "description": "Item import data contracts must exist",
+      "expected": "Import data contracts include item fields"
+    },
+    {
+      "id": "IMP-003",
+      "name": "Invoice Import Readiness",
+      "module": "Import",
+      "description": "Invoice import data contracts must exist",
+      "expected": "Import data contracts include invoice fields"
+    },
+    {
+      "id": "IMP-004",
+      "name": "Import Route Coverage",
+      "module": "Import",
+      "description": "Import endpoints must be reachable where implemented",
+      "expected": "Implemented import routes return expected responses"
+    },
+    {
+      "id": "IMP-005",
+      "name": "Import Validation Rules",
+      "module": "Import",
+      "description": "Import validation must reject malformed records",
+      "expected": "Import validation surfaces field-level errors"
+    },
+    {
+      "id": "IMP-006",
+      "name": "Import Artifact Coverage",
+      "module": "Import",
+      "description": "Import flows must produce evidence when audited",
+      "expected": "Audit evidence references import readiness checks"
+    },
+    {
+      "id": "IMP-007",
+      "name": "Template Import Mapping",
+      "module": "Import",
+      "description": "Imported templates must preserve field mapping",
+      "expected": "Template imports map known fields correctly"
+    },
+    {
+      "id": "IMP-008",
+      "name": "Bulk Data Integrity",
+      "module": "Import",
+      "description": "Bulk import must retain record counts",
+      "expected": "Imported counts match accepted records"
+    },
+    {
+      "id": "IMP-009",
+      "name": "Import User Access",
+      "module": "Import",
+      "description": "Import features must remain access controlled",
+      "expected": "Unauthorized import calls are rejected"
+    },
+    {
+      "id": "IMP-010",
+      "name": "Import Workflow Proof",
+      "module": "Import",
+      "description": "Import readiness must be auditable",
+      "expected": "Audit proof captures import validations or missing implementations"
+    },
+    {
+      "id": "REP-001",
+      "name": "Invoice Register Report",
+      "module": "Reports",
+      "description": "Invoice register report must be reachable",
+      "expected": "Invoice register API returns data"
+    },
+    {
+      "id": "REP-002",
+      "name": "Payment Register Report",
+      "module": "Reports",
+      "description": "Payment register report must be reachable",
+      "expected": "Payments register API returns data"
+    },
+    {
+      "id": "REP-003",
+      "name": "VAT Summary Report",
+      "module": "Reports",
+      "description": "VAT summary report must be reachable",
+      "expected": "VAT summary API returns data"
+    },
+    {
+      "id": "REP-004",
+      "name": "Trial Balance Report",
+      "module": "Reports",
+      "description": "Trial balance report must be reachable",
+      "expected": "Trial balance API returns data"
+    },
+    {
+      "id": "REP-005",
+      "name": "General Ledger Report",
+      "module": "Reports",
+      "description": "General ledger report must be reachable",
+      "expected": "General ledger API returns data"
+    },
+    {
+      "id": "REP-006",
+      "name": "Profit Loss Report",
+      "module": "Reports",
+      "description": "Profit and loss report must be reachable",
+      "expected": "Profit and loss API returns data"
+    },
+    {
+      "id": "REP-007",
+      "name": "Balance Sheet Report",
+      "module": "Reports",
+      "description": "Balance sheet report must be reachable",
+      "expected": "Balance sheet API returns data"
+    },
+    {
+      "id": "REP-008",
+      "name": "Dashboard Summary Report",
+      "module": "Reports",
+      "description": "Dashboard summary report must be reachable",
+      "expected": "Dashboard summary API returns data"
+    },
+    {
+      "id": "REP-009",
+      "name": "Report Data Freshness",
+      "module": "Reports",
+      "description": "Reports must reflect recent workflow changes",
+      "expected": "Reports show newly posted workflow records"
+    },
+    {
+      "id": "REP-010",
+      "name": "Report Workflow Proof",
+      "module": "Reports",
+      "description": "Reporting workflow must be provable",
+      "expected": "Workflow proof confirms reporting outputs updated"
+    },
+    {
+      "id": "USR-001",
+      "name": "User Registration Route",
+      "module": "Users",
+      "description": "User registration route must work",
+      "expected": "Registration API returns success for valid payloads"
+    },
+    {
+      "id": "USR-002",
+      "name": "User Login Route",
+      "module": "Users",
+      "description": "User login route must work",
+      "expected": "Login API returns success for valid credentials"
+    },
+    {
+      "id": "USR-003",
+      "name": "Workspace Access Control",
+      "module": "Users",
+      "description": "Protected workspace routes must require access",
+      "expected": "Unauthorized access is rejected"
+    },
+    {
+      "id": "USR-004",
+      "name": "Company User Listing",
+      "module": "Users",
+      "description": "Company user listing route must work",
+      "expected": "Company users API returns data"
+    },
+    {
+      "id": "USR-005",
+      "name": "Support Account Listing",
+      "module": "Users",
+      "description": "Support account listing route must work",
+      "expected": "Support account API returns data"
+    },
+    {
+      "id": "USR-006",
+      "name": "Role Update Route",
+      "module": "Users",
+      "description": "User role update route must work",
+      "expected": "User update API returns success for authorized callers"
+    },
+    {
+      "id": "USR-007",
+      "name": "Audit Actor Capture",
+      "module": "Users",
+      "description": "User-driven workflows must preserve actor metadata",
+      "expected": "Workflow records retain acting user identifiers"
+    },
+    {
+      "id": "USR-008",
+      "name": "Session Health",
+      "module": "Users",
+      "description": "Authenticated session state must support workspace requests",
+      "expected": "Authenticated API calls succeed for workspace routes"
+    },
+    {
+      "id": "USR-009",
+      "name": "User Dummy Data Coverage",
+      "module": "Users",
+      "description": "Dummy workflow setup must include a valid acting user",
+      "expected": "Workflow tests create an acting user"
+    },
+    {
+      "id": "USR-010",
+      "name": "User Workflow Proof",
+      "module": "Users",
+      "description": "User access flow must be auditable",
+      "expected": "Audit proof captures authenticated workflow execution"
+    }
+  ]
+}

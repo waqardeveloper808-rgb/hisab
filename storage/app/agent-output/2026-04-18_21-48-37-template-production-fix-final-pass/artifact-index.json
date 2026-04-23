@@ -1,0 +1,29 @@
+{
+  "outputDir": "c:\\hisab\\storage\\app\\agent-output\\2026-04-18_21-48-37-template-production-fix-final-pass",
+  "reportPath": "c:\\hisab\\storage\\app\\agent-output\\2026-04-18_21-48-37-template-production-fix-final-pass\\document-validation-report.json",
+  "generatedAt": "2026-04-18T18:50:27.242Z",
+  "files": [
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/invoice.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/invoice-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/invoice.pdf",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/invoice-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/quotation.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/quotation-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/proforma.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/proforma-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/proforma.pdf",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/proforma-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/credit-note.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/credit-note-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/credit-note.pdf",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/credit-note-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/debit-note.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/debit-note-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/debit-note.pdf",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/debit-note-pdf-proof.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/delivery-note.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/delivery-note-preview-page.png",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/purchase-order.html",
+    "storage/app/agent-output/2026-04-18_21-48-37-template-production-fix-final-pass/purchase-order-preview-page.png"
+  ]
+}

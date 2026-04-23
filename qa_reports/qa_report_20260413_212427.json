@@ -1,0 +1,727 @@
+{
+  "project_name": "Gulf Hisab",
+  "generated_at": "2026-04-13T21:24:27.255575Z",
+  "environment": "local-production-like",
+  "overall_score": 99.06,
+  "totals": {
+    "checks": 52,
+    "passed_checks": 50,
+    "failed_checks": 2,
+    "critical": 0,
+    "high": 2,
+    "medium": 2,
+    "low": 2
+  },
+  "executive_summary": [
+    "Overall QA health score: 99.06/100.",
+    "High-severity issues detected: 2.",
+    "Weakest areas: headline_structure (85.0), route_availability (90.0), headline_structure (92.0), headline_structure (92.0)"
+  ],
+  "checks": [
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "gulf hisab",
+          "zatca-compliant invoicing"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 30
+      },
+      "issues": []
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 29
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "card_hygiene",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked card cleanliness and UI noise.",
+      "evidence": {},
+      "issues": []
+    },
+    {
+      "checker": "placeholder_copy",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked rendered HTML for placeholder and draft copy.",
+      "evidence": {},
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4,
+        "brand_link_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "products",
+          "gulf hisab"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 3
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/products",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4,
+        "brand_link_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "pricing",
+          "trial"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 26
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/plans",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4,
+        "brand_link_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/helpdesk-ai",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "help",
+          "gulf hisab"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/helpdesk-ai",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 8
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/helpdesk-ai",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 4,
+        "brand_link_count": 4
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "log in"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 27
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 92.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 0
+      },
+      "issues": [
+        {
+          "id": "structure-no-h2-sections-found-1776115313536",
+          "category": "structure",
+          "severity": "low",
+          "title": "No H2 sections found",
+          "description": "Page has weak section hierarchy.",
+          "evidence": {},
+          "recommendation": "Break long pages into clearly labeled sections using H2s.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/login",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "start free trial"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "cta_clarity",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Evaluated CTA clarity and action labels.",
+      "evidence": {
+        "button_count": 26
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 92.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 1,
+        "h2_count": 0
+      },
+      "issues": [
+        {
+          "id": "structure-no-h2-sections-found-1776115314656",
+          "category": "structure",
+          "severity": "low",
+          "title": "No H2 sections found",
+          "description": "Page has weak section hierarchy.",
+          "evidence": {},
+          "recommendation": "Break long pages into clearly labeled sections using H2s.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/register",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "dashboard",
+          "total sales"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 60
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "placeholder_copy",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked rendered HTML for placeholder and draft copy.",
+      "evidence": {},
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/user",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "platform plans"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 47
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/admin",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "customer",
+          "support"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 45
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/assistant",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "referral"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "link_integrity",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated links and placeholder actions.",
+      "evidence": {
+        "link_count": 41
+      },
+      "issues": []
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/agent",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "audit engine",
+          "qa/qc engine"
+        ]
+      },
+      "issues": []
+    },
+    {
+      "checker": "headline_structure",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": true,
+      "score": 85.0,
+      "summary": "Checked heading hierarchy.",
+      "evidence": {
+        "h1_count": 2,
+        "h2_count": 3
+      },
+      "issues": [
+        {
+          "id": "structure-multiple-h1-headings-1776115463686",
+          "category": "structure",
+          "severity": "medium",
+          "title": "Multiple H1 headings",
+          "description": "Page contains more than one H1 which weakens hierarchy and accessibility.",
+          "evidence": {
+            "count": 2
+          },
+          "recommendation": "Use one H1 and demote the rest to H2/H3 as needed.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "internal_label_leaks",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for leaked developer labels.",
+      "evidence": {
+        "banned_labels_checked": 11
+      },
+      "issues": []
+    },
+    {
+      "checker": "placeholder_copy",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked rendered HTML for placeholder and draft copy.",
+      "evidence": {},
+      "issues": []
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/sandbox/admin/audit",
+      "passed": true,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 6,
+        "brand_link_count": 6
+      },
+      "issues": []
+    },
+    {
+      "checker": "route_availability",
+      "target": "http://127.0.0.1:3001/this-route-does-not-exist",
+      "passed": false,
+      "score": 90.0,
+      "summary": "Validated route response and expected page content.",
+      "evidence": {
+        "expected_text": [
+          "page not found",
+          "this page is not available"
+        ]
+      },
+      "issues": [
+        {
+          "id": "routes-route-contains-forbidden-shell-content-1776115465600",
+          "category": "routes",
+          "severity": "high",
+          "title": "Route contains forbidden shell content",
+          "description": "The route rendered chrome or labels that do not belong on this page state.",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/this-route-does-not-exist",
+            "matches": [
+              "user workspace"
+            ]
+          },
+          "recommendation": "Render the correct not-found boundary or page shell for this route.",
+          "owner": "frontend",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "logo_presence",
+      "target": "http://127.0.0.1:3001/this-route-does-not-exist",
+      "passed": false,
+      "score": 100.0,
+      "summary": "Checked for official logo presence.",
+      "evidence": {
+        "logo_count": 2,
+        "brand_link_count": 1
+      },
+      "issues": [
+        {
+          "id": "links-page-returned-error-status-1776115465626",
+          "category": "links",
+          "severity": "high",
+          "title": "Page returned error status",
+          "description": "URL returned HTTP 404.",
+          "evidence": {
+            "url": "http://127.0.0.1:3001/this-route-does-not-exist",
+            "status_code": 404
+          },
+          "recommendation": "Fix route, deployment, auth, or server response.",
+          "owner": "engineering",
+          "status": "open"
+        }
+      ]
+    },
+    {
+      "checker": "architecture_conventions",
+      "target": ".",
+      "passed": true,
+      "score": 92.0,
+      "summary": "Checked architecture shape against conventions.",
+      "evidence": {
+        "expected_paths_checked": 8
+      },
+      "issues": [
+        {
+          "id": "architecture-potential-architecture-anti-patterns-found-1776115467254",
+          "category": "architecture",
+          "severity": "medium",
+          "title": "Potential architecture anti-patterns found",
+          "description": "Some files or patterns suggest architectural drift.",
+          "evidence": {
+            "matches": [
+              "components\\workspace\\TemplatesOverview.tsx",
+              "backend\\app\\Models\\DocumentTemplate.php",
+              "backend\\app\\Services\\DocumentTemplateRendererService.php",
+              "backend\\app\\Http\\Controllers\\Api\\DocumentTemplateController.php"
+            ]
+          },
+          "recommendation": "Review and refactor files that bypass intended layers or boundaries.",
+          "owner": "engineering",
+          "status": "open"
+        }
+      ]
+    }
+  ],
+  "agent_instruction_block": "You are a Senior Product QA Fix Agent working on Gulf Hisab.\n\nRules:\n- Do not ask questions.\n- Do not stop after one fix.\n- Fix highest severity issues first.\n- Remove all user-facing developer artifacts.\n- Preserve architecture and existing working flows.\n- Do not redesign unrelated areas.\n- After each fix, verify the affected flow still works.\n- Prioritize polished SaaS clarity over decorative chips or taxonomy leakage.\n\nPriority issues to resolve:\n1. [HIGH] routes: Route contains forbidden shell content — The route rendered chrome or labels that do not belong on this page state.\n   Fix guidance: Render the correct not-found boundary or page shell for this route.\n2. [HIGH] links: Page returned error status — URL returned HTTP 404.\n   Fix guidance: Fix route, deployment, auth, or server response.\n3. [MEDIUM] structure: Multiple H1 headings — Page contains more than one H1 which weakens hierarchy and accessibility.\n   Fix guidance: Use one H1 and demote the rest to H2/H3 as needed.\n4. [MEDIUM] architecture: Potential architecture anti-patterns found — Some files or patterns suggest architectural drift.\n   Fix guidance: Review and refactor files that bypass intended layers or boundaries.\n5. [LOW] structure: No H2 sections found — Page has weak section hierarchy.\n   Fix guidance: Break long pages into clearly labeled sections using H2s.\n6. [LOW] structure: No H2 sections found — Page has weak section hierarchy.\n   Fix guidance: Break long pages into clearly labeled sections using H2s.\n\nDeliverables:\n- Updated code\n- Brief change log\n- Recheck results for each resolved issue\n- Confirm no internal abbreviations, placeholder chips, or broken CTAs remain visible"
+}

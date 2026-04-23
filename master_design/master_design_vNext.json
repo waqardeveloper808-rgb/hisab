@@ -1,0 +1,211 @@
+{
+  "system_name": "Gulf Hisab System Mode",
+  "version": "Master Design vNext",
+  "phase": "Phase 1",
+  "created_at": "2026-04-18T03:18:58",
+  "constitution": {
+    "purpose": "Deliver an accounting and operations platform with enforceable accounting integrity, traceable workflows, and production-grade UI/API behavior.",
+    "target_standard": "Wafeq-level SaaS or higher",
+    "phase_1_scope": [
+      "VAT module completion",
+      "End-to-end accounting proof",
+      "UI validation completion",
+      "Final reporting validation",
+      "Stability and edge-case completion"
+    ],
+    "non_negotiable_rules": [
+      "Do not weaken runtime accounting enforcement.",
+      "Do not bypass payment validation.",
+      "Do not change invoice posting formulas unless explicitly required by accounting law.",
+      "Do not change inventory posting formulas unless explicitly required by accounting law.",
+      "Do not hardcode account IDs.",
+      "Every task must produce verifiable evidence."
+    ]
+  },
+  "module_architecture": [
+    {
+      "name": "Accounting Engine",
+      "inputs": ["documents", "payments", "inventory events", "company chart of accounts", "tax rules"],
+      "outputs": ["balanced journal entries", "ledger lines", "trial-balance visibility"],
+      "processing_logic": "Translate business events into balanced journal entries using configured accounts and posting rules.",
+      "accounting_impact": "Primary source of journal, ledger, trial balance, and equity movement.",
+      "validation_rules": ["Entries must balance", "Required accounts must exist", "Posting date must be in an open period if enforced"],
+      "traceability_rules": ["Every entry must keep source type, source id, and linked document context"],
+      "report_impact": ["trial-balance", "general-ledger", "profit-loss", "balance-sheet", "VAT detail"]
+    },
+    {
+      "name": "Invoice Engine",
+      "inputs": ["customer", "invoice lines", "tax category", "pricing", "dates"],
+      "outputs": ["draft invoice", "finalized invoice", "invoice status changes"],
+      "processing_logic": "Create, validate, and finalize sales documents and link them to accounting and downstream payment flows.",
+      "accounting_impact": "Creates receivable, revenue, and output VAT postings on finalize.",
+      "validation_rules": ["Required customer data present", "line items valid", "tax rules calculable"],
+      "traceability_rules": ["Invoice number must map to journal lines and ledger queries"],
+      "report_impact": ["invoice register", "revenue reporting", "VAT reporting", "AR balance"]
+    },
+    {
+      "name": "Inventory Engine",
+      "inputs": ["items", "stock receipts", "sales consumption", "adjustments", "inventory type"],
+      "outputs": ["inventory transactions", "on-hand balances", "inventory journals"],
+      "processing_logic": "Persist inventory movements and post inventory and cost journals where applicable.",
+      "accounting_impact": "Moves inventory asset and cost of goods sold balances.",
+      "validation_rules": ["No invalid item references", "stock constraints enforced where applicable", "cost present for stock-affecting transactions"],
+      "traceability_rules": ["Inventory transactions must retain reference, journal entry number, and source linkage"],
+      "report_impact": ["stock register", "general ledger", "balance sheet inventory"]
+    },
+    {
+      "name": "Payment Engine",
+      "inputs": ["contact", "amount", "payment date", "allocations", "reference"],
+      "outputs": ["payment record", "allocation rows", "payment journals"],
+      "processing_logic": "Record payments, allocate against one or more invoices, and update settlement state.",
+      "accounting_impact": "Posts cash/bank movement, AR/AP settlement, and advances when amounts remain unallocated.",
+      "validation_rules": ["Allocation sum cannot exceed payment amount", "target documents must belong to same counterparty type", "amounts must be positive and internally consistent"],
+      "traceability_rules": ["Each AR/AP settlement line must keep invoice/document linkage"],
+      "report_impact": ["payments register", "general ledger", "trial balance", "AR/AP ageing if present"]
+    },
+    {
+      "name": "Customer Advance Engine",
+      "inputs": ["overpayments", "manual advance applications", "refunds"],
+      "outputs": ["advance balance", "advance application journals", "refund journals"],
+      "processing_logic": "Create customer credit from excess receipts and later apply or refund it without breaking traceability.",
+      "accounting_impact": "Uses liability account 2300 for customer advances and relieves AR when applied.",
+      "validation_rules": ["Available advance must cover requested application", "refund cannot exceed remaining advance"],
+      "traceability_rules": ["Applications must link original customer, target invoice, and posting source"],
+      "report_impact": ["trial balance 2300", "balance sheet liabilities", "invoice balances"]
+    },
+    {
+      "name": "VAT Engine",
+      "inputs": ["tax categories", "document lines", "transaction types", "counterparty metadata"],
+      "outputs": ["taxable amount", "tax amount", "VAT detail rows"],
+      "processing_logic": "Calculate VAT at line and document level and expose compliant output/input VAT totals.",
+      "accounting_impact": "Drives VAT payable and receivable postings via tax-aware journal generation.",
+      "validation_rules": ["Buyer VAT and address requirements on tax invoices", "tax category must resolve", "rate math must reconcile with line totals"],
+      "traceability_rules": ["VAT codes and document context must persist to VAT detail output"],
+      "report_impact": ["vat-detail", "profit-loss net revenue presentation", "balance sheet VAT balances"]
+    },
+    {
+      "name": "Reporting Engine",
+      "inputs": ["journal entries", "accounts", "document metadata", "tax categories"],
+      "outputs": ["trial balance", "general ledger", "profit and loss", "balance sheet", "invoice register"],
+      "processing_logic": "Aggregate posted accounting data into operational and financial reports.",
+      "accounting_impact": "Read-only aggregation layer over posted entries.",
+      "validation_rules": ["Report totals must reconcile to ledger source data", "income and revenue classifications must be handled correctly"],
+      "traceability_rules": ["Document filters must return relevant journal and ledger evidence"],
+      "report_impact": ["all financial and document-facing reports"]
+    },
+    {
+      "name": "Traceability Engine",
+      "inputs": ["source documents", "payments", "inventory records", "journal metadata"],
+      "outputs": ["document links", "source metadata", "cross-module lookup paths"],
+      "processing_logic": "Preserve cross-reference data so every accounting movement can be traced back to a business event.",
+      "accounting_impact": "Enables safe auditability rather than new monetary balances.",
+      "validation_rules": ["No orphan settlement lines", "linked document numbers must be queryable"],
+      "traceability_rules": ["Every cross-module post stores source_type, source_id, and document context"],
+      "report_impact": ["journal detail", "ledger filtering", "audit evidence"]
+    },
+    {
+      "name": "Integrity Enforcement Engine",
+      "inputs": ["posted journals", "source records", "allocation metadata", "ledger visibility checks"],
+      "outputs": ["validation pass/fail", "audit log entries", "blocked invalid writes"],
+      "processing_logic": "Run synchronous post-write accounting validations and reject broken state.",
+      "accounting_impact": "Prevents invalid accounting persistence.",
+      "validation_rules": ["Balanced entry validation", "coverage validation", "traceability validation", "report visibility validation"],
+      "traceability_rules": ["Must verify invoice-level linkage for allocated payment lines"],
+      "report_impact": ["ensures reports only reflect valid posted data"]
+    },
+    {
+      "name": "UI Validation Layer",
+      "inputs": ["user form actions", "workflow errors", "live routed API responses"],
+      "outputs": ["visible validation feedback", "successful workflow navigation", "screenshots and UI proofs"],
+      "processing_logic": "Validate that business constraints and successful actions are correctly represented in the interface.",
+      "accounting_impact": "Indirect; guards correct data entry before accounting posts occur.",
+      "validation_rules": ["Required fields must block issue", "short stock must warn", "successful issue flow must surface next actions"],
+      "traceability_rules": ["UI-issued documents must match backend document numbers and later report results"],
+      "report_impact": ["invoice register visibility", "workflow evidence"]
+    },
+    {
+      "name": "API Layer",
+      "inputs": ["workspace requests", "backend company-scoped requests", "auth headers"],
+      "outputs": ["JSON responses", "error payloads", "state mutations"],
+      "processing_logic": "Expose business workflows and reports through company-scoped endpoints.",
+      "accounting_impact": "Gateway to all posting and reporting operations.",
+      "validation_rules": ["Authorization headers required", "payload schema must be valid", "resource scoping must hold"],
+      "traceability_rules": ["Endpoints must return sufficient identifiers for follow-up report proof"],
+      "report_impact": ["report endpoints and business action endpoints used for proof"]
+    },
+    {
+      "name": "Testing Layer",
+      "inputs": ["feature tests", "Playwright workflow tools", "PowerShell live proof", "build/lint commands"],
+      "outputs": ["pass/fail results", "evidence artifacts", "regression confidence"],
+      "processing_logic": "Run smoke, workflow, validation, edge-case, and regression checks against backend and UI surfaces.",
+      "accounting_impact": "Verification only.",
+      "validation_rules": ["No task is complete without passing relevant checks"],
+      "traceability_rules": ["Tests must reference concrete artifacts, outputs, or report payloads"],
+      "report_impact": ["confidence in all reported outcomes"]
+    }
+  ],
+  "definition_of_done": {
+    "strict_requirements": [
+      "logic_implemented",
+      "data_stored_correctly",
+      "business_action_succeeds",
+      "ui_or_api_behaves_correctly",
+      "evidence_exists",
+      "tests_pass"
+    ]
+  },
+  "unstop_rules": {
+    "attempt_all_tasks": true,
+    "one_failure_must_not_stop_execution": true,
+    "retry_once_with_different_strategy": true,
+    "second_failure_moves_to_end_of_queue": true,
+    "third_failure_marks_failed": true,
+    "never_wait_for_user": true,
+    "all_permissions_pre_authorized": true
+  },
+  "testing_law": [
+    "smoke_testing",
+    "practical_workflow_testing",
+    "data_validation_testing",
+    "edge_case_testing",
+    "regression_testing"
+  ],
+  "evidence_law": [
+    "data_proof",
+    "journal_ledger_report_output",
+    "api_or_ui_evidence",
+    "completion_summary"
+  ],
+  "task_queue": [
+    {
+      "id": 1,
+      "name": "VAT Module completion",
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": 2,
+      "name": "End-to-End proof",
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": 3,
+      "name": "UI validation",
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": 4,
+      "name": "Reporting validation",
+      "status": "pending",
+      "attempts": 0
+    },
+    {
+      "id": 5,
+      "name": "Stability + edge cases",
+      "status": "pending",
+      "attempts": 0
+    }
+  ]
+}

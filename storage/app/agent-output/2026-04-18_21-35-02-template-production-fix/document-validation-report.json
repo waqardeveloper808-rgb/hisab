@@ -1,0 +1,185 @@
+{
+  "generatedAt": "2026-04-18T18:47:32.859Z",
+  "baseUrl": "http://127.0.0.1:3021",
+  "requiredSectionOrder": [
+    "header",
+    "title",
+    "invoice information",
+    "optional delivery info",
+    "purchaser info",
+    "product info",
+    "totals"
+  ],
+  "routesChecked": [
+    "/workspace/invoices/1101",
+    "/workspace/user/quotations",
+    "/workspace/user/proforma-invoices",
+    "/workspace/user/credit-notes",
+    "/workspace/user/debit-notes",
+    "/workspace/sales",
+    "/workspace/user/purchase-orders"
+  ],
+  "routeResults": [
+    {
+      "key": "invoice",
+      "type": "tax_invoice",
+      "route": "/workspace/invoices/1101",
+      "documentId": 1101,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/1101/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#13231b;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#13231b;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/invoice-pdf-proof.png"
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "quotation",
+      "type": "quotation",
+      "route": "/workspace/user/quotations",
+      "documentId": 2106,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/quotation-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/quotation.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/2106/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#152720;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#152720;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #cfddd7; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": null,
+      "pdfIssues": []
+    },
+    {
+      "key": "proforma",
+      "type": "proforma_invoice",
+      "route": "/workspace/user/proforma-invoices",
+      "documentId": 2107,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/2107/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#13231b;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#13231b;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/proforma-pdf-proof.png"
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "credit-note",
+      "type": "credit_note",
+      "route": "/workspace/user/credit-notes",
+      "documentId": 1201,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/1201/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#13231b;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#13231b;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/credit-note-pdf-proof.png"
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "debit-note",
+      "type": "debit_note",
+      "route": "/workspace/user/debit-notes",
+      "documentId": 1301,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/1301/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#13231b;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#13231b;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": {
+        "pdf": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note.pdf",
+        "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/debit-note-pdf-proof.png"
+      },
+      "pdfIssues": []
+    },
+    {
+      "key": "delivery-note",
+      "type": "delivery_note",
+      "route": "/workspace/sales",
+      "documentId": 2132,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/delivery-note-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/delivery-note.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/2132/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#13231b;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#13231b;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #cbd7d0; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": null,
+      "pdfIssues": []
+    },
+    {
+      "key": "purchase-order",
+      "type": "purchase_order",
+      "route": "/workspace/user/purchase-orders",
+      "documentId": 2103,
+      "screenshot": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/purchase-order-preview-page.png",
+      "htmlPath": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/purchase-order.html",
+      "previewIssues": [],
+      "pdfUrl": "http://127.0.0.1:3021/api/workspace/documents/2103/export-pdf",
+      "htmlExcerpt": "<html><head><meta charset=\"utf-8\" /><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap'); body{margin:0;padding:0;background:#f1f5f1;font-family:Segoe UI,Tahoma,Arial,sans-serif;color:#12232c;} .gh-arabic{font-family:'Noto Naskh Arabic', Tahoma, Arial, sans-serif; direction:rtl; unicode-bidi:isolate; letter-spacing:0; word-spacing:0;}</style></head><body style=\"margin:0; padding:0; background:#f1f5f1; font-family:Segoe UI, Tahoma, Arial, sans-serif; color:#12232c;\"><div style=\"max-width:1020px; margin:0 auto; padding:12px; background:#ffffff;\"><article style=\"background:#ffffff; border:1px solid #aebbc3; font-family:Segoe UI, Tahoma, ",
+      "pdfEvidence": null,
+      "pdfIssues": []
+    }
+  ],
+  "templateEngine": {
+    "listingCount": 3,
+    "defaultTemplateId": 801,
+    "previewReturnedHtml": true,
+    "updateReturnedId": 801,
+    "persistedAccentColor": "#1f7a53",
+    "persistedFileAccentColor": "#1f7a53",
+    "defaultStillSelected": true,
+    "noDeadEndActions": true
+  },
+  "templateEvidence": {
+    "register": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/template-register.png",
+    "studio": "storage/app/agent-output/2026-04-18_21-35-02-template-production-fix/template-studio.png"
+  },
+  "matrix": [
+    {
+      "type": "tax_invoice",
+      "route": "/workspace/invoices/1101",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "quotation",
+      "route": "/workspace/user/quotations",
+      "preview": "PASS",
+      "pdf": "N/A"
+    },
+    {
+      "type": "proforma_invoice",
+      "route": "/workspace/user/proforma-invoices",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "credit_note",
+      "route": "/workspace/user/credit-notes",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "debit_note",
+      "route": "/workspace/user/debit-notes",
+      "preview": "PASS",
+      "pdf": "PASS"
+    },
+    {
+      "type": "delivery_note",
+      "route": "/workspace/sales",
+      "preview": "PASS",
+      "pdf": "N/A"
+    },
+    {
+      "type": "purchase_order",
+      "route": "/workspace/user/purchase-orders",
+      "preview": "PASS",
+      "pdf": "N/A"
+    }
+  ]
+}

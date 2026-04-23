@@ -1,0 +1,20 @@
+{
+  "register": "invoices",
+  "route": "/workspace/user/invoices",
+  "selector": "[data-inspector-real-register=\"invoices\"]",
+  "visibleRowCount": 35,
+  "meetsThreshold": true,
+  "firstRows": [
+    "TINV-00027 PAID CDM-20260422085843 Customer 10 2026-04-18 655.50 0.00",
+    "TINV-00026 PAID CDM-20260422085843 Customer 09 2026-04-17 621.00 0.00",
+    "TINV-00009 PAID Recovery Imported Customer 1776519332-5 2026-04-17 1,725.00 0.00",
+    "TINV-00008 PAID Recovery Imported Customer 1776519326-4 2026-04-17 1,725.00 0.00",
+    "TINV-00007 PAID Recovery Imported Customer 1776519319-3 2026-04-17 1,725.00 0.00",
+    "TINV-00006 PAID Recovery Imported Customer 1776519312-2 2026-04-17 1,725.00 0.00",
+    "TINV-00005 PAID Recovery Imported Customer 1776519306-1 2026-04-17 1,725.00 0.00",
+    "TINV-00004 PAID Recovery Imported Customer 1776519267 2026-04-17 1,725.00 0.00",
+    "TINV-00003 PAID Recovery Imported Customer 1776519210 2026-04-17 1,725.00 0.00",
+    "TINV-00002 PAID Recovery Imported Customer 1776519147 2026-04-17 1,725.00 0.00"
+  ],
+  "screenshot": "C:\\hisab\\artifacts\\register_visibility_20260422123547\\screenshots\\invoice-register.png"
+}

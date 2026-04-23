@@ -1,0 +1,19 @@
+Visual issues found
+- Document previews had weak visual hierarchy: totals were too quiet, meta blocks felt uniformly boxed, and bilingual content lacked enough separation.
+- Preview routes still showed floating support widgets, which made the product feel unfinished and could obstruct review.
+- Template studio felt like a form-heavy settings screen instead of a canvas-first design tool.
+
+UI improvements applied
+- Increased hierarchy in document titles, totals, and table totals.
+- Reduced visual clutter by using denser spacing, softer panel backgrounds, and more deliberate emphasis instead of repeated heavy boxes.
+- Added stronger total treatment with accent-backed total rows and highlighted line totals.
+- Applied section gap and canvas padding settings consistently in the HTML renderer.
+- Hid floating support widgets on document preview routes.
+- Simplified the studio by reducing duplicated control blocks and reinforcing the preview canvas as the primary surface.
+
+Validation evidence
+- Frontend build passed.
+- Backend DocumentTemplatePreviewTest passed.
+- All 7 preview routes passed.
+- All 7 PDF routes passed.
+- PDF proof screenshots are nonblank and rendered.
