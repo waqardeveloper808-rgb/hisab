@@ -46,19 +46,18 @@ export function resolveSessionWorkspaceCompanyId(session: AuthSession | null) {
 }
 
 function isSessionReady(session: AuthSession | null): session is AuthSession {
+  const activeCompanyId = session?.companyId ?? session?.workspaceContext?.activeCompany?.id;
+  const workspaceToken = getWorkspaceApiToken(session ?? null);
+
   return Boolean(session)
     && typeof session?.id === "number"
     && session.id > 0
     && typeof session.userId === "number"
     && session.userId > 0
-    && typeof session.authToken === "string"
-    && session.authToken.trim().length > 0
-    && typeof session.companyId === "number"
-    && session.companyId > 0
-    && typeof session.workspaceContext?.activeCompany?.id === "number"
-    && session.workspaceContext.activeCompany.id > 0
-    && typeof session.workspaceContext.activeCompany.legalName === "string"
-    && session.workspaceContext.activeCompany.legalName.trim().length > 0;
+    && typeof activeCompanyId === "number"
+    && activeCompanyId > 0
+    && typeof workspaceToken === "string"
+    && workspaceToken.trim().length > 0;
 }
 
 function isAuthSessionReadResult(value: AuthSession | AuthSessionReadResult | null): value is AuthSessionReadResult {
@@ -99,7 +98,7 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
 
   const activeCompanyId = sessionResult.session.companyId ?? sessionResult.session.workspaceContext?.activeCompany?.id ?? null;
   const actorId = sessionResult.session.userId;
-  const workspaceToken = sessionResult.session.authToken;
+  const workspaceToken = getWorkspaceApiToken(sessionResult.session);
   const backendConfigured = Boolean(backendBaseUrl && activeCompanyId && actorId && workspaceToken);
 
   return {

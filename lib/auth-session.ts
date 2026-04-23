@@ -145,7 +145,7 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
     return null;
   }
 
-  if (!isNonEmptyString(parsed.authToken) || !isPositiveInteger(activeCompany?.id) || !isNonEmptyString(activeCompanyLegalName)) {
+  if (!isPositiveInteger(activeCompany?.id) || !isNonEmptyString(activeCompanyLegalName)) {
     return null;
   }
 
@@ -158,7 +158,11 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
     userId: parsed.userId,
     name: parsed.name,
     email: parsed.email,
-    authToken: parsed.authToken,
+    authToken: isNonEmptyString(parsed.authToken)
+      ? parsed.authToken
+      : isNonEmptyString(parsed.auth_token)
+        ? parsed.auth_token
+        : undefined,
     companyId: activeCompany.id,
     platformRole: typeof parsed.platformRole === "string" ? parsed.platformRole : undefined,
     workspaceContext: {

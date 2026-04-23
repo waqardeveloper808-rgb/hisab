@@ -42,7 +42,11 @@ export function WorkspaceAccessProvider({
     fetch("/api/auth/session", { cache: "no-store", credentials: "include" })
       .then(async (response) => {
         if (!response.ok) {
-          throw new Error(`session:${response.status}`);
+          if (response.status === 401 || response.status === 403) {
+            throw new Error(`session:${response.status}`);
+          }
+
+          return;
         }
 
         const payload = await response.json() as {
@@ -74,7 +78,12 @@ export function WorkspaceAccessProvider({
           platformRole: payload.data.platformRole,
         });
       })
-      .catch(() => {
+      .catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : "";
+        if (!message.startsWith("session:")) {
+          return;
+        }
+
         if (!active) {
           return;
         }

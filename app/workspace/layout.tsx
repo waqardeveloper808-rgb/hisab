@@ -3,10 +3,10 @@ import { WorkspaceAccessProvider } from "@/components/workspace/WorkspaceAccessP
 import { WorkspacePathProvider } from "@/components/workspace/WorkspacePathProvider";
 import { WorkspaceDataProvider } from "@/components/workflow/WorkspaceDataProvider";
 import { LayoutEditorProvider } from "@/components/workspace/LayoutEditorProvider";
-import { getWorkspaceSessionAccess } from "@/lib/server-access";
+import { requireWorkspaceAccess } from "@/lib/server-access";
 
 export default async function WorkspaceLayout({ children }: { children: React.ReactNode }) {
-  const { session, access } = await getWorkspaceSessionAccess();
+  const { session, access } = await requireWorkspaceAccess();
 
   return (
     <WorkspacePathProvider value={{ basePath: "/workspace" }}>

@@ -16,6 +16,19 @@ export const dynamic = "force-dynamic";
 const dummyLoginEmail = process.env.DUMMY_LOGIN_EMAIL?.trim().toLowerCase() || "demo@gulfhisab.local";
 const dummyLoginPassword = process.env.DUMMY_LOGIN_PASSWORD || "demo123";
 
+function resolvePayloadAuthToken(payloadData: Record<string, unknown> | undefined) {
+  const candidateKeys = ["auth_token", "authToken", "workspace_token", "workspaceToken", "token", "access_token"];
+
+  for (const key of candidateKeys) {
+    const value = payloadData?.[key];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return null;
+}
+
 function isDummyLoginRequest(body: unknown) {
   if (process.env.NODE_ENV === "production" || ! body || typeof body !== "object") {
     return false;
@@ -180,6 +193,12 @@ export async function POST(request: NextRequest) {
       name: string;
       email: string;
       platform_role?: string;
+      auth_token?: string;
+      authToken?: string;
+      workspace_token?: string;
+      workspaceToken?: string;
+      token?: string;
+      access_token?: string;
       workspace_context?: {
         active_company?: {
           id: number;
@@ -203,7 +222,7 @@ export async function POST(request: NextRequest) {
     actorId: payload.data.id,
     fallbackCompany,
   });
-  const authToken = getWorkspaceApiToken();
+  const authToken = resolvePayloadAuthToken(payload.data as unknown as Record<string, unknown>) ?? getWorkspaceApiToken();
   const sessionValue = await createAuthSessionValue({
     id: payload.data.id,
     userId: payload.data.id,
