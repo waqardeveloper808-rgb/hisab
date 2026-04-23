@@ -42,7 +42,14 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = JSON.parse(text) as { data: { id: number; name: string; email: string; platform_role?: string } };
-  const sessionValue = await createAuthSessionValue(payload.data);
+  const sessionPayload = {
+    id: payload.data.id,
+    userId: payload.data.id,
+    name: payload.data.name,
+    email: payload.data.email,
+    platformRole: payload.data.platform_role,
+  };
+  const sessionValue = await createAuthSessionValue(sessionPayload);
   const nextResponse = NextResponse.json({ data: payload.data }, { status: 201 });
 
   nextResponse.cookies.set(authSessionCookieName, sessionValue, {

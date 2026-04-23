@@ -190,8 +190,10 @@ export function validateCompanyProfile(company: {
   fax: string;
   addressStreet: string;
   addressCity: string;
+  addressArea?: string;
   addressPostalCode: string;
   addressAdditionalNumber: string;
+  addressBuildingNumber?: string;
   addressCountry: string;
   shortAddress: string;
 }) {
@@ -243,11 +245,11 @@ export function validateCompanyProfile(company: {
     setError(errors, "addressAdditionalNumber", "Secondary number must contain exactly 4 digits.");
   }
 
-  if (!/^\d{4}$/.test(digitsOnly(company.addressBuildingNumber))) {
+  if (!/^\d{4}$/.test(digitsOnly(company.addressBuildingNumber || ""))) {
     setError(errors, "addressBuildingNumber", "Building number must contain exactly 4 digits.");
   }
 
-  if (!company.addressArea.trim()) {
+  if (!company.addressArea || !company.addressArea.trim()) {
     setError(errors, "addressArea", "Enter the district before saving settings.");
   }
 

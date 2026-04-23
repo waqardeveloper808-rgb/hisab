@@ -1316,12 +1316,20 @@ async function request<T>(path: string, init?: WorkspaceRequestInit): Promise<T>
     headers.set("Content-Type", "application/json");
   }
 
-  const response = await fetch(`${getWorkspaceApiBase()}/${path}`, {
-    ...fetchInit,
-    credentials: fetchInit.credentials ?? "include",
-    cache: "no-store",
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${getWorkspaceApiBase()}/${path}`, {
+      ...fetchInit,
+      credentials: fetchInit.credentials ?? "include",
+      cache: "no-store",
+      headers,
+    });
+  } catch (fetchError) {
+    const message = fetchError instanceof Error ? fetchError.message : "Failed to fetch from workspace API";
+    console.error(`[workspace-api] fetch error for ${path}:`, message);
+    throw new Error(`Workspace API fetch failed: ${message}`);
+  }
+
   const responseMode = response.headers.get("X-Workspace-Mode")?.toLowerCase();
 
   if (response.ok && expectedMode !== "any" && responseMode && responseMode !== expectedMode) {
@@ -1332,7 +1340,20 @@ async function request<T>(path: string, init?: WorkspaceRequestInit): Promise<T>
     throw new Error(await extractErrorMessage(response, `Request failed for ${path}`));
   }
 
-  return response.json() as Promise<T>;
+  let jsonData: T;
+  try {
+    const contentType = response.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      console.warn(`[workspace-api] non-JSON response for ${path}: ${contentType}`);
+    }
+    jsonData = await response.json() as T;
+  } catch (parseError) {
+    const message = parseError instanceof Error ? parseError.message : "Failed to parse JSON response";
+    console.error(`[workspace-api] JSON parse error for ${path}:`, message);
+    throw new Error(`Workspace API response parse failed for ${path}: ${message}`);
+  }
+
+  return jsonData;
 }
 
 async function ensureTemplateId(templateId: number | null | undefined, documentType: string): Promise<number> {
@@ -2403,15 +2424,17 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
       request<ApiEnvelope<Array<{ id: number; event: string; auditable_type: string; auditable_id: number; created_at: string }>>>("reports/audit-trail"),
     ]);
 
+    const toArray = <T>(val: T | T[]): T[] => (Array.isArray(val) ? val : []);
+
     return {
-      vatSummary: vatSummary.data.map((row) => ({
+      vatSummary: toArray(vatSummary.data).map((row) => ({
         code: row.code,
         name: row.name,
         rate: numberValue(row.tax_rate),
         taxableAmount: numberValue(row.taxable_amount),
         taxAmount: numberValue(row.tax_amount),
       })),
-      vatDetail: vatDetail.data.map((row) => ({
+      vatDetail: toArray(vatDetail.data).map((row) => ({
         code: row.code,
         name: row.name,
         rate: numberValue(row.tax_rate),
@@ -2420,7 +2443,7 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         inputTaxableAmount: numberValue(row.input_taxable_amount),
         inputTaxAmount: numberValue(row.input_tax_amount),
       })),
-      vatReceivedDetails: vatReceivedDetails.data.map((row) => ({
+      vatReceivedDetails: toArray(vatReceivedDetails.data).map((row) => ({
         id: row.id,
         invoiceNumber: row.document_number,
         date: row.issue_date,
@@ -2428,7 +2451,7 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         taxableAmount: numberValue(row.taxable_amount),
         vatAmount: numberValue(row.vat_amount),
       })),
-      vatPaidDetails: vatPaidDetails.data.map((row) => ({
+      vatPaidDetails: toArray(vatPaidDetails.data).map((row) => ({
         id: row.id,
         reference: row.reference,
         date: row.issue_date,
@@ -2436,17 +2459,17 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         vatAmount: numberValue(row.vat_amount),
         category: row.category,
       })),
-      receivablesAging: receivablesAging.data.map((row) => ({
+      receivablesAging: toArray(receivablesAging.data).map((row) => ({
         documentNumber: row.document_number,
         balanceDue: numberValue(row.balance_due),
         bucket: row.bucket,
       })),
-      payablesAging: payablesAging.data.map((row) => ({
+      payablesAging: toArray(payablesAging.data).map((row) => ({
         documentNumber: row.document_number,
         balanceDue: numberValue(row.balance_due),
         bucket: row.bucket,
       })),
-      trialBalance: trialBalance.data.map((row) => ({
+      trialBalance: toArray(trialBalance.data).map((row) => ({
         code: row.code,
         name: row.name,
         type: row.type,
@@ -2455,7 +2478,7 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         balance: numberValue(row.balance),
       })),
       profitLoss: {
-        lines: profitLoss.data.lines.map((row) => ({
+        lines: toArray(profitLoss.data.lines).map((row) => ({
           code: row.code,
           name: row.name,
           type: row.type,
@@ -2466,21 +2489,21 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         netProfit: numberValue(profitLoss.data.net_profit),
       },
       balanceSheet: {
-        assets: balanceSheet.data.assets.map((row) => ({ ...row, balance: numberValue(row.balance) })),
-        liabilities: balanceSheet.data.liabilities.map((row) => ({ ...row, balance: numberValue(row.balance) })),
-        equity: balanceSheet.data.equity.map((row) => ({ ...row, balance: numberValue(row.balance) })),
+        assets: toArray(balanceSheet.data.assets).map((row) => ({ ...row, balance: numberValue(row.balance) })),
+        liabilities: toArray(balanceSheet.data.liabilities).map((row) => ({ ...row, balance: numberValue(row.balance) })),
+        equity: toArray(balanceSheet.data.equity).map((row) => ({ ...row, balance: numberValue(row.balance) })),
         assetTotal: numberValue(balanceSheet.data.asset_total),
         liabilityTotal: numberValue(balanceSheet.data.liability_total),
         equityTotal: numberValue(balanceSheet.data.equity_total),
       },
-      profitByCustomer: profitByCustomer.data.map((row) => ({
+      profitByCustomer: toArray(profitByCustomer.data).map((row) => ({
         contactId: row.contact_id,
         contactName: row.contact_name,
         revenue: numberValue(row.revenue),
         estimatedCost: numberValue(row.estimated_cost),
         profit: numberValue(row.profit),
       })),
-      profitByProduct: profitByProduct.data.map((row) => ({
+      profitByProduct: toArray(profitByProduct.data).map((row) => ({
         itemId: row.item_id,
         itemName: row.item_name,
         quantity: numberValue(row.quantity),
@@ -2488,12 +2511,12 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         estimatedCost: numberValue(row.estimated_cost),
         profit: numberValue(row.profit),
       })),
-      expenseBreakdown: expenseBreakdown.data.map((row) => ({
+      expenseBreakdown: toArray(expenseBreakdown.data).map((row) => ({
         categoryCode: row.category_code,
         categoryName: row.category_name,
         total: numberValue(row.total),
       })),
-      auditTrail: auditTrail.data.map((row) => ({
+      auditTrail: toArray(auditTrail.data).map((row) => ({
         id: row.id,
         event: row.event,
         auditableType: row.auditable_type,

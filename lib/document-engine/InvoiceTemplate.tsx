@@ -1,4 +1,4 @@
-import type { DocumentRenderModel } from "@/lib/document-engine\types";
+import type { DocumentRenderModel } from "@/lib/document-engine/types";
 
 const formatCurrency = new Intl.NumberFormat("en-SA", {
   minimumFractionDigits: 2,

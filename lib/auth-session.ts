@@ -137,8 +137,8 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
       : null;
   const activeCompanyLegalName = typeof activeCompany?.legalName === "string"
     ? activeCompany.legalName
-    : typeof activeCompany?.legal_name === "string"
-      ? activeCompany.legal_name
+    : typeof (activeCompany as any)?.legal_name === "string"
+      ? (activeCompany as any).legal_name
       : null;
 
   if (!isPositiveInteger(parsed.id) || !isPositiveInteger(parsed.userId) || !isNonEmptyString(parsed.name) || !isNonEmptyString(parsed.email)) {
@@ -149,29 +149,34 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
     return null;
   }
 
-  if (normalizedCompanyId !== null && normalizedCompanyId !== activeCompany.id) {
+  const activeCompanyId = activeCompany?.id;
+  if (!isPositiveInteger(activeCompanyId)) {
+    return null;
+  }
+
+  if (normalizedCompanyId !== null && normalizedCompanyId !== activeCompanyId) {
     return null;
   }
 
   return {
-    id: parsed.id,
-    userId: parsed.userId,
-    name: parsed.name,
-    email: parsed.email,
+    id: parsed.id as number,
+    userId: parsed.userId as number,
+    name: parsed.name as string,
+    email: parsed.email as string,
     authToken: isNonEmptyString(parsed.authToken)
       ? parsed.authToken
       : isNonEmptyString(parsed.auth_token)
         ? parsed.auth_token
         : undefined,
-    companyId: activeCompany.id,
+    companyId: activeCompanyId,
     platformRole: typeof parsed.platformRole === "string" ? parsed.platformRole : undefined,
     workspaceContext: {
       activeCompany: {
-        id: activeCompany.id,
+        id: activeCompanyId as number,
         legalName: activeCompanyLegalName,
-        role: typeof activeCompany.role === "string" ? activeCompany.role : undefined,
-        abilities: Array.isArray(activeCompany.abilities)
-          ? activeCompany.abilities.filter((ability): ability is string => typeof ability === "string")
+        role: typeof (activeCompany as any)?.role === "string" ? (activeCompany as any).role : undefined,
+        abilities: Array.isArray((activeCompany as any)?.abilities)
+          ? ((activeCompany as any).abilities as any[]).filter((ability): ability is string => typeof ability === "string")
           : undefined,
       },
     },
