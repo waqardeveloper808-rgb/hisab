@@ -21,6 +21,14 @@ export function getConfiguredWorkspaceCompanyId() {
   return process.env.GULF_HISAB_COMPANY_ID ?? process.env.NEXT_PUBLIC_GULF_HISAB_COMPANY_ID ?? null;
 }
 
+export function getWorkspaceApiToken(session?: AuthSession | null) {
+  if (typeof session?.authToken === "string" && session.authToken.trim().length > 0) {
+    return session.authToken;
+  }
+
+  return process.env.GULF_HISAB_API_TOKEN ?? process.env.WORKSPACE_API_TOKEN ?? null;
+}
+
 export function resolveSessionWorkspaceCompanyId(session: AuthSession | null) {
   const explicitCompanyId = session?.companyId;
 
