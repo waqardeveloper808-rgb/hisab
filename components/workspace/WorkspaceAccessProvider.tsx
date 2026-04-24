@@ -41,6 +41,10 @@ export function WorkspaceAccessProvider({
 
     fetch("/api/auth/session", { cache: "no-store", credentials: "include" })
       .then(async (response) => {
+        // #region agent log
+        fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H5',location:'components/workspace/WorkspaceAccessProvider.tsx:45',message:'Workspace access provider received session response',data:{pathname:pathname||null,status:response.status,ok:response.ok,initialSessionId:session.id,initialCompanyId:session.companyId??null},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
             throw new Error(`session:${response.status}`);
@@ -68,6 +72,10 @@ export function WorkspaceAccessProvider({
           return;
         }
 
+        // #region agent log
+        fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H5',location:'components/workspace/WorkspaceAccessProvider.tsx:71',message:'Workspace access provider accepted session payload',data:{pathname:pathname||null,responseSessionId:payload.data.id,responseCompanyId:payload.data.companyId??payload.data.company_id??null},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+
         setResolvedSession({
           id: payload.data.id,
           userId: payload.data.userId ?? payload.data.user_id ?? payload.data.id,
@@ -80,6 +88,11 @@ export function WorkspaceAccessProvider({
       })
       .catch((error: unknown) => {
         const message = error instanceof Error ? error.message : "";
+
+        // #region agent log
+        fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H4',location:'components/workspace/WorkspaceAccessProvider.tsx:83',message:'Workspace access provider session fetch failed',data:{pathname:pathname||null,message},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+
         if (!message.startsWith("session:")) {
           return;
         }
