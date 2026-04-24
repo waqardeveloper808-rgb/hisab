@@ -77,6 +77,10 @@ async function fetchWorkspaceAccessProfileResult(session: AuthSession): Promise<
     return { access: null, status: "invalid_session" };
   }
 
+  if (backendContext.accessStatus === "company_context_missing") {
+    return { access: null, status: "company_context_missing" };
+  }
+
   if (! backendContext.backendConfigured || !backendContext.backendBaseUrl || !backendContext.companyId || !backendContext.actorId || !backendContext.workspaceToken) {
     return { access: null, status: "backend_unconfigured" };
   }
@@ -105,11 +109,22 @@ async function fetchWorkspaceAccessProfileResult(session: AuthSession): Promise<
 export async function requireWorkspaceAccess(requirements?: { platform?: string[]; company?: string[] }) {
   const { session, access, sessionStatus, accessStatus } = await getWorkspaceSessionAccess();
 
+  // #region agent log
+  fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H4',location:'lib/server-access.ts:108',message:'Server workspace access gate evaluated',data:{sessionStatus,accessStatus,sessionId:session.id,companyId:session.companyId??null,hasAccess:Boolean(access),hasRequirements:Boolean(requirements)},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
+
   if (sessionStatus === "guest" || accessStatus === "invalid_session") {
     redirect("/login");
   }
 
-  if (accessStatus === "backend_unconfigured" || accessStatus === "backend_unavailable") {
+  if (accessStatus === "company_context_missing" && !requirements) {
+    return {
+      session,
+      access,
+    };
+  }
+
+  if (accessStatus === "company_context_missing" || accessStatus === "backend_unconfigured" || accessStatus === "backend_unavailable") {
     redirect("/workspace/user?access_status=" + accessStatus);
   }
 

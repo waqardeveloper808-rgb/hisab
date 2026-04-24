@@ -223,6 +223,7 @@ export async function POST(request: NextRequest) {
     fallbackCompany,
   });
   const authToken = resolvePayloadAuthToken(payload.data as unknown as Record<string, unknown>) ?? getWorkspaceApiToken();
+
   const sessionValue = await createAuthSessionValue({
     id: payload.data.id,
     userId: payload.data.id,

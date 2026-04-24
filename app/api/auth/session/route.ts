@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   if (sessionResult.status !== "ready" || ! sessionResult.session) {
     return NextResponse.json({
       data: null,
-      access_status: sessionResult.status,
+      access_status: backendContext.accessStatus,
       reason: sessionResult.reason,
     }, { status: 401, headers: { "X-Workspace-Mode": "backend" } });
   }

@@ -57,6 +57,14 @@ type LegacyAuthSession = {
   };
 };
 
+type LegacyActiveCompany = {
+  id?: number;
+  legalName?: string;
+  legal_name?: string;
+  role?: string;
+  abilities?: string[];
+};
+
 export const authSessionCookieName = "gulf_hisab_session";
 export const authSessionMaxAge = 60 * 60 * 24 * 7;
 
@@ -128,37 +136,37 @@ function isPositiveInteger(value: unknown) {
   return typeof value === "number" && Number.isInteger(value) && value > 0;
 }
 
+function normalizeOptionalPositiveInteger(value: unknown) {
+  return isPositiveInteger(value) ? value : null;
+}
+
 function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession | null {
-  const activeCompany = parsed.workspaceContext?.activeCompany ?? parsed.workspace_context?.active_company;
-  const normalizedCompanyId = typeof parsed.companyId === "number"
-    ? parsed.companyId
-    : typeof parsed.company_id === "number"
-      ? parsed.company_id
-      : null;
+  const activeCompany = (parsed.workspaceContext?.activeCompany ?? parsed.workspace_context?.active_company) as LegacyActiveCompany | undefined;
+  const normalizedCompanyId = normalizeOptionalPositiveInteger(parsed.companyId) ?? normalizeOptionalPositiveInteger(parsed.company_id);
+  const activeCompanyId = normalizeOptionalPositiveInteger(activeCompany?.id);
   const activeCompanyLegalName = typeof activeCompany?.legalName === "string"
     ? activeCompany.legalName
-    : typeof (activeCompany as any)?.legal_name === "string"
-      ? (activeCompany as any).legal_name
+    : typeof activeCompany?.legal_name === "string"
+      ? activeCompany.legal_name
       : null;
 
   if (!isPositiveInteger(parsed.id) || !isPositiveInteger(parsed.userId) || !isNonEmptyString(parsed.name) || !isNonEmptyString(parsed.email)) {
     return null;
   }
 
-  if (!isPositiveInteger(activeCompany?.id) || !isNonEmptyString(activeCompanyLegalName)) {
+  if (activeCompanyId !== null && !isNonEmptyString(activeCompanyLegalName)) {
     return null;
   }
 
-  const activeCompanyId = activeCompany?.id;
-  if (!isPositiveInteger(activeCompanyId)) {
+  if (activeCompanyId === null && activeCompanyLegalName !== null) {
     return null;
   }
 
-  if (normalizedCompanyId !== null && normalizedCompanyId !== activeCompanyId) {
+  if (normalizedCompanyId !== null && activeCompanyId !== null && normalizedCompanyId !== activeCompanyId) {
     return null;
   }
 
-  return {
+  const session: AuthSession = {
     id: parsed.id as number,
     userId: parsed.userId as number,
     name: parsed.name as string,
@@ -168,35 +176,49 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
       : isNonEmptyString(parsed.auth_token)
         ? parsed.auth_token
         : undefined,
-    companyId: activeCompanyId,
+    companyId: normalizedCompanyId ?? activeCompanyId ?? undefined,
     platformRole: typeof parsed.platformRole === "string" ? parsed.platformRole : undefined,
-    workspaceContext: {
+  };
+
+  if (activeCompanyId !== null && activeCompanyLegalName !== null) {
+    session.workspaceContext = {
       activeCompany: {
-        id: activeCompanyId as number,
+        id: activeCompanyId,
         legalName: activeCompanyLegalName,
-        role: typeof (activeCompany as any)?.role === "string" ? (activeCompany as any).role : undefined,
-        abilities: Array.isArray((activeCompany as any)?.abilities)
-          ? ((activeCompany as any).abilities as any[]).filter((ability): ability is string => typeof ability === "string")
+        role: typeof activeCompany.role === "string" ? activeCompany.role : undefined,
+        abilities: Array.isArray(activeCompany.abilities)
+          ? activeCompany.abilities.filter((ability): ability is string => typeof ability === "string")
           : undefined,
       },
-    },
-  };
+    };
+  }
+
+  return session;
 }
 
 export async function readAuthSessionOutcome(cookieValue?: string | null): Promise<AuthSessionReadResult> {
   if (! cookieValue) {
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H1',location:'lib/auth-session.ts:188',message:'Auth session cookie missing',data:{hasCookie:false},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return { status: "guest", session: null, reason: "missing" };
   }
 
   const [payload, signature] = cookieValue.split(".");
 
   if (! payload || ! signature) {
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H1',location:'lib/auth-session.ts:194',message:'Auth session cookie malformed',data:{hasPayload:Boolean(payload),hasSignature:Boolean(signature)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return { status: "invalid_session", session: null, reason: "malformed" };
   }
 
   const expectedSignature = await sign(payload);
 
   if (! await timingSafeEqual(signature, expectedSignature)) {
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H2',location:'lib/auth-session.ts:200',message:'Auth session signature invalid',data:{payloadLength:payload.length},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return { status: "invalid_session", session: null, reason: "invalid_signature" };
   }
 
@@ -204,6 +226,10 @@ export async function readAuthSessionOutcome(cookieValue?: string | null): Promi
     const decoded = new TextDecoder().decode(fromBase64Url(payload));
     const parsed = JSON.parse(decoded) as Partial<LegacyAuthSession>;
     const session = normalizeAuthSession(parsed);
+
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H1',location:'lib/auth-session.ts:209',message:'Auth session parsed',data:{normalized:Boolean(session),hasParsedCompanyId:typeof parsed.companyId==='number'||typeof parsed.company_id==='number',hasParsedActiveCompany:Boolean(parsed.workspaceContext?.activeCompany??parsed.workspace_context?.active_company),normalizedCompanyId:session?.companyId??null,hasNormalizedActiveCompany:Boolean(session?.workspaceContext?.activeCompany?.id)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
 
     if (! session) {
       return { status: "invalid_session", session: null, reason: "invalid_payload" };

@@ -1,7 +1,7 @@
 import type { AuthSession, AuthSessionReadResult } from "@/lib/auth-session";
 
 export type WorkspaceCompanyContext = NonNullable<AuthSession["workspaceContext"]>["activeCompany"];
-export type WorkspaceAccessStatus = "guest" | "invalid_session" | "backend_unconfigured" | "backend_unavailable" | "ready";
+export type WorkspaceAccessStatus = "guest" | "invalid_session" | "company_context_missing" | "backend_unconfigured" | "backend_unavailable" | "ready";
 export type WorkspaceBackendContext = {
   backendBaseUrl: string | null;
   activeCompanyId: number | null;
@@ -63,7 +63,6 @@ export function resolveWorkspaceBackendPath(slug: string[]) {
 }
 
 function isSessionReady(session: AuthSession | null): session is AuthSession {
-  const activeCompanyId = session?.companyId ?? session?.workspaceContext?.activeCompany?.id;
   const workspaceToken = getWorkspaceApiToken(session ?? null);
 
   return Boolean(session)
@@ -71,10 +70,17 @@ function isSessionReady(session: AuthSession | null): session is AuthSession {
     && session.id > 0
     && typeof session.userId === "number"
     && session.userId > 0
-    && typeof activeCompanyId === "number"
-    && activeCompanyId > 0
     && typeof workspaceToken === "string"
     && workspaceToken.trim().length > 0;
+}
+
+function hasWorkspaceCompanyContext(session: AuthSession) {
+  const activeCompany = session.workspaceContext?.activeCompany;
+
+  return typeof activeCompany?.id === "number"
+    && activeCompany.id > 0
+    && typeof activeCompany.legalName === "string"
+    && activeCompany.legalName.trim().length > 0;
 }
 
 function isAuthSessionReadResult(value: AuthSession | AuthSessionReadResult | null): value is AuthSessionReadResult {
@@ -90,6 +96,9 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
       : { status: "guest" as const, session: null, reason: "missing" as const };
 
   if (sessionResult.status === "guest") {
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:93',message:'Workspace backend context resolved guest',data:{backendBaseUrlConfigured:Boolean(backendBaseUrl)},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return {
       backendBaseUrl,
       activeCompanyId: null,
@@ -102,6 +111,9 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
   }
 
   if (sessionResult.status === "invalid_session" || !isSessionReady(sessionResult.session)) {
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:105',message:'Workspace backend context treated session as invalid',data:{sessionStatus:sessionResult.status,hasSession:Boolean(sessionResult.session),sessionId:sessionResult.session?.id??null,userId:sessionResult.session?.userId??null,companyId:sessionResult.session?.companyId??null,activeCompanyId:sessionResult.session?.workspaceContext?.activeCompany?.id??null,hasWorkspaceToken:Boolean(getWorkspaceApiToken(sessionResult.session??null))},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
     return {
       backendBaseUrl,
       activeCompanyId: null,
@@ -113,10 +125,29 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
     };
   }
 
+  if (!hasWorkspaceCompanyContext(sessionResult.session)) {
+    // #region agent log
+    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:121',message:'Workspace backend context missing active company context',data:{sessionStatus:sessionResult.status,sessionId:sessionResult.session.id,userId:sessionResult.session.userId,companyId:sessionResult.session.companyId??null,hasWorkspaceToken:Boolean(getWorkspaceApiToken(sessionResult.session))},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    return {
+      backendBaseUrl,
+      activeCompanyId: null,
+      companyId: resolveSessionWorkspaceCompanyId(sessionResult.session),
+      actorId: sessionResult.session.userId,
+      workspaceToken: getWorkspaceApiToken(sessionResult.session),
+      backendConfigured: false,
+      accessStatus: "company_context_missing",
+    };
+  }
+
   const activeCompanyId = sessionResult.session.companyId ?? sessionResult.session.workspaceContext?.activeCompany?.id ?? null;
   const actorId = sessionResult.session.userId;
   const workspaceToken = getWorkspaceApiToken(sessionResult.session);
   const backendConfigured = Boolean(backendBaseUrl && activeCompanyId && actorId && workspaceToken);
+
+  // #region agent log
+  fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:122',message:'Workspace backend context ready path evaluated',data:{backendBaseUrlConfigured:Boolean(backendBaseUrl),activeCompanyId:activeCompanyId??null,actorId:actorId??null,hasWorkspaceToken:Boolean(workspaceToken),backendConfigured,accessStatus:backendConfigured?'ready':'backend_unconfigured'},timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   return {
     backendBaseUrl,
