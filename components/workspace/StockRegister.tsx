@@ -457,8 +457,8 @@ export function StockRegister({ inventoryFilter = "", title = "Stock Register", 
 							<span className={`text-[11px] text-right font-medium ${isLow ? "text-red-700" : "text-ink"}`}>{item.available}</span>
 							<span className="text-[10px] text-muted">{item.journalEntryNumber}</span>
 							<span className="text-[10px] text-muted truncate">{item.recordedBy}</span>
-							<span className="flex flex-wrap gap-1 text-[10px] text-muted">{item.documentLinks.slice(0, 3).map((link) => <DocumentLinkTrigger key={`${item.id}-${link.documentNumber}`} link={link} onPreview={setLinkPreview} className="cursor-pointer text-primary underline-offset-2 hover:underline" />)}</span>
-							<span className="text-[10px] text-muted">{item.lastUpdated.slice(0, 10)}</span>
+							<span className="flex flex-wrap gap-1 text-[10px] text-muted">{(item.documentLinks ?? []).slice(0, 3).map((link) => <DocumentLinkTrigger key={`${item.id}-${link.documentNumber}`} link={link} onPreview={setLinkPreview} className="cursor-pointer text-primary underline-offset-2 hover:underline" />)}</span>
+							<span className="text-[10px] text-muted">{item.lastUpdated ? item.lastUpdated.slice(0, 10) : "—"}</span>
 						</div>
 					);
 				})}
