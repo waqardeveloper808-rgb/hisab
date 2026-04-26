@@ -86,7 +86,11 @@ export function DocumentLinkPreviewModal({ link, onClose }: DocumentLinkPreviewM
             {link.documentId ? (
               <button
                 type="button"
-                onClick={() => window.open(getDocumentPdfUrl(link.documentId), "_blank", "noopener,noreferrer")}
+                onClick={() => {
+                  const id = link.documentId;
+                  if (id == null) return;
+                  window.open(getDocumentPdfUrl(id), "_blank", "noopener,noreferrer");
+                }}
                 className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink hover:border-primary/40 hover:text-primary"
               >
                 <Printer className="h-4 w-4" />

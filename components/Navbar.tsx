@@ -14,16 +14,9 @@ const links = [
   { href: "/#faq", label: "FAQ", sectionId: "faq" },
 ];
 
-const devEntryLinks = [
-  { href: "/workspace/user", label: "Workspace" },
-  { href: "/workspace-v2/user", label: "Workspace alias" },
-  { href: "/system/master-design", label: "Open System Monitor" },
-];
-
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const showDevEntries = process.env.NODE_ENV !== "production";
   const isLanding = pathname === "/";
 
   function scrollToSection(sectionId: string) {
@@ -66,26 +59,16 @@ export function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-2.5 md:flex">
-            <Link href="/system/master-design" className="rounded-xl px-3 py-2 text-sm font-semibold text-ink transition hover:bg-primary-soft hover:text-primary">
-              System Monitor
-            </Link>
             <Link href="/login" className="rounded-xl px-3 py-2 text-sm font-semibold text-ink transition hover:bg-primary-soft hover:text-primary">
               Login
             </Link>
             <Button href="/register" size="md" variant={pathname === "/register" ? "secondary" : "primary"}>Start Free Trial</Button>
-            {showDevEntries ? (
-              <>
-                {devEntryLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="rounded-xl border border-line bg-white px-3 py-2 text-sm font-semibold text-ink transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </>
-            ) : null}
+            <Link href="/workspace/user" className="rounded-xl px-3 py-2 text-sm font-semibold text-ink transition hover:bg-primary-soft hover:text-primary">
+              Workspace
+            </Link>
+            <Link href="/system/master-design" className="rounded-xl px-3 py-2 text-sm font-semibold text-ink transition hover:bg-primary-soft hover:text-primary">
+              System Monitor
+            </Link>
           </div>
 
           <button
@@ -120,16 +103,12 @@ export function Navbar() {
               ))}
               <Link href="/login" onClick={() => setMobileOpen(false)} className="rounded-2xl px-4 py-3 hover:bg-primary-soft hover:text-ink">Login</Link>
               <Button href="/register" fullWidth size="md">Start Free Trial</Button>
-              {showDevEntries ? devEntryLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="rounded-2xl border border-line px-4 py-3 hover:bg-primary-soft hover:text-ink"
-                >
-                  {link.label}
-                </Link>
-              )) : null}
+              <Link href="/workspace/user" onClick={() => setMobileOpen(false)} className="rounded-2xl px-4 py-3 hover:bg-primary-soft hover:text-ink">
+                Workspace
+              </Link>
+              <Link href="/system/master-design" onClick={() => setMobileOpen(false)} className="rounded-2xl px-4 py-3 hover:bg-primary-soft hover:text-ink">
+                System Monitor
+              </Link>
             </nav>
           </div>
         ) : null}

@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { WorkspaceV2ThemeBoundary } from "@/components/workspace-v2/WorkspaceV2ThemeBoundary";
-import { WorkspaceV2Shell } from "@/components/workspace-v2/WorkspaceV2Shell";
+import { WorkspaceThemeBoundary } from "@/components/workspace/WorkspaceThemeBoundary";
+import { WorkspaceAppShell } from "@/components/workspace/WorkspaceAppShell";
 import { WorkspaceShell } from "@/components/workspace/WorkspaceShell";
 import type { WorkspaceAccessProfile } from "@/lib/workspace-api";
 import type { WorkspaceAccessStatus } from "@/lib/workspace-session";
@@ -22,18 +22,18 @@ type WorkspaceDualShellProps = {
 };
 
 /**
- * Canonical /workspace/user/* uses Workspace V2 chrome + theme.
+ * Canonical /workspace/user/* uses the Workspace app chrome + theme.
  * Admin, assistant, agent, and other segments keep the legacy WorkspaceShell.
  */
 export function WorkspaceDualShell({ session, access, children }: WorkspaceDualShellProps) {
   const pathname = usePathname() ?? "";
-  const v2User = pathname === "/workspace/user" || pathname.startsWith("/workspace/user/");
+  const userApp = pathname === "/workspace/user" || pathname.startsWith("/workspace/user/");
 
-  if (v2User) {
+  if (userApp) {
     return (
-      <WorkspaceV2ThemeBoundary>
-        <WorkspaceV2Shell>{children}</WorkspaceV2Shell>
-      </WorkspaceV2ThemeBoundary>
+      <WorkspaceThemeBoundary>
+        <WorkspaceAppShell>{children}</WorkspaceAppShell>
+      </WorkspaceThemeBoundary>
     );
   }
 

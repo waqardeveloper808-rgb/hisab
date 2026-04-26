@@ -6,13 +6,9 @@ import { FaultInspectorDialog } from "@/components/system-monitor/FaultInspector
 import type { SystemMonitorState } from "@/components/system/MasterDesignDashboard";
 import type { SystemMonitorControlPoint, SystemMonitorStatus } from "@/lib/audit-engine/monitor-types";
 import {
-  computeGlobalSummary,
-  computeGroupSummary,
-  computeSubCategorySummary,
   expandVisibleMainGroupsGroupRowResults,
   filterControlPointsForMonitorList,
   formatSummaryGroupRowsForCopy,
-  sumVisibleModuleMapSummaryFromDisplayedGroupRows,
   type MonitorListFilter,
 } from "@/lib/audit-engine/control-point-summary-engine";
 import { MONITOR_GROUP_DEFS, monitorGroupModuleIds } from "@/lib/audit-engine/monitor-groups";
@@ -37,88 +33,92 @@ function statusWord(s: SystemMonitorStatus): string {
 
 function formatMonitorPanelTitle(filter: SelectedFilter, moduleHealth: SystemMonitorState["moduleHealth"]): string {
   if (filter.listAggregation === "visible-module-map-group-results") {
-    if (filter.status === "fail") return "Summary — Failed Control Points";
-    if (filter.status === "pass") return "Summary — Passed Control Points";
-    if (filter.status === "partial") return "Summary — Partial Control Points";
-    if (filter.status === "blocked") return "Summary — Blocked Control Points";
-    return "Summary — All Control Points";
+    const diag = "Group-scoped appearances — not unique system failures · ";
+    if (filter.status === "fail") return `${diag}Failed appearance rows`;
+    if (filter.status === "pass") return `${diag}Passed appearance rows`;
+    if (filter.status === "partial") return `${diag}Partial appearance rows`;
+    if (filter.status === "blocked") return `${diag}Blocked appearance rows`;
+    return `${diag}All appearance rows`;
   }
   const modLabel = filter.moduleId ? (moduleHealth.find((m) => m.id === filter.moduleId)?.name ?? filter.moduleId) : null;
   const grpLabel = filter.groupId ? (MONITOR_GROUP_DEFS.find((g) => g.id === filter.groupId)?.name ?? filter.groupId) : null;
   if (filter.healthNonPass) {
     if (grpLabel) return `${grpLabel} — health (non-pass control points)`;
     if (modLabel) return `${modLabel} — health (non-pass control points)`;
-    return "Global unique — health (non-pass control points)";
+    return "Primary ownership — health (non-pass control points)";
   }
   if (grpLabel && filter.status) {
     return `${grpLabel} — ${statusWord(filter.status)} control points`;
   }
   if (grpLabel) {
-    return `${grpLabel} — all linked control points`;
+    return `${grpLabel} — all primary-owned control points`;
   }
   if (modLabel && filter.status) {
-    return `${modLabel} — ${statusWord(filter.status)} control points`;
+    return `${modLabel} — ${statusWord(filter.status)} control points (primary ownership)`;
   }
   if (modLabel) {
-    return `${modLabel} — all linked control points`;
+    return `${modLabel} — all primary-owned control points`;
   }
   if (filter.status) {
-    return `Global unique — ${statusWord(filter.status)} control points`;
+    return `${statusWord(filter.status)} control points (primary ownership)`;
   }
-  return "All control points (global unique)";
+  return "All control points (primary ownership)";
 }
 
-function buildTreeNodes(controlPoints: SystemMonitorControlPoint[], moduleHealth: SystemMonitorState["moduleHealth"]): MasterDesignTreeNode[] {
+function buildTreeNodes(moduleHealth: SystemMonitorState["moduleHealth"], groupScope: SystemMonitorState["groupScope"]): MasterDesignTreeNode[] {
   return MONITOR_GROUP_DEFS.map((def) => {
-    const gs = computeGroupSummary(controlPoints, { id: def.id, modules: [...def.modules] });
-    const summaryOnly = { pass: gs.pass, fail: gs.fail, partial: gs.partial, blocked: gs.blocked };
+    const gRow = groupScope.find((g) => g.id === def.id);
+    const passCount = gRow?.passCount ?? 0;
+    const failCount = gRow?.failCount ?? 0;
+    const partialCount = gRow?.partialCount ?? 0;
+    const blockedCount = gRow?.blockedCount ?? 0;
+    const totalCp = gRow?.totalControlPoints ?? 0;
+    const summaryOnly = { pass: passCount, fail: failCount, partial: partialCount, blocked: blockedCount };
     return {
       id: def.id,
       name: def.name,
       isGroup: true,
-      healthPercent: healthPercentFromSummary(summaryOnly, gs.total),
-      passCount: gs.pass,
-      failCount: gs.fail,
-      partialCount: gs.partial,
-      blockedCount: gs.blocked,
-      totalCp: gs.total,
+      healthPercent: healthPercentFromSummary(summaryOnly, totalCp),
+      passCount,
+      failCount,
+      partialCount,
+      blockedCount,
+      totalCp,
       scopeNote:
-        "Group row counts are unique inside this group. A control point linked to multiple groups can appear in more than one group row; group totals are not summed to the global total.",
+        "Ownership-based totals for this main group (sum of primary-owned module counts). System Monitor Summary = Core System + Finance Engines + Platform Layers.",
       filterable: false,
       children: def.modules
         .map((moduleId) => moduleHealth.find((m) => m.id === moduleId))
         .filter((m): m is SystemMonitorState["moduleHealth"][number] => Boolean(m))
         .map((mh) => {
-          const sub = computeSubCategorySummary(controlPoints, { moduleId: mh.id });
-          const subSum = { pass: sub.pass, fail: sub.fail, partial: sub.partial, blocked: sub.blocked };
+          const subSum = { pass: mh.passCount, fail: mh.failCount, partial: mh.partialCount, blocked: mh.blockedCount };
           return {
             id: mh.id,
             name: mh.name,
             isGroup: false,
-            healthPercent: healthPercentFromSummary(subSum, sub.total),
-            passCount: sub.pass,
-            failCount: sub.fail,
-            partialCount: sub.partial,
-            blockedCount: sub.blocked,
-            totalCp: sub.total,
+            healthPercent: healthPercentFromSummary(subSum, mh.totalControlPoints),
+            passCount: mh.passCount,
+            failCount: mh.failCount,
+            partialCount: mh.partialCount,
+            blockedCount: mh.blockedCount,
+            totalCp: mh.totalControlPoints,
             filterable: true,
             children: mh.dependencies
               .map((depId) => moduleHealth.find((m) => m.id === depId))
               .filter((m): m is SystemMonitorState["moduleHealth"][number] => Boolean(m))
               .map((dep) => {
-                const depSub = computeSubCategorySummary(controlPoints, { moduleId: dep.id });
-                const dSum = { pass: depSub.pass, fail: depSub.fail, partial: depSub.partial, blocked: depSub.blocked };
+                const dSum = { pass: dep.passCount, fail: dep.failCount, partial: dep.partialCount, blocked: dep.blockedCount };
                 return {
                   id: `${mh.id}:${dep.id}`,
                   metricModuleId: dep.id,
                   name: dep.name,
                   isGroup: false,
-                  healthPercent: healthPercentFromSummary(dSum, depSub.total),
-                  passCount: depSub.pass,
-                  failCount: depSub.fail,
-                  partialCount: depSub.partial,
-                  blockedCount: depSub.blocked,
-                  totalCp: depSub.total,
+                  healthPercent: healthPercentFromSummary(dSum, dep.totalControlPoints),
+                  passCount: dep.passCount,
+                  failCount: dep.failCount,
+                  partialCount: dep.partialCount,
+                  blockedCount: dep.blockedCount,
+                  totalCp: dep.totalControlPoints,
                   filterable: false,
                   children: [],
                 };
@@ -130,54 +130,44 @@ function buildTreeNodes(controlPoints: SystemMonitorControlPoint[], moduleHealth
 }
 
 function formatVisibleList(cps: SystemMonitorControlPoint[]) {
-  return cps.map((c) => `${c.id}\t${c.status}\t${c.severity}\t${c.module}\t${c.title}\t${c.timestamp}`).join("\n");
+  return cps
+    .map(
+      (c) =>
+        `${c.id}\t${c.status}\t${c.severity}\t${c.primaryModuleName}\t${c.primaryGroupName}\t${c.module}\t${c.title}\t${c.lastCheckedAt}\t${c.evaluation_method}\t${c.auditResult.replace(/\s+/g, " ").slice(0, 120)}`,
+    )
+    .join("\n");
 }
 
 function reportContext(s: SystemMonitorState): AuditReportContext {
-  const { controlPoints, moduleHealth, groupScope } = s;
-  const visibleTotals = sumVisibleModuleMapSummaryFromDisplayedGroupRows(
-    MONITOR_GROUP_DEFS.map((def) => {
-      const block = computeGroupSummary(controlPoints, { id: def.id, modules: [...def.modules] });
-      return {
-        passCount: block.pass,
-        failCount: block.fail,
-        partialCount: block.partial,
-        blockedCount: block.blocked,
-        totalCp: block.total,
-      };
-    }),
-  );
+  const { moduleHealth, groupScope, traceability } = s;
+  const vis = traceability.summary;
   return {
     generatedAt: s.generatedAt,
     lastRefreshedAt: s.generatedAt,
     visibleSummaryMainMap: {
-      pass: visibleTotals.pass,
-      fail: visibleTotals.fail,
-      partial: visibleTotals.partial,
-      blocked: visibleTotals.blocked,
-      total: visibleTotals.total,
+      pass: vis.pass,
+      fail: vis.fail,
+      partial: vis.partial,
+      blocked: vis.blocked,
+      total: vis.total,
     },
-    groupRows: MONITOR_GROUP_DEFS.map((def) => {
-      const g = groupScope.find((x) => x.id === def.id);
-      const block = computeGroupSummary(controlPoints, { id: def.id, modules: [...def.modules] });
+    groupRows: traceability.groups.map((g) => {
+      const gMeta = groupScope.find((x) => x.id === g.id);
       return {
-        id: def.id,
-        name: def.name,
-        summary: { pass: block.pass, fail: block.fail, partial: block.partial, blocked: block.blocked },
-        total: block.total,
-        scope: g?.scopeLabel ?? "Unique control points in group (each CP once).",
+        id: g.id,
+        name: g.name,
+        summary: { pass: g.pass, fail: g.fail, partial: g.partial, blocked: g.blocked },
+        total: g.total,
+        scope: gMeta?.scopeLabel ?? "Ownership-based group rollup.",
       };
     }),
-    moduleRows: moduleHealth.map((m) => {
-      const scoped = computeSubCategorySummary(controlPoints, { moduleId: m.id });
-      return {
-        id: m.id,
-        name: m.name,
-        summary: { pass: scoped.pass, fail: scoped.fail, partial: scoped.partial, blocked: scoped.blocked },
-        total: scoped.total,
-        healthPercent: m.healthPercent,
-      };
-    }),
+    moduleRows: moduleHealth.map((m) => ({
+      id: m.id,
+      name: m.name,
+      summary: { pass: m.passCount, fail: m.failCount, partial: m.partialCount, blocked: m.blockedCount },
+      total: m.totalControlPoints,
+      healthPercent: m.healthPercent,
+    })),
   };
 }
 
@@ -190,7 +180,30 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
   const [inspect, setInspect] = useState<SystemMonitorControlPoint | null>(null);
 
   const controlPoints = data.controlPoints;
-  const globalSummary = useMemo(() => computeGlobalSummary(controlPoints), [controlPoints]);
+  const primarySummary = useMemo(() => {
+    const g = data.summary?.globalUnique;
+    if (g) return g;
+    return {
+      total: data.audit.total,
+      pass: data.audit.pass,
+      fail: data.audit.fail,
+      partial: data.audit.partial,
+      blocked: data.audit.blocked,
+    };
+  }, [data.summary?.globalUnique, data.audit]);
+  const groupScoped = data.summary?.groupScopedAppearances ?? {
+    pass: 0,
+    fail: 0,
+    partial: 0,
+    blocked: 0,
+    summedControlPointSlots: 0,
+  };
+  const duplicateMeta = data.summary?.duplicateMeta ?? {
+    uniqueGlobalFailCount: data.audit.fail,
+    groupScopedFailAppearancesSum: 0,
+    extraFailAppearancesFromMultiGroupMembership: 0,
+    failingControlPointsSpanningMultipleMainGroups: 0,
+  };
 
   const summaryGroupRows = useMemo(() => {
     if (selectedFilter.listAggregation !== "visible-module-map-group-results") {
@@ -217,29 +230,14 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
 
   const allSummaryPartialsForCopy = useMemo(() => expandVisibleMainGroupsGroupRowResults(controlPoints, "partial", false), [controlPoints]);
 
-  const globalTotal = globalSummary.total;
-  const sumLine = globalSummary.pass + globalSummary.fail + globalSummary.partial + globalSummary.blocked;
+  const globalTotal = primarySummary.total;
+  const sumLine = primarySummary.pass + primarySummary.fail + primarySummary.partial + primarySummary.blocked;
   const consistent = sumLine === globalTotal;
 
-  const treeNodes = useMemo(() => buildTreeNodes(controlPoints, data.moduleHealth), [controlPoints, data.moduleHealth]);
+  const treeNodes = useMemo(() => buildTreeNodes(data.moduleHealth, data.groupScope), [data.moduleHealth, data.groupScope]);
 
-  const visibleModuleMapSummary = useMemo(
-    () =>
-      sumVisibleModuleMapSummaryFromDisplayedGroupRows(
-        treeNodes.map((n) => ({
-          passCount: n.passCount,
-          failCount: n.failCount,
-          partialCount: n.partialCount,
-          blockedCount: n.blockedCount,
-          totalCp: n.totalCp,
-        })),
-      ),
-    [treeNodes],
-  );
-
-  const visibleSumLine =
-    visibleModuleMapSummary.pass + visibleModuleMapSummary.fail + visibleModuleMapSummary.partial + visibleModuleMapSummary.blocked;
-  const visibleTotalsConsistent = visibleSumLine === visibleModuleMapSummary.total;
+  const visibleSumLine = groupScoped.pass + groupScoped.fail + groupScoped.partial + groupScoped.blocked;
+  const visibleTotalsConsistent = visibleSumLine === groupScoped.summedControlPointSlots;
 
   const filterHighlight = useMemo(() => {
     let status: MonitorMetricKind | "all" | "total" | "health" | null = "total";
@@ -301,13 +299,16 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
     setRefreshing(true);
     setRefreshError(null);
     try {
-      const res = await fetch("/api/system/monitor/refresh", { method: "POST", cache: "no-store" });
-      const json = (await res.json()) as { ok: boolean; data?: SystemMonitorState; error?: string };
-      if (!json.ok || !json.data) {
-        throw new Error(json.error || "Refresh failed");
+      const res = await fetch("/api/master-design/status", { method: "GET", cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`Refresh failed (HTTP ${res.status})`);
+      }
+      const json = (await res.json()) as { data?: SystemMonitorState };
+      if (!json.data?.summary || !json.data.controlPoints || !json.data.traceability) {
+        throw new Error("Invalid response from /api/master-design/status");
       }
       setData(json.data);
-      setCopyToast("Refreshed");
+      setCopyToast("Audit data refreshed");
       setTimeout(() => setCopyToast(null), 2000);
     } catch (e) {
       setRefreshError(e instanceof Error ? e.message : "Refresh error");
@@ -332,7 +333,24 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
     }
   }, []);
 
-  const progress = globalTotal > 0 ? Math.round((globalSummary.pass / globalTotal) * 100) : 0;
+  const progress = globalTotal > 0 ? Math.round((primarySummary.pass / globalTotal) * 100) : 0;
+
+  const globalUniqueTotalActive =
+    selectedFilter.status == null &&
+    selectedFilter.listAggregation !== "visible-module-map-group-results" &&
+    !selectedFilter.moduleId &&
+    !selectedFilter.groupId &&
+    !selectedFilter.healthNonPass;
+
+  function globalUniqueMetricActive(status: SystemMonitorStatus) {
+    return (
+      selectedFilter.status === status &&
+      selectedFilter.listAggregation !== "visible-module-map-group-results" &&
+      !selectedFilter.moduleId &&
+      !selectedFilter.groupId &&
+      !selectedFilter.healthNonPass
+    );
+  }
 
   const hasActiveFilter =
     selectedFilter.status != null ||
@@ -374,12 +392,14 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">System Monitor (control point engine)</p>
               <p className="mt-1 text-xs text-muted">
-                Last refreshed: {data.generatedAt} — <strong>Summary</strong> matches the sum of the three main Module Map group rows (Core System, Finance Engines, Platform Layers).
+                Last refreshed: {data.generatedAt}. <strong>Primary counts are ownership-based.</strong> Each control point is counted once under its primary module and main group. The System Monitor
+                Summary is the sum of Core System, Finance Engines, and Platform Layers (see API <code className="rounded bg-surface-soft px-1">traceability</code>). Optional link-appearance diagnostics
+                are under <strong>Count reconciliation details</strong>.
               </p>
               {refreshError ? <p className="mt-2 text-sm font-medium text-red-700">{refreshError}</p> : null}
               {refreshing ? <p className="mt-1 text-sm text-primary">Refreshing…</p> : null}
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold" data-inspector-system-monitor-header-metrics="true">
-                <span className="rounded-full border border-line bg-surface-soft/70 px-2.5 py-1 text-ink">Pass rate {progress}% (global unique pass / global unique total)</span>
+                <span className="rounded-full border border-line bg-surface-soft/70 px-2.5 py-1 text-ink">Pass rate {progress}% (Pass / Total Control Points)</span>
                 <span className="rounded-full border border-line bg-surface-soft/70 px-2.5 py-1 text-ink">Risk {data.risk.level} ({data.risk.score})</span>
                 {!consistent ? (
                   <span className="rounded-full border border-red-300 bg-red-50 px-2.5 py-1 text-red-800">Inconsistent: status sum {sumLine} vs total {globalTotal}</span>
@@ -394,7 +414,7 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
                 className="rounded-lg border border-line bg-surface-soft px-3 py-2 text-xs font-semibold text-ink shadow-xs hover:bg-white disabled:opacity-60"
                 data-inspector-system-monitor-refresh="true"
               >
-                {refreshing ? "Refreshing…" : "Refresh control points"}
+                {refreshing ? "Refreshing…" : "Refresh Audit Data"}
               </button>
               <button
                 type="button"
@@ -419,17 +439,17 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
               </button>
               <button
                 type="button"
-                onClick={() => void copy("All fails", formatSummaryGroupRowsForCopy(allSummaryFailsForCopy))}
+                onClick={() => {
+                  if (summaryGroupRows?.length) {
+                    void copy("Copy All", formatSummaryGroupRowsForCopy(summaryGroupRows));
+                  } else {
+                    void copy("Copy All", formatVisibleList(treeScopedList ?? []));
+                  }
+                }}
                 className="rounded-lg border border-line px-3 py-2 text-xs font-semibold"
+                data-inspector-system-monitor-copy-all="true"
               >
-                Copy all fails
-              </button>
-              <button
-                type="button"
-                onClick={() => void copy("All partials", formatSummaryGroupRowsForCopy(allSummaryPartialsForCopy))}
-                className="rounded-lg border border-line px-3 py-2 text-xs font-semibold"
-              >
-                Copy all partials
+                Copy All
               </button>
               {selectedFilter.moduleId || selectedFilter.groupId || selectedFilter.listAggregation === "visible-module-map-group-results" ? (
                 <button
@@ -461,82 +481,187 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
             </div>
 
             <div className="w-full space-y-4" data-inspector-system-monitor-summary="true">
-              <div>
-                <p className="text-xs font-semibold text-ink">Summary</p>
-                <p className="mt-0.5 text-[10px] text-muted">Core System + Finance Engines + Platform Layers (same numbers as the main group cards).</p>
-                <div className="mt-2 grid w-full gap-2 sm:grid-cols-6">
+              <div data-inspector-primary-summary="true">
+                <h2 className="text-sm font-semibold text-ink">System Monitor Summary</h2>
+                <div className="mt-2 grid w-full gap-2 sm:grid-cols-5">
+                  <button
+                    type="button"
+                    data-inspector-system-monitor-summary-global="total"
+                    onClick={() => setSelectedFilter(EMPTY_FILTER)}
+                    className={`rounded-xl border border-line bg-emerald-50/80 px-3 py-2.5 text-left transition-colors hover:bg-emerald-50 ${
+                      globalUniqueTotalActive ? "ring-2 ring-primary" : ""
+                    }`}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.14em] text-emerald-900">Total Control Points</p>
+                    <p className="mt-1 text-base font-semibold text-ink">{primarySummary.total}</p>
+                  </button>
                   {(
                     [
-                      { key: "pass", label: "Pass", tone: "border-line bg-surface-soft/70", inspector: "visible-pass" },
-                      { key: "fail", label: "Fail", tone: "border-red-200 bg-red-50", inspector: "visible-fail" },
-                      { key: "partial", label: "Partial", tone: "border-amber-200 bg-amber-50", inspector: "visible-partial" },
-                      { key: "blocked", label: "Blocked", tone: "border-slate-200 bg-slate-50", inspector: "visible-blocked" },
+                      { key: "pass" as const, label: "Pass", tone: "border-line bg-surface-soft/70", inspector: "global-pass" },
+                      { key: "fail" as const, label: "Fail", tone: "border-red-200 bg-red-50", inspector: "global-fail" },
+                      { key: "partial" as const, label: "Partial", tone: "border-amber-200 bg-amber-50", inspector: "global-partial" },
+                      { key: "blocked" as const, label: "Blocked", tone: "border-slate-200 bg-slate-50", inspector: "global-blocked" },
                     ] as const
                   ).map((card) => (
                     <button
-                      key={`v-${card.key}`}
+                      key={`g-${card.key}`}
                       type="button"
-                      data-inspector-system-monitor-summary-visible={card.inspector}
+                      data-inspector-system-monitor-summary-global={card.inspector}
                       onClick={() =>
-                        setSelectedFilter((f) => {
+                        setSelectedFilter((prev) => {
                           const same =
-                            f.listAggregation === "visible-module-map-group-results" &&
-                            f.status === card.key &&
-                            !f.moduleId &&
-                            !f.groupId &&
-                            !f.healthNonPass;
+                            prev.status === card.key &&
+                            prev.listAggregation !== "visible-module-map-group-results" &&
+                            !prev.moduleId &&
+                            !prev.groupId &&
+                            !prev.healthNonPass;
                           return {
                             status: same ? null : card.key,
                             moduleId: null,
                             groupId: null,
                             healthNonPass: false,
-                            listAggregation: "visible-module-map-group-results",
+                            listAggregation: null,
                           };
                         })
                       }
                       className={`rounded-xl border px-3 py-2.5 text-left transition-colors hover:brightness-[0.98] ${
-                        visibleCardActive(card.key) ? "ring-2 ring-primary " + card.tone : card.tone
+                        globalUniqueMetricActive(card.key) ? "ring-2 ring-primary " + card.tone : card.tone
                       }`}
                     >
                       <p className="text-[10px] uppercase tracking-[0.14em] text-muted">{card.label}</p>
-                      <p className="mt-1 text-base font-semibold text-ink">{visibleModuleMapSummary[card.key]}</p>
+                      <p className="mt-1 text-base font-semibold text-ink">{primarySummary[card.key]}</p>
                     </button>
                   ))}
-                  <button
-                    type="button"
-                    data-inspector-system-monitor-summary-visible="total"
-                    onClick={() =>
-                      setSelectedFilter((f) => {
-                        if (f.listAggregation === "visible-module-map-group-results" && f.status == null && !f.healthNonPass && !f.moduleId && !f.groupId) {
-                          return EMPTY_FILTER;
-                        }
-                        return {
-                          status: null,
-                          moduleId: null,
-                          groupId: null,
-                          healthNonPass: false,
-                          listAggregation: "visible-module-map-group-results",
-                        };
-                      })
-                    }
-                    className={`rounded-xl border border-line bg-indigo-50/80 px-3 py-2.5 text-left transition-colors hover:bg-indigo-50 ${
-                      visibleTotalCardActive || !hasActiveFilter ? "ring-2 ring-primary" : ""
-                    }`}
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.14em] text-indigo-900">Total</p>
-                    <p className="mt-1 text-base font-semibold text-ink">{visibleModuleMapSummary.total}</p>
-                    <p className="mt-0.5 text-[9px] text-muted">Σ group rows = {visibleSumLine}</p>
-                    {!visibleTotalsConsistent ? (
-                      <p className="mt-0.5 text-[9px] font-medium text-red-700">Row sum mismatch — inspect statuses</p>
-                    ) : null}
-                  </button>
                 </div>
               </div>
 
-              <p className="text-[11px] leading-snug text-muted">
-                Summary counts add the displayed group rows. A control point linked to multiple groups may be counted more than once in this summary. When you use Summary filters or Copy all fails /
-                partials, the list and export include group context and may list the same CP under each relevant group.
-              </p>
+              <details className="rounded-xl border border-line bg-surface-soft/30" data-inspector-reconciliation-details="true">
+                <summary className="cursor-pointer list-none px-3 py-2.5 text-sm font-semibold text-ink marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span className="underline decoration-dotted">Count reconciliation details</span>
+                  <span className="ml-2 text-xs font-normal text-muted">(optional — group appearance math)</span>
+                </summary>
+                <div className="space-y-4 border-t border-line p-3 text-xs leading-relaxed">
+                  {data.summary ? (
+                    <>
+                      <ul className="list-inside list-disc space-y-1 text-ink">
+                        <li>
+                          Unique failed control points: <strong>{duplicateMeta.uniqueGlobalFailCount}</strong>
+                        </li>
+                        <li>
+                          Group-scoped failed appearances: <strong>{groupScoped.fail}</strong> (<code className="rounded bg-surface-soft px-1">summary.groupScopedAppearances.fail</code>)
+                        </li>
+                        <li>
+                          Multi-group failing CPs: <strong>{duplicateMeta.failingControlPointsSpanningMultipleMainGroups}</strong>
+                        </li>
+                        <li>
+                          Extra fail appearances: <strong>{duplicateMeta.extraFailAppearancesFromMultiGroupMembership}</strong>
+                        </li>
+                      </ul>
+                      <p className="text-muted">
+                        <strong>Primary dashboard:</strong> failures are counted once per CP under{" "}
+                        <strong className="text-ink">{duplicateMeta.uniqueGlobalFailCount}</strong> (ownership). <strong>Optional diagnostic:</strong> if you treated &quot;any link to a group&quot; as a
+                        separate appearance, summed fails can read <strong className="text-ink">{groupScoped.fail}</strong> — that is <strong>not</strong> the primary System Monitor failure total.
+                      </p>
+                      <p className="text-[10px] text-muted">
+                        <code className="rounded bg-surface-soft px-1">audit</code>, <code className="rounded bg-surface-soft px-1">summary.globalUnique</code>, and{" "}
+                        <code className="rounded bg-surface-soft px-1">traceability.summary</code> use the same ownership roll-up (Core + Finance + Platform).
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-muted">Extended summary fields unavailable; using audit-only fallback for the primary cards.</p>
+                  )}
+
+                  <div className="rounded-lg border border-indigo-200/80 bg-indigo-50/50 p-3" data-inspector-group-scoped-summary="true">
+                    <p className="text-xs font-semibold text-indigo-950">Group-scoped appearances — not unique system failures</p>
+                    <p className="mt-1 text-[11px] text-indigo-900/90">
+                      Diagnostic filters below sum Core + Finance + Platform group rows. The same control point may appear in multiple groups; list length can exceed unique failure count.
+                    </p>
+                    <div className="mt-2 grid w-full gap-2 sm:grid-cols-2 lg:grid-cols-6">
+                      {(
+                        [
+                          { key: "pass", label: "Pass", tone: "border-line bg-surface-soft/70", inspector: "visible-pass" },
+                          { key: "fail", label: "Fail", tone: "border-red-200 bg-red-50", inspector: "visible-fail" },
+                          { key: "partial", label: "Partial", tone: "border-amber-200 bg-amber-50", inspector: "visible-partial" },
+                          { key: "blocked", label: "Blocked", tone: "border-slate-200 bg-slate-50", inspector: "visible-blocked" },
+                        ] as const
+                      ).map((card) => (
+                        <button
+                          key={`v-${card.key}`}
+                          type="button"
+                          data-inspector-system-monitor-summary-visible={card.inspector}
+                          onClick={() =>
+                            setSelectedFilter((f) => {
+                              const same =
+                                f.listAggregation === "visible-module-map-group-results" &&
+                                f.status === card.key &&
+                                !f.moduleId &&
+                                !f.groupId &&
+                                !f.healthNonPass;
+                              return {
+                                status: same ? null : card.key,
+                                moduleId: null,
+                                groupId: null,
+                                healthNonPass: false,
+                                listAggregation: "visible-module-map-group-results",
+                              };
+                            })
+                          }
+                          className={`rounded-xl border px-3 py-2.5 text-left transition-colors hover:brightness-[0.98] ${
+                            visibleCardActive(card.key) ? "ring-2 ring-primary " + card.tone : card.tone
+                          }`}
+                        >
+                          <p className="text-[10px] uppercase tracking-[0.14em] text-muted">{card.label}</p>
+                          <p className="mt-1 text-base font-semibold text-ink">{groupScoped[card.key]}</p>
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        data-inspector-system-monitor-summary-visible="total"
+                        onClick={() =>
+                          setSelectedFilter((f) => {
+                            if (f.listAggregation === "visible-module-map-group-results" && f.status == null && !f.healthNonPass && !f.moduleId && !f.groupId) {
+                              return EMPTY_FILTER;
+                            }
+                            return {
+                              status: null,
+                              moduleId: null,
+                              groupId: null,
+                              healthNonPass: false,
+                              listAggregation: "visible-module-map-group-results",
+                            };
+                          })
+                        }
+                        className={`rounded-xl border border-line bg-indigo-50/80 px-3 py-2.5 text-left transition-colors hover:bg-indigo-50 ${
+                          visibleTotalCardActive ? "ring-2 ring-primary" : ""
+                        }`}
+                      >
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-indigo-900">Total (slots)</p>
+                        <p className="mt-1 text-base font-semibold text-ink">{groupScoped.summedControlPointSlots}</p>
+                        <p className="mt-0.5 text-[9px] text-muted">Σ group rows = {visibleSumLine}</p>
+                        {!visibleTotalsConsistent ? (
+                          <p className="mt-0.5 text-[9px] font-medium text-red-700">Row sum mismatch — inspect statuses</p>
+                        ) : null}
+                      </button>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void copy("All fails (group-scoped appearances)", formatSummaryGroupRowsForCopy(allSummaryFailsForCopy))}
+                        className="rounded-lg border border-line bg-white px-3 py-1.5 text-[11px] font-semibold"
+                      >
+                        Copy all fails (appearances)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void copy("All partials (group-scoped appearances)", formatSummaryGroupRowsForCopy(allSummaryPartialsForCopy))}
+                        className="rounded-lg border border-line bg-white px-3 py-1.5 text-[11px] font-semibold"
+                      >
+                        Copy all partials (appearances)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
           {hasActiveFilter && (
@@ -545,7 +670,14 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
               {selectedFilter.healthNonPass ? <span className="rounded-md bg-surface-soft px-2 py-0.5 font-semibold">health=non-pass</span> : null}
               {selectedFilter.status ? <span className="rounded-md bg-surface-soft px-2 py-0.5 font-semibold">status={selectedFilter.status}</span> : null}
               {selectedFilter.listAggregation === "visible-module-map-group-results" ? (
-                <span className="rounded-md bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-950">summary (group rows)</span>
+                <span className="rounded-md bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-950">Group-scoped appearances — not unique system failures</span>
+              ) : null}
+              {selectedFilter.status &&
+              selectedFilter.listAggregation !== "visible-module-map-group-results" &&
+              !selectedFilter.moduleId &&
+              !selectedFilter.groupId &&
+              !selectedFilter.healthNonPass ? (
+                <span className="rounded-md bg-emerald-50 px-2 py-0.5 font-semibold text-emerald-950">Primary ownership (traceable)</span>
               ) : null}
               {selectedFilter.groupId ? <span className="rounded-md bg-surface-soft px-2 py-0.5 font-semibold">group={selectedFilter.groupId}</span> : null}
               {selectedFilter.moduleId ? <span className="rounded-md bg-surface-soft px-2 py-0.5 font-semibold">module={selectedFilter.moduleId}</span> : null}
@@ -579,12 +711,12 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
           <div className="space-y-3">
             <div className="rounded-2xl border border-line bg-white p-4 shadow-xs">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Module map</p>
-              <p className="mt-2 rounded-lg border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-xs text-amber-950">
-                <strong className="font-semibold">Group totals are unique inside each group.</strong> A control point linked to multiple groups may appear in more than one group, so group totals are
-                not added together to equal the global total.
+              <p className="mt-2 rounded-lg border border-emerald-200/80 bg-emerald-50/80 px-3 py-2 text-xs text-emerald-950">
+                <strong className="font-semibold">Ownership-based module map.</strong> Each number is the count of control points whose <em>primary</em> module is that row. Core + Finance + Platform
+                equals the System Monitor Summary. Every count is backed by explicit CP IDs in <code className="rounded bg-white/80 px-1">traceability</code> from the API.
               </p>
               <p className="mt-2 text-xs text-muted">
-                Module and dependency rows count every link to that module (a single control point can be linked to several modules, so module FAIL counts can exceed global unique FAIL).
+                Dependency rows use the same primary-ownership rule for the dependency module. Secondary linked modules are shown on each CP card but do not change primary totals.
               </p>
               <div className="mt-3">
                 <MasterDesignTree
@@ -598,10 +730,27 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
             </div>
           </div>
           <div className="flex h-[min(80vh,900px)] flex-col rounded-2xl border border-line bg-white p-4 shadow-xs" data-inspector-system-monitor-fault-list="true">
-            <p className="shrink-0 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{panelTitle}</p>
+            <div className="flex shrink-0 flex-wrap items-start justify-between gap-2">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{panelTitle}</p>
+              <button
+                type="button"
+                className="rounded-md border border-line bg-surface-soft px-2 py-1 text-[10px] font-semibold text-ink hover:bg-white"
+                data-inspector-system-monitor-detail-copy-all="true"
+                onClick={() => {
+                  if (summaryGroupRows?.length) {
+                    void copy("Copy All (detail)", formatSummaryGroupRowsForCopy(summaryGroupRows));
+                  } else {
+                    void copy("Copy All (detail)", formatVisibleList(treeScopedList ?? []));
+                  }
+                }}
+              >
+                Copy All
+              </button>
+            </div>
             {summaryGroupRows ? (
               <p className="mt-1 shrink-0 text-xs text-muted">
-                <strong>{summaryGroupRows.length}</strong> group-row results (matches Summary card total for this status). <strong>{summaryUniqueCount}</strong> unique control points.
+                <strong className="text-ink">Group-scoped appearances — not unique system failures.</strong> <strong>{summaryGroupRows.length}</strong> appearance rows ·{" "}
+                <strong>{summaryUniqueCount}</strong> unique control points in this list.
               </p>
             ) : (
               <p className="mt-0.5 shrink-0 text-xs text-muted">{treeScopedList?.length ?? 0} matching control points</p>
@@ -620,10 +769,13 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
                         <p className="text-[10px] font-mono text-muted">{p.id}</p>
                         <p className="text-sm font-semibold text-ink">{p.title}</p>
                         <p className="text-[11px] text-muted">
-                          Logical: {p.module} / {p.sub_module} · Risk {p.severity} · Status {p.status} · {p.timestamp}
+                          Primary: {p.primaryModuleName} · Group: {p.primaryGroupName} · Logical: {p.module} / {p.sub_module} · Risk {p.severity} · Status {p.status}
+                        </p>
+                        <p className="text-[10px] text-muted">
+                          Last checked: {p.lastCheckedAt} · Evaluator: {p.evaluation_method}
                         </p>
                         <p className="text-[10px] text-muted">Linked modules: {p.linked_project_modules.length ? p.linked_project_modules.join(", ") : "—"}</p>
-                        <p className="line-clamp-2 text-xs text-ink">{p.root_cause_hint || p.actual_behavior}</p>
+                        <p className="line-clamp-2 text-xs text-ink">{p.auditResult || p.root_cause_hint || p.actual_behavior}</p>
                         <button
                           type="button"
                           className="mt-1 text-xs font-semibold text-primary underline"
@@ -642,10 +794,13 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
                     <p className="text-[10px] font-mono text-muted">{p.id}</p>
                     <p className="text-sm font-semibold text-ink">{p.title}</p>
                     <p className="text-[11px] text-muted">
-                      Logical: {p.module} / {p.sub_module} · Risk {p.severity} · Status {p.status} · {p.timestamp}
+                      Primary: {p.primaryModuleName} · Group: {p.primaryGroupName} · Logical: {p.module} / {p.sub_module} · Risk {p.severity} · Status {p.status}
+                    </p>
+                    <p className="text-[10px] text-muted">
+                      Last checked: {p.lastCheckedAt} · Evaluator: {p.evaluation_method}
                     </p>
                     <p className="text-[10px] text-muted">Linked modules: {p.linked_project_modules.length ? p.linked_project_modules.join(", ") : "—"}</p>
-                    <p className="line-clamp-2 text-xs text-ink">{p.root_cause_hint || p.actual_behavior}</p>
+                    <p className="line-clamp-2 text-xs text-ink">{p.auditResult || p.root_cause_hint || p.actual_behavior}</p>
                     <button
                       type="button"
                       className="mt-1 text-xs font-semibold text-primary underline"

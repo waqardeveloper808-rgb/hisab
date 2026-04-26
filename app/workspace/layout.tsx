@@ -1,4 +1,4 @@
-import "../workspace-v2/v2.css";
+import "./workspace.css";
 import { WorkspaceDualShell } from "@/components/workspace/WorkspaceDualShell";
 import { WorkspaceAccessProvider } from "@/components/workspace/WorkspaceAccessProvider";
 import { WorkspacePathProvider } from "@/components/workspace/WorkspacePathProvider";

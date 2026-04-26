@@ -31,4 +31,15 @@ export type SystemMonitorControlPoint = {
   evidence_references: string[];
   source_standard_document: string;
   recommended_next_action: string;
+  /** Primary ownership for System Monitor counting (exactly one main group + module per CP). */
+  primaryModuleId: string;
+  primaryModuleName: string;
+  primaryGroupId: string;
+  primaryGroupName: string;
+  /** Other monitor-tracked project modules linked to this CP (not the primary owner). */
+  relatedProjectModules: string[];
+  /** Same as `actual_behavior` — engine evaluation message for this refresh. */
+  auditResult: string;
+  /** ISO timestamp of last refresh / evaluation for this row. */
+  lastCheckedAt: string;
 };

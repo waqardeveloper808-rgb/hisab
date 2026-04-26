@@ -127,8 +127,8 @@ export default async function Home() {
                   Open workspace
                 </Button>
                 {process.env.NODE_ENV !== "production" ? (
-                  <Button href="/workspace-v2/user" size="md" variant="tertiary">
-                    Workspace alias (/workspace-v2)
+                  <Button href="/workspace/user" size="md" variant="tertiary">
+                    Workspace (/workspace/user)
                   </Button>
                 ) : null}
               </div>

@@ -264,11 +264,11 @@ async function renderAuthenticatedDocumentEngine(params: {
   const documentResponse = await fetchBackendJson<BackendDocumentDetail>(`${params.baseUrl}/api/companies/${params.companyId}/documents/${params.documentId}`, params.actorId, params.apiToken, params.activeCompanyId);
   const template = await fetchBackendTemplateById(params);
 
-  const assets = assetsResponse.data.map((asset) => ({
+  const assets: CompanyAssetLike[] = assetsResponse.data.map((asset) => ({
     id: asset.id,
     usage: asset.usage,
-    public_url: normalizeBackendAssetUrl(params.baseUrl, asset.public_url),
-    is_active: asset.is_active,
+    publicUrl: normalizeBackendAssetUrl(params.baseUrl, asset.public_url),
+    isActive: asset.is_active,
   }));
   const company = mapBackendCompany(settingsResponse.data, assets);
   const document = documentResponse.data;
@@ -360,11 +360,11 @@ async function renderAuthenticatedTemplatePreview(params: {
     fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken, params.activeCompanyId),
     fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken, params.activeCompanyId),
   ]);
-  const assets = assetsResponse.data.map((asset) => ({
+  const assets: CompanyAssetLike[] = assetsResponse.data.map((asset) => ({
     id: asset.id,
     usage: asset.usage,
-    public_url: normalizeBackendAssetUrl(params.baseUrl, asset.public_url),
-    is_active: asset.is_active,
+    publicUrl: normalizeBackendAssetUrl(params.baseUrl, asset.public_url),
+    isActive: asset.is_active,
   }));
   const company = mapBackendCompany(settingsResponse.data, assets);
 
@@ -450,10 +450,19 @@ async function renderAuthenticatedTemplatePreview(params: {
   });
 }
 
+function readFirstDocumentTypeFromPayload(payload: Record<string, unknown>): string | undefined {
+  const raw = payload.document_types;
+  if (!Array.isArray(raw) || raw.length === 0) {
+    return undefined;
+  }
+  const first = raw[0];
+  return typeof first === "string" ? first : undefined;
+}
+
 async function renderTemplatePdfFromPayload(payload: Record<string, unknown>) {
   const html = await renderPreviewTemplateHtmlPayload(payload);
   const bytes = await renderDocumentPdf(html);
-  const documentType = String(payload.document_type ?? payload.document_types?.[0] ?? "tax_invoice");
+  const documentType = String(payload.document_type ?? readFirstDocumentTypeFromPayload(payload) ?? "tax_invoice");
   const templateName = String(payload.name ?? `${documentType}-template`).trim() || `${documentType}-template`;
   const safeName = templateName.replace(/[^a-zA-Z0-9._-]+/g, "-");
 

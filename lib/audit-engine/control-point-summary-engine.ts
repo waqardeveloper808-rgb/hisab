@@ -156,12 +156,11 @@ function scopeBaseList(
     if (!modules?.length) {
       return [];
     }
-    return controlPointsForGroupUnique(controlPoints, modules);
+    void modules;
+    return controlPoints.filter((cp) => cp.primaryGroupId === filter.groupId);
   }
   if (filter.moduleId) {
-    return controlPoints.filter(
-      (cp) => cp.module === filter.moduleId || cp.linked_project_modules.includes(filter.moduleId!),
-    );
+    return controlPoints.filter((cp) => cp.primaryModuleId === filter.moduleId);
   }
   return [...controlPoints];
 }

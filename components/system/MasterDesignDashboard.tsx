@@ -1,6 +1,8 @@
 "use client";
 
 import { SystemMonitor } from "@/components/system-monitor/SystemMonitor";
+import type { MasterDesignCountSummary } from "@/backend/app/Support/Standards/control-point-engine";
+import type { SystemMonitorTraceabilityPayload } from "@/lib/audit-engine/system-monitor-traceability";
 import type { SystemMonitorControlPoint } from "@/lib/audit-engine/monitor-types";
 import type { ActualModuleRecord, ModuleExecutionStatus, SystemBlocker } from "@/types/system-map";
 
@@ -17,6 +19,8 @@ export type SystemMonitorState = {
     partial: number;
     blocked: number;
   };
+  summary: MasterDesignCountSummary;
+  traceability: SystemMonitorTraceabilityPayload;
   controlPoints: SystemMonitorControlPoint[];
   groupScope: Array<{
     id: string;

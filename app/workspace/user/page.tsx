@@ -1,1 +1,9 @@
-export { default, metadata } from "../../workspace-v2/user/page";
+import { WorkspaceDashboard } from "@/components/workspace/WorkspaceDashboard";
+
+export const metadata = {
+  title: "Workspace",
+};
+
+export default function WorkspaceUserPage() {
+  return <WorkspaceDashboard />;
+}

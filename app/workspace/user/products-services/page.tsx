@@ -1,1 +1,9 @@
-export { default, metadata } from "../../../workspace-v2/user/products-services/page";
+import { WorkspaceStockRegister } from "@/components/workspace/WorkspaceStockRegister";
+
+export const metadata = {
+  title: "Workspace — Products & services",
+};
+
+export default function Page() {
+  return <WorkspaceStockRegister mode="products" />;
+}

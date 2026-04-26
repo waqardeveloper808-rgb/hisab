@@ -83,7 +83,8 @@ export function mapInvoiceToAhnTemplate(model: DocumentRenderModel): TaxInvoiceA
       totalPages: asNumber(custom.total_pages, 1),
     },
     lines: model.invoice.lines.map((line, index) => {
-      const taxableAmount = asNumber(line.taxableAmount, line.total - line.vatAmount);
+      const vatFallback = line.vatAmount ?? 0;
+      const taxableAmount = asNumber(line.taxableAmount, line.total - vatFallback);
       const vatAmount = asNumber(line.vatAmount, Math.max(0, line.total - taxableAmount));
       const vatRate = taxableAmount > 0 ? (vatAmount / taxableAmount) * 100 : model.invoice.vatRate;
 

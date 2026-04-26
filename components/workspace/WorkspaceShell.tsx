@@ -92,7 +92,10 @@ const itemIconRules: Array<{ test: RegExp; icon: ComponentType<{ className?: str
 ];
 
 function resolveGroupIcon(label: string) {
-  return groupIconMap[label] ?? Boxes;
+  if (Object.prototype.hasOwnProperty.call(groupIconMap, label)) {
+    return groupIconMap[label as keyof typeof groupIconMap];
+  }
+  return Boxes;
 }
 
 function resolveItemIcon(label: string, href: string) {

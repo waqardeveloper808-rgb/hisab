@@ -1,0 +1,58 @@
+import type { DocumentRecord } from "@/lib/workspace/types";
+
+export const proformaInvoices: DocumentRecord[] = [
+  {
+    id: "pro-2026-0042",
+    number: "PRO-2026-0042",
+    kind: "proforma",
+    customerId: "cust-003",
+    issueDate: "2026-04-20",
+    dueDate: "2026-04-27",
+    status: "sent",
+    currency: "SAR",
+    subtotal: 12173.91,
+    vat: 1826.09,
+    total: 14000,
+    balance: 14000,
+    templateId: "tmpl-standard",
+    lines: [
+      { id: "ln-1", description: "Container yard — May estimate", quantity: 1, unitPrice: 12173.91, vatRate: 0.15 },
+    ],
+  },
+  {
+    id: "pro-2026-0041",
+    number: "PRO-2026-0041",
+    kind: "proforma",
+    customerId: "cust-006",
+    issueDate: "2026-04-14",
+    dueDate: "2026-04-21",
+    status: "accepted",
+    currency: "SAR",
+    subtotal: 5217.39,
+    vat: 782.61,
+    total: 6000,
+    balance: 0,
+    templateId: "tmpl-compact",
+    lines: [
+      { id: "ln-1", description: "Trade show inventory — 200 jars", quantity: 200, unitPrice: 26.09, vatRate: 0.15 },
+    ],
+  },
+  {
+    id: "pro-2026-0040",
+    number: "PRO-2026-0040",
+    kind: "proforma",
+    customerId: "cust-008",
+    issueDate: "2026-04-09",
+    dueDate: "2026-04-16",
+    status: "expired",
+    currency: "SAR",
+    subtotal: 2173.91,
+    vat: 326.09,
+    total: 2500,
+    balance: 2500,
+    templateId: "tmpl-standard",
+    lines: [
+      { id: "ln-1", description: "Sample dates supply — 200 kg", quantity: 200, unitPrice: 10.87, vatRate: 0.15 },
+    ],
+  },
+];

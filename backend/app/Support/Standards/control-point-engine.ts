@@ -5,13 +5,17 @@ import { buildSystemMonitorControlPoints } from "@/lib/audit-engine/build-monito
 import {
   computeSummary,
   controlPointsForGroupUnique,
-  controlPointsForModuleId,
   healthPercentFromSummary,
   topCriticalFails,
 } from "@/lib/audit-engine/summary";
 import { getActualSystemMap, getPriorityModulesFromActualMap } from "@/lib/mapping-engine";
 import { MONITOR_GROUP_DEFS } from "@/lib/audit-engine/monitor-groups";
 import type { SystemMonitorControlPoint } from "@/lib/audit-engine/monitor-types";
+import {
+  applyTraceabilityModuleNames,
+  buildSystemMonitorTraceability,
+  type SystemMonitorTraceabilityPayload,
+} from "@/lib/audit-engine/system-monitor-traceability";
 import type { ControlPointAuditStatus } from "@/backend/app/Support/Standards/control-point-engine-types";
 import type { ActualModuleRecord, ModuleExecutionStatus, SystemBlocker } from "@/types/system-map";
 
@@ -93,6 +97,32 @@ export function hydrateControlPointEngineAuditStatuses(auditStatusMap: ReadonlyM
   };
 }
 
+/** Canonical vs group-scoped counts for Master Design / System Monitor (Session 1 count integrity). */
+export type MasterDesignCountSummary = {
+  globalUnique: {
+    total: number;
+    pass: number;
+    fail: number;
+    partial: number;
+    blocked: number;
+  };
+  /** Sums of the three main monitor group rows (Core / Finance / Platform). Double-counts CPs linked to multiple groups. */
+  groupScopedAppearances: {
+    pass: number;
+    fail: number;
+    partial: number;
+    blocked: number;
+    summedControlPointSlots: number;
+  };
+  duplicateMeta: {
+    uniqueGlobalFailCount: number;
+    groupScopedFailAppearancesSum: number;
+    /** Sum of group fail counts minus unique global fails — explains “377 vs 178” style mismatch. */
+    extraFailAppearancesFromMultiGroupMembership: number;
+    failingControlPointsSpanningMultipleMainGroups: number;
+  };
+};
+
 type SystemState = {
   generatedAt: string;
   risk: {
@@ -106,6 +136,8 @@ type SystemState = {
     partial: number;
     blocked: number;
   };
+  /** Explicit separation of global unique totals vs summed group-row appearances (UI must not conflate). */
+  summary: MasterDesignCountSummary;
   controlPoints: SystemMonitorControlPoint[];
   moduleHealth: Array<{
     id: string;
@@ -149,6 +181,8 @@ type SystemState = {
   }>;
   moduleMap: ActualModuleRecord[];
   blockers: SystemBlocker[];
+  /** Ownership tree: summary = Core + Finance + Platform; each count maps to cpIdsByStatus. */
+  traceability: SystemMonitorTraceabilityPayload;
 };
 
 function riskFromSummary(fail: number, partial: number, blocked: number): { level: "low" | "medium" | "high" | "critical"; score: number } {
@@ -163,10 +197,14 @@ function buildLegacySystemState(): SystemState {
   const actual = getActualSystemMap();
   const generatedAt = new Date().toISOString();
   const controlPoints = buildSystemMonitorControlPoints(generatedAt);
-  const engineSummary = computeSummary(controlPoints);
+  const moduleNameById = new Map(actual.modules.map((m) => [m.id, m.name]));
+  const traceResult = buildSystemMonitorTraceability(controlPoints);
+  applyTraceabilityModuleNames(traceResult.payload, moduleNameById);
+  const traceability = traceResult.payload;
+  const sSum = traceability.summary;
 
   const moduleHealth = actual.modules.map((module) => {
-    const related = controlPointsForModuleId(controlPoints, module.id);
+    const related = controlPoints.filter((cp) => cp.primaryModuleId === module.id);
     const s = computeSummary(related);
     const total = related.length;
     const healthPercent = healthPercentFromSummary(s, total);
@@ -189,39 +227,92 @@ function buildLegacySystemState(): SystemState {
     };
   });
 
-  const groupScope = MONITOR_GROUP_DEFS.map((g) => {
+  const groupScope = traceability.groups.map((g) => ({
+    id: g.id,
+    name: g.name,
+    passCount: g.pass,
+    failCount: g.fail,
+    partialCount: g.partial,
+    blockedCount: g.blocked,
+    totalControlPoints: g.total,
+    healthPercent: healthPercentFromSummary(
+      { pass: g.pass, fail: g.fail, partial: g.partial, blocked: g.blocked },
+      g.total,
+    ),
+    scopeLabel:
+      "Ownership-based: control points whose primary module is in this group. Primary System Monitor totals sum Core + Finance + Platform.",
+  }));
+
+  const groupScopeAppearanceDiagnostic = MONITOR_GROUP_DEFS.map((g) => {
     const unique = controlPointsForGroupUnique(controlPoints, g.modules);
     const s = computeSummary(unique);
     const total = unique.length;
     return {
-      id: g.id,
-      name: g.name,
       passCount: s.pass,
       failCount: s.fail,
       partialCount: s.partial,
       blockedCount: s.blocked,
-      totalControlPoints: total,
-      healthPercent: healthPercentFromSummary(s, total),
-      scopeLabel: "Unique control points with any link to a module in this group (counted once).",
+      totalCp: total,
     };
   });
 
-  const risk = riskFromSummary(engineSummary.fail, engineSummary.partial, engineSummary.blocked);
+  const groupScopedAppearances = groupScopeAppearanceDiagnostic.reduce(
+    (acc, g) => ({
+      pass: acc.pass + g.passCount,
+      fail: acc.fail + g.failCount,
+      partial: acc.partial + g.partialCount,
+      blocked: acc.blocked + g.blockedCount,
+      summedControlPointSlots: acc.summedControlPointSlots + g.totalCp,
+    }),
+    { pass: 0, fail: 0, partial: 0, blocked: 0, summedControlPointSlots: 0 },
+  );
+
+  const failingCpsInMultiMainGroup = controlPoints.filter((cp) => {
+    if (cp.status !== "fail") return false;
+    let n = 0;
+    for (const def of MONITOR_GROUP_DEFS) {
+      if (cp.linked_project_modules.some((m) => (def.modules as readonly string[]).includes(m))) {
+        n += 1;
+      }
+    }
+    return n > 1;
+  }).length;
+
+  const summary: MasterDesignCountSummary = {
+    globalUnique: {
+      total: sSum.total,
+      pass: sSum.pass,
+      fail: sSum.fail,
+      partial: sSum.partial,
+      blocked: sSum.blocked,
+    },
+    groupScopedAppearances,
+    duplicateMeta: {
+      uniqueGlobalFailCount: sSum.fail,
+      groupScopedFailAppearancesSum: groupScopedAppearances.fail,
+      extraFailAppearancesFromMultiGroupMembership: Math.max(0, groupScopedAppearances.fail - sSum.fail),
+      failingControlPointsSpanningMultipleMainGroups: failingCpsInMultiMainGroup,
+    },
+  };
+
+  const risk = riskFromSummary(sSum.fail, sSum.partial, sSum.blocked);
   const topFails = topCriticalFails(controlPoints, 10);
 
   return {
     generatedAt,
     risk,
     audit: {
-      total: controlPoints.length,
-      pass: engineSummary.pass,
-      fail: engineSummary.fail,
-      partial: engineSummary.partial,
-      blocked: engineSummary.blocked,
+      total: sSum.total,
+      pass: sSum.pass,
+      fail: sSum.fail,
+      partial: sSum.partial,
+      blocked: sSum.blocked,
     },
+    summary,
     controlPoints,
     moduleHealth,
     groupScope,
+    traceability,
     failingAreas: topFails.map((row) => ({
       controlPointId: row.id,
       title: row.title,
@@ -240,6 +331,8 @@ function buildLegacySystemState(): SystemState {
     blockers: actual.modules.flatMap((module) => module.blockers),
   };
 }
+
+export type { SystemMonitorTraceabilityPayload };
 
 export function getFreshSystemMonitorState(): SystemState {
   return buildLegacySystemState();

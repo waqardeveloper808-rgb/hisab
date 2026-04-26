@@ -1,1 +1,9 @@
-export { default, metadata } from "../../../workspace-v2/user/payments/page";
+import { redirect } from "next/navigation";
+
+export const metadata = {
+  title: "Workspace — Payments (redirect)",
+};
+
+export default function Page() {
+  redirect("/workspace/user/customer-payments");
+}

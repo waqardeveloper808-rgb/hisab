@@ -11,6 +11,12 @@ import runtimeAuditData from "@/data/audit-runtime/control-point-runtime-results
 import { collectTraceabilitySnapshot } from "@/lib/audit-engine/evidence-entities";
 import type { SystemMonitorControlPoint, SystemMonitorSeverity, SystemMonitorStatus } from "@/lib/audit-engine/monitor-types";
 import {
+  buildMonitorModuleToGroup,
+  MONITOR_PROJECT_MODULE_IDS,
+  pickPrimaryMonitorProjectModuleId,
+} from "@/lib/audit-engine/system-monitor-traceability";
+import { getActualSystemMap } from "@/lib/mapping-engine";
+import {
   buildAccountingTrace,
   buildInventoryTrace,
   buildVatTrace,
@@ -94,20 +100,22 @@ function applySeverity(
 
 export function buildSystemMonitorControlPoints(isoTime = new Date().toISOString()): SystemMonitorControlPoint[] {
   const snap = collectTraceabilitySnapshot();
+  const modToGroup = buildMonitorModuleToGroup();
+  const moduleNameById = new Map(getActualSystemMap().modules.map((m) => [m.id, m.name]));
   return engineRegisteredControlPoints.map((cp) => {
     const result = evaluateControlPointExecution(cp);
     const bundle = collectControlPointEvidence(cp);
     const category = getExecutionCategory(cp);
     const evaluator = getExecutionEvaluatorKey(cp);
     const modules = cp.linked_project_modules;
-    const module = resolveModuleDomain(modules, cp.module_code);
+    const logicalModule = resolveModuleDomain(modules, cp.module_code);
     const sub = resolveSubModule(cp.module_code, category);
-    const d = toTraceDomain(module);
+    const d = toTraceDomain(logicalModule);
     const linkage = isLinkageControlPoint(cp, evaluator);
     const linkMissing = linkage && d !== "other" && domainLinkMissing(d, snap);
     const baseSeverity = result.risk_level as SystemMonitorSeverity;
-    const severity = applySeverity(baseSeverity, linkMissing, module);
-    const trace = buildTrace(module, snap);
+    const severity = applySeverity(baseSeverity, linkMissing, logicalModule);
+    const trace = buildTrace(logicalModule, snap);
     const linked = d === "other" || !linkage ? {} : linkedEntitiesForDomain(d, snap);
     const rt = runtimeResults[cp.id];
     const timestamp = rt?.last_checked_at ?? isoTime;
@@ -126,9 +134,15 @@ export function buildSystemMonitorControlPoints(isoTime = new Date().toISOString
       trace.unshift("CRITICAL: required traceability link missing in engine evidence (preview / metrics chain).");
     }
     const evidenceRefs = bundle.evidence.map((item) => item.reference);
+    const primaryModuleId = pickPrimaryMonitorProjectModuleId(modules, cp.module_code);
+    const gMeta = modToGroup.get(primaryModuleId) ?? { groupId: "platform-layers", groupName: "Platform Layers" };
+    const primaryModuleName = moduleNameById.get(primaryModuleId) ?? primaryModuleId;
+    const relatedProjectModules = [...modules]
+      .filter((id) => MONITOR_PROJECT_MODULE_IDS.has(id) && id !== primaryModuleId)
+      .sort();
     return {
       id: cp.id,
-      module,
+      module: logicalModule,
       sub_module: sub,
       status: toStatus(result.status),
       severity,
@@ -148,6 +162,13 @@ export function buildSystemMonitorControlPoints(isoTime = new Date().toISOString
       evidence_references: evidenceRefs,
       source_standard_document: cp.source_standard_document,
       recommended_next_action: cp.nonconformity,
+      primaryModuleId,
+      primaryModuleName,
+      primaryGroupId: gMeta.groupId,
+      primaryGroupName: gMeta.groupName,
+      relatedProjectModules,
+      auditResult: result.audit_reason,
+      lastCheckedAt: timestamp,
     } satisfies SystemMonitorControlPoint;
   });
 }

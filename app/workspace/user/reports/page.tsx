@@ -1,1 +1,9 @@
-export { default, metadata } from "../../../workspace-v2/user/reports/page";
+import { WorkspaceReportsHub } from "@/components/workspace/WorkspaceReportsHub";
+
+export const metadata = {
+  title: "Workspace — Reports",
+};
+
+export default function Page() {
+  return <WorkspaceReportsHub />;
+}

@@ -1,1 +1,9 @@
-export { default, metadata } from "../../../workspace-v2/user/customer-payments/page";
+import { WorkspacePaymentsRegister } from "@/components/workspace/WorkspacePaymentsRegister";
+
+export const metadata = {
+  title: "Workspace — Customer payments",
+};
+
+export default function Page() {
+  return <WorkspacePaymentsRegister />;
+}

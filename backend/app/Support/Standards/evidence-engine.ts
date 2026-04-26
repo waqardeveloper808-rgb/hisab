@@ -416,13 +416,13 @@ const qualityMetrics: QualityMetrics = (() => {
   };
 })();
 
-const canonicalWorkspaceV2StaticEvidence = (() => {
+const canonicalUserWorkspaceStaticEvidence = (() => {
   if (typeof window !== "undefined") {
     return {
       dualShellRouterPresent: true,
-      v2NavigationCanonicalBase: true,
-      v2ShellPresent: true,
-      userHomeReexportsV2: true,
+      navigationCanonicalBase: true,
+      userAppShellPresent: true,
+      userHomeWiresWorkspaceDashboard: true,
     };
   }
   try {
@@ -432,20 +432,20 @@ const canonicalWorkspaceV2StaticEvidence = (() => {
     };
     const fs = runtimeRequire("node:fs");
     const cwd = process.cwd().replace(/\\/g, "/");
-    const navigationSource = fs.readFileSync(`${cwd}/lib/workspace-v2/navigation.ts`, "utf8");
+    const navigationSource = fs.readFileSync(`${cwd}/lib/workspace/navigation.ts`, "utf8");
     const userHomeSource = fs.readFileSync(`${cwd}/app/workspace/user/page.tsx`, "utf8");
     return {
       dualShellRouterPresent: fs.existsSync(`${cwd}/components/workspace/WorkspaceDualShell.tsx`),
-      v2NavigationCanonicalBase: navigationSource.includes('V2_BASE = "/workspace/user"'),
-      v2ShellPresent: fs.existsSync(`${cwd}/components/workspace-v2/WorkspaceV2Shell.tsx`),
-      userHomeReexportsV2: userHomeSource.includes("workspace-v2/user/page"),
+      navigationCanonicalBase: navigationSource.includes('USER_WORKSPACE_BASE = "/workspace/user"'),
+      userAppShellPresent: fs.existsSync(`${cwd}/components/workspace/WorkspaceAppShell.tsx`),
+      userHomeWiresWorkspaceDashboard: userHomeSource.includes("@/components/workspace/WorkspaceDashboard"),
     };
   } catch {
     return {
       dualShellRouterPresent: false,
-      v2NavigationCanonicalBase: false,
-      v2ShellPresent: false,
-      userHomeReexportsV2: false,
+      navigationCanonicalBase: false,
+      userAppShellPresent: false,
+      userHomeWiresWorkspaceDashboard: false,
     };
   }
 })();
@@ -604,10 +604,10 @@ function getWorkspaceEvidence() {
     buildEvidenceItem("ui-snapshot", "Workspace quick actions", "data/role-workspace.ts", qualityMetrics.workspaceQuickActionCount > 0, `${qualityMetrics.workspaceQuickActionCount} quick actions are defined.`, "data/role-workspace.ts"),
     buildEvidenceItem("ui-snapshot", "Workspace modules", "data/workspace.ts", qualityMetrics.workspaceRouteCount > 0, `${qualityMetrics.workspaceRouteCount} workspace modules are declared.`, "data/workspace.ts"),
     buildEvidenceItem("ui-snapshot", "Required sales navigation", "data/role-workspace.ts", qualityMetrics.missingUserSalesNavLabels.length === 0, `${qualityMetrics.presentUserSalesNavCount}/${qualityMetrics.requiredUserSalesNavCount} required user sales navigation entries are present.`, "data/role-workspace.ts"),
-    buildEvidenceItem("ui-snapshot", "Canonical user workspace V2 router", "components/workspace/WorkspaceDualShell.tsx", canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent, canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent ? "Workspace layout routes /workspace/user/* through Workspace V2 shell + theme." : "Canonical V2 shell router is missing.", "components/workspace/WorkspaceDualShell.tsx"),
-    buildEvidenceItem("ui-snapshot", "Workspace V2 navigation base (canonical /workspace/user)", "lib/workspace-v2/navigation.ts", canonicalWorkspaceV2StaticEvidence.v2NavigationCanonicalBase, canonicalWorkspaceV2StaticEvidence.v2NavigationCanonicalBase ? "V2_BASE targets canonical /workspace/user; /workspace-v2/user remains alias." : "V2 navigation base is not aligned to canonical /workspace/user.", "lib/workspace-v2/navigation.ts"),
-    buildEvidenceItem("ui-snapshot", "Canonical /workspace/user home re-exports V2", "app/workspace/user/page.tsx", canonicalWorkspaceV2StaticEvidence.userHomeReexportsV2, canonicalWorkspaceV2StaticEvidence.userHomeReexportsV2 ? "User workspace home delegates to Workspace V2 implementation." : "User workspace home is not wired to Workspace V2.", "app/workspace/user/page.tsx"),
-    buildEvidenceItem("ui-snapshot", "Workspace V2 shell component", "components/workspace-v2/WorkspaceV2Shell.tsx", canonicalWorkspaceV2StaticEvidence.v2ShellPresent, canonicalWorkspaceV2StaticEvidence.v2ShellPresent ? "Workspace V2 shell component is present for canonical user routes." : "Workspace V2 shell component is missing.", "components/workspace-v2/WorkspaceV2Shell.tsx"),
+    buildEvidenceItem("ui-snapshot", "Canonical user workspace router", "components/workspace/WorkspaceDualShell.tsx", canonicalUserWorkspaceStaticEvidence.dualShellRouterPresent, canonicalUserWorkspaceStaticEvidence.dualShellRouterPresent ? "Workspace layout routes /workspace/user/* through the Workspace app shell + theme." : "Canonical Workspace shell router is missing.", "components/workspace/WorkspaceDualShell.tsx"),
+    buildEvidenceItem("ui-snapshot", "Workspace navigation base (canonical /workspace/user)", "lib/workspace/navigation.ts", canonicalUserWorkspaceStaticEvidence.navigationCanonicalBase, canonicalUserWorkspaceStaticEvidence.navigationCanonicalBase ? "USER_WORKSPACE_BASE targets canonical /workspace/user routes." : "Workspace navigation base is not aligned to canonical /workspace/user.", "lib/workspace/navigation.ts"),
+    buildEvidenceItem("ui-snapshot", "Canonical /workspace/user home", "app/workspace/user/page.tsx", canonicalUserWorkspaceStaticEvidence.userHomeWiresWorkspaceDashboard, canonicalUserWorkspaceStaticEvidence.userHomeWiresWorkspaceDashboard ? "User workspace home renders the Workspace dashboard." : "User workspace home is not wired to the Workspace dashboard.", "app/workspace/user/page.tsx"),
+    buildEvidenceItem("ui-snapshot", "Workspace app shell component", "components/workspace/WorkspaceAppShell.tsx", canonicalUserWorkspaceStaticEvidence.userAppShellPresent, canonicalUserWorkspaceStaticEvidence.userAppShellPresent ? "Workspace app shell is present for canonical user routes." : "Workspace app shell is missing.", "components/workspace/WorkspaceAppShell.tsx"),
     buildEvidenceItem("api-response", "Core-flow auth fallback banner", "app/api/workspace/[...slug]/route.ts", !qualityMetrics.workspaceAuthFallbackBannerPresent, qualityMetrics.workspaceAuthFallbackBannerPresent ? "Core workspace API can surface an auth-required banner for unauthenticated core flows." : "No auth-required core-flow banner is declared in the workspace API proxy.", "app/api/workspace/[...slug]/route.ts"),
     buildEvidenceItem("ui-snapshot", "Placeholder workspace fallback (legacy catch-all)", "app/workspace/[...slug]/page.tsx", !qualityMetrics.workspacePlaceholderModuleFallbackPresent, qualityMetrics.workspacePlaceholderModuleFallbackPresent ? "Catch-all workspace routing still resolves into the placeholder module page shell." : "Catch-all workspace routing does not resolve into the placeholder module page shell.", "app/workspace/[...slug]/page.tsx"),
     buildEvidenceItem("api-response", "Silent backend fallbacks", "lib/workspace-api.ts", qualityMetrics.workspaceSilentBackendFallbackCount === 0, `${qualityMetrics.workspaceSilentBackendFallbackCount} silent backend fallback markers were found in the shared workspace client.`, "lib/workspace-api.ts"),
@@ -668,7 +668,7 @@ function getControlPointEngineEvidence() {
     buildEvidenceItem("system-log", "Standards runtime integration", "backend/app/Support/Standards/control-points.ts", runtimeControlPointSource.active_runtime_dataset === "control-point-engine" && standardsControlPoints.length === controlPointEngineRuntime.total_control_points, `Standards runtime dataset is '${runtimeControlPointSource.active_runtime_dataset}' with ${standardsControlPoints.length} controls.`, "backend/app/Support/Standards/control-points.ts"),
     buildEvidenceItem("system-log", "Engine summary rendering", "backend/app/Support/Standards/control-point-engine-summary.ts", renderedSummary.includes(`# Control Point Engine Summary`) && renderedSummary.includes(`Total control points: ${controlPointEngineRuntime.total_control_points}`), `Rendered summary covers ${controlPointEngineRuntime.total_control_points} controls and ${controlPointEngineRuntime.total_modules} modules.`, "backend/app/Support/Standards/control-point-engine-summary.ts"),
     buildEvidenceItem("ui-snapshot", "Dashboard audit integration", "components/workspace/MasterDesignDashboard.tsx", true, "Master design dashboard imports live audit summary and risk summary from the control point audit engine.", "components/workspace/MasterDesignDashboard.tsx"),
-    buildEvidenceItem("ui-snapshot", "Canonical workspace V2 shell routing", "components/workspace/WorkspaceDualShell.tsx", canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent, canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent ? "System monitor governance can trace user workspace chrome to Workspace V2 via WorkspaceDualShell." : "WorkspaceDualShell is missing for canonical V2 routing evidence.", "components/workspace/WorkspaceDualShell.tsx"),
+    buildEvidenceItem("ui-snapshot", "Canonical Workspace shell routing", "components/workspace/WorkspaceDualShell.tsx", canonicalUserWorkspaceStaticEvidence.dualShellRouterPresent, canonicalUserWorkspaceStaticEvidence.dualShellRouterPresent ? "System monitor governance can trace user workspace chrome to the Workspace app shell via WorkspaceDualShell." : "WorkspaceDualShell is missing for canonical Workspace routing evidence.", "components/workspace/WorkspaceDualShell.tsx"),
   ];
 }
 
