@@ -377,7 +377,7 @@ function DrilldownCard({
       className={[
         "h-full rounded-xl border p-3 text-left transition",
         isActive
-          ? "border-primary bg-[linear-gradient(180deg,rgba(231,246,237,0.96),rgba(255,255,255,0.98))] shadow-[0_18px_28px_-24px_rgba(31,122,83,0.6)]"
+          ? "border-primary bg-[linear-gradient(180deg,rgba(91,198,63,0.12),rgba(255,255,255,0.98))] shadow-[0_18px_28px_-24px_rgba(63,174,42,0.32)]"
           : "border-line bg-white hover:border-primary/30 hover:bg-primary-soft/18",
       ].join(" ")}
     >
@@ -985,11 +985,11 @@ export function MasterDesignDashboard({ initialSnapshot }: { initialSnapshot: Ma
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Master Design Control Center</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink">Gulf Hisab KSA Phase 1</h2>
+              <h2 className="mt-1 text-2xl font-semibold tracking-tight text-ink">Hisabix KSA Phase 1</h2>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">Live internal control view for target state, actual state, module drift, blocker chains, and country-product separation.</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-line bg-white px-3 py-1 text-[11px] font-semibold text-ink">Current product: Gulf Hisab KSA</span>
+              <span className="rounded-full border border-line bg-white px-3 py-1 text-[11px] font-semibold text-ink">Current product: Hisabix KSA</span>
               <span className="rounded-full border border-line bg-white px-3 py-1 text-[11px] font-semibold text-ink">Current phase: Phase 1</span>
               <Button size="sm" variant="secondary" onClick={() => void refresh()} disabled={isRefreshing}>Refresh</Button>
             </div>
@@ -1064,7 +1064,7 @@ export function MasterDesignDashboard({ initialSnapshot }: { initialSnapshot: Ma
                 onClick={() => setSelectedModuleId(module.moduleId)}
                 className={[
                   "rounded-xl border p-3 text-left transition",
-                  active ? "border-primary bg-primary-soft/40 shadow-[0_16px_26px_-24px_rgba(31,122,83,0.6)]" : "border-line bg-white hover:border-primary/30 hover:bg-primary-soft/20",
+                  active ? "border-primary bg-primary-soft/40 shadow-[0_16px_26px_-24px_rgba(63,174,42,0.32)]" : "border-line bg-white hover:border-primary/30 hover:bg-primary-soft/20",
                 ].join(" ")}
               >
                 <div className="flex items-start justify-between gap-2">

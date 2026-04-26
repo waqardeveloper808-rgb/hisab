@@ -99,11 +99,11 @@ SVG;
             'language_code' => $template->locale_mode === 'ar' ? 'ar' : 'en',
             'issue_date' => Carbon::parse('2026-04-13'),
             'due_date' => Carbon::parse('2026-04-20'),
-            'subtotal' => 4000,
-            'tax_total' => 600,
-            'grand_total' => 4600,
-            'taxable_total' => 4000,
-            'balance_due' => 4600,
+            'subtotal' => 1_000_000,
+            'tax_total' => 150_000,
+            'grand_total' => 1_150_000,
+            'taxable_total' => 1_000_000,
+            'balance_due' => 1_150_000,
             'notes' => '',
             'custom_fields' => [
                 'reference' => 'INV-2026-1101',
@@ -139,10 +139,11 @@ SVG;
             new DocumentLine([
                 'description' => 'Monthly bookkeeping services',
                 'quantity' => 1,
-                'unit_price' => 4000,
-                'gross_amount' => 4000,
-                'tax_amount' => 600,
-                'metadata' => ['custom_fields' => ['description_ar' => 'خدمات مسك الدفاتر الشهرية']],
+                'unit_price' => 1_000_000,
+                'gross_amount' => 1_000_000,
+                'tax_rate' => 15,
+                'tax_amount' => 150_000,
+                'metadata' => ['custom_fields' => ['description_ar' => 'خدمات مسك الدفاتر الشهرية', 'unit' => 'srv', 'vat_rate' => 15]],
             ]),
         ]));
 
@@ -583,8 +584,10 @@ SVG;
         $columns = $this->resolveItemTableColumns($settings);
         $bilingualTableHeadings = filter_var($settings['table_heading_bilingual'] ?? false, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? false;
         $labelQuantity = $this->resolveLabelPair($settings, 'quantity', 'Qty', 'الكمية');
-        $labelUnitPrice = $this->resolveLabelPair($settings, 'unit_price', 'Unit Price', 'سعر الوحدة');
+        $labelUnit = $this->resolveLabelPair($settings, 'unit', 'Unit', 'الوحدة');
+        $labelUnitPrice = $this->resolveLabelPair($settings, 'unit_price', 'Rate', 'السعر');
         $labelTaxable = $this->resolveLabelPair($settings, 'taxable', 'Taxable', 'الخاضع للضريبة');
+        $labelVatRate = $this->resolveLabelPair($settings, 'vat_rate', 'VAT %', '% الضريبة');
         $labelVat = $this->resolveLabelPair($settings, 'vat', 'VAT', 'الضريبة');
         $labelTotal = $this->resolveLabelPair($settings, 'total', 'Total', 'الإجمالي');
 
@@ -592,8 +595,10 @@ SVG;
             'serial' => ['en' => '#', 'ar' => '#'],
             'description' => ['en' => 'Description', 'ar' => 'الوصف'],
             'quantity' => $labelQuantity,
+            'unit' => $labelUnit,
             'unit_price' => $labelUnitPrice,
             'taxable' => $labelTaxable,
+            'vat_rate' => $labelVatRate,
             'vat' => $labelVat,
             'total' => $labelTotal,
         ];
@@ -604,13 +609,22 @@ SVG;
             $lineTotal = $showCommercialTotals ? $taxableAmount + $vatAmount : $taxableAmount;
 
             $arabicDescription = (string) data_get($line->metadata, 'custom_fields.description_ar', '');
+            $unit = (string) data_get($line->metadata, 'custom_fields.unit', '');
+            $unitDisplay = $unit !== '' ? $unit : '—';
+            $rateRaw = $line->tax_rate;
+            if (($rateRaw === null || (float) $rateRaw === 0.0) && data_get($line->metadata, 'custom_fields.vat_rate') !== null) {
+                $rateRaw = data_get($line->metadata, 'custom_fields.vat_rate');
+            }
+            $vatRateDisplay = number_format((float) $rateRaw, 2).'%';
 
             $rowValues = [
                 'serial' => (string) ($index + 1),
                 'description' => '<div>'.e((string) $line->description).'</div>'.($arabicDescription !== '' ? '<div dir="rtl" style="margin-top:2px;text-align:right;">'.e($arabicDescription).'</div>' : ''),
                 'quantity' => number_format((float) $line->quantity, 2),
+                'unit' => e($unitDisplay),
                 'unit_price' => number_format((float) $line->unit_price, 2),
                 'taxable' => number_format($taxableAmount, 2),
+                'vat_rate' => e($vatRateDisplay),
                 'vat' => number_format($vatAmount, 2),
                 'total' => number_format($lineTotal, 2),
             ];
@@ -620,7 +634,7 @@ SVG;
                 $alignment = in_array($key, ['serial'], true) ? 'center' : (in_array($key, ['description'], true) ? 'left' : 'right');
                 $fontWeight = $key === 'total' ? '700' : '400';
 
-                return '<td style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:6px;text-align:'.$alignment.';font-variant-numeric:tabular-nums;vertical-align:top;font-weight:'.$fontWeight.';">'.($rowValues[$key] ?? '').'</td>';
+                return '<td style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:6px;text-align:'.$alignment.';font-variant-numeric:tabular-nums;vertical-align:middle;font-weight:'.$fontWeight.';">'.($rowValues[$key] ?? '').'</td>';
             })->implode('').'</tr>';
         })->implode('');
 
@@ -736,36 +750,51 @@ SVG;
 
     private function resolveItemTableColumns(array $settings): Collection
     {
-        $fallback = collect([
-            ['key' => 'serial', 'width' => 5, 'visible' => true],
-            ['key' => 'description', 'width' => 37, 'visible' => true],
-            ['key' => 'quantity', 'width' => 9, 'visible' => true],
-            ['key' => 'unit_price', 'width' => 13, 'visible' => true],
-            ['key' => 'taxable', 'width' => 13, 'visible' => true],
-            ['key' => 'vat', 'width' => 10, 'visible' => true],
-            ['key' => 'total', 'width' => 13, 'visible' => true],
+        $defaults = collect([
+            ['key' => 'serial', 'width' => 4, 'visible' => true],
+            ['key' => 'description', 'width' => 26, 'visible' => true],
+            ['key' => 'quantity', 'width' => 7, 'visible' => true],
+            ['key' => 'unit', 'width' => 7, 'visible' => true],
+            ['key' => 'unit_price', 'width' => 9, 'visible' => true],
+            ['key' => 'taxable', 'width' => 11, 'visible' => true],
+            ['key' => 'vat_rate', 'width' => 7, 'visible' => true],
+            ['key' => 'vat', 'width' => 9, 'visible' => true],
+            ['key' => 'total', 'width' => 20, 'visible' => true],
         ]);
 
         $decoded = json_decode((string) ($settings['item_table_columns'] ?? ''), true);
-        if (! is_array($decoded)) {
-            return $fallback;
+        $byKey = [];
+        if (is_array($decoded)) {
+            foreach ($decoded as $entry) {
+                if (is_array($entry) && isset($entry['key']) && is_string($entry['key'])) {
+                    $byKey[$entry['key']] = $entry;
+                }
+            }
         }
 
-        $allowed = collect(['serial', 'description', 'quantity', 'unit_price', 'taxable', 'vat', 'total']);
+        $merged = $defaults->map(function (array $d) use ($byKey): array {
+            $o = $byKey[$d['key']] ?? null;
+            if (! is_array($o)) {
+                return $d;
+            }
 
-        $normalized = collect($decoded)
-            ->filter(fn ($entry) => is_array($entry) && in_array((string) ($entry['key'] ?? ''), $allowed->all(), true))
-            ->map(function (array $entry): array {
-                return [
-                    'key' => (string) ($entry['key'] ?? 'description'),
-                    'width' => max(5, min(60, (int) ($entry['width'] ?? 10))),
-                    'visible' => filter_var($entry['visible'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? true,
-                ];
-            })
-            ->filter(fn (array $entry) => $entry['visible'])
-            ->values();
+            return [
+                'key' => $d['key'],
+                'width' => max(3, min(60, (int) ($o['width'] ?? $d['width']))),
+                'visible' => filter_var($o['visible'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? true,
+            ];
+        });
 
-        return $normalized->isNotEmpty() ? $normalized : $fallback;
+        $visible = $merged->filter(fn (array $c) => $c['visible'])->values();
+        $sumWidths = (int) $visible->sum('width');
+        if ($sumWidths < 1) {
+            $sumWidths = 1;
+        }
+
+        return $visible->map(fn (array $c) => [
+            'key' => $c['key'],
+            'width' => round(100 * $c['width'] / $sumWidths, 4),
+        ]);
     }
 
     private function defaultLogoDataUri(): string

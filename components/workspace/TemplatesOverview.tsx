@@ -47,7 +47,7 @@ const defaultTemplateDraft: Omit<DocumentTemplateRecord, "id" | "logoAssetUrl"> 
   name: "",
   documentTypes: ["tax_invoice"],
   localeMode: "bilingual",
-  accentColor: "#1f7a53",
+  accentColor: "#3FAE2A",
   watermarkText: "",
   headerHtml: "<p>Prepared for review and approval.</p>",
   footerHtml: "<p>Questions? Contact the finance team for this document.</p>",
@@ -569,7 +569,7 @@ export function TemplatesOverview() {
 
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-2">
               <Input label="Template name" value={templateDraft.name} onChange={(event) => updateTemplate("name", event.target.value)} placeholder="Modern bilingual invoice" />
-              <Input label="Accent color" value={templateDraft.accentColor} onChange={(event) => updateTemplate("accentColor", event.target.value)} placeholder="#1f7a53" />
+              <Input label="Accent color" value={templateDraft.accentColor} onChange={(event) => updateTemplate("accentColor", event.target.value)} placeholder="#3FAE2A" />
               <div>
                 <label htmlFor="locale-mode" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.06em] text-ink">Locale mode</label>
                 <select id="locale-mode" value={templateDraft.localeMode} onChange={(event) => updateTemplate("localeMode", event.target.value)} className="block h-[var(--control-input)] w-full rounded-lg border border-line-strong bg-white px-2.5 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
@@ -717,7 +717,7 @@ export function TemplatesOverview() {
                 <div className="px-6 py-10 text-sm text-muted">Rendering preview...</div>
               ) : previewHtml ? (
                 <div className="bg-[#edf3ee] p-2 sm:p-2.5">
-                  <div className="mx-auto max-w-[1100px] overflow-hidden rounded-xl border border-[#dfe6df] bg-white shadow-[0_30px_70px_-46px_rgba(17,32,24,0.28)]">
+                  <div className="mx-auto max-w-[1100px] overflow-hidden rounded-xl border border-line bg-white shadow-[0_30px_70px_-46px_rgba(11,11,11,0.18)]">
                     <div className={["overflow-auto", fullScreenEditor ? "max-h-[84vh] p-2.5" : "max-h-[78vh] p-2 sm:p-2.5"].join(" ")} dangerouslySetInnerHTML={{ __html: previewHtml }} />
                   </div>
                 </div>
@@ -732,7 +732,7 @@ export function TemplatesOverview() {
                   <h2 className="text-lg font-semibold text-ink">Brand assets</h2>
                   <p className="mt-1 text-xs text-muted">Upload a logo and attach it to the current template.</p>
                 </div>
-                <label className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-primary bg-primary px-3 py-2 text-sm font-semibold text-white shadow-[0_16px_32px_-18px_rgba(31,122,83,0.6)]">
+                <label className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-primary bg-primary px-3 py-2 text-sm font-semibold text-white shadow-[0_16px_32px_-18px_rgba(63,174,42,0.38)]">
                   {uploading ? "Uploading" : "Upload logo"}
                   <input type="file" className="hidden" accept=".svg,.png,.jpg,.jpeg,.webp" onChange={(event) => void handleAssetUpload(event.target.files?.[0] ?? null)} />
                 </label>

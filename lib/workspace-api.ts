@@ -992,6 +992,11 @@ export type DocumentPreviewRecord = {
   html: string;
 };
 
+export type TemplatePdfDownloadRecord = {
+  fileName: string;
+  url: string;
+};
+
 export type DocumentTemplateRecord = {
   id: number;
   name: string;
@@ -1325,8 +1330,10 @@ async function request<T>(path: string, init?: WorkspaceRequestInit): Promise<T>
       headers,
     });
   } catch (fetchError) {
+    if (fetchInit.signal?.aborted || (fetchError instanceof Error && fetchError.name === "AbortError")) {
+      throw fetchError;
+    }
     const message = fetchError instanceof Error ? fetchError.message : "Failed to fetch from workspace API";
-    console.error(`[workspace-api] fetch error for ${path}:`, message);
     throw new Error(`Workspace API fetch failed: ${message}`);
   }
 
@@ -1792,9 +1799,23 @@ function mapDocumentDetail(document: BackendDocumentDetail): DocumentDetailRecor
 }
 
 function mapDocumentTemplate(template: BackendDocumentTemplate): DocumentTemplateRecord {
+  const normalizedName = (() => {
+    const layout = typeof template.settings?.layout === "string" ? template.settings.layout : "";
+    if (layout === "classic_corporate" || template.name === "Classic Corporate") {
+      return "Standard";
+    }
+    if (layout === "modern_carded" || template.name === "Modern Carded") {
+      return "Modern";
+    }
+    if (layout === "industrial_supply" || template.name === "Industrial / Supply Chain") {
+      return "Compact";
+    }
+    return template.name;
+  })();
+
   return {
     id: template.id,
-    name: template.name,
+    name: normalizedName,
     documentTypes: template.document_types ?? [],
     localeMode: template.locale_mode,
     accentColor: template.accent_color,
@@ -2347,7 +2368,7 @@ export async function recordDocumentPayment(payload: {
   return mapPayment(result.data);
 }
 
-export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
+export async function getDashboardSnapshot(signal?: AbortSignal): Promise<DashboardSnapshot> {
   try {
     const result = await request<ApiEnvelope<{
       open_invoices: number;
@@ -2358,7 +2379,7 @@ export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
       recent_invoices: BackendDocument[];
       recent_bills: BackendDocument[];
       recent_payments: BackendPayment[];
-    }>>("reports/dashboard-summary");
+    }>>("reports/dashboard-summary", { signal });
 
     return {
       openInvoices: result.data.open_invoices,
@@ -2395,7 +2416,7 @@ export async function getRegistersSnapshot(): Promise<RegistersSnapshot> {
   }
 }
 
-export async function getReportsSnapshot(filters?: { invoiceId?: number; invoiceNumber?: string }): Promise<ReportsSnapshot> {
+export async function getReportsSnapshot(filters?: { invoiceId?: number; invoiceNumber?: string }, signal?: AbortSignal): Promise<ReportsSnapshot> {
   try {
     const impactQuery = new URLSearchParams();
     if (typeof filters?.invoiceId === "number" && Number.isFinite(filters.invoiceId) && filters.invoiceId > 0) {
@@ -2409,19 +2430,19 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
       : "reports/trial-balance";
 
     const [vatSummary, vatDetail, vatReceivedDetails, vatPaidDetails, receivablesAging, payablesAging, trialBalance, profitLoss, balanceSheet, profitByCustomer, profitByProduct, expenseBreakdown, auditTrail] = await Promise.all([
-      request<ApiEnvelope<Array<{ code: string; name: string; tax_rate: string | number; taxable_amount: string | number; tax_amount: string | number }>>>("reports/vat-summary"),
-      request<ApiEnvelope<Array<{ code: string; name: string; tax_rate: string | number; output_taxable_amount: string | number; output_tax_amount: string | number; input_taxable_amount: string | number; input_tax_amount: string | number }>>>("reports/vat-detail"),
-      request<ApiEnvelope<Array<{ id: number; document_number: string; issue_date: string; customer: string; taxable_amount: string | number; vat_amount: string | number }>>>("reports/vat-received-details"),
-      request<ApiEnvelope<Array<{ id: number; reference: string; issue_date: string; vendor: string; vat_amount: string | number; category: string }>>>("reports/vat-paid-details"),
-      request<ApiEnvelope<Array<{ document_number: string; balance_due: string | number; bucket: string }>>>("reports/receivables-aging"),
-      request<ApiEnvelope<Array<{ document_number: string; balance_due: string | number; bucket: string }>>>("reports/payables-aging"),
-      request<ApiEnvelope<Array<{ code: string; name: string; type: string; debit_total: string | number; credit_total: string | number; balance: string | number }>>>(trialBalancePath),
-      request<ApiEnvelope<{ lines: Array<{ code: string; name: string; type: string; net_amount: string | number }>; revenue_total: string | number; expense_total: string | number; net_profit: string | number }>>("reports/profit-loss"),
-      request<ApiEnvelope<{ assets: Array<{ code: string; name: string; type: string; balance: string | number }>; liabilities: Array<{ code: string; name: string; type: string; balance: string | number }>; equity: Array<{ code: string; name: string; type: string; balance: string | number }>; asset_total: string | number; liability_total: string | number; equity_total: string | number }>>("reports/balance-sheet"),
-      request<ApiEnvelope<Array<{ contact_id: number; contact_name: string; revenue: string | number; estimated_cost: string | number; profit: string | number }>>>("reports/profit-by-customer"),
-      request<ApiEnvelope<Array<{ item_id: number; item_name: string; quantity: string | number; revenue: string | number; estimated_cost: string | number; profit: string | number }>>>("reports/profit-by-product"),
-      request<ApiEnvelope<Array<{ category_code: string; category_name: string; total: string | number }>>>("reports/expense-breakdown"),
-      request<ApiEnvelope<Array<{ id: number; event: string; auditable_type: string; auditable_id: number; created_at: string }>>>("reports/audit-trail"),
+      request<ApiEnvelope<Array<{ code: string; name: string; tax_rate: string | number; taxable_amount: string | number; tax_amount: string | number }>>>("reports/vat-summary", { signal }),
+      request<ApiEnvelope<Array<{ code: string; name: string; tax_rate: string | number; output_taxable_amount: string | number; output_tax_amount: string | number; input_taxable_amount: string | number; input_tax_amount: string | number }>>>("reports/vat-detail", { signal }),
+      request<ApiEnvelope<Array<{ id: number; document_number: string; issue_date: string; customer: string; taxable_amount: string | number; vat_amount: string | number }>>>("reports/vat-received-details", { signal }),
+      request<ApiEnvelope<Array<{ id: number; reference: string; issue_date: string; vendor: string; vat_amount: string | number; category: string }>>>("reports/vat-paid-details", { signal }),
+      request<ApiEnvelope<Array<{ document_number: string; balance_due: string | number; bucket: string }>>>("reports/receivables-aging", { signal }),
+      request<ApiEnvelope<Array<{ document_number: string; balance_due: string | number; bucket: string }>>>("reports/payables-aging", { signal }),
+      request<ApiEnvelope<Array<{ code: string; name: string; type: string; debit_total: string | number; credit_total: string | number; balance: string | number }>>>(trialBalancePath, { signal }),
+      request<ApiEnvelope<{ lines: Array<{ code: string; name: string; type: string; net_amount: string | number }>; revenue_total: string | number; expense_total: string | number; net_profit: string | number }>>("reports/profit-loss", { signal }),
+      request<ApiEnvelope<{ assets: Array<{ code: string; name: string; type: string; balance: string | number }>; liabilities: Array<{ code: string; name: string; type: string; balance: string | number }>; equity: Array<{ code: string; name: string; type: string; balance: string | number }>; asset_total: string | number; liability_total: string | number; equity_total: string | number }>>("reports/balance-sheet", { signal }),
+      request<ApiEnvelope<Array<{ contact_id: number; contact_name: string; revenue: string | number; estimated_cost: string | number; profit: string | number }>>>("reports/profit-by-customer", { signal }),
+      request<ApiEnvelope<Array<{ item_id: number; item_name: string; quantity: string | number; revenue: string | number; estimated_cost: string | number; profit: string | number }>>>("reports/profit-by-product", { signal }),
+      request<ApiEnvelope<Array<{ category_code: string; category_name: string; total: string | number }>>>("reports/expense-breakdown", { signal }),
+      request<ApiEnvelope<Array<{ id: number; event: string; auditable_type: string; auditable_id: number; created_at: string }>>>("reports/audit-trail", { signal }),
     ]);
 
     const toArray = <T>(val: T | T[]): T[] => (Array.isArray(val) ? val : []);
@@ -3142,6 +3163,46 @@ export async function previewDocumentTemplate(template: Omit<DocumentTemplateRec
   return result.data;
 }
 
+export async function exportDocumentTemplatePdf(template: Omit<DocumentTemplateRecord, "id" | "logoAssetUrl">, documentType: string): Promise<TemplatePdfDownloadRecord> {
+  const response = await fetch(`${getWorkspaceApiBase()}/templates/export-pdf`, {
+    method: "POST",
+    cache: "no-store",
+    credentials: "include",
+    headers: {
+      Accept: "application/pdf",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: template.name,
+      document_types: template.documentTypes,
+      locale_mode: template.localeMode,
+      accent_color: template.accentColor,
+      watermark_text: template.watermarkText || null,
+      header_html: template.headerHtml || null,
+      footer_html: template.footerHtml || null,
+      settings: template.settings,
+      logo_asset_id: template.logoAssetId,
+      is_default: template.isDefault,
+      is_active: template.isActive,
+      document_type: documentType,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error((await response.text()) || "Template PDF export failed.");
+  }
+
+  const blob = await response.blob();
+  const fileNameHeader = response.headers.get("Content-Disposition") ?? "";
+  const match = /filename="?([^"]+)"?/i.exec(fileNameHeader);
+  const fileName = match?.[1] ?? `${template.name || "document-template"}.pdf`;
+
+  return {
+    fileName,
+    url: URL.createObjectURL(blob),
+  };
+}
+
 export async function sendDocument(documentId: number, payload?: { email?: string; subject?: string }): Promise<DocumentDetailRecord> {
   const result = await request<ApiEnvelope<BackendDocumentDetail>>(`documents/${documentId}/send`, {
     method: "POST",
@@ -3275,8 +3336,10 @@ export async function updateDocumentTemplate(template: Omit<DocumentTemplateReco
   return mapDocumentTemplate(result.data);
 }
 
-export async function listCompanyAssets(): Promise<CompanyAssetRecord[]> {
-  const result = await request<ApiEnvelope<BackendCompanyAsset[]>>("assets");
+export async function listCompanyAssets(options?: { mode?: WorkspaceResponseMode }): Promise<CompanyAssetRecord[]> {
+  const mode = options?.mode ?? "backend";
+  const path = mode === "preview" ? "assets?mode=preview" : "assets";
+  const result = await request<ApiEnvelope<BackendCompanyAsset[]>>(path, { expectedMode: mode });
   return result.data.map(mapCompanyAsset);
 }
 

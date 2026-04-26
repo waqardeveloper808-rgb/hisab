@@ -30,7 +30,7 @@ function toBase64(bytes: Uint8Array) {
 
 function buildPayload(invoice: DocumentCenterRecord) {
   const timestamp = `${invoice.issueDate || new Date().toISOString().slice(0, 10)}T09:30:00`;
-  const sellerName = String(invoice.customFields.seller_name_en ?? invoice.customFields.seller_name ?? "Gulf Hisab");
+  const sellerName = String(invoice.customFields.seller_name_en ?? invoice.customFields.seller_name ?? "Hisabix");
   const sellerVatNumber = String(invoice.customFields.seller_vat_number ?? invoice.customFields.vat_number ?? "");
   const fields = [
     encodeTlvField(1, sellerName),
@@ -57,7 +57,7 @@ export function ZatcaQrPanel({ invoice, compact = false }: ZatcaQrPanelProps) {
   const [qrSrc, setQrSrc] = useState(cachedQrSrc);
   const timestamp = `${invoice.issueDate || new Date().toISOString().slice(0, 10)}T09:30:00`;
   const qrSize = compact ? 128 : 152;
-  const sellerName = String(invoice.customFields.seller_name_en ?? invoice.customFields.seller_name ?? "Gulf Hisab");
+  const sellerName = String(invoice.customFields.seller_name_en ?? invoice.customFields.seller_name ?? "Hisabix");
   const sellerVatNumber = String(invoice.customFields.seller_vat_number ?? invoice.customFields.vat_number ?? "Not available");
 
   useEffect(() => {

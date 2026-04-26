@@ -18,9 +18,9 @@ import {
 } from "@/lib/workspace-api";
 
 const emptyConfig: PlatformConfigRecord = {
-  supportDisplayName: "Gulf Hisab Support",
+  supportDisplayName: "Hisabix Support",
   supportWhatsappNumber: "966500000000",
-  supportEmail: "support@gulfhisab.sa",
+  supportEmail: "support@hisabix.sa",
   freeTrialDays: 45,
   freeInvoiceLimit: 1,
   paidPlanMonthlyPriceSar: 40,

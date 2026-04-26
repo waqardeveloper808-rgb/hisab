@@ -415,7 +415,7 @@ export function InvoiceDetailWorkspace({ documentId, mode = "panel", reloadKey =
 
   return (
     <div className="space-y-3" data-inspector-document-render-surface="true" data-inspector-document-view="invoice">
-      {error ? <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div> : null}
+      {error ? <div className="rounded-xl border border-rose-200 bg-rose-50/80 px-3 py-2 text-sm text-rose-700">{error}</div> : null}
       {actionNotice ? (
         <div className={["rounded-lg px-3 py-2 text-sm", actionNotice.tone === "success" ? "border border-emerald-200 bg-emerald-50 text-emerald-800" : "border border-red-200 bg-red-50 text-red-700"].join(" ")}>
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -445,16 +445,16 @@ export function InvoiceDetailWorkspace({ documentId, mode = "panel", reloadKey =
           <div className="flex flex-wrap gap-1.5" data-inspector-issued-actions="true">
             {canIssue ? <Button size="xs" onClick={handleIssue} disabled={runningAction !== null}>{runningAction === "issue" ? "Finalize" : "Finalize"}</Button> : null}
             {canSend ? <Button size="xs" variant="secondary" onClick={() => void handleSend()} disabled={runningAction !== null}>Send</Button> : null}
-            {canSend ? <Button size="xs" variant="tertiary" onClick={() => void handleLegacyQuickSend()} disabled={runningAction !== null}>{runningAction === "send" ? "Sending" : "Quick send"}</Button> : null}
-            <Button size="xs" variant="secondary" href={openHref}>Preview</Button>
             {canEdit ? <Button size="xs" variant="secondary" href={editHref}>Edit</Button> : null}
             {canIssueAdjustments ? <Button size="xs" variant="secondary" href={mapWorkspaceHref(`/workspace/invoices/new?documentType=credit_note&sourceDocumentId=${document.id}&linkedTax=${encodeURIComponent(document.number)}`, basePath)}>Credit Note</Button> : null}
             {canIssueAdjustments ? <Button size="xs" variant="secondary" href={mapWorkspaceHref(`/workspace/invoices/new?documentType=debit_note&sourceDocumentId=${document.id}&linkedTax=${encodeURIComponent(document.number)}`, basePath)}>Debit Note</Button> : null}
             <Button size="xs" variant="secondary" href={pdfHref} linkBehavior="anchor" onClick={handleDownloadStart} disabled={runningAction !== null}>{runningAction === "download" ? "Starting PDF" : "Download"}</Button>
+            {canSend ? <Button size="xs" variant="tertiary" onClick={() => void handleLegacyQuickSend()} disabled={runningAction !== null}>{runningAction === "send" ? "Sending" : "Quick send"}</Button> : null}
             {mode === "panel" ? <Button size="xs" variant={showHistoryPanel ? "primary" : "secondary"} onClick={onToggleHistoryPanel}>{showHistoryPanel ? "Hide History" : "History"}</Button> : null}
             {canRecordPayment ? <Button size="xs" variant="secondary" onClick={() => setShowPaymentForm((current) => !current)} disabled={runningAction !== null}>{showPaymentForm ? "Close Payment" : "Record Payment"}</Button> : null}
             {!canEdit ? <Button size="xs" variant="secondary" onClick={() => setShowDuplicateModal(true)} disabled={runningAction !== null}>{runningAction === "duplicate" ? "Duplicating" : "Duplicate"}</Button> : null}
-            {mode === "panel" && onClosePreview ? <Button size="xs" variant="secondary" onClick={onClosePreview}>Close preview</Button> : null}
+            <Button size="xs" variant="secondary" href={openHref}>Open full preview</Button>
+            {mode === "panel" && onClosePreview ? <Button size="xs" variant="secondary" onClick={onClosePreview}>Close</Button> : null}
             {mode === "page" ? <Button size="xs" variant="secondary" href={registerHref}>Back</Button> : null}
           </div>
         </div>
@@ -511,7 +511,7 @@ export function InvoiceDetailWorkspace({ documentId, mode = "panel", reloadKey =
             </div>
           </div>
           {previewHtml ? (
-            <div style={{ height: "calc(100vh - 520px)", minHeight: "500px" }}>
+            <div className="min-h-[26rem] h-[min(72vh,56rem)]">
               <DocumentViewer htmlContent={previewHtml} fileName={document.number} pdfUrl={pdfHref} />
             </div>
           ) : (

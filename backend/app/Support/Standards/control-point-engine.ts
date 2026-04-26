@@ -1,7 +1,17 @@
 import { buildControlPointEngineSummary, renderControlPointEngineSummary } from "@/backend/app/Support/Standards/control-point-engine-summary";
 import { buildControlPointEnginePrecheck, buildControlPointEngineRuntime, controlPointEngineRuntime, engineRegisteredControlPoints } from "@/backend/app/Support/Standards/control-point-engine-runtime";
 import { evaluateControlPointExecution, getControlPointEvidenceSamples } from "@/backend/app/Support/Standards/control-point-execution";
+import { buildSystemMonitorControlPoints } from "@/lib/audit-engine/build-monitor-points";
+import {
+  computeSummary,
+  controlPointsForGroupUnique,
+  controlPointsForModuleId,
+  healthPercentFromSummary,
+  topCriticalFails,
+} from "@/lib/audit-engine/summary";
 import { getActualSystemMap, getPriorityModulesFromActualMap } from "@/lib/mapping-engine";
+import { MONITOR_GROUP_DEFS } from "@/lib/audit-engine/monitor-groups";
+import type { SystemMonitorControlPoint } from "@/lib/audit-engine/monitor-types";
 import type { ControlPointAuditStatus } from "@/backend/app/Support/Standards/control-point-engine-types";
 import type { ActualModuleRecord, ModuleExecutionStatus, SystemBlocker } from "@/types/system-map";
 
@@ -96,6 +106,7 @@ type SystemState = {
     partial: number;
     blocked: number;
   };
+  controlPoints: SystemMonitorControlPoint[];
   moduleHealth: Array<{
     id: string;
     name: string;
@@ -103,14 +114,33 @@ type SystemState = {
     completionPercentage: number;
     dependencies: string[];
     blockerCount: number;
+    passCount: number;
     failCount: number;
     partialCount: number;
+    blockedCount: number;
+    totalControlPoints: number;
+    healthPercent: number;
+    engineDisplayStatus: "PASS" | "FAIL" | "PARTIAL" | "BLOCKED";
+  }>;
+  groupScope: Array<{
+    id: string;
+    name: string;
+    passCount: number;
+    failCount: number;
+    partialCount: number;
+    blockedCount: number;
+    totalControlPoints: number;
+    healthPercent: number;
+    scopeLabel: string;
   }>;
   failingAreas: Array<{
     controlPointId: string;
     title: string;
     status: string;
     exactCauses: string[];
+    severity: string;
+    module: string;
+    timestamp: string;
   }>;
   priorityModules: Array<{
     id: string;
@@ -121,45 +151,86 @@ type SystemState = {
   blockers: SystemBlocker[];
 };
 
+function riskFromSummary(fail: number, partial: number, blocked: number): { level: "low" | "medium" | "high" | "critical"; score: number } {
+  const score = Math.min(100, fail * 3 + blocked * 4 + partial * 1);
+  if (fail > 0) return { level: "critical", score };
+  if (blocked > 0) return { level: "high", score };
+  if (partial > 0) return { level: "medium", score };
+  return { level: "low", score: 0 };
+}
+
 function buildLegacySystemState(): SystemState {
   const actual = getActualSystemMap();
+  const generatedAt = new Date().toISOString();
+  const controlPoints = buildSystemMonitorControlPoints(generatedAt);
+  const engineSummary = computeSummary(controlPoints);
 
   const moduleHealth = actual.modules.map((module) => {
-    const relatedRows = controlPointExecutionRows.filter((row) => row.controlPoint.linked_project_modules.includes(module.id));
+    const related = controlPointsForModuleId(controlPoints, module.id);
+    const s = computeSummary(related);
+    const total = related.length;
+    const healthPercent = healthPercentFromSummary(s, total);
+    const engineDisplayStatus: "PASS" | "FAIL" | "PARTIAL" | "BLOCKED" =
+      s.fail > 0 ? "FAIL" : s.partial > 0 ? "PARTIAL" : s.blocked > 0 ? "BLOCKED" : "PASS";
     return {
       id: module.id,
       name: module.name,
       status: module.status,
-      completionPercentage: module.completionPercentage,
+      completionPercentage: healthPercent,
       dependencies: module.dependencies,
       blockerCount: module.blockers.length,
-      failCount: relatedRows.filter((row) => row.result.status === "FAIL").length,
-      partialCount: relatedRows.filter((row) => row.result.status === "PARTIAL").length,
+      passCount: s.pass,
+      failCount: s.fail,
+      partialCount: s.partial,
+      blockedCount: s.blocked,
+      totalControlPoints: total,
+      healthPercent,
+      engineDisplayStatus,
     };
   });
 
+  const groupScope = MONITOR_GROUP_DEFS.map((g) => {
+    const unique = controlPointsForGroupUnique(controlPoints, g.modules);
+    const s = computeSummary(unique);
+    const total = unique.length;
+    return {
+      id: g.id,
+      name: g.name,
+      passCount: s.pass,
+      failCount: s.fail,
+      partialCount: s.partial,
+      blockedCount: s.blocked,
+      totalControlPoints: total,
+      healthPercent: healthPercentFromSummary(s, total),
+      scopeLabel: "Unique control points with any link to a module in this group (counted once).",
+    };
+  });
+
+  const risk = riskFromSummary(engineSummary.fail, engineSummary.partial, engineSummary.blocked);
+  const topFails = topCriticalFails(controlPoints, 10);
+
   return {
-    generatedAt: new Date().toISOString(),
-    risk: {
-      level: controlPointRiskSummary.system_risk_level,
-      score: controlPointRiskSummary.system_risk_score,
-    },
+    generatedAt,
+    risk,
     audit: {
-      total: controlPointAuditSummary.totalCount,
-      pass: controlPointAuditSummary.passCount,
-      fail: controlPointAuditSummary.failCount,
-      partial: controlPointAuditSummary.partialCount,
-      blocked: controlPointAuditSummary.blockedCount,
+      total: controlPoints.length,
+      pass: engineSummary.pass,
+      fail: engineSummary.fail,
+      partial: engineSummary.partial,
+      blocked: engineSummary.blocked,
     },
+    controlPoints,
     moduleHealth,
-    failingAreas: controlPointExecutionRows
-      .filter((row) => row.result.status !== "PASS")
-      .map((row) => ({
-        controlPointId: row.controlPoint.id,
-        title: row.controlPoint.title,
-        status: row.result.status,
-        exactCauses: row.result.failures.length ? row.result.failures : [row.result.audit_reason],
-      })),
+    groupScope,
+    failingAreas: topFails.map((row) => ({
+      controlPointId: row.id,
+      title: row.title,
+      status: row.status,
+      exactCauses: [row.root_cause_hint || row.actual_behavior],
+      severity: row.severity,
+      module: row.module,
+      timestamp: row.timestamp,
+    })),
     priorityModules: getPriorityModulesFromActualMap(actual).map((module) => ({
       id: module.id,
       name: module.name,
@@ -170,8 +241,12 @@ function buildLegacySystemState(): SystemState {
   };
 }
 
-export async function getSystemState(): Promise<SystemState> {
+export function getFreshSystemMonitorState(): SystemState {
   return buildLegacySystemState();
+}
+
+export async function getSystemState(): Promise<SystemState> {
+  return getFreshSystemMonitorState();
 }
 
 export function getControlPointRootCause(controlPointId: string) {

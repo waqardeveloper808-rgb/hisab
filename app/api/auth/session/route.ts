@@ -3,6 +3,7 @@ import {
   authSessionCookieName,
   authSessionMaxAge,
   createAuthSessionValue,
+  guestAuthSession,
   readAuthSessionOutcome,
 } from "@/lib/auth-session";
 import { resolveWorkspaceBackendContext } from "@/lib/workspace-session";
@@ -12,6 +13,32 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
   const sessionResult = await readAuthSessionOutcome(request.cookies.get(authSessionCookieName)?.value);
   const backendContext = resolveWorkspaceBackendContext(sessionResult);
+
+  if (sessionResult.status === "guest") {
+    return NextResponse.json({
+      user: {
+        id: guestAuthSession.id,
+        name: guestAuthSession.name,
+        email: guestAuthSession.email,
+        platform_role: guestAuthSession.platformRole ?? null,
+      },
+      active_company_id: null,
+      data: {
+        ...guestAuthSession,
+        user_id: guestAuthSession.userId,
+        company_id: null,
+        active_company_id: null,
+        actor_id: null,
+        backend_base_url: backendContext.backendBaseUrl,
+        backend_configured: backendContext.backendConfigured,
+        access_status: "guest",
+        auth_token: guestAuthSession.authToken,
+        workspace_backend_context: backendContext,
+      },
+      access_status: "guest",
+      reason: sessionResult.reason,
+    }, { headers: { "X-Workspace-Mode": "backend" } });
+  }
 
   if (sessionResult.status !== "ready" || ! sessionResult.session) {
     return NextResponse.json({

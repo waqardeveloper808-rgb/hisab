@@ -1,35 +1,35 @@
 import Image from "next/image";
 import Link from "next/link";
-
-const WEBSITE_PRIMARY_SRC = "/branding/gulf-hisab-main-logo.png";
-const WEBSITE_COMPACT_SRC = "/branding/gulf-hisab-compact-logo.svg";
+import { appName, iconLogoPath, mainLogoPath } from "@/lib/brand";
 
 type BrandMarkProps = {
   variant?: "primary" | "compact";
   href?: string;
   className?: string;
   label?: string;
+  imageClassName?: string;
 };
 
 export function BrandMark({
   variant = "primary",
   href = "/",
   className = "",
-  label = "Gulf Hisab home",
+  label = `${appName} home`,
+  imageClassName = "",
 }: BrandMarkProps) {
   const content = (
     <div className={["flex items-center gap-3.5 overflow-visible", className].filter(Boolean).join(" ")}>
       {variant === "compact" ? (
-        <span className="flex min-h-14 w-full shrink-0 items-start justify-center overflow-visible pt-1">
-          <Image src={WEBSITE_COMPACT_SRC} alt="Gulf Hisab compact logo" width={46} height={46} className="size-[46px] object-contain" />
+        <span className="flex min-h-12 w-full shrink-0 items-center justify-center overflow-visible">
+          <Image src={iconLogoPath} alt={`${appName} icon`} width={42} height={42} className={["size-[42px] object-contain", imageClassName].filter(Boolean).join(" ")} />
         </span>
       ) : (
         <Image
-          src={WEBSITE_PRIMARY_SRC}
-          alt="Gulf Hisab"
-          width={236}
-          height={56}
-          className="h-9 w-auto max-w-full shrink-0 object-contain md:h-10"
+          src={mainLogoPath}
+          alt={appName}
+          width={320}
+          height={96}
+          className={["h-10 w-auto max-w-full shrink-0 object-contain md:h-11", imageClassName].filter(Boolean).join(" ")}
         />
       )}
     </div>

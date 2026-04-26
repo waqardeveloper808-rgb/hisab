@@ -3,12 +3,64 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
+import { useWorkspaceAccess } from "@/components/workspace/WorkspaceAccessProvider";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { WorkspaceRoleHeader } from "@/components/workspace/WorkspaceRoleHeader";
 import { workspaceRoles } from "@/data/role-workspace";
 import { listPlatformAgents, listPlatformCustomers, listSubscriptionPlans, listSupportAccounts, type PlatformAgentRecord, type PlatformCustomerRecord, type SubscriptionPlanRecord, type SupportAccountRecord } from "@/lib/workspace-api";
 
+const previewCustomers: PlatformCustomerRecord[] = [
+  {
+    id: 1,
+    legalName: "Desert Retail Co.",
+    tradeName: "Desert Retail",
+    taxNumber: "301112223330003",
+    registrationNumber: "1010123456",
+    baseCurrency: "SAR",
+    locale: "en-SA",
+    timezone: "Asia/Riyadh",
+    isActive: true,
+    suspendedReason: "",
+    owner: { name: "Amina Saleh", email: "amina@desertretail.sa" },
+    users: [{ id: 1, name: "Amina Saleh", email: "amina@desertretail.sa", role: "owner", isActive: true }],
+    subscription: { planId: 1, status: "trialing", planCode: "zatca-monthly", planName: "Operational Plan", monthlyPriceSar: 40 },
+    referralSource: null,
+  },
+];
+
+const previewPlans: SubscriptionPlanRecord[] = [
+  {
+    id: 1,
+    code: "zatca-monthly",
+    name: "Operational Plan",
+    description: "Preview plan",
+    monthlyPriceSar: 40,
+    annualPriceSar: 400,
+    trialDays: 45,
+    invoiceLimit: null,
+    customerLimit: null,
+    accountantSeatLimit: 3,
+    featureFlags: { support_center: true },
+    marketingPoints: [],
+    isVisible: true,
+    isFree: false,
+    isPaid: true,
+    isActive: true,
+    sortOrder: 1,
+  },
+];
+
+const previewSupportAccounts: SupportAccountRecord[] = [
+  { id: 1, name: "Hisabix Support", email: "support@hisabix.sa", platformRole: "support", supportPermissions: ["platform.customers.view"], isPlatformActive: true },
+];
+
+const previewAgents: PlatformAgentRecord[] = [
+  { id: 1, name: "Rami Khaled", email: "rami@hisabix.sa", referralCode: "RAMI45", commissionRate: 20, isActive: true, referralsCount: 8, pendingCommission: 320, earnedCommission: 640 },
+];
+
 export function AdminWorkspaceHome() {
+  const access = useWorkspaceAccess();
+  const isPreview = !access;
   const [customers, setCustomers] = useState<PlatformCustomerRecord[]>([]);
   const [plans, setPlans] = useState<SubscriptionPlanRecord[]>([]);
   const [supportAccounts, setSupportAccounts] = useState<SupportAccountRecord[]>([]);
@@ -16,11 +68,19 @@ export function AdminWorkspaceHome() {
   const role = workspaceRoles.admin;
 
   useEffect(() => {
+    if (isPreview) {
+      setCustomers(previewCustomers);
+      setPlans(previewPlans);
+      setSupportAccounts(previewSupportAccounts);
+      setAgents(previewAgents);
+      return;
+    }
+
     listPlatformCustomers({}).then(setCustomers).catch((err: unknown) => { console.error('[AdminWorkspaceHome] listPlatformCustomers failed:', err); setCustomers([]); });
     listSubscriptionPlans().then(setPlans).catch((err: unknown) => { console.error('[AdminWorkspaceHome] listSubscriptionPlans failed:', err); setPlans([]); });
     listSupportAccounts().then(setSupportAccounts).catch((err: unknown) => { console.error('[AdminWorkspaceHome] listSupportAccounts failed:', err); setSupportAccounts([]); });
     listPlatformAgents({}).then(setAgents).catch((err: unknown) => { console.error('[AdminWorkspaceHome] listPlatformAgents failed:', err); setAgents([]); });
-  }, []);
+  }, [isPreview]);
 
   const subscribedCustomers = customers.filter((customer) => customer.subscription !== null).length;
   const trialingCustomers = customers.filter((customer) => customer.subscription?.status === "trialing").length;
@@ -95,6 +155,12 @@ export function AdminWorkspaceHome() {
           </div>
         </Card>
       </div>
+
+      {isPreview ? (
+        <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          Preview mode shows a controlled platform-control snapshot. Sign in with an admin account to manage live customers, plans, agents, and support operators.
+        </div>
+      ) : null}
     </div>
   );
 }

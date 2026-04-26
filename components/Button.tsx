@@ -17,9 +17,9 @@ type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "border border-primary bg-primary text-white shadow-[0_10px_22px_-16px_rgba(31,122,83,0.55)] hover:bg-primary-hover focus:ring-primary/30",
+    "border border-primary bg-primary text-white shadow-[0_10px_22px_-16px_rgba(63,174,42,0.46)] hover:bg-primary-hover active:bg-brand-dark focus:ring-primary/30",
   secondary:
-    "border border-primary-border bg-primary-soft text-ink shadow-[0_10px_24px_-22px_rgba(17,32,24,0.16)] hover:border-primary/26 hover:bg-primary-soft hover:text-primary focus:ring-primary/15",
+    "border border-primary-border bg-primary-soft text-ink shadow-[0_10px_24px_-22px_rgba(11,11,11,0.12)] hover:border-primary/26 hover:bg-white hover:text-primary focus:ring-primary/15",
   tertiary:
     "border border-transparent bg-transparent text-ink shadow-none hover:bg-primary-soft/75 hover:text-primary focus:ring-primary/12",
   muted:

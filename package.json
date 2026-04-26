@@ -14,7 +14,10 @@
     "audit:control-points:ui": "tsx tools/run-audit-engine.ts --scope=route --route=/workspace/admin/audit"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "arabic-reshaper": "^1.1.0",
     "jimp": "^1.6.1",
+    "lucide-react": "^1.11.0",
     "next": "16.2.3",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
@@ -23,6 +26,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@fontsource/noto-naskh-arabic": "^5.2.11",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

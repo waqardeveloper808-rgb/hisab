@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
+import { useWorkspaceMode } from "@/components/workspace/WorkspaceAccessProvider";
 import { validateCompanyProfile, type FieldErrors } from "@/lib/business-form-validation";
 import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
 import { mapWorkspaceHref } from "@/lib/workspace-path";
@@ -66,6 +67,7 @@ const emptyState: CompanySettingsSnapshot = {
 
 export function SettingsOverview({ section = "all" }: { section?: "company" | "accounting" | "all" }) {
   const { basePath } = useWorkspacePath();
+  const { isPreview } = useWorkspaceMode();
   const [snapshot, setSnapshot] = useState<CompanySettingsSnapshot>(emptyState);
   const [ready, setReady] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -96,7 +98,10 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
       };
 
   useEffect(() => {
-    Promise.all([getCompanySettings(), listCompanyAssets()]).then(([result, companyAssets]) => {
+    Promise.all([
+      getCompanySettings({ mode: isPreview ? "preview" : "backend" }),
+      listCompanyAssets({ mode: isPreview ? "preview" : "backend" }),
+    ]).then(([result, companyAssets]) => {
       if (result) {
         setSnapshot(result);
         setReady(true);
@@ -104,7 +109,7 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
 
       setAssets(companyAssets);
     });
-  }, []);
+  }, [isPreview]);
 
   useEffect(() => {
     if (!feedback) {
@@ -163,6 +168,12 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
   const signatureAsset = useMemo(() => assets.find((asset) => asset.usage === "signature") ?? null, [assets]);
 
   async function handleAssetUpload(usage: "logo" | "stamp" | "signature", file: File) {
+    if (isPreview) {
+      setFeedback(null);
+      setError("Sign in to save changes.");
+      return;
+    }
+
     setUploadingUsage(usage);
     setFeedback(null);
     setError(null);
@@ -188,6 +199,12 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
   }
 
   async function handleSave() {
+    if (isPreview) {
+      setFeedback(null);
+      setError("Sign in to save changes.");
+      return;
+    }
+
     const nextErrors = validateCompanyProfile(snapshot.company);
     if (Object.keys(nextErrors).length > 0) {
       setTouchedFields({
@@ -218,6 +235,11 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
       const result = await updateCompanySettings(snapshot);
       setSnapshot(result);
       setReady(true);
+      try {
+        window.localStorage.removeItem("hisabix:onboarding-warning");
+      } catch {
+        // Ignore storage failures.
+      }
       setFeedback({
         kind: "save",
         text: "Company settings were saved successfully.",
@@ -240,10 +262,11 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
             <p className="mt-2 text-sm leading-6 text-muted">{heading.description}</p>
           </div>
           <div className="flex flex-wrap gap-3">
+            <Button href={mapWorkspaceHref("/workspace/settings/profile", basePath)} variant="secondary">User profile</Button>
             <Button href={mapWorkspaceHref("/workspace/settings/company", basePath)} variant={section === "company" ? "primary" : "secondary"}>Company profile</Button>
             <Button href={mapWorkspaceHref("/workspace/settings/accounting", basePath)} variant={section === "accounting" ? "primary" : "secondary"}>Accounting settings</Button>
             <Button href={mapWorkspaceHref("/workspace/settings/templates", basePath)} variant="secondary">Open templates</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? "Saving settings" : "Save settings"}</Button>
+            <Button onClick={handleSave} disabled={saving || isPreview}>{saving ? "Saving settings" : "Save settings"}</Button>
           </div>
         </div>
         <div className="mt-3 flex items-center justify-between text-xs text-muted">
@@ -251,6 +274,12 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
           <Link href={mapWorkspaceHref("/workspace/help/faq", basePath)} className="font-semibold text-primary hover:text-primary-hover">Settings guidance</Link>
         </div>
       </Card>
+
+      {isPreview ? (
+        <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          Preview mode keeps the company profile visible with demo-safe values. Sign in to save changes or upload assets.
+        </div>
+      ) : null}
 
       <div className={["grid gap-3", showCompany && showAccounting ? "xl:grid-cols-2" : ""].join(" ")}>
         {showCompany ? <Card className="rounded-xl bg-white/95 p-4">
@@ -274,7 +303,7 @@ export function SettingsOverview({ section = "all" }: { section?: "company" | "a
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     className="sr-only"
-                    disabled={uploadingUsage !== null}
+                    disabled={uploadingUsage !== null || isPreview}
                     onChange={(event) => {
                       const file = event.target.files?.[0];
                       if (file) {

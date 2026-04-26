@@ -1,0 +1,4 @@
+components/system-monitor/SystemMonitor.tsx
+lib/audit-engine/control-point-summary-engine.ts
+lib/audit-engine/control-point-summary-engine.test.ts
+tools/capture-system-monitor-header-dual-summary-shots.ts

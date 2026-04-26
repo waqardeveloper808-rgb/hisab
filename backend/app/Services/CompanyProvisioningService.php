@@ -120,7 +120,7 @@ class CompanyProvisioningService
 
             foreach ([
                 [
-                    'name' => 'Classic Corporate',
+                    'name' => 'Standard',
                     'accent_color' => '#1f7a53',
                             'uuid' => (string) Str::uuid(),
                     'is_default' => true,
@@ -137,7 +137,7 @@ class CompanyProvisioningService
                     ],
                 ],
                 [
-                    'name' => 'Modern Carded',
+                    'name' => 'Modern',
                     'accent_color' => '#0f766e',
                     'is_default' => false,
                     'settings' => [
@@ -153,7 +153,7 @@ class CompanyProvisioningService
                     ],
                 ],
                 [
-                    'name' => 'Industrial / Supply Chain',
+                    'name' => 'Compact',
                     'accent_color' => '#1f4f63',
                     'is_default' => false,
                     'settings' => [

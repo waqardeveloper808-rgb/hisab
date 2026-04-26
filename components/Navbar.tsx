@@ -8,13 +8,15 @@ import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 
 const links = [
-  { href: "/#products", label: "Products", sectionId: "products" },
   { href: "/#pricing", label: "Pricing", sectionId: "pricing" },
-  { href: "/#help", label: "Help", sectionId: "help" },
+  { href: "/#modules", label: "Modules", sectionId: "modules" },
+  { href: "/#trust", label: "Trust", sectionId: "trust" },
+  { href: "/#faq", label: "FAQ", sectionId: "faq" },
 ];
 
 const devEntryLinks = [
   { href: "/workspace/user", label: "Enter Workspace" },
+  { href: "/workspace-v2/user", label: "Workspace V2" },
   { href: "/system/master-design", label: "Open System Monitor" },
 ];
 
@@ -22,6 +24,7 @@ export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const showDevEntries = process.env.NODE_ENV !== "production";
+  const isLanding = pathname === "/";
 
   function scrollToSection(sectionId: string) {
     const section = document.getElementById(sectionId);
@@ -37,7 +40,11 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-0 z-40 border-b border-line/70 bg-white/95 backdrop-blur-xl">
       <Container className="py-2.5">
         <div className="flex items-center justify-between gap-3 lg:gap-5">
-          <BrandMark className="items-center" />
+          {isLanding ? (
+            <div className="h-11 w-[11.5rem] shrink-0" aria-hidden="true" />
+          ) : (
+            <BrandMark className="items-center" />
+          )}
 
           <nav aria-label="Primary" className="hidden items-center gap-1 rounded-2xl border border-line/80 bg-white/90 p-1 text-sm font-medium text-muted shadow-xs md:flex">
             {links.map((link) => (
@@ -99,6 +106,7 @@ export function Navbar() {
         {mobileOpen ? (
           <div className="mt-3 rounded-3xl border border-line bg-white p-3 shadow-card md:hidden">
             <nav aria-label="Mobile primary" className="flex flex-col gap-1 text-sm font-medium text-muted">
+              {isLanding ? <BrandMark className="mb-2 items-center" imageClassName="h-14 md:h-14" /> : null}
               {links.map((link) => (
                 link.sectionId && pathname === "/" ? (
                   <button key={link.href} type="button" onClick={() => scrollToSection(link.sectionId)} className="rounded-2xl px-4 py-3 text-left hover:bg-primary-soft hover:text-ink">

@@ -1,25 +1,34 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import { AppFrame } from "@/components/AppFrame";
+import { appName, iconLogoPath } from "@/lib/brand";
 import { buildWhatsAppHref, getProductConfig } from "@/lib/product-config";
 import "./globals.css";
 
-const manrope = Manrope({
-  variable: "--font-manrope",
+const poppins = Poppins({
+  variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  variable: "--font-body",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
+  applicationName: appName,
   title: {
-    default: "Gulf Hisab",
-    template: "%s | Gulf Hisab",
+    default: appName,
+    template: `%s | ${appName}`,
   },
   description:
-    "ZATCA-Compliant Invoicing For Your Business, with VAT reports, WhatsApp support, and a fast free-trial path.",
+    "Hisabix is a clean finance workspace for invoicing, VAT visibility, reporting, and direct support.",
   icons: {
-    icon: "/branding/gulf-hisab-compact-logo.svg",
-    shortcut: "/branding/gulf-hisab-compact-logo.svg",
-    apple: "/branding/gulf-hisab-compact-logo.svg",
+    icon: iconLogoPath,
+    shortcut: iconLogoPath,
+    apple: iconLogoPath,
   },
 };
 
@@ -31,7 +40,7 @@ export default async function RootLayout({
   const productConfig = await getProductConfig();
 
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${manrope.variable} h-full antialiased`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} ${inter.variable} h-full antialiased`}>
       <body className="min-h-full bg-canvas text-ink">
         <AppFrame supportHref={buildWhatsAppHref(productConfig.supportWhatsappNumber)}>{children}</AppFrame>
       </body>

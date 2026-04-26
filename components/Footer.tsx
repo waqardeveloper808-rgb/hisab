@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/BrandMark";
 import { Container } from "@/components/Container";
+import { appName } from "@/lib/brand";
 
 type FooterProps = {
   supportHref: string;
@@ -9,7 +10,7 @@ type FooterProps = {
 const productLinks = [
   { href: "/products", label: "Products" },
   { href: "/plans", label: "Pricing" },
-  { href: "/helpdesk-ai", label: "Help center" },
+  { href: "/help", label: "Help center" },
   { href: "/workspace", label: "Workspace" },
 ];
 
@@ -19,13 +20,13 @@ const accountLinks = [
 ];
 
 const supportLinks = [
-  { href: "/helpdesk-ai", label: "Public help center" },
+  { href: "/help", label: "Public help center" },
   { href: "/workspace/help", label: "Workspace help" },
 ];
 
 export function Footer({ supportHref }: FooterProps) {
   return (
-    <footer id="help" className="border-t border-line bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(238,245,239,0.75))]">
+    <footer id="help" className="border-t border-line bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(245,245,245,0.9))]">
       <Container className="py-12 sm:py-16">
         <div className="grid gap-8 rounded-[2rem] border border-line bg-white p-6 shadow-card md:grid-cols-[1.2fr_0.85fr_0.85fr_1fr] md:p-8">
           <div className="max-w-sm">
@@ -87,7 +88,7 @@ export function Footer({ supportHref }: FooterProps) {
         </div>
 
         <div className="mt-8 flex flex-col gap-2 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 Gulf Hisab. ZATCA-compliant invoicing for Saudi businesses.</p>
+          <p>© 2026 {appName}. ZATCA-compliant invoicing for Saudi businesses.</p>
           <p>Landing site, workspace, and direct support in one entry point.</p>
         </div>
       </Container>

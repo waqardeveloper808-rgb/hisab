@@ -9,14 +9,14 @@ export default function HelpPage() {
       <Card className="rounded-xl border-white/70 bg-white/95 p-6 shadow-[0_28px_54px_-38px_rgba(17,32,24,0.2)] backdrop-blur-xl">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Help</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-ink">Get answers without disrupting the work in front of you.</h1>
-        <p className="mt-4 max-w-3xl text-base leading-7 text-muted">Start with the FAQ, move to AI help when you need faster guidance, and keep support separate from the transaction itself.</p>
+        <p className="mt-4 max-w-3xl text-base leading-7 text-muted">Start with structured help categories, search the FAQ when you need a fast answer, and move to AI or support only when the workflow still needs help.</p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Button href="/workspace/help/ai">Open AI help</Button>
           <Button href="/workspace/help/faq" variant="secondary">Browse FAQ</Button>
         </div>
       </Card>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <Link href="/workspace/help/faq">
           <Card className="rounded-xl bg-white/95 p-6 hover:border-primary/25">
             <p className="text-sm font-semibold text-primary">FAQ</p>
@@ -29,6 +29,13 @@ export default function HelpPage() {
             <p className="text-sm font-semibold text-primary">AI help</p>
             <h2 className="mt-2 text-2xl font-semibold text-ink">Ask for guided help</h2>
             <p className="mt-3 text-sm leading-6 text-muted">Use a focused entry point for workflow questions without leaving the workspace.</p>
+          </Card>
+        </Link>
+        <Link href="/help">
+          <Card className="rounded-xl bg-white/95 p-6 hover:border-primary/25">
+            <p className="text-sm font-semibold text-primary">Public help</p>
+            <h2 className="mt-2 text-2xl font-semibold text-ink">Open the help center</h2>
+            <p className="mt-3 text-sm leading-6 text-muted">View setup, invoicing, VAT, accounting, inventory, and support guidance from the public support surface.</p>
           </Card>
         </Link>
       </div>

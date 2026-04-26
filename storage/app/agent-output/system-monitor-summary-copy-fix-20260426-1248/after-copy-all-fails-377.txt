@@ -1,0 +1,387 @@
+GROUP: Core System
+CP-ID | Status | Risk | Module | Title | Timestamp
+CP-ACC-010 | fail | critical | vat | Accounting Engine proof expectation - documents and inventory create traceable journal impacts | 2026-04-26T09:49:18.592Z
+CP-TAX-001 | fail | critical | vat | Tax / VAT Engine feature - VAT calculation | 2026-04-26T09:49:18.592Z
+CP-TAX-002 | fail | critical | vat | Tax / VAT Engine feature - VAT summary and detail | 2026-04-26T09:49:18.592Z
+CP-TAX-003 | fail | critical | vat | Tax / VAT Engine feature - country-owned decision rules | 2026-04-26T09:49:18.592Z
+CP-TAX-004 | fail | critical | vat | Tax / VAT Engine proof expectation - VAT outputs reflect posted truth | 2026-04-26T09:49:18.592Z
+CP-TAX-005 | fail | critical | vat | Tax / VAT Engine proof expectation - customer origin affects tax treatment | 2026-04-26T09:49:18.592Z
+CP-TAX-006 | fail | critical | vat | Tax / VAT Engine UI expectation - VAT dashboard | 2026-04-26T09:49:18.592Z
+CP-TAX-007 | fail | critical | vat | Tax / VAT Engine UI expectation - summary and detail views | 2026-04-26T09:49:18.592Z
+CP-TAX-008 | fail | critical | vat | VAT Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-TAX-009 | fail | critical | vat | VAT codes and document context must persist to VAT detail output | 2026-04-26T09:49:18.592Z
+CP-TAX-010 | fail | critical | vat | Buyer VAT and address requirements on tax invoices | 2026-04-26T09:49:18.592Z
+CP-TAX-011 | fail | critical | vat | tax category must resolve | 2026-04-26T09:49:18.592Z
+CP-TAX-012 | fail | critical | vat | rate math must reconcile with line totals | 2026-04-26T09:49:18.592Z
+CP-IVC-001 | fail | critical | vat | Invoice Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-IVC-002 | fail | critical | vat | Invoice number must map to journal lines and ledger queries | 2026-04-26T09:49:18.592Z
+CP-IVC-003 | fail | critical | vat | Required customer data present | 2026-04-26T09:49:18.592Z
+CP-IVC-004 | fail | critical | vat | line items valid | 2026-04-26T09:49:18.592Z
+CP-IVC-005 | fail | critical | vat | tax rules calculable | 2026-04-26T09:49:18.592Z
+CP-INV-009 | fail | critical | accounting | Inventory Engine proof expectation - inventory movement affects accounting and workflow proof | 2026-04-26T09:49:18.592Z
+CP-AUD-006 | fail | critical | accounting | Proof Layer feature - workflow proof scripts | 2026-04-26T09:49:18.592Z
+CP-AUD-007 | fail | critical | accounting | Proof Layer feature - UI/API evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-008 | fail | critical | accounting | Proof Layer feature - failure diagnostics | 2026-04-26T09:49:18.592Z
+CP-AUD-009 | fail | critical | accounting | Proof Layer proof expectation - critical flows have reviewable evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-010 | fail | critical | accounting | Proof Layer UI expectation - control dashboard reflects proof health | 2026-04-26T09:49:18.592Z
+CP-AUD-014 | fail | critical | accounting | Traceability Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-AUD-015 | fail | critical | accounting | Every cross-module post stores source_type, source_id, and document context | 2026-04-26T09:49:18.592Z
+CP-AUD-016 | fail | critical | accounting | No orphan settlement lines | 2026-04-26T09:49:18.592Z
+CP-AUD-017 | fail | critical | accounting | linked document numbers must be queryable | 2026-04-26T09:49:18.592Z
+CP-UX-001 | fail | critical | ux_validation | UI / UX Shell feature - dense operational shell | 2026-04-26T09:49:18.592Z
+CP-UX-002 | fail | critical | ux_validation | UI / UX Shell feature - truthful route ownership | 2026-04-26T09:49:18.592Z
+CP-UX-003 | fail | critical | ux_validation | UI / UX Shell feature - master design control tab | 2026-04-26T09:49:18.592Z
+CP-UX-004 | fail | critical | ux_validation | UI / UX Shell proof expectation - shell exposes real implemented modules | 2026-04-26T09:49:18.592Z
+CP-UX-005 | fail | critical | ux_validation | UI / UX Shell UI expectation - no placeholder overclaim for shipped modules | 2026-04-26T09:49:18.592Z
+CP-UX-006 | fail | critical | ux_validation | UI / UX Shell UI expectation - live control center route | 2026-04-26T09:49:18.592Z
+CP-USR-001 | fail | critical | workspace | Identity & Workspace feature - authenticated workspace session | 2026-04-26T09:49:18.592Z
+CP-USR-002 | fail | critical | workspace | Identity & Workspace feature - role-aware navigation | 2026-04-26T09:49:18.592Z
+CP-USR-003 | fail | critical | workspace | Identity & Workspace feature - first-class master design route | 2026-04-26T09:49:18.592Z
+CP-USR-004 | fail | critical | workspace | Identity & Workspace proof expectation - route opens under workspace shell | 2026-04-26T09:49:18.592Z
+CP-USR-005 | fail | critical | workspace | Identity & Workspace proof expectation - navigation exposes control center | 2026-04-26T09:49:18.592Z
+CP-USR-006 | fail | critical | workspace | Identity & Workspace UI expectation - visible master design tab | 2026-04-26T09:49:18.592Z
+CP-USR-007 | fail | critical | workspace | Identity & Workspace UI expectation - dedicated route ownership | 2026-04-26T09:49:18.592Z
+CP-USR-008 | fail | critical | workspace | Identity & Workspace UI expectation - no catch-all placeholder for shipped control pages | 2026-04-26T09:49:18.592Z
+CP-USR-009 | fail | critical | workspace | User Workspace priority - Keep receivables, payables, and VAT visible without leaving the main workflow. | 2026-04-26T09:49:18.592Z
+CP-USR-010 | fail | critical | workspace | User Workspace priority - Move from task to module directly instead of routing through abstract overview pages. | 2026-04-26T09:49:18.592Z
+CP-USR-011 | fail | critical | workspace | User Workspace priority - Keep every daily action one click away from the role home and sidebar. | 2026-04-26T09:49:18.592Z
+CP-USR-012 | fail | critical | workspace | User Workspace sidebar group - Dashboard | 2026-04-26T09:49:18.592Z
+CP-USR-013 | fail | critical | workspace | User Workspace sidebar group - Sales | 2026-04-26T09:49:18.592Z
+CP-USR-014 | fail | critical | workspace | User Workspace sidebar group - Purchases | 2026-04-26T09:49:18.592Z
+CP-USR-015 | fail | critical | workspace | User Workspace sidebar group - Inventory | 2026-04-26T09:49:18.592Z
+CP-USR-016 | fail | critical | workspace | User Workspace sidebar group - Accounting | 2026-04-26T09:49:18.592Z
+CP-USR-017 | fail | critical | workspace | User Workspace sidebar group - Banking | 2026-04-26T09:49:18.592Z
+CP-USR-018 | fail | critical | workspace | User Workspace sidebar group - VAT / Compliance | 2026-04-26T09:49:18.592Z
+CP-USR-019 | fail | critical | workspace | User Workspace sidebar group - Reports | 2026-04-26T09:49:18.592Z
+CP-USR-020 | fail | critical | workspace | User Workspace sidebar group - Templates | 2026-04-26T09:49:18.592Z
+CP-USR-021 | fail | critical | workspace | User Workspace sidebar group - Settings | 2026-04-26T09:49:18.592Z
+CP-ADM-001 | fail | critical | workspace | Agent Admin highlight - Commission visibility | 2026-04-26T09:49:18.592Z
+CP-ADM-002 | fail | critical | workspace | Agent Admin highlight - Referral search | 2026-04-26T09:49:18.592Z
+CP-ADM-003 | fail | critical | workspace | Agent Admin highlight - Active and inactive control | 2026-04-26T09:49:18.592Z
+CP-ADM-004 | fail | critical | workspace | Customers highlight - Company status control | 2026-04-26T09:49:18.592Z
+CP-ADM-005 | fail | critical | workspace | Customers highlight - Subscription visibility | 2026-04-26T09:49:18.592Z
+CP-ADM-006 | fail | critical | workspace | Customers highlight - Linked user inspection | 2026-04-26T09:49:18.592Z
+CP-ADM-007 | fail | critical | workspace | Plans highlight - Live pricing values | 2026-04-26T09:49:18.592Z
+CP-ADM-008 | fail | critical | workspace | Plans highlight - Trial and support settings | 2026-04-26T09:49:18.592Z
+CP-ADM-009 | fail | critical | workspace | Plans highlight - Marketing points stay synced to the site | 2026-04-26T09:49:18.592Z
+CP-ADM-010 | fail | critical | workspace | Admin Workspace priority - Keep customer, subscription, and support-account decisions grounded in live platform state. | 2026-04-26T09:49:18.592Z
+CP-ADM-011 | fail | critical | workspace | Admin Workspace priority - Separate platform control from the operating workspace used by customers. | 2026-04-26T09:49:18.592Z
+CP-ADM-012 | fail | critical | workspace | Admin Workspace priority - Make route quality and governance visible without burying them under generic platform labels. | 2026-04-26T09:49:18.592Z
+CP-ADM-013 | fail | critical | workspace | Admin Workspace sidebar group - Platform Control | 2026-04-26T09:49:18.592Z
+CP-ADM-014 | fail | critical | workspace | Admin Workspace sidebar group - Commercial Operations | 2026-04-26T09:49:18.592Z
+CP-ADM-015 | fail | critical | workspace | Admin Workspace sidebar group - Access / Governance | 2026-04-26T09:49:18.592Z
+CP-ADM-016 | fail | critical | workspace | Admin Workspace sidebar group - AI Review | 2026-04-26T09:49:18.592Z
+CP-ADM-017 | fail | critical | workspace | Support Accounts highlight - Activation control | 2026-04-26T09:49:18.592Z
+CP-ADM-018 | fail | critical | workspace | Support Accounts highlight - Permission assignment | 2026-04-26T09:49:18.592Z
+CP-ADM-019 | fail | critical | workspace | Support Accounts highlight - Support account lifecycle | 2026-04-26T09:49:18.592Z
+CP-AST-001 | fail | critical | workspace | Assistant Workspace priority - Keep follow-up, onboarding, and help intake visible in the same workspace. | 2026-04-26T09:49:18.592Z
+CP-AST-002 | fail | critical | workspace | Assistant Workspace priority - Use operational queues and customer health signals instead of vague support placeholders. | 2026-04-26T09:49:18.592Z
+CP-AST-003 | fail | critical | workspace | Assistant Workspace priority - Move directly from issue context into the next customer-facing action. | 2026-04-26T09:49:18.592Z
+CP-AST-004 | fail | critical | workspace | Assistant Workspace sidebar group - Support Queue | 2026-04-26T09:49:18.592Z
+CP-AST-005 | fail | critical | workspace | Assistant Workspace sidebar group - Customer Success | 2026-04-26T09:49:18.592Z
+CP-AST-006 | fail | critical | workspace | Assistant Workspace sidebar group - Knowledge / Escalations | 2026-04-26T09:49:18.592Z
+CP-AST-007 | fail | critical | workspace | Help highlight - Help stays available but quiet | 2026-04-26T09:49:18.592Z
+CP-AST-008 | fail | critical | workspace | Help highlight - Daily work does not compete with support content | 2026-04-26T09:49:18.592Z
+CP-AST-009 | fail | critical | workspace | Help highlight - Business language stays consistent across guidance | 2026-04-26T09:49:18.592Z
+CP-ACP-001 | fail | critical | workspace | Agent Workspace priority - Keep commercial follow-up and account ownership visible, not buried inside generic partner pages. | 2026-04-26T09:49:18.592Z
+CP-ACP-002 | fail | critical | workspace | Agent Workspace priority - Make leads, outreach, and assigned-client actions obvious from the first screen. | 2026-04-26T09:49:18.592Z
+CP-ACP-003 | fail | critical | workspace | Agent Workspace priority - Keep pipeline actions tied to the real signup and referral flow. | 2026-04-26T09:49:18.592Z
+CP-ACP-004 | fail | critical | workspace | Agent Workspace sidebar group - Pipeline | 2026-04-26T09:49:18.592Z
+CP-ACP-005 | fail | critical | workspace | Agent Workspace sidebar group - Outreach | 2026-04-26T09:49:18.592Z
+CP-ACP-006 | fail | critical | workspace | Agents highlight - Referral link ready to share | 2026-04-26T09:49:18.592Z
+CP-ACP-007 | fail | critical | workspace | Agents highlight - Signups and commissions stay visible | 2026-04-26T09:49:18.592Z
+CP-ACP-008 | fail | critical | workspace | Agents highlight - Partner sales can be measured without exports | 2026-04-26T09:49:18.592Z
+CP-ACP-009 | fail | critical | workspace | Users highlight - Seat usage stays visible | 2026-04-26T09:49:18.592Z
+CP-ACP-010 | fail | critical | workspace | Users highlight - Role changes are controlled | 2026-04-26T09:49:18.592Z
+CP-ACP-011 | fail | critical | workspace | Users highlight - Internal user access stays simple | 2026-04-26T09:49:18.592Z
+CP-VAL-004 | fail | critical | ux_validation | Import Engine proof expectation - imported rows feed operational modules correctly | 2026-04-26T09:49:18.592Z
+CP-SEC-001 | fail | critical | security | API Layer processing contract | 2026-04-26T09:49:18.592Z
+CP-SEC-002 | fail | critical | security | Endpoints must return sufficient identifiers for follow-up report proof | 2026-04-26T09:49:18.592Z
+CP-SEC-003 | fail | critical | security | Authorization headers required | 2026-04-26T09:49:18.592Z
+CP-SEC-004 | fail | critical | security | payload schema must be valid | 2026-04-26T09:49:18.592Z
+CP-SEC-005 | fail | critical | security | resource scoping must hold | 2026-04-26T09:49:18.592Z
+CP-TMP-001 | fail | critical | document | Template Engine feature - template CRUD | 2026-04-26T09:49:18.592Z
+CP-TMP-002 | fail | critical | document | Template Engine feature - section order | 2026-04-26T09:49:18.592Z
+CP-TMP-003 | fail | critical | document | Template Engine feature - asset assignment | 2026-04-26T09:49:18.592Z
+CP-TMP-004 | fail | critical | document | Template Engine feature - preview parity | 2026-04-26T09:49:18.592Z
+CP-TMP-005 | fail | critical | document | Template Engine proof expectation - template changes affect live document output | 2026-04-26T09:49:18.592Z
+CP-TMP-006 | fail | critical | document | Template Engine UI expectation - dedicated template dashboard | 2026-04-26T09:49:18.592Z
+CP-TMP-007 | fail | critical | document | Template Engine UI expectation - real editing canvas | 2026-04-26T09:49:18.592Z
+CP-TMP-008 | fail | critical | document | Template Engine UI expectation - no fake family diversity | 2026-04-26T09:49:18.592Z
+CP-DOC-001 | fail | critical | vat | Document Engine feature - draft and finalize workflow | 2026-04-26T09:49:18.592Z
+CP-DOC-002 | fail | critical | vat | Document Engine feature - document preview and PDF | 2026-04-26T09:49:18.592Z
+CP-DOC-003 | fail | critical | vat | Document Engine feature - credit and debit note support | 2026-04-26T09:49:18.592Z
+CP-DOC-004 | fail | critical | vat | Document Engine proof expectation - issue/pay/render flow is evidenced | 2026-04-26T09:49:18.592Z
+CP-DOC-005 | fail | critical | vat | Document Engine proof expectation - preview and PDF match the same contract | 2026-04-26T09:49:18.592Z
+CP-DOC-006 | fail | critical | vat | Document Engine UI expectation - real registers | 2026-04-26T09:49:18.592Z
+CP-DOC-007 | fail | critical | vat | Document Engine UI expectation - real create and detail pages | 2026-04-26T09:49:18.592Z
+CP-DOC-008 | fail | critical | vat | Document Engine UI expectation - split preview drill-down | 2026-04-26T09:49:18.592Z
+CP-XMD-003 | fail | critical | vat | Country Service Architecture feature - active KSA product | 2026-04-26T09:49:18.592Z
+CP-XMD-004 | fail | critical | vat | Country Service Architecture feature - France readiness boundary | 2026-04-26T09:49:18.592Z
+CP-XMD-005 | fail | critical | vat | Country Service Architecture feature - future country slots | 2026-04-26T09:49:18.592Z
+CP-XMD-006 | fail | critical | vat | Country Service Architecture proof expectation - country-specific logic is attributable | 2026-04-26T09:49:18.592Z
+CP-XMD-007 | fail | critical | vat | Country Service Architecture UI expectation - country readiness shown in control center | 2026-04-26T09:49:18.592Z
+CP-XMD-008 | fail | critical | accounting | End-to-End Workflow Proof feature - company to document to payment to reports flow | 2026-04-26T09:49:18.592Z
+CP-XMD-009 | fail | critical | accounting | End-to-End Workflow Proof feature - stored proof artifacts | 2026-04-26T09:49:18.592Z
+CP-XMD-010 | fail | critical | accounting | End-to-End Workflow Proof feature - control dashboard status | 2026-04-26T09:49:18.592Z
+CP-XMD-011 | fail | critical | accounting | End-to-End Workflow Proof proof expectation - practical end-to-end flow is evidenced | 2026-04-26T09:49:18.592Z
+CP-XMD-012 | fail | critical | accounting | End-to-End Workflow Proof UI expectation - control center shows workflow readiness and remaining work | 2026-04-26T09:49:18.592Z
+CP-XMD-013 | fail | critical | accounting | Integrity Enforcement Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-XMD-014 | fail | critical | accounting | Must verify invoice-level linkage for allocated payment lines | 2026-04-26T09:49:18.592Z
+CP-XMD-015 | fail | critical | accounting | Balanced entry validation | 2026-04-26T09:49:18.592Z
+CP-XMD-016 | fail | critical | accounting | coverage validation | 2026-04-26T09:49:18.592Z
+CP-XMD-017 | fail | critical | accounting | traceability validation | 2026-04-26T09:49:18.592Z
+CP-XMD-018 | fail | critical | accounting | report visibility validation | 2026-04-26T09:49:18.592Z
+CP-BRD-001 | fail | critical | ux_validation | Users highlight - Seat usage stays visible | 2026-04-26T09:49:18.592Z
+CP-BRD-002 | fail | critical | ux_validation | Users highlight - Role changes are controlled | 2026-04-26T09:49:18.592Z
+CP-BRD-003 | fail | critical | ux_validation | Users highlight - Internal user access stays simple | 2026-04-26T09:49:18.592Z
+CP-BRD-004 | fail | critical | document | Template assets must stay assigned through one contract | 2026-04-26T09:49:18.592Z
+CP-COM-001 | fail | critical | document | Communication processing contract | 2026-04-26T09:49:18.592Z
+CP-COM-002 | fail | critical | document | Communication traceability | 2026-04-26T09:49:18.592Z
+CP-COM-003 | fail | critical | document | Communication required recipient validation | 2026-04-26T09:49:18.592Z
+CP-COM-004 | fail | critical | document | Communication template resolution | 2026-04-26T09:49:18.592Z
+CP-COM-005 | fail | critical | document | Communication dispatch attempts | 2026-04-26T09:49:18.592Z
+CP-COM-006 | fail | critical | document | Communication retry bounds | 2026-04-26T09:49:18.592Z
+CP-COM-007 | fail | critical | document | Communication duplicate prevention | 2026-04-26T09:49:18.592Z
+CP-COM-008 | fail | critical | document | Communication source timeline | 2026-04-26T09:49:18.592Z
+CP-COM-009 | fail | critical | document | Document send integration | 2026-04-26T09:49:18.592Z
+CP-COM-010 | fail | critical | document | In-app event mirroring | 2026-04-26T09:49:18.592Z
+CP-COM-011 | fail | critical | document | Communication learning persistence | 2026-04-26T09:49:18.592Z
+CP-COM-012 | fail | critical | document | Communication API ownership | 2026-04-26T09:49:18.592Z
+CP-COM-013 | fail | critical | document | Communication register UI | 2026-04-26T09:49:18.592Z
+CP-COM-014 | fail | critical | document | Invoice detail send dialog and timeline | 2026-04-26T09:49:18.592Z
+CP-COM-015 | fail | critical | document | Communication proof expectation | 2026-04-26T09:49:18.592Z
+CP-04 | fail | critical | accounting | Open source document routing | 2026-04-26T09:49:18.592Z
+CP-05 | fail | critical | document | Document download validity | 2026-04-26T09:49:18.592Z
+CP-06 | fail | critical | document | Date rendering uniqueness | 2026-04-26T09:49:18.592Z
+CP-07 | fail | critical | document | Preview close action availability | 2026-04-26T09:49:18.592Z
+CP-11 | fail | critical | document | Table alternate row shading | 2026-04-26T09:49:18.592Z
+CP-13 | fail | critical | document | Template bilingual compliance | 2026-04-26T09:49:18.592Z
+CP-14 | fail | critical | document | Logo, stamp, and signature asset rendering | 2026-04-26T09:49:18.592Z
+CP-15 | fail | critical | document | Preview and PDF parity | 2026-04-26T09:49:18.592Z
+CP-16 | fail | critical | vat | ZATCA field validation | 2026-04-26T09:49:18.592Z
+CP-17 | fail | critical | vat | Saudi national address support | 2026-04-26T09:49:18.592Z
+CP-18 | fail | critical | document | QR, XML, and PDF hooks | 2026-04-26T09:49:18.592Z
+
+GROUP: Finance Engines
+CP-ID | Status | Risk | Module | Title | Timestamp
+CP-ACC-010 | fail | critical | vat | Accounting Engine proof expectation - documents and inventory create traceable journal impacts | 2026-04-26T09:49:18.592Z
+CP-TAX-001 | fail | critical | vat | Tax / VAT Engine feature - VAT calculation | 2026-04-26T09:49:18.592Z
+CP-TAX-002 | fail | critical | vat | Tax / VAT Engine feature - VAT summary and detail | 2026-04-26T09:49:18.592Z
+CP-TAX-003 | fail | critical | vat | Tax / VAT Engine feature - country-owned decision rules | 2026-04-26T09:49:18.592Z
+CP-TAX-004 | fail | critical | vat | Tax / VAT Engine proof expectation - VAT outputs reflect posted truth | 2026-04-26T09:49:18.592Z
+CP-TAX-005 | fail | critical | vat | Tax / VAT Engine proof expectation - customer origin affects tax treatment | 2026-04-26T09:49:18.592Z
+CP-TAX-006 | fail | critical | vat | Tax / VAT Engine UI expectation - VAT dashboard | 2026-04-26T09:49:18.592Z
+CP-TAX-007 | fail | critical | vat | Tax / VAT Engine UI expectation - summary and detail views | 2026-04-26T09:49:18.592Z
+CP-TAX-008 | fail | critical | vat | VAT Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-TAX-009 | fail | critical | vat | VAT codes and document context must persist to VAT detail output | 2026-04-26T09:49:18.592Z
+CP-TAX-010 | fail | critical | vat | Buyer VAT and address requirements on tax invoices | 2026-04-26T09:49:18.592Z
+CP-TAX-011 | fail | critical | vat | tax category must resolve | 2026-04-26T09:49:18.592Z
+CP-TAX-012 | fail | critical | vat | rate math must reconcile with line totals | 2026-04-26T09:49:18.592Z
+CP-IVC-001 | fail | critical | vat | Invoice Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-IVC-002 | fail | critical | vat | Invoice number must map to journal lines and ledger queries | 2026-04-26T09:49:18.592Z
+CP-IVC-003 | fail | critical | vat | Required customer data present | 2026-04-26T09:49:18.592Z
+CP-IVC-004 | fail | critical | vat | line items valid | 2026-04-26T09:49:18.592Z
+CP-IVC-005 | fail | critical | vat | tax rules calculable | 2026-04-26T09:49:18.592Z
+CP-INV-009 | fail | critical | accounting | Inventory Engine proof expectation - inventory movement affects accounting and workflow proof | 2026-04-26T09:49:18.592Z
+CP-AUD-002 | fail | critical | workspace | Evidence law - data_proof | 2026-04-26T09:49:18.592Z
+CP-AUD-003 | fail | critical | workspace | Evidence law - journal_ledger_report_output | 2026-04-26T09:49:18.592Z
+CP-AUD-004 | fail | critical | workspace | Evidence law - api_or_ui_evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-005 | fail | critical | workspace | Evidence law - completion_summary | 2026-04-26T09:49:18.592Z
+CP-AUD-006 | fail | critical | accounting | Proof Layer feature - workflow proof scripts | 2026-04-26T09:49:18.592Z
+CP-AUD-007 | fail | critical | accounting | Proof Layer feature - UI/API evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-008 | fail | critical | accounting | Proof Layer feature - failure diagnostics | 2026-04-26T09:49:18.592Z
+CP-AUD-009 | fail | critical | accounting | Proof Layer proof expectation - critical flows have reviewable evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-010 | fail | critical | accounting | Proof Layer UI expectation - control dashboard reflects proof health | 2026-04-26T09:49:18.592Z
+CP-AUD-014 | fail | critical | accounting | Traceability Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-AUD-015 | fail | critical | accounting | Every cross-module post stores source_type, source_id, and document context | 2026-04-26T09:49:18.592Z
+CP-AUD-016 | fail | critical | accounting | No orphan settlement lines | 2026-04-26T09:49:18.592Z
+CP-AUD-017 | fail | critical | accounting | linked document numbers must be queryable | 2026-04-26T09:49:18.592Z
+CP-VAL-004 | fail | critical | ux_validation | Import Engine proof expectation - imported rows feed operational modules correctly | 2026-04-26T09:49:18.592Z
+CP-DOC-001 | fail | critical | vat | Document Engine feature - draft and finalize workflow | 2026-04-26T09:49:18.592Z
+CP-DOC-002 | fail | critical | vat | Document Engine feature - document preview and PDF | 2026-04-26T09:49:18.592Z
+CP-DOC-003 | fail | critical | vat | Document Engine feature - credit and debit note support | 2026-04-26T09:49:18.592Z
+CP-DOC-004 | fail | critical | vat | Document Engine proof expectation - issue/pay/render flow is evidenced | 2026-04-26T09:49:18.592Z
+CP-DOC-005 | fail | critical | vat | Document Engine proof expectation - preview and PDF match the same contract | 2026-04-26T09:49:18.592Z
+CP-DOC-006 | fail | critical | vat | Document Engine UI expectation - real registers | 2026-04-26T09:49:18.592Z
+CP-DOC-007 | fail | critical | vat | Document Engine UI expectation - real create and detail pages | 2026-04-26T09:49:18.592Z
+CP-DOC-008 | fail | critical | vat | Document Engine UI expectation - split preview drill-down | 2026-04-26T09:49:18.592Z
+CP-XMD-003 | fail | critical | vat | Country Service Architecture feature - active KSA product | 2026-04-26T09:49:18.592Z
+CP-XMD-004 | fail | critical | vat | Country Service Architecture feature - France readiness boundary | 2026-04-26T09:49:18.592Z
+CP-XMD-005 | fail | critical | vat | Country Service Architecture feature - future country slots | 2026-04-26T09:49:18.592Z
+CP-XMD-006 | fail | critical | vat | Country Service Architecture proof expectation - country-specific logic is attributable | 2026-04-26T09:49:18.592Z
+CP-XMD-007 | fail | critical | vat | Country Service Architecture UI expectation - country readiness shown in control center | 2026-04-26T09:49:18.592Z
+CP-XMD-008 | fail | critical | accounting | End-to-End Workflow Proof feature - company to document to payment to reports flow | 2026-04-26T09:49:18.592Z
+CP-XMD-009 | fail | critical | accounting | End-to-End Workflow Proof feature - stored proof artifacts | 2026-04-26T09:49:18.592Z
+CP-XMD-010 | fail | critical | accounting | End-to-End Workflow Proof feature - control dashboard status | 2026-04-26T09:49:18.592Z
+CP-XMD-011 | fail | critical | accounting | End-to-End Workflow Proof proof expectation - practical end-to-end flow is evidenced | 2026-04-26T09:49:18.592Z
+CP-XMD-012 | fail | critical | accounting | End-to-End Workflow Proof UI expectation - control center shows workflow readiness and remaining work | 2026-04-26T09:49:18.592Z
+CP-XMD-013 | fail | critical | accounting | Integrity Enforcement Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-XMD-014 | fail | critical | accounting | Must verify invoice-level linkage for allocated payment lines | 2026-04-26T09:49:18.592Z
+CP-XMD-015 | fail | critical | accounting | Balanced entry validation | 2026-04-26T09:49:18.592Z
+CP-XMD-016 | fail | critical | accounting | coverage validation | 2026-04-26T09:49:18.592Z
+CP-XMD-017 | fail | critical | accounting | traceability validation | 2026-04-26T09:49:18.592Z
+CP-XMD-018 | fail | critical | accounting | report visibility validation | 2026-04-26T09:49:18.592Z
+CP-04 | fail | critical | accounting | Open source document routing | 2026-04-26T09:49:18.592Z
+
+GROUP: Platform Layers
+CP-ID | Status | Risk | Module | Title | Timestamp
+CP-ACC-010 | fail | critical | vat | Accounting Engine proof expectation - documents and inventory create traceable journal impacts | 2026-04-26T09:49:18.592Z
+CP-TAX-001 | fail | critical | vat | Tax / VAT Engine feature - VAT calculation | 2026-04-26T09:49:18.592Z
+CP-TAX-002 | fail | critical | vat | Tax / VAT Engine feature - VAT summary and detail | 2026-04-26T09:49:18.592Z
+CP-TAX-003 | fail | critical | vat | Tax / VAT Engine feature - country-owned decision rules | 2026-04-26T09:49:18.592Z
+CP-TAX-004 | fail | critical | vat | Tax / VAT Engine proof expectation - VAT outputs reflect posted truth | 2026-04-26T09:49:18.592Z
+CP-TAX-005 | fail | critical | vat | Tax / VAT Engine proof expectation - customer origin affects tax treatment | 2026-04-26T09:49:18.592Z
+CP-TAX-006 | fail | critical | vat | Tax / VAT Engine UI expectation - VAT dashboard | 2026-04-26T09:49:18.592Z
+CP-TAX-007 | fail | critical | vat | Tax / VAT Engine UI expectation - summary and detail views | 2026-04-26T09:49:18.592Z
+CP-INV-009 | fail | critical | accounting | Inventory Engine proof expectation - inventory movement affects accounting and workflow proof | 2026-04-26T09:49:18.592Z
+CP-AUD-001 | fail | critical | workspace | Completion requires evidence and passing checks | 2026-04-26T09:49:18.592Z
+CP-AUD-002 | fail | critical | workspace | Evidence law - data_proof | 2026-04-26T09:49:18.592Z
+CP-AUD-003 | fail | critical | workspace | Evidence law - journal_ledger_report_output | 2026-04-26T09:49:18.592Z
+CP-AUD-004 | fail | critical | workspace | Evidence law - api_or_ui_evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-005 | fail | critical | workspace | Evidence law - completion_summary | 2026-04-26T09:49:18.592Z
+CP-AUD-006 | fail | critical | accounting | Proof Layer feature - workflow proof scripts | 2026-04-26T09:49:18.592Z
+CP-AUD-007 | fail | critical | accounting | Proof Layer feature - UI/API evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-008 | fail | critical | accounting | Proof Layer feature - failure diagnostics | 2026-04-26T09:49:18.592Z
+CP-AUD-009 | fail | critical | accounting | Proof Layer proof expectation - critical flows have reviewable evidence | 2026-04-26T09:49:18.592Z
+CP-AUD-010 | fail | critical | accounting | Proof Layer UI expectation - control dashboard reflects proof health | 2026-04-26T09:49:18.592Z
+CP-AUD-011 | fail | critical | workspace | Testing Layer processing contract | 2026-04-26T09:49:18.592Z
+CP-AUD-012 | fail | critical | workspace | Tests must reference concrete artifacts, outputs, or report payloads | 2026-04-26T09:49:18.592Z
+CP-AUD-013 | fail | critical | workspace | No task is complete without passing relevant checks | 2026-04-26T09:49:18.592Z
+CP-AUD-014 | fail | critical | accounting | Traceability Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-AUD-015 | fail | critical | accounting | Every cross-module post stores source_type, source_id, and document context | 2026-04-26T09:49:18.592Z
+CP-AUD-016 | fail | critical | accounting | No orphan settlement lines | 2026-04-26T09:49:18.592Z
+CP-AUD-017 | fail | critical | accounting | linked document numbers must be queryable | 2026-04-26T09:49:18.592Z
+CP-AUD-018 | fail | critical | workspace | Workflow / Intelligence Layer feature - audit surfacing | 2026-04-26T09:49:18.592Z
+CP-AUD-019 | fail | critical | workspace | Workflow / Intelligence Layer feature - command/help surfaces | 2026-04-26T09:49:18.592Z
+CP-AUD-020 | fail | critical | workspace | Workflow / Intelligence Layer feature - workflow guidance | 2026-04-26T09:49:18.592Z
+CP-AUD-021 | fail | critical | workspace | Workflow / Intelligence Layer proof expectation - findings expose real drift rather than fake health | 2026-04-26T09:49:18.592Z
+CP-AUD-022 | fail | critical | workspace | Workflow / Intelligence Layer UI expectation - operational support surfaces | 2026-04-26T09:49:18.592Z
+CP-AUD-023 | fail | critical | workspace | Workflow / Intelligence Layer UI expectation - no vague placeholder queues | 2026-04-26T09:49:18.592Z
+CP-UX-001 | fail | critical | ux_validation | UI / UX Shell feature - dense operational shell | 2026-04-26T09:49:18.592Z
+CP-UX-002 | fail | critical | ux_validation | UI / UX Shell feature - truthful route ownership | 2026-04-26T09:49:18.592Z
+CP-UX-003 | fail | critical | ux_validation | UI / UX Shell feature - master design control tab | 2026-04-26T09:49:18.592Z
+CP-UX-004 | fail | critical | ux_validation | UI / UX Shell proof expectation - shell exposes real implemented modules | 2026-04-26T09:49:18.592Z
+CP-UX-005 | fail | critical | ux_validation | UI / UX Shell UI expectation - no placeholder overclaim for shipped modules | 2026-04-26T09:49:18.592Z
+CP-UX-006 | fail | critical | ux_validation | UI / UX Shell UI expectation - live control center route | 2026-04-26T09:49:18.592Z
+CP-USR-001 | fail | critical | workspace | Identity & Workspace feature - authenticated workspace session | 2026-04-26T09:49:18.592Z
+CP-USR-002 | fail | critical | workspace | Identity & Workspace feature - role-aware navigation | 2026-04-26T09:49:18.592Z
+CP-USR-003 | fail | critical | workspace | Identity & Workspace feature - first-class master design route | 2026-04-26T09:49:18.592Z
+CP-USR-004 | fail | critical | workspace | Identity & Workspace proof expectation - route opens under workspace shell | 2026-04-26T09:49:18.592Z
+CP-USR-005 | fail | critical | workspace | Identity & Workspace proof expectation - navigation exposes control center | 2026-04-26T09:49:18.592Z
+CP-USR-006 | fail | critical | workspace | Identity & Workspace UI expectation - visible master design tab | 2026-04-26T09:49:18.592Z
+CP-USR-007 | fail | critical | workspace | Identity & Workspace UI expectation - dedicated route ownership | 2026-04-26T09:49:18.592Z
+CP-USR-008 | fail | critical | workspace | Identity & Workspace UI expectation - no catch-all placeholder for shipped control pages | 2026-04-26T09:49:18.592Z
+CP-USR-009 | fail | critical | workspace | User Workspace priority - Keep receivables, payables, and VAT visible without leaving the main workflow. | 2026-04-26T09:49:18.592Z
+CP-USR-010 | fail | critical | workspace | User Workspace priority - Move from task to module directly instead of routing through abstract overview pages. | 2026-04-26T09:49:18.592Z
+CP-USR-011 | fail | critical | workspace | User Workspace priority - Keep every daily action one click away from the role home and sidebar. | 2026-04-26T09:49:18.592Z
+CP-USR-012 | fail | critical | workspace | User Workspace sidebar group - Dashboard | 2026-04-26T09:49:18.592Z
+CP-USR-013 | fail | critical | workspace | User Workspace sidebar group - Sales | 2026-04-26T09:49:18.592Z
+CP-USR-014 | fail | critical | workspace | User Workspace sidebar group - Purchases | 2026-04-26T09:49:18.592Z
+CP-USR-015 | fail | critical | workspace | User Workspace sidebar group - Inventory | 2026-04-26T09:49:18.592Z
+CP-USR-016 | fail | critical | workspace | User Workspace sidebar group - Accounting | 2026-04-26T09:49:18.592Z
+CP-USR-017 | fail | critical | workspace | User Workspace sidebar group - Banking | 2026-04-26T09:49:18.592Z
+CP-USR-018 | fail | critical | workspace | User Workspace sidebar group - VAT / Compliance | 2026-04-26T09:49:18.592Z
+CP-USR-019 | fail | critical | workspace | User Workspace sidebar group - Reports | 2026-04-26T09:49:18.592Z
+CP-USR-020 | fail | critical | workspace | User Workspace sidebar group - Templates | 2026-04-26T09:49:18.592Z
+CP-USR-021 | fail | critical | workspace | User Workspace sidebar group - Settings | 2026-04-26T09:49:18.592Z
+CP-ADM-001 | fail | critical | workspace | Agent Admin highlight - Commission visibility | 2026-04-26T09:49:18.592Z
+CP-ADM-002 | fail | critical | workspace | Agent Admin highlight - Referral search | 2026-04-26T09:49:18.592Z
+CP-ADM-003 | fail | critical | workspace | Agent Admin highlight - Active and inactive control | 2026-04-26T09:49:18.592Z
+CP-ADM-004 | fail | critical | workspace | Customers highlight - Company status control | 2026-04-26T09:49:18.592Z
+CP-ADM-005 | fail | critical | workspace | Customers highlight - Subscription visibility | 2026-04-26T09:49:18.592Z
+CP-ADM-006 | fail | critical | workspace | Customers highlight - Linked user inspection | 2026-04-26T09:49:18.592Z
+CP-ADM-007 | fail | critical | workspace | Plans highlight - Live pricing values | 2026-04-26T09:49:18.592Z
+CP-ADM-008 | fail | critical | workspace | Plans highlight - Trial and support settings | 2026-04-26T09:49:18.592Z
+CP-ADM-009 | fail | critical | workspace | Plans highlight - Marketing points stay synced to the site | 2026-04-26T09:49:18.592Z
+CP-ADM-010 | fail | critical | workspace | Admin Workspace priority - Keep customer, subscription, and support-account decisions grounded in live platform state. | 2026-04-26T09:49:18.592Z
+CP-ADM-011 | fail | critical | workspace | Admin Workspace priority - Separate platform control from the operating workspace used by customers. | 2026-04-26T09:49:18.592Z
+CP-ADM-012 | fail | critical | workspace | Admin Workspace priority - Make route quality and governance visible without burying them under generic platform labels. | 2026-04-26T09:49:18.592Z
+CP-ADM-013 | fail | critical | workspace | Admin Workspace sidebar group - Platform Control | 2026-04-26T09:49:18.592Z
+CP-ADM-014 | fail | critical | workspace | Admin Workspace sidebar group - Commercial Operations | 2026-04-26T09:49:18.592Z
+CP-ADM-015 | fail | critical | workspace | Admin Workspace sidebar group - Access / Governance | 2026-04-26T09:49:18.592Z
+CP-ADM-016 | fail | critical | workspace | Admin Workspace sidebar group - AI Review | 2026-04-26T09:49:18.592Z
+CP-ADM-017 | fail | critical | workspace | Support Accounts highlight - Activation control | 2026-04-26T09:49:18.592Z
+CP-ADM-018 | fail | critical | workspace | Support Accounts highlight - Permission assignment | 2026-04-26T09:49:18.592Z
+CP-ADM-019 | fail | critical | workspace | Support Accounts highlight - Support account lifecycle | 2026-04-26T09:49:18.592Z
+CP-AST-001 | fail | critical | workspace | Assistant Workspace priority - Keep follow-up, onboarding, and help intake visible in the same workspace. | 2026-04-26T09:49:18.592Z
+CP-AST-002 | fail | critical | workspace | Assistant Workspace priority - Use operational queues and customer health signals instead of vague support placeholders. | 2026-04-26T09:49:18.592Z
+CP-AST-003 | fail | critical | workspace | Assistant Workspace priority - Move directly from issue context into the next customer-facing action. | 2026-04-26T09:49:18.592Z
+CP-AST-004 | fail | critical | workspace | Assistant Workspace sidebar group - Support Queue | 2026-04-26T09:49:18.592Z
+CP-AST-005 | fail | critical | workspace | Assistant Workspace sidebar group - Customer Success | 2026-04-26T09:49:18.592Z
+CP-AST-006 | fail | critical | workspace | Assistant Workspace sidebar group - Knowledge / Escalations | 2026-04-26T09:49:18.592Z
+CP-AST-007 | fail | critical | workspace | Help highlight - Help stays available but quiet | 2026-04-26T09:49:18.592Z
+CP-AST-008 | fail | critical | workspace | Help highlight - Daily work does not compete with support content | 2026-04-26T09:49:18.592Z
+CP-AST-009 | fail | critical | workspace | Help highlight - Business language stays consistent across guidance | 2026-04-26T09:49:18.592Z
+CP-ACP-001 | fail | critical | workspace | Agent Workspace priority - Keep commercial follow-up and account ownership visible, not buried inside generic partner pages. | 2026-04-26T09:49:18.592Z
+CP-ACP-002 | fail | critical | workspace | Agent Workspace priority - Make leads, outreach, and assigned-client actions obvious from the first screen. | 2026-04-26T09:49:18.592Z
+CP-ACP-003 | fail | critical | workspace | Agent Workspace priority - Keep pipeline actions tied to the real signup and referral flow. | 2026-04-26T09:49:18.592Z
+CP-ACP-004 | fail | critical | workspace | Agent Workspace sidebar group - Pipeline | 2026-04-26T09:49:18.592Z
+CP-ACP-005 | fail | critical | workspace | Agent Workspace sidebar group - Outreach | 2026-04-26T09:49:18.592Z
+CP-ACP-006 | fail | critical | workspace | Agents highlight - Referral link ready to share | 2026-04-26T09:49:18.592Z
+CP-ACP-007 | fail | critical | workspace | Agents highlight - Signups and commissions stay visible | 2026-04-26T09:49:18.592Z
+CP-ACP-008 | fail | critical | workspace | Agents highlight - Partner sales can be measured without exports | 2026-04-26T09:49:18.592Z
+CP-ACP-009 | fail | critical | workspace | Users highlight - Seat usage stays visible | 2026-04-26T09:49:18.592Z
+CP-ACP-010 | fail | critical | workspace | Users highlight - Role changes are controlled | 2026-04-26T09:49:18.592Z
+CP-ACP-011 | fail | critical | workspace | Users highlight - Internal user access stays simple | 2026-04-26T09:49:18.592Z
+CP-VAL-004 | fail | critical | ux_validation | Import Engine proof expectation - imported rows feed operational modules correctly | 2026-04-26T09:49:18.592Z
+CP-SEC-001 | fail | critical | security | API Layer processing contract | 2026-04-26T09:49:18.592Z
+CP-SEC-002 | fail | critical | security | Endpoints must return sufficient identifiers for follow-up report proof | 2026-04-26T09:49:18.592Z
+CP-SEC-003 | fail | critical | security | Authorization headers required | 2026-04-26T09:49:18.592Z
+CP-SEC-004 | fail | critical | security | payload schema must be valid | 2026-04-26T09:49:18.592Z
+CP-SEC-005 | fail | critical | security | resource scoping must hold | 2026-04-26T09:49:18.592Z
+CP-TMP-001 | fail | critical | document | Template Engine feature - template CRUD | 2026-04-26T09:49:18.592Z
+CP-TMP-002 | fail | critical | document | Template Engine feature - section order | 2026-04-26T09:49:18.592Z
+CP-TMP-003 | fail | critical | document | Template Engine feature - asset assignment | 2026-04-26T09:49:18.592Z
+CP-TMP-004 | fail | critical | document | Template Engine feature - preview parity | 2026-04-26T09:49:18.592Z
+CP-TMP-005 | fail | critical | document | Template Engine proof expectation - template changes affect live document output | 2026-04-26T09:49:18.592Z
+CP-TMP-006 | fail | critical | document | Template Engine UI expectation - dedicated template dashboard | 2026-04-26T09:49:18.592Z
+CP-TMP-007 | fail | critical | document | Template Engine UI expectation - real editing canvas | 2026-04-26T09:49:18.592Z
+CP-TMP-008 | fail | critical | document | Template Engine UI expectation - no fake family diversity | 2026-04-26T09:49:18.592Z
+CP-DOC-001 | fail | critical | vat | Document Engine feature - draft and finalize workflow | 2026-04-26T09:49:18.592Z
+CP-DOC-002 | fail | critical | vat | Document Engine feature - document preview and PDF | 2026-04-26T09:49:18.592Z
+CP-DOC-003 | fail | critical | vat | Document Engine feature - credit and debit note support | 2026-04-26T09:49:18.592Z
+CP-DOC-004 | fail | critical | vat | Document Engine proof expectation - issue/pay/render flow is evidenced | 2026-04-26T09:49:18.592Z
+CP-DOC-005 | fail | critical | vat | Document Engine proof expectation - preview and PDF match the same contract | 2026-04-26T09:49:18.592Z
+CP-DOC-006 | fail | critical | vat | Document Engine UI expectation - real registers | 2026-04-26T09:49:18.592Z
+CP-DOC-007 | fail | critical | vat | Document Engine UI expectation - real create and detail pages | 2026-04-26T09:49:18.592Z
+CP-DOC-008 | fail | critical | vat | Document Engine UI expectation - split preview drill-down | 2026-04-26T09:49:18.592Z
+CP-XMD-001 | fail | critical | platform | Do not bypass payment validation. | 2026-04-26T09:49:18.592Z
+CP-XMD-002 | fail | critical | platform | Every task must produce verifiable evidence. | 2026-04-26T09:49:18.592Z
+CP-XMD-003 | fail | critical | vat | Country Service Architecture feature - active KSA product | 2026-04-26T09:49:18.592Z
+CP-XMD-004 | fail | critical | vat | Country Service Architecture feature - France readiness boundary | 2026-04-26T09:49:18.592Z
+CP-XMD-005 | fail | critical | vat | Country Service Architecture feature - future country slots | 2026-04-26T09:49:18.592Z
+CP-XMD-006 | fail | critical | vat | Country Service Architecture proof expectation - country-specific logic is attributable | 2026-04-26T09:49:18.592Z
+CP-XMD-007 | fail | critical | vat | Country Service Architecture UI expectation - country readiness shown in control center | 2026-04-26T09:49:18.592Z
+CP-XMD-008 | fail | critical | accounting | End-to-End Workflow Proof feature - company to document to payment to reports flow | 2026-04-26T09:49:18.592Z
+CP-XMD-009 | fail | critical | accounting | End-to-End Workflow Proof feature - stored proof artifacts | 2026-04-26T09:49:18.592Z
+CP-XMD-010 | fail | critical | accounting | End-to-End Workflow Proof feature - control dashboard status | 2026-04-26T09:49:18.592Z
+CP-XMD-011 | fail | critical | accounting | End-to-End Workflow Proof proof expectation - practical end-to-end flow is evidenced | 2026-04-26T09:49:18.592Z
+CP-XMD-012 | fail | critical | accounting | End-to-End Workflow Proof UI expectation - control center shows workflow readiness and remaining work | 2026-04-26T09:49:18.592Z
+CP-XMD-013 | fail | critical | accounting | Integrity Enforcement Engine processing contract | 2026-04-26T09:49:18.592Z
+CP-XMD-014 | fail | critical | accounting | Must verify invoice-level linkage for allocated payment lines | 2026-04-26T09:49:18.592Z
+CP-XMD-015 | fail | critical | accounting | Balanced entry validation | 2026-04-26T09:49:18.592Z
+CP-XMD-016 | fail | critical | accounting | coverage validation | 2026-04-26T09:49:18.592Z
+CP-XMD-017 | fail | critical | accounting | traceability validation | 2026-04-26T09:49:18.592Z
+CP-XMD-018 | fail | critical | accounting | report visibility validation | 2026-04-26T09:49:18.592Z
+CP-BRD-001 | fail | critical | ux_validation | Users highlight - Seat usage stays visible | 2026-04-26T09:49:18.592Z
+CP-BRD-002 | fail | critical | ux_validation | Users highlight - Role changes are controlled | 2026-04-26T09:49:18.592Z
+CP-BRD-003 | fail | critical | ux_validation | Users highlight - Internal user access stays simple | 2026-04-26T09:49:18.592Z
+CP-BRD-004 | fail | critical | document | Template assets must stay assigned through one contract | 2026-04-26T09:49:18.592Z
+CP-COM-001 | fail | critical | document | Communication processing contract | 2026-04-26T09:49:18.592Z
+CP-COM-002 | fail | critical | document | Communication traceability | 2026-04-26T09:49:18.592Z
+CP-COM-004 | fail | critical | document | Communication template resolution | 2026-04-26T09:49:18.592Z
+CP-COM-005 | fail | critical | document | Communication dispatch attempts | 2026-04-26T09:49:18.592Z
+CP-COM-006 | fail | critical | document | Communication retry bounds | 2026-04-26T09:49:18.592Z
+CP-COM-007 | fail | critical | document | Communication duplicate prevention | 2026-04-26T09:49:18.592Z
+CP-COM-008 | fail | critical | document | Communication source timeline | 2026-04-26T09:49:18.592Z
+CP-COM-009 | fail | critical | document | Document send integration | 2026-04-26T09:49:18.592Z
+CP-COM-010 | fail | critical | document | In-app event mirroring | 2026-04-26T09:49:18.592Z
+CP-COM-011 | fail | critical | document | Communication learning persistence | 2026-04-26T09:49:18.592Z
+CP-COM-013 | fail | critical | document | Communication register UI | 2026-04-26T09:49:18.592Z
+CP-COM-014 | fail | critical | document | Invoice detail send dialog and timeline | 2026-04-26T09:49:18.592Z
+CP-COM-015 | fail | critical | document | Communication proof expectation | 2026-04-26T09:49:18.592Z
+CP-13 | fail | critical | document | Template bilingual compliance | 2026-04-26T09:49:18.592Z
+CP-15 | fail | critical | document | Preview and PDF parity | 2026-04-26T09:49:18.592Z
+
+# meta: group-row data lines = 377

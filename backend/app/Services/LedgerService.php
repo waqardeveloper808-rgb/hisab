@@ -867,9 +867,24 @@ class LedgerService
 
     private function nextEntryNumber(Company $company): string
     {
-        $count = DB::table('journal_entries')->where('company_id', $company->id)->lockForUpdate()->count() + 1;
+        $prefix = sprintf('JE-%d-', $company->id);
+        $nextSequence = DB::table('journal_entries')
+            ->where('company_id', $company->id)
+            ->where('entry_number', 'like', $prefix.'%')
+            ->lockForUpdate()
+            ->pluck('entry_number')
+            ->map(function ($entryNumber) use ($prefix) {
+                $value = (string) $entryNumber;
 
-        return sprintf('JE-%d-%05d', $company->id, $count);
+                if (! str_starts_with($value, $prefix)) {
+                    return 0;
+                }
+
+                return (int) substr($value, strlen($prefix));
+            })
+            ->max() + 1;
+
+        return sprintf('%s%05d', $prefix, $nextSequence);
     }
 
     private function createBalancedEntry(Company $company, array $entryAttributes, array $lines): JournalEntry

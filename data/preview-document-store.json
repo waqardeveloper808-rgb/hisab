@@ -3947,7 +3947,7 @@
     "notes": "AHN-INV-QMS-5004",
     "compliance_metadata": {
       "zatca": {
-        "seller_name": "Gulf Hisab Trading LLC",
+        "seller_name": "Hisabix Trading LLC",
         "vat_number": "300123456700003"
       }
     },
@@ -4004,7 +4004,7 @@
     "notes": "AHN-INV-QMS-5004",
     "compliance_metadata": {
       "zatca": {
-        "seller_name": "Gulf Hisab Trading LLC",
+        "seller_name": "Hisabix Trading LLC",
         "vat_number": "300123456700003"
       }
     },
@@ -4052,7 +4052,7 @@
     "notes": "INV-DRAFT-1001",
     "compliance_metadata": {
       "zatca": {
-        "seller_name": "Gulf Hisab Trading LLC",
+        "seller_name": "Hisabix Trading LLC",
         "vat_number": "300123456700003"
       }
     },
@@ -4103,7 +4103,7 @@
     "notes": "Customer requested pricing before invoice issue.",
     "compliance_metadata": {
       "zatca": {
-        "seller_name": "Gulf Hisab Trading Co.",
+        "seller_name": "Hisabix Trading Co.",
         "vat_number": "300000000000003"
       }
     },
@@ -4154,7 +4154,7 @@
     "notes": "Pre-billing approval document before conversion to tax invoice.",
     "compliance_metadata": {
       "zatca": {
-        "seller_name": "Gulf Hisab Trading Co.",
+        "seller_name": "Hisabix Trading Co.",
         "vat_number": "300000000000003"
       }
     },

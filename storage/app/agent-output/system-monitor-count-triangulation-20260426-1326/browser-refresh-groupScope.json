@@ -1,0 +1,35 @@
+[
+  {
+    "id": "core-system",
+    "name": "Core System",
+    "passCount": 18,
+    "failCount": 162,
+    "partialCount": 23,
+    "blockedCount": 0,
+    "totalControlPoints": 203,
+    "healthPercent": 9,
+    "scopeLabel": "Unique control points with any link to a module in this group (counted once)."
+  },
+  {
+    "id": "finance-engines",
+    "name": "Finance Engines",
+    "passCount": 18,
+    "failCount": 58,
+    "partialCount": 19,
+    "blockedCount": 0,
+    "totalControlPoints": 95,
+    "healthPercent": 19,
+    "scopeLabel": "Unique control points with any link to a module in this group (counted once)."
+  },
+  {
+    "id": "platform-layers",
+    "name": "Platform Layers",
+    "passCount": 12,
+    "failCount": 157,
+    "partialCount": 11,
+    "blockedCount": 0,
+    "totalControlPoints": 180,
+    "healthPercent": 7,
+    "scopeLabel": "Unique control points with any link to a module in this group (counted once)."
+  }
+]

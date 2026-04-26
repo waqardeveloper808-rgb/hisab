@@ -16,6 +16,7 @@ import type {
   ItemPayload,
   ItemRecord,
 } from "@/components/workflow/types";
+import { useWorkspaceSession } from "@/components/workspace/WorkspaceAccessProvider";
 import { createContactInBackend, createItemInBackend, getWorkspaceDirectory } from "@/lib/workspace-api";
 import { contactToOption, itemToOption, sleep } from "@/components/workflow/utils";
 
@@ -33,13 +34,21 @@ type WorkspaceDataContextValue = {
 const WorkspaceDataContext = createContext<WorkspaceDataContextValue | null>(null);
 
 export function WorkspaceDataProvider({ children }: { children: React.ReactNode }) {
+  const session = useWorkspaceSession();
   const [contacts, setContacts] = useState<ContactRecord[]>([]);
   const [items, setItems] = useState<ItemRecord[]>([]);
   const [recentItemIds, setRecentItemIds] = useState<string[]>([]);
   const [optimisticItems, addOptimisticItem] = useOptimistic(items, (state, nextItem: ItemRecord) => [nextItem, ...state]);
   const [optimisticContacts, addOptimisticContact] = useOptimistic(contacts, (state, nextContact: ContactRecord) => [nextContact, ...state]);
+  const workspaceReady = session?.accessStatus === "ready";
 
   useEffect(() => {
+    if (!workspaceReady) {
+      setContacts([]);
+      setItems([]);
+      return;
+    }
+
     let active = true;
 
     getWorkspaceDirectory().then((directory) => {
@@ -61,7 +70,7 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
     return () => {
       active = false;
     };
-  }, []);
+  }, [workspaceReady]);
 
   const customers = useMemo(
     () => optimisticContacts.filter((contact) => contact.kind === "customer"),

@@ -5,15 +5,30 @@ import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
 import { faqGroups } from "@/data/help-center";
 
+const categoryOrder = ["Pre-sales", "Setup", "Invoicing", "VAT / ZATCA", "Accounting", "Inventory", "Support"];
+
+const categoryAliasMap: Record<string, string> = {
+  Sales: "Invoicing",
+  Purchases: "Inventory",
+  Control: "Accounting",
+};
+
 export default function HelpFaqPage() {
   const [query, setQuery] = useState("");
   const filteredGroups = useMemo(
-    () => faqGroups
-      .map((group) => ({
+    () => {
+      const mappedGroups = faqGroups.map((group) => ({
         ...group,
+        category: categoryAliasMap[group.category] ?? group.category,
         questions: group.questions.filter((item) => `${group.category} ${item.question} ${item.answer}`.toLowerCase().includes(query.toLowerCase())),
-      }))
-      .filter((group) => group.questions.length > 0),
+      })).filter((group) => group.questions.length > 0);
+
+      return [...mappedGroups].sort((left, right) => {
+        const leftIndex = categoryOrder.indexOf(left.category);
+        const rightIndex = categoryOrder.indexOf(right.category);
+        return (leftIndex === -1 ? Number.MAX_SAFE_INTEGER : leftIndex) - (rightIndex === -1 ? Number.MAX_SAFE_INTEGER : rightIndex);
+      });
+    },
     [query],
   );
 
@@ -28,7 +43,7 @@ export default function HelpFaqPage() {
         </div>
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {filteredGroups.map((group) => (
           <Card key={group.category} className="rounded-xl bg-white/95 p-6">
             <p className="text-sm font-semibold text-primary">{group.category}</p>

@@ -6,11 +6,10 @@ import {
   resolveWorkspaceBackendPath,
 } from "@/lib/workspace-session";
 import {
-  buildDocumentHtml as buildUnifiedDocumentHtml,
-  buildInvoiceRenderModel,
   renderDocumentPdf,
 } from "@/lib/document-engine/index";
 import type { CompanyProfileSnapshot, CompanyAssetLike } from "@/lib/document-engine/types";
+import { renderWorkspaceDocumentHtml } from "@/lib/workspace-preview";
 
 type BackendCompanySettingsEnvelope = {
   company: {
@@ -31,6 +30,26 @@ type BackendCompanyAsset = {
   id: number;
   usage?: string | null;
   public_url: string;
+  is_active: boolean;
+};
+
+type BackendDocumentTemplate = {
+  id: number;
+  name: string;
+  document_types?: string[] | null;
+  locale_mode: string;
+  accent_color: string;
+  watermark_text?: string | null;
+  header_html?: string | null;
+  footer_html?: string | null;
+  settings?: Record<string, string | number | boolean | null> | null;
+  logo_asset_id?: number | null;
+  logo_asset?: {
+    id: number;
+    public_url: string;
+    original_name?: string;
+  } | null;
+  is_default: boolean;
   is_active: boolean;
 };
 
@@ -143,6 +162,26 @@ function readSettingsMetadata(rules: Record<string, string> | null | undefined, 
   return rules?.[key] ?? "";
 }
 
+function normalizeBackendAssetUrl(baseUrl: string, assetUrl: string | null | undefined) {
+  const value = (assetUrl ?? "").trim();
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const backendOrigin = new URL(baseUrl).origin;
+    const parsed = new URL(value, backendOrigin);
+
+    if (parsed.pathname.startsWith("/storage/") && (parsed.hostname === "localhost" || parsed.hostname === "127.0.0.1")) {
+      return `${backendOrigin}${parsed.pathname}${parsed.search}`;
+    }
+
+    return parsed.toString();
+  } catch {
+    return value;
+  }
+}
+
 function mapBackendCompany(settings: BackendCompanySettingsEnvelope, assets: CompanyAssetLike[]): CompanyProfileSnapshot {
   const rules = settings.settings.numbering_rules ?? {};
   const companyLogo = assets.find((asset) => asset.isActive && (asset.usage ?? "").toLowerCase() === "logo")?.publicUrl ?? null;
@@ -186,6 +225,28 @@ async function fetchBackendJson<T>(targetUrl: string, actorId: number, apiToken:
   return await response.json() as { data: T };
 }
 
+async function fetchBackendTemplateById(params: {
+  baseUrl: string;
+  companyId: string;
+  actorId: number;
+  apiToken: string;
+  activeCompanyId: number | null;
+  templateId?: number | null;
+}) {
+  if (typeof params.templateId !== "number" || params.templateId <= 0) {
+    return null;
+  }
+
+  const response = await fetchBackendJson<BackendDocumentTemplate[]>(
+    `${params.baseUrl}/api/companies/${params.companyId}/templates`,
+    params.actorId,
+    params.apiToken,
+    params.activeCompanyId,
+  );
+
+  return response.data.find((template) => template.id === params.templateId) ?? null;
+}
+
 async function renderAuthenticatedDocumentEngine(params: {
   baseUrl: string;
   companyId: string;
@@ -193,6 +254,7 @@ async function renderAuthenticatedDocumentEngine(params: {
   apiToken: string;
   activeCompanyId: number | null;
   documentId: number;
+  templateId?: number | null;
 }) {
   const [settingsResponse, assetsResponse] = await Promise.all([
     fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken, params.activeCompanyId),
@@ -200,46 +262,90 @@ async function renderAuthenticatedDocumentEngine(params: {
   ]);
 
   const documentResponse = await fetchBackendJson<BackendDocumentDetail>(`${params.baseUrl}/api/companies/${params.companyId}/documents/${params.documentId}`, params.actorId, params.apiToken, params.activeCompanyId);
+  const template = await fetchBackendTemplateById(params);
 
-  const assets = assetsResponse.data.map((asset) => ({ id: asset.id, usage: asset.usage, publicUrl: asset.public_url, isActive: asset.is_active }));
+  const assets = assetsResponse.data.map((asset) => ({
+    id: asset.id,
+    usage: asset.usage,
+    public_url: normalizeBackendAssetUrl(params.baseUrl, asset.public_url),
+    is_active: asset.is_active,
+  }));
   const company = mapBackendCompany(settingsResponse.data, assets);
   const document = documentResponse.data;
 
-  return buildUnifiedDocumentHtml(buildInvoiceRenderModel({
-    company,
-    assets,
+  return await renderWorkspaceDocumentHtml({
+    availableAssets: assets,
+    template: template
+      ? {
+          ...template,
+          logo_asset: template.logo_asset?.public_url
+            ? {
+                id: template.logo_asset.id,
+                public_url: normalizeBackendAssetUrl(params.baseUrl, template.logo_asset.public_url),
+                original_name: template.logo_asset.original_name ?? template.name,
+              }
+            : null,
+        }
+      : undefined,
     document: {
       id: document.id,
       type: document.type,
-      documentNumber: document.document_number,
-      issueDate: document.issue_date,
-      dueDate: document.due_date,
-      supplyDate: document.supply_date,
-      taxableTotal: Number(document.taxable_total ?? 0),
-      taxTotal: Number(document.tax_total ?? 0),
-      grandTotal: Number(document.grand_total ?? 0),
-      customFields: document.custom_fields,
+      status: "finalized",
+      contact_id: 0,
+      document_number: document.document_number,
+      issue_date: document.issue_date,
+      due_date: document.due_date,
+      supply_date: document.supply_date,
+      grand_total: Number(document.grand_total ?? 0),
+      balance_due: Number(document.grand_total ?? 0),
+      paid_total: 0,
+      tax_total: Number(document.tax_total ?? 0),
+      taxable_total: Number(document.taxable_total ?? 0),
+      contact: {
+        display_name: document.contact?.display_name ?? "",
+      },
+      title: document.document_number,
+      language_code: "bilingual",
+      custom_fields: {
+        currency: company.baseCurrency,
+        seller_name_en: company.englishName || company.tradeName || company.legalName,
+        seller_name_ar: company.arabicName || company.legalName,
+        seller_vat_number: company.taxNumber,
+        seller_cr_number: company.registrationNumber,
+        seller_email: company.email,
+        seller_phone: company.phone,
+        seller_address_en: company.shortAddress || company.addressStreet,
+        seller_address_ar: company.shortAddress || company.addressStreet,
+        ...(document.custom_fields ?? {}),
+      },
       lines: (document.lines ?? []).map((line) => ({
         id: line.id,
         description: line.description,
         quantity: Number(line.quantity ?? 0),
-        unitPrice: Number(line.unit_price ?? 0),
-        grossAmount: Number(line.gross_amount ?? 0),
+        unit_price: Number(line.unit_price ?? 0),
+        gross_amount: Number(line.gross_amount ?? 0),
         metadata: line.metadata,
       })),
+      compliance_metadata: {
+        zatca_ready: true,
+        xml_ready: true,
+        document_mode: document.type,
+      },
     },
     contact: document.contact ? {
-      displayName: document.contact.display_name ?? "",
-      displayNameAr: document.contact.display_name_ar,
-      vatNumber: document.contact.tax_number ?? document.contact.vat_number ?? null,
+      id: 0,
+      type: "customer",
+      display_name: document.contact.display_name ?? "",
+      display_name_ar: document.contact.display_name_ar,
       phone: document.contact.phone ?? null,
-      billingAddress: {
-        line1: document.contact.billing_address?.line_1 ?? null,
-        line1Ar: document.contact.billing_address?.line_1_ar ?? null,
+      vat_number: document.contact.tax_number ?? document.contact.vat_number ?? null,
+      billing_address: {
+        line_1: document.contact.billing_address?.line_1 ?? null,
+        line_1_ar: document.contact.billing_address?.line_1_ar ?? null,
         city: document.contact.billing_address?.city ?? null,
       },
     } : null,
-  }));
+  });
 }
 
 async function renderAuthenticatedTemplatePreview(params: {
@@ -254,48 +360,189 @@ async function renderAuthenticatedTemplatePreview(params: {
     fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken, params.activeCompanyId),
     fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken, params.activeCompanyId),
   ]);
-  const assets = assetsResponse.data.map((asset) => ({ id: asset.id, usage: asset.usage, publicUrl: asset.public_url, isActive: asset.is_active }));
+  const assets = assetsResponse.data.map((asset) => ({
+    id: asset.id,
+    usage: asset.usage,
+    public_url: normalizeBackendAssetUrl(params.baseUrl, asset.public_url),
+    is_active: asset.is_active,
+  }));
   const company = mapBackendCompany(settingsResponse.data, assets);
 
-  return buildUnifiedDocumentHtml(buildInvoiceRenderModel({
-    company,
-    assets,
+  return await renderWorkspaceDocumentHtml({
+    availableAssets: assets,
+    template: {
+      id: 0,
+      name: String(params.payload.name ?? "Template Preview"),
+      document_types: Array.isArray(params.payload.document_types) ? params.payload.document_types as string[] : [String(params.payload.document_type ?? "tax_invoice")],
+      locale_mode: String(params.payload.locale_mode ?? "bilingual"),
+      accent_color: String(params.payload.accent_color ?? "#1f7a53"),
+      watermark_text: typeof params.payload.watermark_text === "string" ? params.payload.watermark_text : null,
+      header_html: typeof params.payload.header_html === "string" ? params.payload.header_html : null,
+      footer_html: typeof params.payload.footer_html === "string" ? params.payload.footer_html : null,
+      settings: (params.payload.settings as Record<string, string | number | boolean | null> | undefined) ?? {},
+      logo_asset_id: typeof params.payload.logo_asset_id === "number" ? params.payload.logo_asset_id : null,
+      is_default: Boolean(params.payload.is_default),
+      is_active: params.payload.is_active !== false,
+    },
     document: {
       id: 0,
       type: String(params.payload.document_type ?? "tax_invoice"),
-      documentNumber: "INV-2026-1101",
-      issueDate: "2026-04-22",
-      dueDate: "2026-04-29",
-      supplyDate: "2026-04-22",
-      taxableTotal: 4000,
-      taxTotal: 600,
-      grandTotal: 4600,
-      customFields: {
+      status: "draft",
+      contact_id: 0,
+      document_number: "INV-2026-1101",
+      issue_date: "2026-04-22",
+      due_date: "2026-04-29",
+      supply_date: "2026-04-22",
+      grand_total: 4600,
+      balance_due: 4600,
+      paid_total: 0,
+      tax_total: 600,
+      taxable_total: 4000,
+      contact: { display_name: "Desert Retail Co." },
+      title: "Template Preview",
+      language_code: "bilingual",
+      custom_fields: {
         currency: company.baseCurrency,
+        seller_name_en: company.englishName || company.tradeName || company.legalName,
+        seller_name_ar: company.arabicName || company.legalName,
+        seller_vat_number: company.taxNumber,
+        seller_cr_number: company.registrationNumber,
+        seller_email: company.email,
+        seller_phone: company.phone,
+        seller_address_en: company.shortAddress || company.addressStreet,
+        seller_address_ar: company.shortAddress || company.addressStreet,
+        buyer_name_en: "Desert Retail Co.",
+        buyer_name_ar: "شركة صحراء للتجزئة",
+        buyer_vat_number: "301112223330003",
+        buyer_phone: "+966500000102",
+        buyer_address_en: "Prince Sultan Street, Al Zahra, Jeddah 23425, Saudi Arabia",
+        buyer_address_ar: "شارع الأمير سلطان، حي الزهراء، جدة 23425، المملكة العربية السعودية",
       },
       lines: [
         {
           id: 1,
           description: "Monthly bookkeeping",
           quantity: 1,
-          unitPrice: 4000,
-          grossAmount: 4000,
-          metadata: { custom_fields: { description_ar: "خدمات مسك الدفاتر الشهرية" } },
+          unit_price: 4000,
+          gross_amount: 4000,
+          metadata: { custom_fields: { description_ar: "خدمات مسك الدفاتر الشهرية", vat_rate: 15 } },
         },
       ],
+      compliance_metadata: {
+        zatca_ready: true,
+        xml_ready: true,
+        document_mode: String(params.payload.document_type ?? "tax_invoice"),
+      },
     },
     contact: {
-      displayName: "Desert Retail Co.",
-      displayNameAr: "شركة صحراء للتجزئة",
-      vatNumber: "301112223330003",
+      id: 0,
+      type: "customer",
+      display_name: "Desert Retail Co.",
+      display_name_ar: "شركة صحراء للتجزئة",
+      vat_number: "301112223330003",
       phone: "+966500000102",
-      billingAddress: {
-        line1: "Prince Sultan Street, Al Zahra, Jeddah 23425, Saudi Arabia",
-        line1Ar: "شارع الأمير سلطان، حي الزهراء، جدة 23425، المملكة العربية السعودية",
+      billing_address: {
+        line_1: "Prince Sultan Street, Al Zahra, Jeddah 23425, Saudi Arabia",
+        line_1_ar: "شارع الأمير سلطان، حي الزهراء، جدة 23425، المملكة العربية السعودية",
         city: "Jeddah",
       },
     },
-  }));
+  });
+}
+
+async function renderTemplatePdfFromPayload(payload: Record<string, unknown>) {
+  const html = await renderPreviewTemplateHtmlPayload(payload);
+  const bytes = await renderDocumentPdf(html);
+  const documentType = String(payload.document_type ?? payload.document_types?.[0] ?? "tax_invoice");
+  const templateName = String(payload.name ?? `${documentType}-template`).trim() || `${documentType}-template`;
+  const safeName = templateName.replace(/[^a-zA-Z0-9._-]+/g, "-");
+
+  return {
+    bytes,
+    fileName: `${safeName}.pdf`,
+  };
+}
+
+async function renderPreviewTemplateHtmlPayload(payload: Record<string, unknown>) {
+  return await renderWorkspaceDocumentHtml({
+    template: {
+      id: 0,
+      name: String(payload.name ?? "Template Preview"),
+      document_types: Array.isArray(payload.document_types) ? payload.document_types as string[] : [String(payload.document_type ?? "tax_invoice")],
+      locale_mode: String(payload.locale_mode ?? "bilingual"),
+      accent_color: String(payload.accent_color ?? "#1f7a53"),
+      watermark_text: typeof payload.watermark_text === "string" ? payload.watermark_text : null,
+      header_html: typeof payload.header_html === "string" ? payload.header_html : null,
+      footer_html: typeof payload.footer_html === "string" ? payload.footer_html : null,
+      settings: (payload.settings as Record<string, string | number | boolean | null> | undefined) ?? {},
+      logo_asset_id: typeof payload.logo_asset_id === "number" ? payload.logo_asset_id : null,
+      is_default: Boolean(payload.is_default),
+      is_active: payload.is_active !== false,
+    },
+    document: {
+      id: 0,
+      type: String(payload.document_type ?? "tax_invoice"),
+      status: "draft",
+      contact_id: 102,
+      document_number: "INV-2026-1101",
+      issue_date: "2026-04-13",
+      due_date: "2026-04-20",
+      supply_date: "2026-04-13",
+      grand_total: 4600,
+      balance_due: 4600,
+      paid_total: 0,
+      tax_total: String(payload.document_type ?? "tax_invoice") === "delivery_note" ? 0 : 600,
+      taxable_total: 4000,
+      contact: { display_name: "Desert Retail Co." },
+      title: "Template Preview Document",
+      language_code: "bilingual",
+      custom_fields: {
+        currency: "SAR",
+        seller_name_en: "Hisabix Trading Co.",
+        seller_name_ar: "شركة حسبكس التجارية",
+        seller_vat_number: "310122393500003",
+        seller_cr_number: "1010819065",
+        seller_email: "finance@hisabix.local",
+        seller_phone: "+966112345678",
+        seller_address_en: "King Fahd Road, Riyadh 12214, Saudi Arabia",
+        seller_address_ar: "طريق الملك فهد، الرياض 12214، المملكة العربية السعودية",
+        buyer_name_en: "Desert Retail Co.",
+        buyer_name_ar: "شركة صحراء للتجزئة",
+        buyer_vat_number: "301112223330003",
+        buyer_phone: "+966500000102",
+        buyer_address_en: "Prince Sultan Street, Al Zahra, Jeddah 23425, Saudi Arabia",
+        buyer_address_ar: "شارع الأمير سلطان، حي الزهراء، جدة 23425، المملكة العربية السعودية",
+      },
+      lines: [
+        {
+          id: 1,
+          description: "Monthly bookkeeping",
+          quantity: 1,
+          unit_price: 4000,
+          gross_amount: 4000,
+          metadata: { custom_fields: { description_ar: "خدمات مسك الدفاتر الشهرية", vat_rate: 15 } },
+        },
+      ],
+      compliance_metadata: {
+        zatca_ready: true,
+        xml_ready: true,
+        document_mode: String(payload.document_type ?? "tax_invoice"),
+      },
+    },
+    contact: {
+      id: 102,
+      type: "customer",
+      display_name: "Desert Retail Co.",
+      display_name_ar: "شركة صحراء للتجزئة",
+      vat_number: "301112223330003",
+      phone: "+966500000102",
+      billing_address: {
+        line_1: "Prince Sultan Street, Al Zahra, Jeddah 23425, Saudi Arabia",
+        line_1_ar: "شارع الأمير سلطان، حي الزهراء، جدة 23425، المملكة العربية السعودية",
+        city: "Jeddah",
+      },
+    },
+  });
 }
 
 function readInvoiceImpactFilter(searchParams: URLSearchParams): InvoiceImpactFilter {
@@ -482,6 +729,68 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   const actorId = backendContext.actorId;
   const apiToken = backendContext.workspaceToken;
   const backendPath = resolveWorkspaceBackendPath(slug);
+
+  if (request.method === "POST" && slug[0] === "templates" && slug[1] === "preview") {
+    const payload = await request.json().catch(() => ({}));
+    const html = await renderAuthenticatedTemplatePreview({
+      baseUrl: backendBaseUrl,
+      companyId,
+      actorId,
+      apiToken,
+      activeCompanyId: backendContext.activeCompanyId,
+      payload,
+    });
+    return NextResponse.json({ data: { html } }, { headers: { "X-Workspace-Mode": "backend" } });
+  }
+
+  if (request.method === "POST" && slug[0] === "templates" && slug[1] === "export-pdf") {
+    const payload = await request.json().catch(() => ({}));
+    const pdf = await renderTemplatePdfFromPayload(payload);
+    return new NextResponse(Buffer.from(pdf.bytes), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${pdf.fileName}"`,
+        "Cache-Control": "no-store",
+        "X-Workspace-Mode": "backend",
+      },
+    });
+  }
+
+  if (request.method === "GET" && slug[0] === "documents" && slug[2] === "preview") {
+    const html = await renderAuthenticatedDocumentEngine({
+      baseUrl: backendBaseUrl,
+      companyId,
+      actorId,
+      apiToken,
+      activeCompanyId: backendContext.activeCompanyId,
+      documentId: Number(slug[1]),
+      templateId: request.nextUrl.searchParams.get("template_id") ? Number(request.nextUrl.searchParams.get("template_id")) : null,
+    });
+    return NextResponse.json({ data: { html } }, { headers: { "X-Workspace-Mode": "backend" } });
+  }
+
+  if (request.method === "GET" && slug[0] === "documents" && (slug[2] === "pdf" || slug[2] === "export-pdf")) {
+    const html = await renderAuthenticatedDocumentEngine({
+      baseUrl: backendBaseUrl,
+      companyId,
+      actorId,
+      apiToken,
+      activeCompanyId: backendContext.activeCompanyId,
+      documentId: Number(slug[1]),
+      templateId: request.nextUrl.searchParams.get("template_id") ? Number(request.nextUrl.searchParams.get("template_id")) : null,
+    });
+    const bytes = await renderDocumentPdf(html);
+    return new NextResponse(Buffer.from(bytes), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="document-${slug[1]}.pdf"`,
+        "Cache-Control": "no-store",
+        "X-Workspace-Mode": "backend",
+      },
+    });
+  }
 
   const search = request.nextUrl.search;
   const invoiceImpact = readInvoiceImpactFilter(request.nextUrl.searchParams);
@@ -745,7 +1054,21 @@ async function handlePreviewRequest(request: NextRequest, slug: string[]) {
 
     if (request.method === "POST" && slug[1] === "preview") {
       const payload = await request.json();
-      return NextResponse.json({ data: renderPreviewTemplateHtml(payload, String(payload.document_type ?? payload.document_types?.[0] ?? "tax_invoice")) }, { headers: { "X-Workspace-Mode": "preview" } });
+      return NextResponse.json({ data: await renderPreviewTemplateHtml(payload, String(payload.document_type ?? payload.document_types?.[0] ?? "tax_invoice")) }, { headers: { "X-Workspace-Mode": "preview" } });
+    }
+
+    if (request.method === "POST" && slug[1] === "export-pdf") {
+      const payload = await request.json();
+      const pdf = await renderTemplatePdfFromPayload(payload);
+      return new NextResponse(Buffer.from(pdf.bytes), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="${pdf.fileName}"`,
+          "Cache-Control": "no-store",
+          "X-Workspace-Mode": "preview",
+        },
+      });
     }
 
     if (request.method === "POST" && slug.length === 1) {

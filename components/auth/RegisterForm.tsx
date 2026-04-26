@@ -82,7 +82,7 @@ export function RegisterForm() {
       }
 
       clearCookie(referralCaptureCookieNames.referral);
-      router.push("/workspace/user");
+      router.push("/onboarding/company");
       router.refresh();
     } finally {
       setSaving(false);
@@ -112,10 +112,10 @@ export function RegisterForm() {
         />
 
         <Button type="submit" size="lg" fullWidth disabled={saving || !fullName || !email || !passwordsMatch}>
-          {saving ? "Preparing workspace" : "Create workspace"}
+          {saving ? "Preparing onboarding" : "Create account"}
         </Button>
 
-        <p className="text-center text-sm text-muted">This workspace opens in build mode so you can configure invoicing, VAT, and reporting without upgrade prompts.</p>
+        <p className="text-center text-sm text-muted">After signup you will continue to company setup before entering the workspace.</p>
 
         {errorMessage ? (
           <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

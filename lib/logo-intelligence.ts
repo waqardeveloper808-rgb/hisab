@@ -87,7 +87,7 @@ function extractDominantColors(image: JimpImage) {
 }
 
 function deriveTheme(colors: string[]): ThemePalette {
-  const [primary = "#1f7a53", secondary = "#204f8c", accent = "#c58e3d"] = colors;
+  const [primary = "#3fae2a", secondary = "#2a2a2a", accent = "#5bc63f"] = colors;
   const ink = luminance(parseInt(primary.slice(1, 3), 16), parseInt(primary.slice(3, 5), 16), parseInt(primary.slice(5, 7), 16)) > 0.55
     ? "#102018"
     : "#ffffff";

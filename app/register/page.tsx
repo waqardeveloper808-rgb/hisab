@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AuthShell } from "@/components/AuthShell";
 import { RegisterForm } from "@/components/auth/RegisterForm";
+import { appName } from "@/lib/brand";
 import { authSessionCookieName, readAuthSession } from "@/lib/auth-session";
 import { getProductConfig } from "@/lib/product-config";
 
@@ -15,14 +16,14 @@ export default async function RegisterPage() {
   const config = await getProductConfig();
 
   if (session) {
-    redirect("/workspace/user");
+    redirect(session.workspaceContext?.activeCompany?.id ? "/workspace/user" : "/onboarding/company");
   }
 
   return (
     <AuthShell
       eyebrow="Get started"
-      title="Start your ZATCA-compliant invoicing trial"
-      description="Create your account, get full access for 45 days, and keep one invoice per month free after the trial if you want to stay light."
+      title={`Start your ${appName} trial`}
+      description={`Create your account, get full access for ${config.freeTrialDays} days, and keep one invoice per month free after the trial if you want to stay light.`}
       checklist={[
         `${config.freeTrialDays}-day free trial`,
         `${config.freeInvoiceLimit} invoice per month free`,

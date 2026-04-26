@@ -12,9 +12,10 @@ class AuthenticateWorkspaceRequest
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $allowsCompanylessRequest = $this->allowsCompanylessRequest($request);
         $company = $this->resolveActiveCompany($request);
 
-        if (! $company) {
+        if (! $company && ! $allowsCompanylessRequest) {
             abort(401, 'Workspace company is not configured.');
         }
 
@@ -29,7 +30,7 @@ class AuthenticateWorkspaceRequest
             abort(401, 'Unauthenticated.');
         }
 
-        $user = $this->resolveWorkspaceUser($request);
+        $user = $this->resolveWorkspaceUser($request, $allowsCompanylessRequest);
 
         if (! $user) {
             abort(401, 'Workspace actor is not configured.');
@@ -38,6 +39,11 @@ class AuthenticateWorkspaceRequest
         $request->setUserResolver(static fn (): User => $user);
 
         return $next($request);
+    }
+
+    private function allowsCompanylessRequest(Request $request): bool
+    {
+        return $request->is('api/companies') && $request->isMethod('post');
     }
 
     private function resolveActiveCompany(Request $request): ?Company
@@ -60,7 +66,7 @@ class AuthenticateWorkspaceRequest
         return null;
     }
 
-    private function resolveWorkspaceUser(Request $request): ?User
+    private function resolveWorkspaceUser(Request $request, bool $allowWithoutCompany = false): ?User
     {
         $company = $this->resolveActiveCompany($request);
         $actorId = (int) $request->header('X-Gulf-Hisab-Actor-Id', 0);
@@ -74,6 +80,10 @@ class AuthenticateWorkspaceRequest
             if ($companyUser) {
                 return $companyUser;
             }
+        }
+
+        if ($allowWithoutCompany && $actorId > 0) {
+            return User::query()->find($actorId);
         }
 
         if ($actorId > 0) {

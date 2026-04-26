@@ -5,13 +5,13 @@ import { buildDocumentHtml, buildInvoiceRenderModel } from "@/lib/document-engin
 function createModel(type: string) {
   return buildInvoiceRenderModel({
     company: {
-      legalName: "Gulf Hisab LLC",
-      tradeName: "Gulf Hisab",
-      englishName: "Gulf Hisab",
+      legalName: "Hisabix LLC",
+      tradeName: "Hisabix",
+      englishName: "Hisabix",
       arabicName: "جلف حساب",
       taxNumber: "300000000000003",
       registrationNumber: "1010101010",
-      email: "finance@gulfhisab.sa",
+      email: "finance@hisabix.sa",
       phone: "+966500000000",
       shortAddress: "Riyadh, Saudi Arabia",
       addressStreet: "King Fahd Road",

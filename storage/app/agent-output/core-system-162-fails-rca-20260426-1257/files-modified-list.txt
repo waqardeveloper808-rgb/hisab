@@ -1,0 +1,6 @@
+NONE (application / lib / backend / app / components)
+
+CREATED (artifact outputs only, under storage/app/agent-output):
+- core-system-162-fails-rca-20260426-1257/ (9 markdown files + this list + execution-log.md)
+- core-system-162-fails-rca-20260426-1257.zip
+- core-system-rca-20260426-1257/core-system-fail-list-freeze.md (copy for TASK1 path)

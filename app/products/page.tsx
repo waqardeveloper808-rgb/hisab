@@ -4,6 +4,8 @@ import { Container } from "@/components/Container";
 import { ModuleCard } from "@/components/ModuleCard";
 import { SectionHeader } from "@/components/SectionHeader";
 import { productModules, reportsModule } from "@/data/product";
+import { appName } from "@/lib/brand";
+import { getProductConfig } from "@/lib/product-config";
 
 const connectionFlow = [
   {
@@ -24,7 +26,8 @@ export const metadata = {
   title: "Products",
 };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const config = await getProductConfig();
   const modules = [...productModules, reportsModule];
 
   return (
@@ -46,7 +49,7 @@ export default function ProductsPage() {
               One product promise: create invoice, send it, and stay compliant.
             </h2>
             <p className="mt-4 max-w-xl text-base leading-7 text-muted">
-              The public story stays simple so a business owner knows what Gulf Hisab does within a few seconds and sees the same structure on the homepage and the standalone product page.
+              The public story stays simple so a business owner knows what {appName} does within a few seconds and sees the same structure on the homepage and the standalone product page.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -94,7 +97,7 @@ export default function ProductsPage() {
         <div className="mt-10 flex flex-col gap-3 rounded-[1.85rem] border border-line bg-white px-6 py-6 shadow-[0_18px_38px_-30px_rgba(17,32,24,0.12)] sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-xl font-semibold text-ink">See the pricing path from free trial to monthly plan.</h2>
-            <p className="mt-2 text-sm text-muted">Start with the 45-day trial, then decide if the 40 SAR Plus Plan fits the business.</p>
+            <p className="mt-2 text-sm text-muted">Start with the {config.freeTrialDays}-day trial, then decide if the {config.paidPlanMonthlyPriceSar} SAR monthly plan fits the business.</p>
           </div>
           <Button href="/plans" size="lg">View pricing</Button>
         </div>

@@ -13,12 +13,6 @@ export function LoginForm() {
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  function applyDummyLogin() {
-    setEmail("demo@gulfhisab.local");
-    setPassword("demo123");
-    setErrorMessage(null);
-  }
-
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage(null);
@@ -44,7 +38,8 @@ export function LoginForm() {
         return;
       }
 
-      router.push("/workspace/user");
+      const payload = await response.json().catch(() => null) as { data?: { company_id?: number | null } } | null;
+      router.push(payload?.data?.company_id ? "/workspace/user" : "/onboarding/company");
       router.refresh();
     } finally {
       setSaving(false);
@@ -57,21 +52,13 @@ export function LoginForm() {
         <Input label="Email" type="email" name="email" placeholder="name@company.sa" required value={email} onChange={(event) => setEmail(event.target.value)} />
         <Input label="Password" type="password" name="password" placeholder="Enter your password" required value={password} onChange={(event) => setPassword(event.target.value)} />
 
-        <button
-          type="button"
-          className="text-sm font-semibold text-brand hover:text-brand-dark"
-          onClick={applyDummyLogin}
-        >
-          Use dummy login
-        </button>
-
         <div className="flex items-center justify-between gap-4 text-sm">
           <label className="flex items-center gap-2 text-muted">
             <input type="checkbox" className="size-4 rounded border-line-strong text-brand focus:ring-brand/20" />
             <span>Remember me</span>
           </label>
-          <Link href="/helpdesk-ai" className="font-semibold text-brand hover:text-brand-dark">
-            Forgot password?
+          <Link href="/help" className="font-semibold text-brand hover:text-brand-dark">
+            Need help signing in?
           </Link>
         </div>
 

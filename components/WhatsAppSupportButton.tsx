@@ -46,7 +46,7 @@ export function WhatsAppSupportButton({ href }: WhatsAppSupportButtonProps) {
       rel="noreferrer"
       aria-label="Open WhatsApp support"
       onPointerDown={handlePointerDown}
-      className="support-pulse fixed z-40 inline-flex items-center gap-2 rounded-full border border-[#0d8f63] bg-[#11a36e] px-3 py-2 text-xs font-semibold text-white shadow-[0_20px_44px_-22px_rgba(17,163,110,0.55)] hover:bg-[#0d8f63]"
+      className="support-pulse fixed z-40 inline-flex items-center gap-2 rounded-full border border-brand-dark bg-primary px-3 py-2 text-xs font-semibold text-white shadow-[0_20px_44px_-22px_rgba(63,174,42,0.38)] hover:bg-primary-hover active:bg-brand-dark"
       style={{ right: `${position.x}px`, bottom: `${position.y}px`, touchAction: "none" }}
     >
       <span className="flex size-7 items-center justify-center rounded-full bg-white/16">

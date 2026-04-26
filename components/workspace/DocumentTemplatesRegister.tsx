@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Input } from "@/components/Input";
@@ -10,6 +12,7 @@ import { buildTemplateRegister } from "@/data/document-template-adapter";
 import { buildDefaultSchemaSettings } from "@/lib/document-platform/schema";
 import {
   createDocumentTemplate,
+  exportDocumentTemplatePdf,
   listCompanyAssets,
   listDocumentTemplates,
   previewDocumentTemplate,
@@ -22,9 +25,9 @@ import {
 const sectionChoices = ["header", "title", "document-info", "delivery", "customer", "items", "totals", "notes", "footer"];
 const fontChoices = ["Segoe UI", "Arial", "Georgia", "Tahoma", "Times New Roman"];
 const templatePresets = [
-  { key: "classic_corporate", label: "Classic Corporate", detail: "Dense formal document with thin borders, tight spacing, and accountant-first hierarchy.", settings: { layout: "classic_corporate", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 4, column: 1, span: 1 }, totals: { row: 4, column: 2, span: 1 }, items: { row: 5, column: 1, span: 2 }, notes: { row: 6, column: 1, span: 1 }, footer: { row: 6, column: 2, span: 1 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Segoe UI", font_size: 12, title_font_size: 26, spacing_scale: 0.9, section_gap: 8, canvas_padding: 14, top_bar_height: 3, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
-  { key: "modern_carded", label: "Modern Carded", detail: "Cleaner visual separation with softer panels and slightly more breathing room while remaining document-grade.", settings: { layout: "modern_carded", card_style: "outlined", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, customer: { row: 3, column: 1, span: 1 }, "document-info": { row: 3, column: 2, span: 1 }, items: { row: 4, column: 1, span: 2 }, notes: { row: 5, column: 1, span: 1 }, totals: { row: 5, column: 2, span: 1 }, delivery: { row: 6, column: 1, span: 2 }, footer: { row: 7, column: 1, span: 2 } }), watermark_enabled: true, watermark_logo_mode: "centered", font_family: "Segoe UI", font_size: 12, title_font_size: 27, spacing_scale: 1.04, section_gap: 14, canvas_padding: 20, top_bar_height: 5, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
-  { key: "industrial_supply", label: "Industrial / Supply Chain", detail: "Data-heavy operational document with stronger tables, compact notes, and minimal decorative treatment.", settings: { layout: "industrial_supply", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 3, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 3 }, title: { row: 2, column: 1, span: 3 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 3, column: 3, span: 1 }, items: { row: 4, column: 1, span: 3 }, notes: { row: 5, column: 1, span: 2 }, totals: { row: 5, column: 3, span: 1 }, footer: { row: 6, column: 1, span: 3 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Tahoma", font_size: 12, title_font_size: 25, spacing_scale: 0.9, section_gap: 10, canvas_padding: 16, top_bar_height: 4, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
+  { key: "classic_corporate", label: "Standard", detail: "Balanced default layout for everyday invoicing with dense spacing, bilingual hierarchy, and dependable print parity.", settings: { layout: "classic_corporate", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 4, column: 1, span: 1 }, totals: { row: 4, column: 2, span: 1 }, items: { row: 5, column: 1, span: 2 }, notes: { row: 6, column: 1, span: 1 }, footer: { row: 6, column: 2, span: 1 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Segoe UI", font_size: 12, title_font_size: 26, spacing_scale: 0.9, section_gap: 8, canvas_padding: 14, top_bar_height: 3, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
+  { key: "modern_carded", label: "Modern", detail: "Cleaner visual separation with softer panels and a client-facing presentation while remaining PDF-safe.", settings: { layout: "modern_carded", card_style: "outlined", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, customer: { row: 3, column: 1, span: 1 }, "document-info": { row: 3, column: 2, span: 1 }, items: { row: 4, column: 1, span: 2 }, notes: { row: 5, column: 1, span: 1 }, totals: { row: 5, column: 2, span: 1 }, delivery: { row: 6, column: 1, span: 2 }, footer: { row: 7, column: 1, span: 2 } }), watermark_enabled: true, watermark_logo_mode: "centered", font_family: "Segoe UI", font_size: 12, title_font_size: 27, spacing_scale: 1.04, section_gap: 14, canvas_padding: 20, top_bar_height: 5, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
+  { key: "industrial_supply", label: "Compact", detail: "Compact data-first layout for operational documents with tighter spacing and stronger tabular emphasis.", settings: { layout: "industrial_supply", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 3, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 3 }, title: { row: 2, column: 1, span: 3 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 3, column: 3, span: 1 }, items: { row: 4, column: 1, span: 3 }, notes: { row: 5, column: 1, span: 2 }, totals: { row: 5, column: 3, span: 1 }, footer: { row: 6, column: 1, span: 3 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Tahoma", font_size: 12, title_font_size: 25, spacing_scale: 0.9, section_gap: 10, canvas_padding: 16, top_bar_height: 4, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
 ] as const;
 
 type SectionLayoutSetting = {
@@ -32,6 +35,31 @@ type SectionLayoutSetting = {
   column: number;
   span: number;
 };
+
+function EditableHtmlBlock({
+  label,
+  value,
+  placeholder,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="rounded-xl border border-line bg-surface-soft p-2.5">
+      <p className="text-xs font-semibold text-ink">{label}</p>
+      <div
+        contentEditable
+        suppressContentEditableWarning
+        onBlur={(event) => onChange(event.currentTarget.innerHTML)}
+        className="mt-2 min-h-[5.5rem] rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10"
+        dangerouslySetInnerHTML={{ __html: value || `<p>${placeholder}</p>` }}
+      />
+    </div>
+  );
+}
 
 function buildDefaultSectionLayout(columns: number): Record<string, SectionLayoutSetting> {
   if (columns >= 3) {
@@ -181,36 +209,55 @@ type ItemColumnConfig = {
 };
 
 const fallbackItemColumnConfig: ItemColumnConfig[] = [
-  { key: "serial", width: 5, visible: true },
-  { key: "description", width: 37, visible: true },
-  { key: "quantity", width: 9, visible: true },
-  { key: "unit_price", width: 13, visible: true },
-  { key: "taxable", width: 13, visible: true },
-  { key: "vat", width: 10, visible: true },
-  { key: "total", width: 13, visible: true },
+  { key: "serial", width: 4, visible: true },
+  { key: "description", width: 26, visible: true },
+  { key: "quantity", width: 7, visible: true },
+  { key: "unit", width: 7, visible: true },
+  { key: "unit_price", width: 9, visible: true },
+  { key: "taxable", width: 11, visible: true },
+  { key: "vat_rate", width: 7, visible: true },
+  { key: "vat", width: 9, visible: true },
+  { key: "total", width: 20, visible: true },
 ];
+
+const ITEM_COLUMN_LABELS: Record<string, string> = {
+  serial: "#",
+  description: "Description",
+  quantity: "Qty",
+  unit: "Unit",
+  unit_price: "Rate",
+  taxable: "Taxable",
+  vat_rate: "VAT %",
+  vat: "VAT",
+  total: "Total",
+};
 
 function parseItemColumnConfig(template: DocumentTemplateRecord): ItemColumnConfig[] {
   const raw = getSettingValue(template, "item_table_columns", "");
-  if (!raw.trim()) {
-    return fallbackItemColumnConfig;
+  let parsed: ItemColumnConfig[] = [];
+
+  if (raw.trim()) {
+    try {
+      const json = JSON.parse(raw) as Array<Partial<ItemColumnConfig>>;
+      parsed = json
+        .filter((entry): entry is Partial<ItemColumnConfig> & { key: string } => typeof entry?.key === "string")
+        .map((entry) => ({
+          key: entry.key,
+          width: Math.max(3, Math.min(60, Number(entry.width) || 10)),
+          visible: typeof entry.visible === "boolean" ? entry.visible : true,
+        }));
+    } catch {
+      parsed = [];
+    }
   }
 
-  try {
-    const parsed = JSON.parse(raw) as Array<Partial<ItemColumnConfig>>;
-
-    const normalized = parsed
-      .filter((entry): entry is Partial<ItemColumnConfig> & { key: string } => typeof entry?.key === "string")
-      .map((entry) => ({
-        key: entry.key,
-        width: Math.max(5, Math.min(60, Number(entry.width) || 10)),
-        visible: typeof entry.visible === "boolean" ? entry.visible : true,
-      }));
-
-    return normalized.length ? normalized : fallbackItemColumnConfig;
-  } catch {
-    return fallbackItemColumnConfig;
-  }
+  const byKey = new Map(parsed.map((column) => [column.key, column]));
+  return fallbackItemColumnConfig.map((defaults) => {
+    const override = byKey.get(defaults.key);
+    return override
+      ? { key: defaults.key, width: override.width, visible: override.visible }
+      : { ...defaults };
+  });
 }
 
 function formatLocale(localeMode: string) {
@@ -249,6 +296,8 @@ export function DocumentTemplatesRegister(props?: {
   titleOverride?: string;
 }) {
   const { initialDocumentType, eyebrowOverride, titleOverride } = props ?? {};
+  const router = useRouter();
+  const pathname = usePathname();
   const [templates, setTemplates] = useState<DocumentTemplateRecord[]>([]);
   const [assets, setAssets] = useState<CompanyAssetRecord[]>([]);
   const [, setSelectedTemplateId] = useState<number | null>(null);
@@ -257,12 +306,16 @@ export function DocumentTemplatesRegister(props?: {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [localeFilter, setLocaleFilter] = useState("all");
   const [isFullscreen, setIsFullscreen] = useState(true);
   const [draggedSection, setDraggedSection] = useState<string | null>(null);
+  const [signatureUploadIntent, setSignatureUploadIntent] = useState<File | null>(null);
+  const [signatoryFormName, setSignatoryFormName] = useState("");
+  const [signatoryFormPosition, setSignatoryFormPosition] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -442,7 +495,11 @@ export function DocumentTemplatesRegister(props?: {
     setFeedback(`${preset.label} preset applied.`);
   }
 
-  async function handleAssetUpload(file: File, usage: "logo" | "stamp" | "signature") {
+  async function handleAssetUpload(
+    file: File,
+    usage: "logo" | "stamp" | "signature",
+    signatory?: { name: string; position: string },
+  ) {
     setUploadingLogo(true);
     setFeedback(null);
     setError(null);
@@ -470,6 +527,18 @@ export function DocumentTemplatesRegister(props?: {
               ...current.settings,
               watermark_enabled: true,
               watermark_logo_mode: "full-width",
+            },
+          };
+        }
+
+        if (usage === "signature" && signatory) {
+          return {
+            ...current,
+            settings: {
+              ...current.settings,
+              signature_asset_id: uploaded.id,
+              signatory_name: signatory.name.trim(),
+              signatory_position: signatory.position.trim(),
             },
           };
         }
@@ -594,12 +663,41 @@ export function DocumentTemplatesRegister(props?: {
 
       return {
         ...column,
-        width: patch.width !== undefined ? Math.max(5, Math.min(60, patch.width || 10)) : column.width,
+        width: patch.width !== undefined ? Math.max(3, Math.min(60, patch.width || 10)) : column.width,
         visible: patch.visible !== undefined ? patch.visible : column.visible,
       };
     });
 
     updateDraftSettings({ item_table_columns: JSON.stringify(nextColumns) });
+  }
+
+  function moveItemColumn(key: string, direction: -1 | 1) {
+    if (!draft) {
+      return;
+    }
+
+    const cols = parseItemColumnConfig(draft);
+    const index = cols.findIndex((column) => column.key === key);
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= cols.length) {
+      return;
+    }
+
+    const next = [...cols];
+    [next[index], next[nextIndex]] = [next[nextIndex], next[index]];
+    updateDraftSettings({ item_table_columns: JSON.stringify(next) });
+  }
+
+  async function confirmSignatureUploadFromModal() {
+    if (!signatureUploadIntent) {
+      return;
+    }
+
+    await handleAssetUpload(signatureUploadIntent, "signature", {
+      name: signatoryFormName,
+      position: signatoryFormPosition,
+    });
+    setSignatureUploadIntent(null);
   }
 
   async function handleCreateTemplate() {
@@ -618,7 +716,7 @@ export function DocumentTemplatesRegister(props?: {
         name: `New ${documentType.replaceAll("_", " ")} template`,
         documentTypes: [documentType],
         localeMode: draft?.localeMode ?? "bilingual",
-        accentColor: draft?.accentColor ?? "#1f7a53",
+        accentColor: draft?.accentColor ?? "#3FAE2A",
         watermarkText: "",
         headerHtml: "",
         footerHtml: "",
@@ -713,6 +811,61 @@ export function DocumentTemplatesRegister(props?: {
     }
   }
 
+  async function handleDownloadPdf() {
+    if (!draft) {
+      return;
+    }
+
+    setExportingPdf(true);
+    setFeedback(null);
+    setError(null);
+
+    try {
+      const result = await exportDocumentTemplatePdf({
+        name: draft.name,
+        documentTypes: draft.documentTypes,
+        localeMode: draft.localeMode,
+        accentColor: draft.accentColor,
+        watermarkText: draft.watermarkText,
+        headerHtml: draft.headerHtml,
+        footerHtml: draft.footerHtml,
+        settings: draft.settings,
+        logoAssetId: draft.logoAssetId,
+        isDefault: draft.isDefault,
+        isActive: draft.isActive,
+      }, draft.documentTypes[0] ?? initialDocumentType ?? "tax_invoice");
+
+      const anchor = document.createElement("a");
+      anchor.href = result.url;
+      anchor.download = result.fileName;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(result.url), 1000);
+      setFeedback(`${result.fileName} downloaded.`);
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : "Template PDF could not be downloaded.");
+    } finally {
+      setExportingPdf(false);
+    }
+  }
+
+  function getWorkspaceHref() {
+    if (initialDocumentType) {
+      return pathname || "/workspace/user/document-templates";
+    }
+
+    return "/workspace/user";
+  }
+
+  function getTemplateHubHref() {
+    return pathname || "/workspace/user/document-templates";
+  }
+
+  function handleExitEditor() {
+    router.push(getTemplateHubHref());
+  }
+
   const logoAssets = useMemo(() => assets.filter((asset) => asset.usage === "logo" || asset.type === "logo"), [assets]);
   const stampAssets = useMemo(() => assets.filter((asset) => asset.usage === "stamp"), [assets]);
   const signatureAssets = useMemo(() => assets.filter((asset) => asset.usage === "signature"), [assets]);
@@ -749,8 +902,7 @@ export function DocumentTemplatesRegister(props?: {
               { label: "Active", value: (row) => row.isActive },
             ]}
           />
-          <Button variant="secondary" onClick={() => void handleCreateTemplate()} disabled={saving}>{saving ? "Working" : "Create Template"}</Button>
-          {draft ? <Button onClick={() => void handleSave()} disabled={saving}>{saving ? "Saving" : "Save"}</Button> : null}
+          {!draft ? <Button variant="secondary" onClick={() => void handleCreateTemplate()} disabled={saving}>{saving ? "Working" : "Create Template"}</Button> : null}
         </div>
       </div>
 
@@ -758,6 +910,33 @@ export function DocumentTemplatesRegister(props?: {
       {error ? <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div> : null}
 
       <Card className={["overflow-hidden rounded-2xl bg-white/95 p-0", isFullscreen ? "fixed inset-0 z-50 rounded-none" : "min-h-[78vh]"].join(" ")}>
+        <div className="border-b border-line bg-white/95 px-3 py-2 backdrop-blur">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="secondary" size="sm" onClick={handleExitEditor}>
+                Exit Editor
+              </Button>
+              <Link href={getWorkspaceHref()} className="inline-flex min-h-[var(--control-button)] items-center justify-center rounded-[var(--radius-sm)] border border-line bg-white px-2.5 py-1 text-sm font-semibold text-ink hover:border-primary/30 hover:bg-primary-soft hover:text-primary">
+                Back to Workspace
+              </Link>
+              <Link href={getTemplateHubHref()} className="inline-flex min-h-[var(--control-button)] items-center justify-center rounded-[var(--radius-sm)] border border-line bg-white px-2.5 py-1 text-sm font-semibold text-ink hover:border-primary/30 hover:bg-primary-soft hover:text-primary">
+                Template Register
+              </Link>
+              <span className="rounded-full border border-line bg-surface-soft px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">
+                Full-screen editor
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button size="sm" variant="secondary" onClick={() => setIsFullscreen((v) => !v)}>
+                {isFullscreen ? "Windowed" : "Fullscreen"}
+              </Button>
+              {draft ? <Button size="sm" variant="secondary" onClick={() => void handleDuplicate(draft)} disabled={saving}>Duplicate</Button> : null}
+              {draft ? <Button size="sm" variant="secondary" onClick={() => void handleSetDefault(draft)} disabled={saving || draft.isDefault}>{draft.isDefault ? "Default" : "Set Default"}</Button> : null}
+              {draft ? <Button size="sm" variant="secondary" onClick={() => void handleDownloadPdf()} disabled={exportingPdf}>{exportingPdf ? "Downloading PDF" : "Download PDF"}</Button> : null}
+              {draft ? <Button size="sm" onClick={() => void handleSave()} disabled={saving}>{saving ? "Saving" : "Save"}</Button> : null}
+            </div>
+          </div>
+        </div>
         <div className="grid gap-1.5 border-b border-line px-3 py-2 md:grid-cols-[1.2fr_0.8fr_auto]">
           <Input label="Search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search template or document type" labelClassName="mb-1 text-[10px]" inputClassName="h-10 rounded-lg px-3 text-sm" />
           <div>
@@ -779,7 +958,7 @@ export function DocumentTemplatesRegister(props?: {
 
         {draft ? (
           <div className="grid gap-0 xl:grid-cols-[16rem_minmax(0,1fr)_23rem]">
-            <aside className="border-r border-line bg-[#f7fbf8] p-3 xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
+            <aside className="border-r border-line bg-[#f5f5f5] p-3 xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
               <div className="flex items-center justify-between gap-2 mb-3">
                 <button type="button" onClick={() => { setSelectedTemplateId(null); setDraft(null); setFeedback(null); setError(null); }} className="text-sm font-semibold text-primary hover:underline">← Templates</button>
                 <span className="rounded-full border border-line bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">Studio</span>
@@ -841,9 +1020,7 @@ export function DocumentTemplatesRegister(props?: {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded-full border border-line bg-surface-soft px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">{formatLocale(draft.localeMode)}</span>
-                  <Button size="xs" variant="secondary" onClick={() => setIsFullscreen((v) => !v)}>{isFullscreen ? "Windowed" : "Fullscreen"}</Button>
-                  <Button size="xs" variant="secondary" onClick={() => void handleDuplicate(draft)} disabled={saving}>Duplicate</Button>
-                  <Button size="xs" onClick={() => void handleSave()} disabled={saving}>{saving ? "Saving" : "Save"}</Button>
+                  <span className="rounded-full border border-primary/20 bg-primary-soft px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-primary">Preview = PDF</span>
                 </div>
               </div>
               <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1">
@@ -909,16 +1086,57 @@ export function DocumentTemplatesRegister(props?: {
             </div>
 
             <div className={["overflow-y-auto border-l border-line bg-white", isFullscreen ? "max-h-[calc(100vh-3rem)]" : "max-h-[85vh]"].join(" ")}>
-              <div className="sticky top-0 z-10 border-b border-line bg-white px-3 py-3">
+              <div className="sticky top-0 z-10 border-b border-line bg-white px-2 py-2">
                 <h3 className="text-sm font-semibold text-ink">Inspector</h3>
-                <p className="mt-1 text-[11px] leading-5 text-muted">Secondary controls live here. The canvas stays primary while you tune the output.</p>
+                <p className="mt-0.5 text-[10px] leading-snug text-muted">Tune layout; preview updates live.</p>
               </div>
-              <div className="grid gap-3 p-3">
-                <Input label="Template name" value={draft.name} onChange={(event) => updateDraft({ name: event.target.value })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
+              <div className="grid gap-2 p-2">
+                <Input label="Template name" value={draft.name} onChange={(event) => updateDraft({ name: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2.5 text-sm" />
+                <div className="rounded-lg border-2 border-emerald-400/50 bg-emerald-50/50 p-2">
+                  <p className="text-[11px] font-bold text-ink">Totals Card Width</p>
+                  <p className="mt-0.5 text-[10px] leading-snug text-muted">Pixel max-width for the totals block in live preview (280–720). Saves with the template.</p>
+                  <div className="mt-1.5 flex items-center gap-1">
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line bg-white text-base font-bold text-ink hover:bg-surface-soft"
+                      aria-label="Decrease totals card width"
+                      onClick={() => {
+                        const current = Math.min(720, Math.max(280, Number(getSettingValue(draft, "totals_card_width_px", "540")) || 540));
+                        updateDraftSettings({ totals_card_width_px: Math.max(280, current - 10) });
+                      }}
+                    >
+                      −
+                    </button>
+                    <input
+                      id="template-totals-card-width-px"
+                      type="number"
+                      min={280}
+                      max={720}
+                      step={10}
+                      className="h-9 min-w-0 flex-1 rounded-lg border border-line-strong bg-white px-2 text-center text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
+                      value={getSettingValue(draft, "totals_card_width_px", "540")}
+                      onChange={(event) => {
+                        const n = Number(event.target.value);
+                        updateDraftSettings({ totals_card_width_px: Number.isFinite(n) ? Math.min(720, Math.max(280, n)) : 540 });
+                      }}
+                    />
+                    <button
+                      type="button"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line bg-white text-base font-bold text-ink hover:bg-surface-soft"
+                      aria-label="Increase totals card width"
+                      onClick={() => {
+                        const current = Math.min(720, Math.max(280, Number(getSettingValue(draft, "totals_card_width_px", "540")) || 540));
+                        updateDraftSettings({ totals_card_width_px: Math.min(720, current + 10) });
+                      }}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
                 <div className="grid gap-3 grid-cols-2">
                   <div>
                     <label htmlFor="template-language" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Language</label>
-                    <select id="template-language" value={draft.localeMode} onChange={(event) => updateDraft({ localeMode: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
+                    <select id="template-language" value={draft.localeMode} onChange={(event) => updateDraft({ localeMode: event.target.value })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
                       <option value="bilingual">Bilingual</option>
                       <option value="en">English</option>
                       <option value="ar">Arabic</option>
@@ -926,22 +1144,49 @@ export function DocumentTemplatesRegister(props?: {
                   </div>
                   <div>
                     <label htmlFor="template-status" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Status</label>
-                    <select id="template-status" value={draft.isActive ? "active" : "inactive"} onChange={(event) => updateDraft({ isActive: event.target.value === "active" })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
+                    <select id="template-status" value={draft.isActive ? "active" : "inactive"} onChange={(event) => updateDraft({ isActive: event.target.value === "active" })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
                     </select>
                   </div>
                 </div>
-                <div className="grid gap-3 grid-cols-2">
-                  <Input label="Accent color" value={draft.accentColor} onChange={(event) => updateDraft({ accentColor: event.target.value })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
+                <div className="grid gap-2 grid-cols-2">
+                  <div className="flex items-end gap-1.5">
+                    <Input label="Accent" value={draft.accentColor} onChange={(event) => updateDraft({ accentColor: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 min-w-0 flex-1 rounded-lg px-2 text-sm" />
+                    <input type="color" value={draft.accentColor.length === 7 ? draft.accentColor : "#3FAE2A"} onChange={(event) => updateDraft({ accentColor: event.target.value })} className="h-8 w-9 shrink-0 cursor-pointer rounded border border-line-strong bg-white p-0.5" aria-label="Accent color picker" />
+                  </div>
                   <div>
-                    <label htmlFor="template-layout" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Template family</label>
-                    <select id="template-layout" value={normalizeTemplateFamily(getSettingValue(draft, "layout", "classic_corporate"))} onChange={(event) => updateDraftSettings({ layout: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
-                      <option value="classic_corporate">Classic Corporate</option>
-                      <option value="modern_carded">Modern Carded</option>
-                      <option value="industrial_supply">Industrial / Supply Chain</option>
+                    <label htmlFor="template-layout" className="mb-0.5 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Template family</label>
+                    <select id="template-layout" value={normalizeTemplateFamily(getSettingValue(draft, "layout", "classic_corporate"))} onChange={(event) => updateDraftSettings({ layout: event.target.value })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
+                      <option value="classic_corporate">Standard</option>
+                      <option value="modern_carded">Modern</option>
+                      <option value="industrial_supply">Compact</option>
                     </select>
                   </div>
+                </div>
+                <div className="grid gap-2 grid-cols-2">
+                  <div className="flex items-end gap-1.5">
+                    <Input label="English text" value={getSettingValue(draft, "text_color_en", "")} onChange={(event) => updateDraftSettings({ text_color_en: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 min-w-0 flex-1 rounded-lg px-2 text-sm" placeholder="(theme default)" />
+                    <input type="color" value={getSettingValue(draft, "text_color_en", "").length === 7 ? getSettingValue(draft, "text_color_en", "") : "#13231b"} onChange={(event) => updateDraftSettings({ text_color_en: event.target.value })} className="h-8 w-9 shrink-0 cursor-pointer rounded border border-line-strong bg-white p-0.5" aria-label="English text color" />
+                  </div>
+                  <div className="flex items-end gap-1.5">
+                    <Input label="Arabic text" value={getSettingValue(draft, "text_color_ar", "")} onChange={(event) => updateDraftSettings({ text_color_ar: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 min-w-0 flex-1 rounded-lg px-2 text-sm" placeholder="(theme default)" />
+                    <input type="color" value={getSettingValue(draft, "text_color_ar", "").length === 7 ? getSettingValue(draft, "text_color_ar", "") : "#13231b"} onChange={(event) => updateDraftSettings({ text_color_ar: event.target.value })} className="h-8 w-9 shrink-0 cursor-pointer rounded border border-line-strong bg-white p-0.5" aria-label="Arabic text color" />
+                  </div>
+                </div>
+                <div className="grid gap-3">
+                  <EditableHtmlBlock
+                    label="Header copy"
+                    value={draft.headerHtml}
+                    placeholder="Add a short bilingual header note or approval message."
+                    onChange={(value) => updateDraft({ headerHtml: value })}
+                  />
+                  <EditableHtmlBlock
+                    label="Footer copy"
+                    value={draft.footerHtml}
+                    placeholder="Add footer guidance, payment terms, or compliance notes."
+                    onChange={(value) => updateDraft({ footerHtml: value })}
+                  />
                 </div>
                 <div>
                   <label htmlFor="template-card-style" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Card style</label>
@@ -1036,12 +1281,33 @@ export function DocumentTemplatesRegister(props?: {
                   </div>
                   <div>
                     <label htmlFor="template-body-align" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Body alignment</label>
-                    <select id="template-body-align" value={getSettingValue(draft, "body_align", "left")} onChange={(event) => updateDraftSettings({ body_align: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
+                    <select id="template-body-align" value={getSettingValue(draft, "body_align", "left")} onChange={(event) => updateDraftSettings({ body_align: event.target.value })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
                       <option value="left">Left</option>
                       <option value="center">Center</option>
                       <option value="right">Right</option>
                     </select>
                   </div>
+                </div>
+                <div className="rounded-lg border border-line bg-surface-soft p-2">
+                  <p className="text-[11px] font-semibold text-ink">Totals card &amp; QR</p>
+                  <p className="mt-0.5 text-[10px] text-muted">Card size, padding, and three internal columns (description / ﷼ / amount).</p>
+                  <div className="mt-2 grid gap-1.5 grid-cols-2">
+                    <Input label="Totals max px (legacy cap)" value={getSettingValue(draft, "totals_card_max_width_px", "0")} onChange={(event) => updateDraftSettings({ totals_card_max_width_px: Number(event.target.value) || 0 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Min height px" value={getSettingValue(draft, "totals_card_min_height_px", "0")} onChange={(event) => updateDraftSettings({ totals_card_min_height_px: Number(event.target.value) || 0 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Min block width" value={getSettingValue(draft, "totals_block_min_width_px", "300")} onChange={(event) => updateDraftSettings({ totals_block_min_width_px: Number(event.target.value) || 300 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Card padding px" value={getSettingValue(draft, "totals_card_padding_px", "10")} onChange={(event) => updateDraftSettings({ totals_card_padding_px: Number(event.target.value) || 10 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Row gap px" value={getSettingValue(draft, "totals_row_gap_px", "6")} onChange={(event) => updateDraftSettings({ totals_row_gap_px: Number(event.target.value) || 6 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Col: description" value={getSettingValue(draft, "totals_col_desc_fr", "140")} onChange={(event) => updateDraftSettings({ totals_col_desc_fr: Number(event.target.value) || 140 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Col: currency" value={getSettingValue(draft, "totals_col_currency_fr", "40")} onChange={(event) => updateDraftSettings({ totals_col_currency_fr: Number(event.target.value) || 40 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Col: amount" value={getSettingValue(draft, "totals_col_amount_fr", "100")} onChange={(event) => updateDraftSettings({ totals_col_amount_fr: Number(event.target.value) || 100 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="Symbol (﷼)" value={getSettingValue(draft, "totals_currency_symbol", "﷼")} onChange={(event) => updateDraftSettings({ totals_currency_symbol: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="QR card width %" value={getSettingValue(draft, "qr_card_width_pct", "38")} onChange={(event) => updateDraftSettings({ qr_card_width_pct: Number(event.target.value) || 38 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    <Input label="QR image px" value={getSettingValue(draft, "qr_image_max_px", "88")} onChange={(event) => updateDraftSettings({ qr_image_max_px: Number(event.target.value) || 88 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                  </div>
+                  <label className="mt-2 inline-flex items-center gap-2 rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">
+                    <input type="checkbox" checked={getBooleanSetting(draft, "totals_show_taxable_row", false)} onChange={(event) => updateDraftSettings({ totals_show_taxable_row: event.target.checked })} />
+                    Show taxable row in totals
+                  </label>
                 </div>
                 <div className="rounded-xl border border-line bg-surface-soft p-2.5">
                   <p className="text-xs font-semibold text-ink">Bilingual labels</p>
@@ -1060,11 +1326,14 @@ export function DocumentTemplatesRegister(props?: {
                       ["order_number", "Order Number"],
                       ["project", "Project"],
                       ["quantity", "Qty"],
+                      ["unit", "Unit"],
                       ["unit_price", "Unit Price"],
                       ["taxable", "Taxable"],
+                      ["vat_rate", "VAT %"],
                       ["vat", "VAT"],
                       ["total", "Total"],
                       ["subtotal", "Subtotal"],
+                      ["total_vat", "Total VAT"],
                       ["grand_total", "Grand Total"],
                     ].map(([key, label]) => (
                       <div key={`label-edit-${key}`} className="rounded-lg border border-line bg-white px-2.5 py-2">
@@ -1085,31 +1354,46 @@ export function DocumentTemplatesRegister(props?: {
                     <Input label="Logo max height" value={getSettingValue(draft, "logo_max_height", "62")} onChange={(event) => updateDraftSettings({ logo_max_height: Number(event.target.value) || 62 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
                   </div>
                 </div>
-                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                  <p className="text-xs font-semibold text-ink">Item table columns</p>
-                  <p className="mt-1 text-[11px] text-muted">Configure visible columns and widths for parity-safe preview/PDF table rendering.</p>
-                  <label className="mt-2 inline-flex items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink">
+                <div className="rounded-lg border border-line bg-surface-soft p-2">
+                  <p className="text-[11px] font-semibold text-ink">Products / services columns</p>
+                  <p className="mt-0.5 text-[10px] text-muted">Show/hide rebalances widths in preview and export. Width applies only when visible.</p>
+                  <label className="mt-1.5 inline-flex items-center gap-2 rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">
                     <input type="checkbox" checked={getBooleanSetting(draft, "table_heading_bilingual", true)} onChange={(event) => updateDraftSettings({ table_heading_bilingual: event.target.checked })} />
-                    Bilingual item headings
+                    Bilingual headings
                   </label>
-                  <div className="mt-2 grid gap-1.5">
-                    {itemColumnConfig.map((column) => (
-                      <div key={`item-col-${column.key}`} className="grid items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-2 grid-cols-[1fr_5rem_auto]">
-                        <span className="text-xs font-semibold text-ink">{column.key.replaceAll("_", " ")}</span>
-                        <input type="number" min="5" max="60" value={column.width} onChange={(event) => updateItemColumn(column.key, { width: Number(event.target.value) || column.width })} className="h-8 rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
-                        <label className="inline-flex items-center gap-1 text-xs font-semibold text-ink">
+                  <div className="mt-1.5 flex flex-col gap-1">
+                    {itemColumnConfig.map((column, colIndex) => (
+                      <div key={`item-col-${column.key}`} className="flex flex-wrap items-center gap-1 rounded-md border border-line bg-white px-1.5 py-1">
+                        <span className="min-w-[5.5rem] shrink-0 text-[11px] font-semibold capitalize text-ink">{ITEM_COLUMN_LABELS[column.key] ?? column.key}</span>
+                        {column.visible ? (
+                          <>
+                            <input type="number" min={3} max={60} value={column.width} onChange={(event) => updateItemColumn(column.key, { width: Number(event.target.value) || column.width })} className="h-8 w-[3.25rem] shrink-0 rounded border border-line-strong bg-white px-1 text-center text-xs text-ink outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/15" aria-label={`Width ${column.key}`} />
+                            <button type="button" className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line bg-surface-soft text-sm font-bold text-ink hover:bg-white" aria-label="Narrow column" onClick={() => updateItemColumn(column.key, { width: Math.max(3, column.width - 1) })}>−</button>
+                            <button type="button" className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line bg-surface-soft text-sm font-bold text-ink hover:bg-white" aria-label="Widen column" onClick={() => updateItemColumn(column.key, { width: Math.min(60, column.width + 1) })}>+</button>
+                          </>
+                        ) : (
+                          <span className="text-[10px] text-muted">Hidden</span>
+                        )}
+                        <div className="ml-auto flex shrink-0 items-center gap-0.5">
+                          <button type="button" className="flex h-8 w-8 items-center justify-center rounded border border-line bg-white text-xs text-ink disabled:opacity-40" disabled={colIndex === 0} aria-label="Move column up" onClick={() => moveItemColumn(column.key, -1)}>↑</button>
+                          <button type="button" className="flex h-8 w-8 items-center justify-center rounded border border-line bg-white text-xs text-ink disabled:opacity-40" disabled={colIndex >= itemColumnConfig.length - 1} aria-label="Move column down" onClick={() => moveItemColumn(column.key, 1)}>↓</button>
+                        </div>
+                        <label className="flex shrink-0 items-center gap-1 pl-1 text-[10px] font-semibold text-ink">
                           <input type="checkbox" checked={column.visible} onChange={(event) => updateItemColumn(column.key, { visible: event.target.checked })} />
-                          Visible
+                          Show
                         </label>
                       </div>
                     ))}
                   </div>
                 </div>
-                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <p className="text-xs font-semibold text-ink">Logo intelligence</p>
-                    <label className="inline-flex cursor-pointer items-center rounded-full border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink">
-                      {uploadingLogo ? "Uploading…" : "Upload"}
+                <div className="rounded-lg border border-line bg-surface-soft p-2">
+                  <div className="mb-1.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-[11px] font-semibold text-ink">Company logo</p>
+                      <p className="text-[10px] text-muted">PNG, JPG, or WebP. Shown in document header.</p>
+                    </div>
+                    <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border border-primary/35 bg-primary-soft/40 px-3 text-[11px] font-semibold text-ink hover:bg-primary-soft/60">
+                      {uploadingLogo ? "Uploading…" : "Upload logo"}
                       <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploadingLogo} onChange={(event) => {
                         const file = event.target.files?.[0];
                         if (file) {
@@ -1134,7 +1418,7 @@ export function DocumentTemplatesRegister(props?: {
                         logoAssetUrl: asset?.publicUrl ?? "",
                         accentColor: asset?.metadata?.generatedTheme.primary ?? current.accentColor,
                       } : current);
-                    }} className="mt-2 block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
+                    }} className="mt-2 block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
                       <option value="">No logo</option>
                       {logoAssets.map((asset) => (
                         <option key={asset.id} value={asset.id}>{asset.originalName}</option>
@@ -1163,12 +1447,15 @@ export function DocumentTemplatesRegister(props?: {
                     </div>
                   ) : null}
                 </div>
-                <div className="grid gap-3 grid-cols-2">
-                  <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <p className="text-xs font-semibold text-ink">Stamp</p>
-                      <label className="inline-flex cursor-pointer items-center rounded-full border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink">
-                        Upload
+                <div className="grid gap-2 grid-cols-2">
+                  <div className="rounded-lg border border-line bg-surface-soft p-2">
+                    <div className="mb-1.5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-[11px] font-semibold text-ink">Company stamp</p>
+                        <p className="text-[10px] text-muted">Appears in footer stamp area.</p>
+                      </div>
+                      <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border border-primary/35 bg-primary-soft/40 px-3 text-[11px] font-semibold text-ink hover:bg-primary-soft/60">
+                        Upload stamp
                         <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => {
                           const file = event.target.files?.[0];
                           if (file) {
@@ -1178,32 +1465,41 @@ export function DocumentTemplatesRegister(props?: {
                         }} />
                       </label>
                     </div>
-                    <div className="rounded-lg border border-line bg-white p-2">
-                      {selectedStampAsset?.publicUrl ? <Image src={selectedStampAsset.publicUrl} alt={selectedStampAsset.originalName} width={128} height={96} unoptimized className="h-20 w-full object-contain" /> : <div className="flex h-20 items-center justify-center text-xs text-muted">No stamp selected</div>}
+                    <div className="rounded-md border border-line bg-white p-2">
+                      {selectedStampAsset?.publicUrl ? <Image src={selectedStampAsset.publicUrl} alt={selectedStampAsset.originalName} width={128} height={96} unoptimized className="h-16 w-full object-contain" /> : <div className="flex h-16 items-center justify-center text-[11px] text-muted">No stamp</div>}
                     </div>
-                    <select value={draft.settings.stamp_asset_id ? String(draft.settings.stamp_asset_id) : ""} onChange={(event) => updateDraftSettings({ stamp_asset_id: event.target.value ? Number(event.target.value) : null })} className="mt-2 block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
+                    <select value={draft.settings.stamp_asset_id ? String(draft.settings.stamp_asset_id) : ""} onChange={(event) => updateDraftSettings({ stamp_asset_id: event.target.value ? Number(event.target.value) : null })} className="mt-1.5 block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
                       <option value="">No stamp</option>
                       {stampAssets.map((asset) => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}
                     </select>
                   </div>
-                  <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <p className="text-xs font-semibold text-ink">Signature</p>
-                      <label className="inline-flex cursor-pointer items-center rounded-full border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink">
-                        Upload
-                        <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => {
+                  <div className="rounded-lg border border-line bg-surface-soft p-2">
+                    <div className="mb-1.5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-[11px] font-semibold text-ink">Signature</p>
+                        <p className="text-[10px] text-muted">Opens signatory details, then uploads.</p>
+                      </div>
+                      <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border border-primary/35 bg-primary-soft/40 px-3 text-[11px] font-semibold text-ink hover:bg-primary-soft/60">
+                        Upload signature
+                        <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploadingLogo} onChange={(event) => {
                           const file = event.target.files?.[0];
-                          if (file) {
-                            void handleAssetUpload(file, "signature");
+                          if (file && draft) {
+                            setSignatoryFormName(getSettingValue(draft, "signatory_name", ""));
+                            setSignatoryFormPosition(getSettingValue(draft, "signatory_position", ""));
+                            setSignatureUploadIntent(file);
                           }
                           event.currentTarget.value = "";
                         }} />
                       </label>
                     </div>
-                    <div className="rounded-lg border border-line bg-white p-2">
-                      {selectedSignatureAsset?.publicUrl ? <Image src={selectedSignatureAsset.publicUrl} alt={selectedSignatureAsset.originalName} width={160} height={80} unoptimized className="h-20 w-full object-contain" /> : <div className="flex h-20 items-center justify-center text-xs text-muted">No signature selected</div>}
+                    <div className="rounded-md border border-line bg-white p-2">
+                      {selectedSignatureAsset?.publicUrl ? <Image src={selectedSignatureAsset.publicUrl} alt={selectedSignatureAsset.originalName} width={160} height={80} unoptimized className="h-16 w-full object-contain" /> : <div className="flex h-16 items-center justify-center text-[11px] text-muted">No signature</div>}
                     </div>
-                    <select value={draft.settings.signature_asset_id ? String(draft.settings.signature_asset_id) : ""} onChange={(event) => updateDraftSettings({ signature_asset_id: event.target.value ? Number(event.target.value) : null })} className="mt-2 block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
+                    <div className="mt-1.5 grid gap-1">
+                      <Input label="Signatory (preview)" value={getSettingValue(draft, "signatory_name", "")} onChange={(event) => updateDraftSettings({ signatory_name: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                      <Input label="Position (preview)" value={getSettingValue(draft, "signatory_position", "")} onChange={(event) => updateDraftSettings({ signatory_position: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
+                    </div>
+                    <select value={draft.settings.signature_asset_id ? String(draft.settings.signature_asset_id) : ""} onChange={(event) => updateDraftSettings({ signature_asset_id: event.target.value ? Number(event.target.value) : null })} className="mt-1.5 block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
                       <option value="">No signature</option>
                       {signatureAssets.map((asset) => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}
                     </select>
@@ -1235,7 +1531,7 @@ export function DocumentTemplatesRegister(props?: {
                     <td className="px-3 py-2">
                       <button type="button" className="text-left" onClick={() => selectTemplate(template)} data-inspector-row-clickable="true">
                         <span className="block font-semibold text-ink hover:text-primary">{template.name}</span>
-                        <span className="mt-0.5 block text-xs text-muted">{templatePresets.find((preset) => preset.key === normalizeTemplateFamily(getSettingValue(template, "layout", "classic_corporate")))?.label ?? "Classic Corporate"}</span>
+                        <span className="mt-0.5 block text-xs text-muted">{templatePresets.find((preset) => preset.key === normalizeTemplateFamily(getSettingValue(template, "layout", "classic_corporate")))?.label ?? "Standard"}</span>
                       </button>
                     </td>
                     <td className="px-3 py-2 text-sm text-muted">{group.label}</td>
@@ -1259,6 +1555,23 @@ export function DocumentTemplatesRegister(props?: {
             </table>
           </div>
         )}
+        {signatureUploadIntent ? (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="sig-modal-title">
+            <div className="w-full max-w-md rounded-xl border border-line bg-white p-4 shadow-xl">
+              <h4 id="sig-modal-title" className="text-sm font-semibold text-ink">Signature upload</h4>
+              <p className="mt-1 text-[11px] text-muted">File: {signatureUploadIntent.name}</p>
+              <p className="mt-2 text-[11px] text-muted">Name and position appear under the signature only when filled; empty fields stay blank on the document.</p>
+              <div className="mt-3 grid gap-2">
+                <Input label="Signatory name" value={signatoryFormName} onChange={(event) => setSignatoryFormName(event.target.value)} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-sm" />
+                <Input label="Signatory position" value={signatoryFormPosition} onChange={(event) => setSignatoryFormPosition(event.target.value)} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-sm" />
+              </div>
+              <div className="mt-4 flex justify-end gap-2">
+                <Button type="button" size="sm" variant="secondary" onClick={() => setSignatureUploadIntent(null)} disabled={uploadingLogo}>Cancel</Button>
+                <Button type="button" size="sm" onClick={() => void confirmSignatureUploadFromModal()} disabled={uploadingLogo}>{uploadingLogo ? "Uploading…" : "Upload"}</Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </Card>
     </div>
   );

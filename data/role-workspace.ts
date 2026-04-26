@@ -163,6 +163,7 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Settings",
         items: [
+          { label: "User Profile", href: "/workspace/settings/profile", matchPrefixes: ["/workspace/settings/profile"] },
           { label: "Company Profile", href: "/workspace/settings/company", matchPrefixes: ["/workspace/settings", "/workspace/settings/company"] },
           { label: "Users", href: "/workspace/settings/users" },
           { label: "Accounting Settings", href: "/workspace/settings/accounting", matchPrefixes: ["/workspace/settings/accounting"] },
@@ -413,7 +414,7 @@ const moduleOverrides: Record<string, Omit<WorkspaceModulePageDefinition, "role"
     metrics: [
       { label: "New leads", value: "Pipeline intake", detail: "Capture every new lead before it disappears into chat history or notes." },
       { label: "Follow-up due", value: "Next contact", detail: "Keep scheduled calls and messages visible for the day." },
-      { label: "Trial-ready", value: "Conversion candidates", detail: "Move qualified leads directly into the Gulf Hisab signup flow." },
+      { label: "Trial-ready", value: "Conversion candidates", detail: "Move qualified leads directly into the Hisabix signup flow." },
     ],
     alerts: [
       { title: "Stale opportunities", detail: "Leads without follow-up should be recycled into the outreach list before they go cold." },

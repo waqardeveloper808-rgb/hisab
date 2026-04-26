@@ -1350,7 +1350,7 @@ function scanRepository(): ActualSystemMap {
   });
 
   return {
-    productName: "Gulf Hisab KSA",
+    productName: "Hisabix KSA",
     phase: "Phase 1",
     modules,
     subsystems: buildSubsystems(contexts),

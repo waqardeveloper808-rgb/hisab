@@ -1,0 +1,2 @@
+C:\hisab\components\workspace\DocumentTemplatesRegister.tsx
+C:\hisab\lib\workspace-preview.ts

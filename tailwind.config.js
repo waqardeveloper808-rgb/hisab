@@ -39,7 +39,7 @@ module.exports = {
         info: { DEFAULT: "var(--color-info)", soft: "var(--color-info-soft)" },
       },
       fontFamily: {
-        sans: ["var(--font-manrope)", "sans-serif"],
+        sans: ["var(--font-heading)", "var(--font-body)", "system-ui", "sans-serif"],
       },
       borderRadius: {
         sm: "var(--radius-sm)",

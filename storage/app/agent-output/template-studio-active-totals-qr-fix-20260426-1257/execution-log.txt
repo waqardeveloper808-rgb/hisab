@@ -1,0 +1,8 @@
+2026-04-26 — Workspace V2 Template Studio
+- Updated template-ui-settings.ts: QR defaults 150/125/left; added totalsBlock + DEFAULT_TOTALS_BLOCK (430px card, column px, padding, row gap).
+- document-template-renderer.ts: LayoutTotalsRow amountOnly + currencySymbol; totals section width/min/max from totalsBlock.
+- WorkspaceV2DocumentRenderer.tsx: 3-column TotalsSection; totals shell padding/height from totalsBlock.
+- WorkspaceV2TemplateStudio.tsx: inspector Totals card (preview) controls + steppers.
+- v2.css: totals row grid-friendly rules.
+- pdf.ts: drawTotalsBlock 3-column; drawQrBlock uses qrBlock; removed unused drawMoneyValueAlignRight.
+- Playwright capture: tools/capture-template-studio-screens.mjs — defaults and live width assertions PASS.

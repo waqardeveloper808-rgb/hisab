@@ -39,7 +39,7 @@ export default async function PlansPage() {
         />
 
         <div className="mt-8 flex justify-center">
-          <div className="inline-flex rounded-full border border-line bg-white p-1.5 shadow-[0_14px_30px_-28px_rgba(17,32,24,0.16)]">
+          <div className="inline-flex rounded-full border border-line bg-white p-1.5 shadow-[0_14px_30px_-28px_rgba(11,11,11,0.12)]">
             <span className="rounded-full bg-primary-soft px-4 py-2 text-sm font-semibold text-ink">{productConfig.freeTrialDays}-day trial</span>
             <span className="px-4 py-2 text-sm text-muted">Then {productConfig.paidPlanMonthlyPriceSar} SAR monthly</span>
           </div>
@@ -49,7 +49,7 @@ export default async function PlansPage() {
           <Card className="bg-white">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">45-Day Free Trial</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">{productConfig.freeTrialDays}-Day Free Trial</p>
                 <h2 className="mt-2 text-2xl font-semibold text-ink">Validate the full workflow before you pay.</h2>
               </div>
               <span className="rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">Start here</span>
@@ -72,7 +72,7 @@ export default async function PlansPage() {
             </div>
           </Card>
 
-          <Card className="relative border-primary/35 bg-white shadow-[0_28px_78px_-42px_rgba(31,122,83,0.28)] lg:-translate-y-2">
+          <Card className="relative border-primary/35 bg-white shadow-[0_28px_78px_-42px_rgba(63,174,42,0.22)] lg:-translate-y-2">
             <div className="absolute inset-x-6 top-0 h-1 rounded-b-full bg-primary" />
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -100,10 +100,10 @@ export default async function PlansPage() {
           </Card>
         </div>
 
-        <div className="mt-10 overflow-hidden rounded-xl border border-line bg-white shadow-[0_18px_40px_-34px_rgba(17,32,24,0.12)]">
-          <div className="grid gap-0 border-b border-line bg-surface-soft md:grid-cols-[1.1fr_repeat(2,1fr)]">
+        <div className="mt-10 overflow-hidden rounded-xl border border-line bg-white shadow-[0_18px_40px_-34px_rgba(11,11,11,0.1)]">
+            <div className="grid gap-0 border-b border-line bg-surface-soft md:grid-cols-[1.1fr_repeat(2,1fr)]">
             <div className="px-5 py-4 text-sm font-semibold text-ink">Plan detail</div>
-            <div className="px-5 py-4 text-sm font-semibold text-ink">45-Day Free Trial</div>
+            <div className="px-5 py-4 text-sm font-semibold text-ink">{productConfig.freeTrialDays}-Day Free Trial</div>
             <div className="px-5 py-4 text-sm font-semibold text-ink">Plus Plan</div>
           </div>
           {planScopeRows.map(([label, left, right]) => (
@@ -126,18 +126,18 @@ export default async function PlansPage() {
             </div>
           </Card>
 
-          <Card className="bg-[linear-gradient(145deg,rgba(19,109,76,0.98),rgba(16,95,67,0.96)_55%,rgba(29,125,87,0.94))] text-white shadow-[0_28px_64px_-34px_rgba(9,69,48,0.55)]">
+          <Card className="bg-[linear-gradient(145deg,#0b0b0b,#2a2a2a_55%,#0b0b0b)] text-white shadow-[0_28px_64px_-34px_rgba(11,11,11,0.34)]">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">Commercial clarity</p>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight">Know what unlocks before your team starts the trial.</h2>
             <p className="mt-3 text-sm leading-6 text-white/78">The trial is for workflow validation. The paid plan keeps the same workflow live for ongoing business use. There is no confusing upgrade path or hidden support split.</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Button href="/register?plan=zatca-monthly" size="lg" className="sm:flex-1 !bg-white !text-[#0f5f43] hover:!bg-[#f4fbf7]">Start Free Trial</Button>
+              <Button href="/register?plan=zatca-monthly" size="lg" className="sm:flex-1 !bg-white !text-ink hover:!bg-[#f5f5f5]">Start Free Trial</Button>
               <a href={supportHref} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/8 px-5 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10 sm:flex-1 sm:px-6 sm:py-3.5">WhatsApp Support</a>
             </div>
           </Card>
         </div>
 
-        <div className="mt-10 rounded-[1.85rem] border border-line bg-[linear-gradient(145deg,rgba(19,109,76,0.98),rgba(16,95,67,0.96)_55%,rgba(29,125,87,0.94))] px-6 py-8 text-white shadow-[0_28px_64px_-34px_rgba(9,69,48,0.55)] sm:px-8">
+        <div className="mt-10 rounded-[1.85rem] border border-line bg-[linear-gradient(145deg,#0b0b0b,#2a2a2a_55%,#0b0b0b)] px-6 py-8 text-white shadow-[0_28px_64px_-34px_rgba(11,11,11,0.34)] sm:px-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
               <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Need help deciding which path matches your invoicing volume?</h2>
@@ -149,7 +149,7 @@ export default async function PlansPage() {
               href={supportHref}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white px-5 py-3 text-sm font-semibold text-[#0f5f43] shadow-[0_14px_30px_-24px_rgba(9,69,48,0.42)] transition hover:-translate-y-0.5 hover:bg-[#f4fbf7] sm:px-6 sm:py-3.5"
+              className="inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white px-5 py-3 text-sm font-semibold text-ink shadow-[0_14px_30px_-24px_rgba(11,11,11,0.22)] transition hover:-translate-y-0.5 hover:bg-[#f5f5f5] sm:px-6 sm:py-3.5"
             >
               WhatsApp Support
             </a>

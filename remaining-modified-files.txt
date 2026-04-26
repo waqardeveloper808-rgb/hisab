@@ -1,0 +1,89 @@
+ M app/api/auth/login/route.ts
+ M app/api/auth/register/route.ts
+ M app/api/auth/session/route.ts
+ M app/api/workspace/[...slug]/route.ts
+ M app/global-not-found.tsx
+ M app/globals.css
+ M app/icon.svg
+ M app/layout.tsx
+ M app/login/page.tsx
+ M app/not-found.tsx
+ M app/page.tsx
+ M app/plans/page.tsx
+ M app/products/page.tsx
+ M app/register/page.tsx
+ M app/workspace/help/faq/page.tsx
+ M app/workspace/help/page.tsx
+ M app/workspace/layout.tsx
+ M app/workspace/user/page.tsx
+ M backend/app/Http/Middleware/AuthenticateWorkspaceRequest.php
+ M backend/app/Services/CompanyProvisioningService.php
+ M backend/app/Services/LedgerService.php
+ M backend/app/Services/TemplateEngineRuntimeService.php
+ M backend/resources/css/app.css
+ M components/AppFrame.tsx
+ M components/AuthShell.tsx
+ M components/BrandMark.tsx
+ M components/Button.tsx
+ M components/Footer.tsx
+ M components/ModuleCard.tsx
+ M components/Navbar.tsx
+ M components/WhatsAppSupportButton.tsx
+ M components/auth/LoginForm.tsx
+ M components/auth/RegisterForm.tsx
+ M components/help/PublicHelpCenter.tsx
+ M components/workflow/TransactionForm.tsx
+ M components/workflow/WorkspaceDataProvider.tsx
+ M components/workspace/AdminWorkspaceHome.tsx
+ M components/workspace/AgentOverview.tsx
+ M components/workspace/AgentWorkspaceHome.tsx
+ M components/workspace/AssistantSupportOverview.tsx
+ M components/workspace/AssistantWorkspaceHome.tsx
+ M components/workspace/AuditTrailPanel.tsx
+ M components/workspace/DocumentLinkPreviewModal.tsx
+ M components/workspace/DocumentTemplatesRegister.tsx
+ M components/workspace/DocumentViewer.tsx
+ M components/workspace/InvoiceDetailWorkspace.tsx
+ M components/workspace/InvoiceRegister.tsx
+ M components/workspace/MasterDesignDashboard.tsx
+ M components/workspace/PlansOverview.tsx
+ M components/workspace/RegistersOverview.tsx
+ M components/workspace/SettingsOverview.tsx
+ M components/workspace/TemplatesOverview.tsx
+ M components/workspace/UserWorkspaceHome.tsx
+ M components/workspace/WorkspaceAccessProvider.tsx
+ M components/workspace/WorkspaceDataTable.tsx
+ M components/workspace/WorkspaceShell.tsx
+ M components/workspace/ZatcaQrPanel.tsx
+ M data/master-design/hierarchy.ts
+ M data/preview-contact-store.json
+ M data/preview-document-store.json
+ M data/preview-template-store.json
+ M data/product.ts
+ M data/role-workspace.ts
+ M data/system-map/actual-map.ts
+ M lib/auth-session.ts
+ M lib/document-engine/index.test.ts
+ M lib/logo-intelligence.ts
+ M lib/mapping-engine.ts
+ M lib/master-design-engine.ts
+ M lib/server-access.ts
+ M lib/workspace-api.ts
+ M lib/workspace-preview.ts
+ M lib/zatca-engine.test.ts
+ M next-env.d.ts
+ M package-lock.json
+ M package.json
+ M tailwind.config.js
+?? app/api/auth/company-setup/
+?? app/help/
+?? app/onboarding/
+?? app/workspace/settings/profile/
+?? components/auth/CompanySetupWizard.tsx
+?? components/workspace/UserProfileOverview.tsx
+?? components/workspace/WorkspaceRecoveryState.tsx
+?? docs/document-engine-rebuild-plan.md
+?? lib/brand.ts
+?? public/branding/hisabix-logo-icon.svg
+?? public/branding/hisabix-logo-main.svg
+?? remaining-modified-files.txt

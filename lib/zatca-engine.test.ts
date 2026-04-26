@@ -40,7 +40,7 @@ describe("zatca-engine", () => {
         invoiceTypeCode: "388",
         currencyCode: "SAR",
         seller: {
-          name: "Gulf Hisab",
+          name: "Hisabix",
           vatNumber: "300000000000003",
           address: { countryCode: "SA" },
         },
@@ -68,7 +68,7 @@ describe("zatca-engine", () => {
         issuerName: "issuer",
       },
       qrPayloadInput: {
-        sellerName: "Gulf Hisab",
+        sellerName: "Hisabix",
         vatNumber: "300000000000003",
         timestamp: "2026-04-18T12:00:00",
         invoiceTotal: "115.00",

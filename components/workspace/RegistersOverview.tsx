@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { getRegistersSnapshot, type RegistersSnapshot } from "@/lib/workspace-api";
 import { currency } from "@/components/workflow/utils";
@@ -50,8 +51,9 @@ export function RegistersOverview() {
         caption="Issued sales documents, balances, and due dates."
         rows={snapshot.invoiceRegister}
         emptyMessage="Post the first invoice to start the register."
+        actions={<Link href="/workspace/user/invoices" className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-ink transition hover:border-primary/30 hover:text-primary">Open register</Link>}
         columns={[
-          { header: "Invoice", render: (row) => row.number },
+          { header: "Invoice", render: (row) => <Link href={`/workspace/invoices/${row.id}`} className="font-semibold text-primary hover:underline">{row.number}</Link> },
           { header: "Status", render: (row) => row.status.replaceAll("_", " ") },
           { header: "Issue date", render: (row) => formatDate(row.issueDate) },
           { header: "Due date", render: (row) => formatDate(row.dueDate) },
@@ -64,8 +66,9 @@ export function RegistersOverview() {
         caption="Vendor bills and purchase invoices waiting for settlement."
         rows={snapshot.billsRegister}
         emptyMessage="Post the first vendor bill to start the register."
+        actions={<Link href="/workspace/user/bills" className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-ink transition hover:border-primary/30 hover:text-primary">Open bills</Link>}
         columns={[
-          { header: "Vendor bill", render: (row) => row.number },
+          { header: "Vendor bill", render: (row) => <Link href={`/workspace/bills/${row.id}`} className="font-semibold text-primary hover:underline">{row.number}</Link> },
           { header: "Type", render: (row) => row.type.replaceAll("_", " ") },
           { header: "Status", render: (row) => row.status.replaceAll("_", " ") },
           { header: "Due date", render: (row) => formatDate(row.dueDate) },
@@ -78,8 +81,9 @@ export function RegistersOverview() {
         caption="Incoming and outgoing money, including what is still unallocated."
         rows={snapshot.paymentsRegister}
         emptyMessage="Recorded payments will appear here."
+        actions={<Link href="/workspace/user/payments" className="rounded-full border border-line bg-white px-3 py-1 text-xs font-semibold text-ink transition hover:border-primary/30 hover:text-primary">Open payments</Link>}
         columns={[
-          { header: "Payment", render: (row) => row.number },
+          { header: "Payment", render: (row) => <Link href={`/workspace/user/payments?q=${encodeURIComponent(row.number)}`} className="font-semibold text-primary hover:underline">{row.number}</Link> },
           { header: "Direction", render: (row) => row.direction === "incoming" ? "Incoming money" : "Outgoing payment" },
           { header: "Date", render: (row) => formatDate(row.paymentDate) },
           { header: "Method", render: (row) => row.method || "-" },

@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-04-26T10:28:53.543Z",
+  "url": "http://127.0.0.1:3000/system/master-design",
+  "dom": {
+    "totalCp": "203",
+    "pass": "18",
+    "fail": "162",
+    "partial": "23",
+    "blocked": "0",
+    "healthPercent": "9%"
+  },
+  "screenshot": "C:\\hisab\\storage\\app\\agent-output\\system-monitor-count-triangulation-20260426-1326\\browser-ui-core-system.png"
+}

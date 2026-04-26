@@ -154,7 +154,7 @@ export const helpFaqs = [
   {
     title: "Can I get help on WhatsApp?",
     category: "WhatsApp",
-    description: "Yes. Gulf Hisab includes direct WhatsApp support for invoicing and setup questions.",
+    description: "Yes. Hisabix includes direct WhatsApp support for invoicing and setup questions.",
   },
   {
     title: "What happens after the 45-day trial?",

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { authSessionCookieName, readAuthSessionOutcome, type AuthSession } from "@/lib/auth-session";
+import { authSessionCookieName, guestAuthSession, readAuthSessionOutcome, type AuthSession } from "@/lib/auth-session";
 import { canAccessWorkspaceArea } from "@/lib/access-control";
 import type { WorkspaceAccessProfile } from "@/lib/workspace-api";
 import {
@@ -8,17 +8,16 @@ import {
   type WorkspaceAccessStatus,
 } from "@/lib/workspace-session";
 
-const guestWorkspaceSession: AuthSession = {
-  id: 0,
-  userId: 0,
-  name: "Guest preview",
-  email: "preview@gulfhisab.local",
-  platformRole: "guest",
-};
-
 type WorkspaceAccessProfileResult = {
   access: WorkspaceAccessProfile | null;
   status: WorkspaceAccessStatus;
+};
+
+type WorkspaceAccessGateResult = {
+  session: AuthSession;
+  access: WorkspaceAccessProfile | null;
+  sessionStatus: "guest" | "invalid_session" | "ready";
+  accessStatus: WorkspaceAccessStatus;
 };
 
 export function hasAbility(abilities: string[], ability: string) {
@@ -36,7 +35,7 @@ export async function getWorkspaceSessionAccess() {
 
   if (sessionResult.status === "guest") {
     return {
-      session: guestWorkspaceSession,
+      session: guestAuthSession,
       access: null,
       sessionStatus: "guest" as const,
       accessStatus: "guest" as const,
@@ -45,7 +44,7 @@ export async function getWorkspaceSessionAccess() {
 
   if (sessionResult.status === "invalid_session") {
     return {
-      session: guestWorkspaceSession,
+      session: guestAuthSession,
       access: null,
       sessionStatus: "invalid_session" as const,
       accessStatus: "invalid_session" as const,
@@ -106,21 +105,32 @@ async function fetchWorkspaceAccessProfileResult(session: AuthSession): Promise<
   }
 }
 
-export async function requireWorkspaceAccess(requirements?: { platform?: string[]; company?: string[] }) {
+export async function requireWorkspaceAccess(requirements?: { platform?: string[]; company?: string[] }): Promise<WorkspaceAccessGateResult> {
   const { session, access, sessionStatus, accessStatus } = await getWorkspaceSessionAccess();
 
   // #region agent log
   fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H4',location:'lib/server-access.ts:108',message:'Server workspace access gate evaluated',data:{sessionStatus,accessStatus,sessionId:session.id,companyId:session.companyId??null,hasAccess:Boolean(access),hasRequirements:Boolean(requirements)},timestamp:Date.now()})}).catch(()=>{});
   // #endregion
 
-  if (sessionStatus === "guest" || accessStatus === "invalid_session") {
+  if (accessStatus === "invalid_session") {
     redirect("/login");
   }
 
-  if (accessStatus === "company_context_missing" && !requirements) {
+  if (sessionStatus === "guest") {
     return {
       session,
       access,
+      sessionStatus,
+      accessStatus,
+    };
+  }
+
+  if (!requirements && (accessStatus === "company_context_missing" || accessStatus === "backend_unconfigured" || accessStatus === "backend_unavailable")) {
+    return {
+      session,
+      access,
+      sessionStatus,
+      accessStatus,
     };
   }
 
@@ -135,5 +145,7 @@ export async function requireWorkspaceAccess(requirements?: { platform?: string[
   return {
     session,
     access,
+    sessionStatus,
+    accessStatus,
   };
 }

@@ -1,0 +1,26 @@
+{
+  "ok": true,
+  "source": "POST http://127.0.0.1:3000/api/system/monitor/refresh",
+  "capturedNote": "controlPoints[] omitted from this file; full body was ~1.8MB. Re-run POST to same origin for full array.",
+  "data": {
+    "generatedAt": "2026-04-26T10:27:13.664Z",
+    "audit": {
+      "total": 233,
+      "pass": 28,
+      "fail": 178,
+      "partial": 27,
+      "blocked": 0
+    },
+    "groupScopeCore": {
+      "id": "core-system",
+      "name": "Core System",
+      "passCount": 18,
+      "failCount": 162,
+      "partialCount": 23,
+      "blockedCount": 0,
+      "totalControlPoints": 203,
+      "healthPercent": 9,
+      "scopeLabel": "Unique control points with any link to a module in this group (counted once)."
+    }
+  }
+}

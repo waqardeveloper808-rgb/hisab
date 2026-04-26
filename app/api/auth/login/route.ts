@@ -13,7 +13,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const dummyLoginEmail = process.env.DUMMY_LOGIN_EMAIL?.trim().toLowerCase() || "demo@gulfhisab.local";
+const dummyLoginEmail = process.env.DUMMY_LOGIN_EMAIL?.trim().toLowerCase() || "demo@hisabix.local";
 const dummyLoginPassword = process.env.DUMMY_LOGIN_PASSWORD || "demo123";
 
 function resolvePayloadAuthToken(payloadData: Record<string, unknown> | undefined) {
@@ -47,7 +47,7 @@ function buildDummyCompanyContext() {
 
   return {
     id: Number.isFinite(companyId) && companyId > 0 ? companyId : 2,
-    legalName: process.env.DUMMY_LOGIN_COMPANY_NAME?.trim() || "Gulf Hisab Demo Company",
+    legalName: process.env.DUMMY_LOGIN_COMPANY_NAME?.trim() || "Hisabix Demo Company",
     role: "owner",
     abilities: ["*"],
   } satisfies WorkspaceCompanyContext;

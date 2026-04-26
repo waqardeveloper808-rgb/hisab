@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { MessageCircleMore } from "lucide-react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { Container } from "@/components/Container";
@@ -15,37 +16,62 @@ const faqGroups = [
   {
     title: "Pre-sales",
     items: [
-      { title: "Pricing", description: "Understand the trial, the monthly plan, and what changes after conversion." },
-      { title: "Trial", description: "See what users can validate during the live trial workflow." },
-      { title: "Support", description: "Know how WhatsApp support and guided help work before sign-up." },
-      { title: "Limits", description: "Review commercial boundaries without guessing which features are included." },
+      { title: "Pricing and trial", description: "Understand the free trial, the monthly plan, and what changes when the workspace moves into ongoing use." },
+      { title: "ZATCA readiness", description: "See how company identity, VAT fields, and invoice output are positioned before a team commits." },
+      { title: "Support access", description: "Know how WhatsApp support, guided help, and setup assistance work before sign-up." },
+      { title: "Commercial fit", description: "Review whether the workflow is designed for invoicing-only use or full finance operations." },
     ],
   },
   {
-    title: "Onboarding",
+    title: "Setup",
     items: [
-      { title: "Company setup", description: "Configure legal entity, VAT, address, and document defaults from one profile." },
-      { title: "VAT setup", description: "Keep VAT behavior visible before the first live invoice is issued." },
-      { title: "Import", description: "Map contacts and items before importing them into the working system." },
+      { title: "Company setup wizard", description: "Configure company name, country, VAT number, address, logo, stamp, and signature from one onboarding flow." },
+      { title: "Skipping setup", description: "Users can enter the workspace first and return later, while the system keeps a warning banner visible until setup is completed." },
+      { title: "Profile updates later", description: "Company settings stay editable from the workspace settings area after onboarding is done." },
     ],
   },
   {
-    title: "Operational",
+    title: "Invoicing",
     items: [
-      { title: "Invoices", description: "Create, send, and track invoices from the operational workflow." },
-      { title: "Credit notes", description: "Reverse or adjust issued documents without breaking continuity." },
-      { title: "Debit notes", description: "Apply additional charges with a clean audit path." },
-      { title: "Reports", description: "Move from transactions into journals, VAT, and reporting output." },
-      { title: "Lock periods", description: "Protect closed periods and prevent untracked changes after review." },
+      { title: "Invoice registers", description: "Review compact tables, open the preview panel, and use edit, download, print, and send from one register flow." },
+      { title: "Document editor", description: "Use the full-screen editor with explicit save, cancel, preview, and exit actions." },
+    ],
+  },
+  {
+    title: "VAT / ZATCA",
+    items: [
+      { title: "VAT review", description: "Move from invoices into VAT review, journals, and reports without breaking transaction continuity." },
+      { title: "Compliance continuity", description: "Track issue status, company identity, and exported output from the same workflow used to prepare the document." },
+    ],
+  },
+  {
+    title: "Accounting",
+    items: [
+      { title: "Journals and ledgers", description: "Review accounting impact, aging, and linked reporting without rebuilding the transaction in another screen." },
+      { title: "Operational visibility", description: "Use dashboard cards, reports, and registers for fast daily review with less empty space." },
+    ],
+  },
+  {
+    title: "Inventory",
+    items: [
+      { title: "Products and stock", description: "Manage products, pricing, and item-level workflow details from the same platform used for invoicing." },
+      { title: "Item readiness", description: "Keep products available for quotes, invoices, and reporting without switching systems." },
+    ],
+  },
+  {
+    title: "Support",
+    items: [
+      { title: "Help and support", description: "Search FAQs, open a support request, or jump to WhatsApp support when a workflow is blocked." },
+      { title: "Support follow-up", description: "Capture onboarding blockers, billing questions, VAT requests, and product feedback from one public help surface." },
     ],
   },
 ];
 
 const supportChannels = [
-  { title: "FAQs", description: "Start with grouped answers before opening a ticket or sending a message." },
-  { title: "Feature requests", description: "Capture missing workflow or reporting requests in one place." },
-  { title: "Submit request", description: "Log a support or onboarding request when the answer is not in the public help articles." },
-  { title: "WhatsApp support", description: "Send a direct message when the business needs a human answer quickly." },
+  { title: "FAQs", description: "Start with grouped answers before opening a request or switching channels." },
+  { title: "Support requests", description: "Capture setup blockers, usage issues, or workflow gaps from one public help surface." },
+  { title: "Feature requests", description: "Record missing workflow, reporting, or integration needs for follow-up." },
+  { title: "WhatsApp support", description: "Send a direct message when the business needs a fast human answer." },
   { title: "System status", description: "Check whether the platform, workspace API, and support channels are operating normally." },
 ];
 
@@ -111,7 +137,7 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
         />
 
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          {["pricing", "trial", "support", "VAT setup", "invoices", "reports"].map((topic) => (
+          {["pricing", "setup wizard", "VAT", "invoices", "workspace", "support request"].map((topic) => (
             <button
               key={topic}
               type="button"
@@ -130,7 +156,7 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
           <div className="mb-5 flex items-center justify-between gap-4 border-b border-line pb-4">
             <div>
               <h2 className="text-xl font-semibold text-ink">Find an answer quickly</h2>
-              <p className="mt-1 text-sm text-muted">Search onboarding guidance, VAT questions, and common invoicing workflows.</p>
+              <p className="mt-1 text-sm text-muted">Search pre-sales, setup, usage, VAT, and support workflows.</p>
             </div>
             <span className="rounded-full border border-primary-border bg-primary-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
               Public support
@@ -146,7 +172,7 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
             <Input
               label="Search the help center"
               type="search"
-              placeholder="Try: ZATCA, VAT, WhatsApp, free trial"
+              placeholder="Try: ZATCA, onboarding, invoice preview, WhatsApp"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -154,8 +180,8 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
           </form>
           <div className="mt-5 flex flex-wrap gap-2 text-sm text-muted">
             {[
-              "first invoice",
-              "VAT review",
+              "company setup",
+              "invoice preview",
               "WhatsApp support",
             ].map((suggestion) => (
               <button
@@ -176,11 +202,11 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
         <div className="mt-10">
           <SectionHeader
             eyebrow="FAQ structure"
-            title="Start from the stage of the decision or workflow you are in."
-            description="The public help center is split into pre-sales, onboarding, and operational questions so users reach the right answer faster."
+            title="Start from the stage of the journey you are in."
+            description="The help center is split into pre-sales, setup, invoicing, VAT/ZATCA, accounting, inventory, and support so users reach the right answer faster."
             titleAs="h2"
           />
-          <div className="mt-8 grid gap-5 lg:grid-cols-3">
+          <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredGroups.map((group) => (
               <Card key={group.title} className="bg-white">
                 <p className="text-lg font-semibold text-ink">{group.title}</p>
@@ -207,13 +233,13 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
             ))}
 
             <Card className="bg-white md:col-span-2">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Submit request</p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ink">Capture a feature request or support request without leaving the page.</h2>
+              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">Support request</p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ink">Capture an onboarding, billing, VAT, or product request without leaving the page.</h2>
               <div className="mt-5 grid gap-4">
                 <Input label="Request title" value={requestDraft.title} onChange={(event) => setRequestDraft((current) => ({ ...current, title: event.target.value }))} />
                 <label className="grid gap-2 text-sm font-semibold text-ink">
                   <span>Details</span>
-                  <textarea value={requestDraft.details} onChange={(event) => setRequestDraft((current) => ({ ...current, details: event.target.value }))} rows={5} className="block w-full rounded-[var(--radius-sm)] border border-line-strong bg-white px-3 py-2 text-sm text-ink outline-none focus:border-brand/45 focus:ring-2 focus:ring-brand/10" placeholder="Explain the workflow gap, question, or request." />
+                  <textarea value={requestDraft.details} onChange={(event) => setRequestDraft((current) => ({ ...current, details: event.target.value }))} rows={5} className="block w-full rounded-[var(--radius-sm)] border border-line-strong bg-white px-3 py-2 text-sm text-ink outline-none focus:border-brand/45 focus:ring-2 focus:ring-brand/10" placeholder="Explain the onboarding blocker, invoicing issue, VAT question, or product request." />
                 </label>
                 <div className="flex flex-wrap gap-3">
                   <Button onClick={() => setRequestSubmitted(true)}>Submit request</Button>
@@ -241,7 +267,8 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
               ))}
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <a href={supportHref} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center rounded-2xl border border-primary bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_-18px_rgba(31,122,83,0.6)] hover:-translate-y-0.5 hover:bg-primary-hover sm:px-6 sm:py-3.5">
+              <a href={supportHref} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-2xl border border-primary bg-primary px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_-18px_rgba(63,174,42,0.38)] hover:-translate-y-0.5 hover:bg-primary-hover sm:px-6 sm:py-3.5">
+                <MessageCircleMore className="h-4 w-4" />
                 Open WhatsApp support
               </a>
               <Button href="/workspace/help/ai" size="lg">Open workspace AI help</Button>
@@ -259,6 +286,16 @@ export function PublicHelpCenter({ supportHref }: PublicHelpCenterProps) {
         >
           Top
         </button>
+
+        <a
+          href={supportHref}
+          target="_blank"
+          rel="noreferrer"
+          className="fixed bottom-5 left-5 z-40 inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/20 bg-white text-primary shadow-soft transition hover:-translate-y-0.5 hover:border-primary/40"
+          aria-label="Open WhatsApp support"
+        >
+          <MessageCircleMore className="h-5 w-5" />
+        </a>
       </Container>
     </section>
   );

@@ -470,7 +470,7 @@ export function TransactionForm({ kind, documentId, initialDocumentType, display
     certificatePem: "PHASE2_PENDING_CERTIFICATE",
     privateKeyPem: "PHASE2_PENDING_PRIVATE_KEY",
     certificateSerialNumber: "PHASE2-STUB-CERT",
-    issuerName: "Gulf Hisab Phase 2",
+    issuerName: "Hisabix Phase 2",
   }), []);
   const zatcaSubmissionPreview = useMemo(() => {
     if (kind !== "invoice" || !selectedContactRecord || !lines.length || !companySettings?.company.legalName || !companySettings.company.taxNumber) {
@@ -1662,9 +1662,10 @@ export function TransactionForm({ kind, documentId, initialDocumentType, display
               <h1 className="mt-1 text-xl font-semibold text-ink">{documentId ? config.editTitle : config.title}</h1>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" href={mapWorkspaceHref(documentId ? `/workspace/invoices/${documentId}` : "/workspace/user/invoices", basePath)}>Close</Button>
+              <Button variant="secondary" href={mapWorkspaceHref(documentId ? `/workspace/invoices/${documentId}` : "/workspace/user/invoices", basePath)}>Exit</Button>
+              <Button variant="secondary" href={mapWorkspaceHref(documentId ? `/workspace/invoices/${documentId}` : "/workspace/user/invoices", basePath)}>Cancel</Button>
               <Button variant="secondary" href={documentId ? mapWorkspaceHref(`/workspace/invoices/${documentId}`, basePath) : undefined} disabled={!documentId}>Preview</Button>
-              <Button variant="secondary" onClick={handleSaveDraft} disabled={submitting || readOnlyDocument}>Save</Button>
+              <Button variant="secondary" onClick={handleSaveDraft} disabled={savingDraft || submitting || readOnlyDocument}>{savingDraft ? "Saving" : "Save"}</Button>
               <Button data-inspector-workflow-submit="true" onClick={handleSubmit} disabled={submitting || readOnlyDocument}>{documentId ? "Save & Send" : "Issue / Send"}</Button>
             </div>
           </div>

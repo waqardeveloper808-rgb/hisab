@@ -67,6 +67,13 @@ type LegacyActiveCompany = {
 
 export const authSessionCookieName = "gulf_hisab_session";
 export const authSessionMaxAge = 60 * 60 * 24 * 7;
+export const guestAuthSession: AuthSession = {
+  id: 0,
+  userId: 0,
+  name: "Guest preview",
+  email: "preview@hisabix.local",
+  platformRole: "guest",
+};
 
 function getSessionSecret() {
   return process.env.AUTH_SESSION_SECRET
@@ -132,11 +139,11 @@ function isNonEmptyString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-function isPositiveInteger(value: unknown) {
+function isPositiveInteger(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value > 0;
 }
 
-function normalizeOptionalPositiveInteger(value: unknown) {
+function normalizeOptionalPositiveInteger(value: unknown): number | null {
   return isPositiveInteger(value) ? value : null;
 }
 
@@ -181,14 +188,17 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
   };
 
   if (activeCompanyId !== null && activeCompanyLegalName !== null) {
+    const activeCompanyRole = typeof activeCompany?.role === "string" ? activeCompany.role : undefined;
+    const activeCompanyAbilities = Array.isArray(activeCompany?.abilities)
+      ? activeCompany.abilities.filter((ability): ability is string => typeof ability === "string")
+      : undefined;
+
     session.workspaceContext = {
       activeCompany: {
         id: activeCompanyId,
         legalName: activeCompanyLegalName,
-        role: typeof activeCompany.role === "string" ? activeCompany.role : undefined,
-        abilities: Array.isArray(activeCompany.abilities)
-          ? activeCompany.abilities.filter((ability): ability is string => typeof ability === "string")
-          : undefined,
+        role: activeCompanyRole,
+        abilities: activeCompanyAbilities,
       },
     };
   }

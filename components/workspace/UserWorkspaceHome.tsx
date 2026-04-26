@@ -21,10 +21,10 @@ const emptyDashboard: DashboardSnapshot = {
 
 function KpiChip({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-md border border-line bg-white px-3 py-2">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted">{label}</p>
-      <p className="mt-0.5 text-lg font-bold leading-tight text-ink">{value}</p>
-      {sub ? <p className="mt-0.5 text-[10px] text-muted">{sub}</p> : null}
+    <div className="rounded-xl border border-line bg-white px-3 py-2.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">{label}</p>
+      <p className="mt-1 text-base font-bold leading-tight text-ink sm:text-lg">{value}</p>
+      {sub ? <p className="mt-1 text-[11px] leading-5 text-muted">{sub}</p> : null}
     </div>
   );
 }
@@ -36,14 +36,39 @@ export function UserWorkspaceHome() {
 
   useEffect(() => {
     let active = true;
-    getDashboardSnapshot().then((s) => { if (active) setSnapshot(s); }).catch((err: unknown) => { console.error('[UserWorkspaceHome] getDashboardSnapshot failed:', err); });
-    getReportsSnapshot().then((r) => { if (active) setReports(r); }).catch((err: unknown) => { console.error('[UserWorkspaceHome] getReportsSnapshot failed:', err); });
-    return () => { active = false; };
+    const controller = new AbortController();
+    getDashboardSnapshot(controller.signal)
+      .then((s) => {
+        if (active) {
+          setSnapshot(s);
+        }
+      })
+      .catch((err: unknown) => {
+        if (active && !(err instanceof Error && err.name === "AbortError")) {
+          setSnapshot(emptyDashboard);
+        }
+      });
+    getReportsSnapshot(undefined, controller.signal)
+      .then((r) => {
+        if (active) {
+          setReports(r);
+        }
+      })
+      .catch((err: unknown) => {
+        if (active && !(err instanceof Error && err.name === "AbortError")) {
+          setReports(null);
+        }
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, []);
 
   const vatPayable = (reports?.vatDetail ?? []).reduce((t, r) => t + r.outputTaxAmount - r.inputTaxAmount, 0);
   const pendingInvoices = snapshot.recentInvoices.filter((i) => i.balanceDue > 0).length;
   const pendingBills = snapshot.recentBills.filter((b) => b.balanceDue > 0).length;
+  const hasLiveData = snapshot.backendReady && (snapshot.openInvoices > 0 || snapshot.openBills > 0 || snapshot.recentPayments.length > 0);
 
   const activity = [
     ...snapshot.recentInvoices.map((r) => ({ id: `inv-${r.id}`, type: "Invoice" as const, ref: r.number, date: r.issueDate, amount: r.balanceDue })),
@@ -58,21 +83,36 @@ export function UserWorkspaceHome() {
 
   return (
     <div className="space-y-3">
-      {/* KPI row */}
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+      <div className="rounded-2xl border border-line bg-white px-4 py-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">Workspace overview</p>
+            <h1 className="mt-1 text-xl font-semibold tracking-tight text-ink">Operational finance snapshot</h1>
+            <p className="mt-1 text-sm text-muted">
+              {hasLiveData
+                ? "Track receivables, payables, VAT, and recent activity from one compact workspace surface."
+                : "Demo-ready placeholders keep the workspace readable until live invoices, bills, and payments start flowing."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-muted">
+            <span className="rounded-full border border-line bg-surface-soft px-3 py-1">{snapshot.backendReady ? "Live workspace data" : "Workspace preview mode"}</span>
+            <span className="rounded-full border border-line bg-surface-soft px-3 py-1">{pendingInvoices + pendingBills} pending follow-ups</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 xl:grid-cols-6">
         <KpiChip label="Receivables" value={`${currency(snapshot.receivablesTotal)}`} sub={`${snapshot.openInvoices} open invoices`} />
         <KpiChip label="Payables" value={`${currency(snapshot.payablesTotal)}`} sub={`${snapshot.openBills} open bills`} />
         <KpiChip label="VAT Position" value={`${currency(vatPayable)}`} sub={`${snapshot.vatLines} VAT lines`} />
         <KpiChip label="Net Profit" value={`${currency(reports?.profitLoss.netProfit ?? 0)}`} sub="Current period" />
-        <KpiChip label="Cash / Bank" value={`${currency((reports?.balanceSheet.assetTotal ?? 0) - (reports?.balanceSheet.liabilityTotal ?? 0))}`} sub="Equity position" />
+        <KpiChip label="Net Assets" value={`${currency((reports?.balanceSheet.assetTotal ?? 0) - (reports?.balanceSheet.liabilityTotal ?? 0))}`} sub="Assets minus liabilities" />
         <KpiChip label="Pending" value={`${pendingInvoices + pendingBills}`} sub={`${pendingInvoices} inv · ${pendingBills} bills`} />
       </div>
 
-      {/* Alerts + Quick actions */}
       <div className="grid gap-2 xl:grid-cols-[1fr_1fr]">
-        {/* Alerts */}
-        <div className="rounded-md border border-line bg-white p-2.5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted mb-1.5">Attention</p>
+        <div className="rounded-xl border border-line bg-white p-3">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.08em] text-muted">Attention</p>
           <div className="space-y-1">
             {pendingInvoices > 0 ? (
               <div className="flex items-center justify-between rounded border border-amber-100 bg-amber-50/50 px-2 py-1.5">
@@ -93,17 +133,16 @@ export function UserWorkspaceHome() {
               </div>
             ) : null}
             {pendingInvoices === 0 && pendingBills === 0 && vatPayable === 0 ? (
-              <div className="rounded border border-emerald-100 bg-emerald-50/50 px-2 py-1.5 text-xs text-emerald-800">All clear — no pending items.</div>
+              <div className="rounded border border-emerald-100 bg-emerald-50/50 px-2 py-1.5 text-xs text-emerald-800">All clear - no pending items.</div>
             ) : null}
           </div>
         </div>
 
-        {/* Quick actions grid */}
-        <div className="rounded-md border border-line bg-white p-2.5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted mb-1.5">Quick Access</p>
-          <div className="grid grid-cols-2 gap-1 md:grid-cols-4">
+        <div className="rounded-xl border border-line bg-white p-3">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.08em] text-muted">Quick access</p>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
             {quickLinks.map((item) => (
-              <Link key={item.href} href={item.href} className="rounded border border-line px-2 py-1.5 text-[11px] font-semibold text-ink transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary">
+              <Link key={item.href} href={item.href} className="rounded-lg border border-line px-2.5 py-2 text-[11px] font-semibold text-ink transition hover:border-primary/30 hover:bg-primary-soft hover:text-primary">
                 {item.label}
               </Link>
             ))}

@@ -3,18 +3,61 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
+import { useWorkspaceAccess } from "@/components/workspace/WorkspaceAccessProvider";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { WorkspaceRoleHeader } from "@/components/workspace/WorkspaceRoleHeader";
 import { workspaceRoles } from "@/data/role-workspace";
 import { listPlatformCustomers, type PlatformCustomerRecord } from "@/lib/workspace-api";
 
+const previewCustomers: PlatformCustomerRecord[] = [
+  {
+    id: 1,
+    legalName: "Blue Palm Trading",
+    tradeName: "Blue Palm",
+    taxNumber: "310998887770003",
+    registrationNumber: "1010654321",
+    baseCurrency: "SAR",
+    locale: "en-SA",
+    timezone: "Asia/Riyadh",
+    isActive: true,
+    suspendedReason: "",
+    owner: { name: "Sara Nasser", email: "sara@bluepalm.sa" },
+    users: [{ id: 1, name: "Sara Nasser", email: "sara@bluepalm.sa", role: "owner", isActive: true }],
+    subscription: { planId: 1, status: "trialing", planCode: "zatca-monthly", planName: "Operational Plan", monthlyPriceSar: 40 },
+    referralSource: null,
+  },
+  {
+    id: 2,
+    legalName: "Najd Supplies",
+    tradeName: "Najd Supplies",
+    taxNumber: "300111222330003",
+    registrationNumber: "1010789001",
+    baseCurrency: "SAR",
+    locale: "en-SA",
+    timezone: "Asia/Riyadh",
+    isActive: false,
+    suspendedReason: "Awaiting billing follow-up",
+    owner: { name: "", email: "" },
+    users: [],
+    subscription: null,
+    referralSource: null,
+  },
+];
+
 export function AssistantWorkspaceHome() {
+  const access = useWorkspaceAccess();
+  const isPreview = !access;
   const [customers, setCustomers] = useState<PlatformCustomerRecord[]>([]);
   const role = workspaceRoles.assistant;
 
   useEffect(() => {
+    if (isPreview) {
+      setCustomers(previewCustomers);
+      return;
+    }
+
     listPlatformCustomers({}).then(setCustomers).catch((err: unknown) => { console.error('[AssistantWorkspaceHome] listPlatformCustomers failed:', err); setCustomers([]); });
-  }, []);
+  }, [isPreview]);
 
   const trialing = customers.filter((customer) => customer.subscription?.status === "trialing");
   const suspended = customers.filter((customer) => !customer.isActive);
@@ -89,6 +132,12 @@ export function AssistantWorkspaceHome() {
           </div>
         </Card>
       </div>
+
+      {isPreview ? (
+        <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          Preview mode keeps the support workspace usable with demo follow-up accounts. Sign in to work against live customer health and subscription records.
+        </div>
+      ) : null}
     </div>
   );
 }

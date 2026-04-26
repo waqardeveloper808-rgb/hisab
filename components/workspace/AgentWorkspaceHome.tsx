@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/Card";
+import { useWorkspaceAccess } from "@/components/workspace/WorkspaceAccessProvider";
 import { currency } from "@/components/workflow/utils";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { WorkspaceRoleHeader } from "@/components/workspace/WorkspaceRoleHeader";
@@ -27,13 +28,54 @@ const emptyState: AgentDashboardSnapshot = {
   backendReady: false,
 };
 
+const previewState: AgentDashboardSnapshot = {
+  agent: {
+    referralCode: "RAMI45",
+    commissionRate: 20,
+    isActive: true,
+  },
+  summary: {
+    totalReferrals: 14,
+    totalSignups: 9,
+    totalSubscriptions: 6,
+    activeSubscriptions: 4,
+    pendingCommission: 320,
+    earnedCommission: 640,
+  },
+  referrals: [
+    {
+      id: 1,
+      name: "Blue Palm Trading",
+      email: "owner@bluepalm.sa",
+      signedUpAt: "2026-04-20",
+      commissionAmount: 160,
+      commissionStatus: "pending",
+      subscription: {
+        planName: "Operational Plan",
+        status: "trialing",
+        monthlyPriceSar: 40,
+        trialEndsAt: "2026-05-20",
+        activatedAt: "",
+      },
+    },
+  ],
+  backendReady: false,
+};
+
 export function AgentWorkspaceHome() {
+  const access = useWorkspaceAccess();
+  const isPreview = !access;
   const [snapshot, setSnapshot] = useState<AgentDashboardSnapshot>(emptyState);
   const role = workspaceRoles.agent;
 
   useEffect(() => {
+    if (isPreview) {
+      setSnapshot(previewState);
+      return;
+    }
+
     getAgentDashboard().then(setSnapshot).catch((err: unknown) => { console.error('[AgentWorkspaceHome] getAgentDashboard failed:', err); setSnapshot(emptyState); });
-  }, []);
+  }, [isPreview]);
 
   const pendingOutreach = snapshot.referrals.filter((row) => row.commissionStatus === "pending" || row.subscription === null).length;
   const referralLink = useMemo(() => {
@@ -115,6 +157,12 @@ export function AgentWorkspaceHome() {
           </div>
         </Card>
       </div>
+
+      {isPreview ? (
+        <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          Preview mode shows a working referral pipeline snapshot. Sign in to track live referrals, assigned accounts, and commissions.
+        </div>
+      ) : null}
     </div>
   );
 }

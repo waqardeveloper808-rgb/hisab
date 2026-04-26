@@ -21,8 +21,8 @@ export function ModuleCard({
       className={[
         "group flex h-full flex-col bg-white",
         emphasis === "strong"
-          ? "border-primary/20 shadow-[0_24px_52px_-34px_rgba(31,122,83,0.18)]"
-          : "hover:-translate-y-1 hover:shadow-[0_24px_50px_-34px_rgba(17,32,24,0.16)]",
+          ? "border-primary/20 shadow-[0_24px_52px_-34px_rgba(63,174,42,0.18)]"
+          : "hover:-translate-y-1 hover:shadow-[0_24px_50px_-34px_rgba(11,11,11,0.14)]",
       ].join(" ")}
     >
       <div>
@@ -37,7 +37,7 @@ export function ModuleCard({
 
       <div className="mt-6 space-y-3">
         {features.map((feature) => (
-          <div key={feature} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm text-ink shadow-[0_10px_24px_-20px_rgba(17,32,24,0.08)]">
+          <div key={feature} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm text-ink shadow-[0_10px_24px_-20px_rgba(11,11,11,0.08)]">
             <span className="flex size-6 items-center justify-center rounded-full bg-primary-soft text-[10px] font-bold text-primary">
               ✓
             </span>

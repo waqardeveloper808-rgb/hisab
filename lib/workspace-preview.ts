@@ -864,6 +864,76 @@ function splitTemplateSections(template: PreviewTemplate | undefined) {
   return normalized.filter((section) => !hidden.has(section));
 }
 
+type ResolvedItemCol = { key: string; widthPct: number };
+
+const FULL_ITEM_COLUMN_DEFAULTS: { key: string; width: number; visible: boolean }[] = [
+  { key: "serial", width: 4, visible: true },
+  { key: "description", width: 26, visible: true },
+  { key: "quantity", width: 7, visible: true },
+  { key: "unit", width: 7, visible: true },
+  { key: "unit_price", width: 9, visible: true },
+  { key: "taxable", width: 11, visible: true },
+  { key: "vat_rate", width: 7, visible: true },
+  { key: "vat", width: 9, visible: true },
+  { key: "total", width: 20, visible: true },
+];
+
+function getLabelOverride(template: PreviewTemplate | undefined, lang: "en" | "ar", key: string): string | null {
+  const raw = getTemplateSetting(template, lang === "en" ? "label_overrides_en" : "label_overrides_ar", "{}");
+  try {
+    const j = JSON.parse(raw) as Record<string, unknown>;
+    const v = j[key];
+    return typeof v === "string" && v.trim() ? v.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+function resolveItemColumnsForPreview(template: PreviewTemplate | undefined): ResolvedItemCol[] {
+  const raw = getTemplateSetting(template, "item_table_columns", "");
+  let saved: { key: string; width: number; visible: boolean }[] = [];
+  if (raw.trim()) {
+    try {
+      const parsed = JSON.parse(raw) as Array<Partial<{ key: string; width: number; visible: boolean }>>;
+      saved = parsed
+        .filter((e): e is { key: string } & Partial<{ width: number; visible: boolean }> => typeof e?.key === "string")
+        .map((e) => ({
+          key: e.key,
+          width: Math.max(3, Math.min(60, Number(e.width) || 10)),
+          visible: typeof e.visible === "boolean" ? e.visible : true,
+        }));
+    } catch {
+      saved = [];
+    }
+  }
+  const byKey = new Map(saved.map((s) => [s.key, s]));
+  const merged = FULL_ITEM_COLUMN_DEFAULTS.map((d) => {
+    const o = byKey.get(d.key);
+    return {
+      key: d.key,
+      width: o?.width ?? d.width,
+      visible: o?.visible ?? d.visible,
+    };
+  });
+  const vis = merged.filter((c) => c.visible);
+  const sum = vis.reduce((s, c) => s + c.width, 0) || 1;
+  return vis.map((c) => ({ key: c.key, widthPct: (100 * c.width) / sum }));
+}
+
+function defaultItemColumnLabels(): Record<string, { en: string; ar: string }> {
+  return {
+    serial: { en: "#", ar: "#" },
+    description: { en: "Description", ar: "الوصف" },
+    quantity: { en: "Qty", ar: "الكمية" },
+    unit: { en: "Unit", ar: "الوحدة" },
+    unit_price: { en: "Rate", ar: "السعر" },
+    taxable: { en: "Taxable", ar: "الخاضع للضريبة" },
+    vat_rate: { en: "VAT %", ar: "% الضريبة" },
+    vat: { en: "VAT", ar: "الضريبة" },
+    total: { en: "Total", ar: "الإجمالي" },
+  };
+}
+
 function amountToEnglishWords(value: number) {
   const ones = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
   const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
@@ -1076,12 +1146,32 @@ function buildDocumentMetaRows(document: PreviewDocument, presentation: ReturnTy
   return rows.filter((row) => textValue(row.value, ""));
 }
 
-function buildCustomerRows(document: PreviewDocument, presentation: ReturnType<typeof buildInvoicePresentation>) {
+function buildCustomerRows(
+  document: PreviewDocument,
+  presentation: ReturnType<typeof buildInvoicePresentation>,
+  contact: PreviewContact | null,
+) {
   const label = documentContactLabel(document.type);
+  const contactBillingAddress = contact?.billing_address && typeof contact.billing_address === "object"
+    ? contact.billing_address as Record<string, unknown>
+    : null;
+  const addressLinesEn = [
+    presentation.buyerAddressEn,
+    textValue(contactBillingAddress?.line_2, ""),
+    textValue(document.custom_fields?.buyer_district, ""),
+    [textValue(contact?.billing_address?.city, ""), textValue(document.custom_fields?.buyer_postal_code, "")].filter(Boolean).join(", "),
+    [textValue(document.custom_fields?.buyer_po_box, "") ? `PO Box ${textValue(document.custom_fields?.buyer_po_box, "")}` : "", textValue(document.custom_fields?.buyer_short_address, "")].filter(Boolean).join(" · "),
+    textValue(document.custom_fields?.buyer_country, ""),
+  ].filter(Boolean);
+  const line2Ar = textValue(contactBillingAddress?.line_2_ar, "");
+  const addressRtl = [presentation.buyerAddressAr, line2Ar].filter((line) => textValue(line, "")).join(" · ");
+  const addressValue = addressLinesEn.join(" · ");
+
   return [
     { en: label.en, ar: label.ar, value: presentation.buyerNameEn, rtl: presentation.buyerNameAr || "" },
-    { en: "Address", ar: "العنوان", value: presentation.buyerAddressEn, rtl: presentation.buyerAddressAr || "" },
+    { en: "Address", ar: "العنوان", value: addressValue, rtl: addressRtl },
     { en: "VAT Number", ar: "الرقم الضريبي", value: presentation.buyerVat },
+    { en: "CR Number", ar: "السجل التجاري", value: presentation.buyerCr },
     { en: "Phone", ar: "الهاتف", value: presentation.buyerPhone },
   ].filter((row) => textValue(row.value, "") || textValue(row.rtl, ""));
 }
@@ -1107,22 +1197,41 @@ function buildDocumentHtml(document: PreviewDocument, template: PreviewTemplate 
   const spacingScale = Math.max(0.82, getTemplateNumber(template, "spacing_scale", 1));
   const sectionGap = Math.max(8, getTemplateNumber(template, "section_gap", 10));
   const canvasPadding = Math.max(16, getTemplateNumber(template, "canvas_padding", 16));
-  const accent = template?.accent_color ?? "#1f7a53";
+  const accent = template?.accent_color ?? "#3FAE2A";
   const isModern = getTemplateSetting(template, "layout", "classic_corporate") === "modern_carded";
   const isIndustrial = getTemplateSetting(template, "layout", "classic_corporate") === "industrial_supply";
   const frame = isIndustrial ? "#aebbc3" : isModern ? "#cfddd7" : "#cbd7d0";
   const text = isIndustrial ? "#12232c" : isModern ? "#152720" : "#13231b";
   const muted = isIndustrial ? "#4e616d" : isModern ? "#63756f" : "#5f6e68";
   const panel = isIndustrial ? "#f6f8fa" : isModern ? "#f3f8f4" : "#f7faf7";
-  const accentSoft = isIndustrial ? "rgba(31,79,99,0.1)" : isModern ? "rgba(15,118,110,0.1)" : "rgba(31,122,83,0.1)";
+  const accentSoft = isIndustrial ? "rgba(31,79,99,0.1)" : isModern ? "rgba(15,118,110,0.1)" : "rgba(63,174,42,0.1)";
   const divider = isIndustrial ? "rgba(83,102,118,0.28)" : isModern ? "rgba(43,96,83,0.2)" : "rgba(62,89,78,0.18)";
   const labelSize = Math.max(9, fontSize - 2);
   const currencyCode = presentation.currencyCode;
+  const colorEnRaw = getTemplateSetting(template, "text_color_en", "");
+  const colorArRaw = getTemplateSetting(template, "text_color_ar", "");
+  const colorEn = colorEnRaw.trim() || text;
+  const colorAr = colorArRaw.trim() || text;
+  const logoMaxW = getTemplateNumber(template, "logo_max_width", 160);
+  const logoMaxH = getTemplateNumber(template, "logo_max_height", 62);
   const showQr = ["tax_invoice", "credit_note", "debit_note"].includes(document.type) && getBooleanSetting(template, "show_qr", document.type === "tax_invoice");
   const showTotals = getBooleanSetting(template, "show_totals", true);
   const showVatSection = getBooleanSetting(template, "show_vat_section", true);
+  const headerHtml = textValue(template?.header_html, "").trim();
+  const footerHtml = textValue(template?.footer_html, "").trim();
   const notes = textValue(document.notes, "").trim();
-  const logoMarkup = presentation.logoUrl ? `<img src="${escapeAttribute(presentation.logoUrl)}" alt="Logo" style="max-width:160px; max-height:62px; object-fit:contain; display:block;" />` : "";
+  const sellerVatDigits = presentation.sellerVat.replace(/\D/g, "");
+  const buyerVatDigits = presentation.buyerVat.replace(/\D/g, "");
+  const submittedState = ["submitted", "reported", "cleared", "locked"].includes(document.status);
+  const complianceMessages = [
+    sellerVatDigits.length !== 15 ? "Seller VAT should be a 15-digit value." : "",
+    buyerVatDigits && buyerVatDigits.length !== 15 ? "Buyer VAT should be a 15-digit value." : "",
+    document.compliance_metadata?.xml_ready ? "UBL XML foundation prepared." : "UBL XML foundation pending.",
+    submittedState ? "Editing is blocked after submission-ready status." : "Document remains editable until submission lock is applied.",
+  ].filter(Boolean);
+  const logoMarkup = presentation.logoUrl
+    ? `<img src="${escapeAttribute(presentation.logoUrl)}" alt="Logo" style="max-width:${logoMaxW}px; max-height:${logoMaxH}px; object-fit:contain; display:block;" />`
+    : "";
   const metaRows = buildDocumentMetaRows(document, presentation);
   const deliveryRows = [
     { en: "Supply Date", ar: "تاريخ التوريد", value: presentation.supplyDate },
@@ -1130,130 +1239,243 @@ function buildDocumentHtml(document: PreviewDocument, template: PreviewTemplate 
     { en: "Order Number", ar: "رقم الطلب", value: presentation.orderNumber },
     { en: "Project", ar: "المشروع", value: textValue(document.custom_fields?.project, "") },
   ].filter((row) => textValue(row.value, ""));
-  const contactBillingAddress = contact?.billing_address && typeof contact.billing_address === "object"
-    ? contact.billing_address as Record<string, unknown>
-    : null;
-  const addressLines = [
-    presentation.buyerAddressEn,
-    textValue(contactBillingAddress?.line_2, ""),
-    textValue(document.custom_fields?.buyer_district, ""),
-    [textValue(contact?.billing_address?.city, ""), textValue(document.custom_fields?.buyer_postal_code, "")].filter(Boolean).join(", "),
-    [textValue(document.custom_fields?.buyer_po_box, "") ? `PO Box ${textValue(document.custom_fields?.buyer_po_box, "")}` : "", textValue(document.custom_fields?.buyer_short_address, "")].filter(Boolean).join(" · "),
-    textValue(document.custom_fields?.buyer_country, ""),
-  ].filter(Boolean);
-  const contactLabel = documentContactLabel(document.type);
+  const customerRows = buildCustomerRows(document, presentation, contact);
   const sectionOrder = splitTemplateSections(template);
 
+  const itemCols = resolveItemColumnsForPreview(template);
+  const itemLabelDefaults = defaultItemColumnLabels();
+  const bilingualHeadings = getBooleanSetting(template, "table_heading_bilingual", true);
+  const riyalSym = getTemplateSetting(template, "totals_currency_symbol", "﷼");
+  const tdPad = getTemplateNumber(template, "totals_card_padding_px", 10);
+  const tdGap = getTemplateNumber(template, "totals_row_gap_px", 6);
+  const totalsMinH = getTemplateNumber(template, "totals_card_min_height_px", 0);
+  const totalsMinW = getTemplateNumber(template, "totals_block_min_width_px", 300);
+  const descFr = getTemplateNumber(template, "totals_col_desc_fr", 140);
+  const curFr = getTemplateNumber(template, "totals_col_currency_fr", 40);
+  const amtFr = getTemplateNumber(template, "totals_col_amount_fr", 100);
+  const qrPct = Math.min(50, Math.max(28, getTemplateNumber(template, "qr_card_width_pct", 38)));
+  const qrImgPx = Math.min(200, Math.max(40, getTemplateNumber(template, "qr_image_max_px", 88)));
+  const totalsMaxWpx = getTemplateNumber(template, "totals_card_max_width_px", 0);
+  /** Primary visible width cap for totals card (Template Studio: "Totals Card Width"). */
+  const totalsCardWidthPx = Math.min(720, Math.max(280, getTemplateNumber(template, "totals_card_width_px", 540)));
+  const signatoryName = getTemplateSetting(template, "signatory_name", "").trim();
+  const signatoryPosition = getTemplateSetting(template, "signatory_position", "").trim();
+  const fmtAmt = (n: number) =>
+    numericValue(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const theadRow = itemCols
+    .map((col) => {
+      const lab = itemLabelDefaults[col.key] ?? { en: col.key, ar: col.key };
+      const en = getLabelOverride(template, "en", col.key) ?? lab.en;
+      const ar = getLabelOverride(template, "ar", col.key) ?? lab.ar;
+      const align = col.key === "serial" ? "center" : col.key === "description" ? "left" : "right";
+      const headInner = bilingualHeadings
+        ? `<div style="color:${colorEn};font-size:${labelSize}px;line-height:1.2;">${escapeHtml(en)}</div><div dir="rtl" style="color:${colorAr};font-size:${Math.max(8, labelSize - 1)}px;${arabicTextStyle()}">${escapeHtml(ar)}</div>`
+        : `<span style="color:${colorEn}">${escapeHtml(en)}</span>`;
+      return `<th style="width:${col.widthPct.toFixed(4)}%;border:1px solid ${divider};padding:5px 5px;text-align:${align};font-weight:800;background:${panel};vertical-align:middle;box-sizing:border-box;">${headInner}</th>`;
+    })
+    .join("");
+
+  const tbodyRows = (document.lines ?? [])
+    .map((line, index) => {
+      const taxable = numericValue(line.gross_amount);
+      const vat = getLineVatAmount(line);
+      const total = showTotals ? taxable + vat : taxable;
+      const descriptionAr = textValue(line.metadata?.custom_fields?.description_ar, "");
+      const unitV = textValue(line.metadata?.custom_fields?.unit, "—");
+      const vatRateV = `${getLineVatRate(line)}%`;
+      const cells = itemCols
+        .map((col) => {
+          const align = col.key === "serial" ? "center" : col.key === "description" ? "left" : "right";
+          let inner: string;
+          switch (col.key) {
+            case "serial":
+              inner = String(index + 1);
+              break;
+            case "description":
+              inner = `<div style="color:${colorEn};">${escapeHtml(line.description)}</div>${descriptionAr ? `<div dir="rtl" style="margin-top:2px;color:${colorAr};${arabicTextStyle()}">${escapeHtml(descriptionAr)}</div>` : ""}`;
+              break;
+            case "quantity":
+              inner = numericValue(line.quantity).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+              break;
+            case "unit":
+              inner = escapeHtml(unitV);
+              break;
+            case "unit_price":
+              inner = numericValue(line.unit_price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              break;
+            case "taxable":
+              inner = taxable.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              break;
+            case "vat_rate":
+              inner = escapeHtml(vatRateV);
+              break;
+            case "vat":
+              inner = vat.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              break;
+            case "total":
+              inner = total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+              break;
+            default:
+              inner = "";
+          }
+          const fw = col.key === "total" ? "800" : "400";
+          const bg = col.key === "total" ? accentSoft : "transparent";
+          return `<td style="border-bottom:1px solid ${divider};padding:5px 5px;text-align:${align};font-variant-numeric:tabular-nums;vertical-align:middle;color:${colorEn};font-weight:${fw};background:${bg};box-sizing:border-box;word-break:break-word;">${inner}</td>`;
+        })
+        .join("");
+      return `<tr>${cells}</tr>`;
+    })
+    .join("");
+
+  const itemsSectionHtml = `<section data-doc-section="items" style="margin-bottom:${Math.round(sectionGap)}px;max-width:100%;box-sizing:border-box;">
+    <table style="width:100%;border-collapse:collapse;font-size:${fontSize}px;line-height:1.25;table-layout:fixed;box-sizing:border-box;">
+      <thead><tr>${theadRow}</tr></thead>
+      <tbody>${tbodyRows}</tbody>
+    </table>
+  </section>`;
+
+  function totalsTripleRow(en: string, ar: string, amount: string, grand: boolean) {
+    const fs = grand ? fontSize + 2 : fontSize;
+    const fwEn = grand ? 900 : 600;
+    const top = grand ? `border-top:2px solid ${accent};padding-top:10px;margin-top:6px;` : "";
+    return `<div style="${top}display:grid;grid-template-columns:minmax(0,${descFr}fr) ${curFr}fr ${amtFr}fr;gap:4px 10px;align-items:center;padding:${tdGap}px 0;border-bottom:1px solid ${divider};font-size:${fs}px;line-height:1.2;box-sizing:border-box;">
+      <div style="min-width:0;"><div style="color:${colorEn};font-weight:${fwEn};">${escapeHtml(en)}</div><div dir="rtl" style="color:${colorAr};font-weight:600;font-size:${Math.max(9, fontSize - 1)}px;${arabicTextStyle()}">${escapeHtml(ar)}</div></div>
+      <div style="text-align:center;color:${colorEn};font-weight:700;font-size:${fontSize}px;padding:0 8px;white-space:nowrap;">${escapeHtml(riyalSym)}</div>
+      <div style="text-align:right;font-variant-numeric:tabular-nums;color:${grand ? accent : colorEn};font-weight:${grand ? 900 : 700};white-space:nowrap;font-size:${grand ? fontSize + 3 : fontSize + 1}px;">${amount}</div>
+    </div>`;
+  }
+
+  const subL = {
+    en: getLabelOverride(template, "en", "subtotal") ?? "Subtotal",
+    ar: getLabelOverride(template, "ar", "subtotal") ?? "المجموع الفرعي",
+  };
+  const tvL = {
+    en: getLabelOverride(template, "en", "total_vat") ?? "Total VAT",
+    ar: getLabelOverride(template, "ar", "total_vat") ?? "إجمالي ضريبة القيمة المضافة",
+  };
+  const gtL = {
+    en: getLabelOverride(template, "en", "grand_total") ?? "Grand Total",
+    ar: getLabelOverride(template, "ar", "grand_total") ?? "المجموع شامل الضريبة",
+  };
+
+  const totalsBody = [
+    totalsTripleRow(subL.en, subL.ar, fmtAmt(presentation.subtotal), false),
+    ...(showVatSection && getBooleanSetting(template, "totals_show_taxable_row", false)
+      ? [totalsTripleRow("Taxable Amount", "المبلغ الخاضع للضريبة", fmtAmt(document.taxable_total), false)]
+      : []),
+    ...(showVatSection ? [totalsTripleRow(tvL.en, tvL.ar, fmtAmt(document.tax_total), false)] : []),
+    totalsTripleRow(gtL.en, gtL.ar, fmtAmt(document.grand_total), true),
+  ].join("");
+
+  const qrCard =
+    showQr && qrDataUrl
+      ? `<div data-doc-qr-card style="flex:0 1 ${qrPct}%;max-width:calc(${qrPct}% - 6px);min-width:140px;border:1px solid ${divider};border-radius:8px;padding:8px;background:${panel};box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+          <img src="${escapeAttribute(qrDataUrl)}" alt="ZATCA QR" width="${qrImgPx}" height="${qrImgPx}" style="width:${qrImgPx}px;height:${qrImgPx}px;object-fit:contain;border:1px solid ${frame};padding:3px;background:#fff;align-self:flex-start;" />
+          <div style="font-size:10px;line-height:1.35;color:${colorEn};max-width:100%;word-break:break-word;">Phase 1 ZATCA TLV (foundation)</div>
+        </div>`
+      : "";
+
+  const totalsCardLegacyMax = totalsMaxWpx > 0 ? `min(${totalsCardWidthPx}px, ${totalsMaxWpx}px)` : `${totalsCardWidthPx}px`;
+  const totalsCard = `<div data-doc-totals-card style="flex:1 1 auto;min-width:min(100%,${totalsMinW}px);max-width:min(100%,${totalsCardLegacyMax});width:100%;${totalsMinH > 0 ? `min-height:${totalsMinH}px;` : ""}border:1px solid ${divider};padding:${tdPad}px;background:linear-gradient(180deg,#ffffff 0%,${panel} 100%);box-sizing:border-box;border-radius:8px;">
+    ${totalsBody}
+  </div>`;
+
+  const totalsQrSection = showTotals
+    ? `<section data-doc-section="totals" style="display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;margin-bottom:14px;width:100%;max-width:100%;box-sizing:border-box;">
+    ${showQr ? qrCard : ""}
+    ${totalsCard}
+  </section>`
+    : "";
+
+  const stampSigFooter = `${assets.stampUrl ? `<img src="${escapeAttribute(assets.stampUrl)}" alt="Stamp" style="max-width:96px;max-height:72px;object-fit:contain;" />` : ""}${
+    assets.signatureUrl
+      ? `<div data-doc-signature-block style="display:flex;flex-direction:column;align-items:flex-start;gap:3px;">
+          <img src="${escapeAttribute(assets.signatureUrl)}" alt="Signature" style="max-width:160px;max-height:56px;object-fit:contain;" />
+          ${signatoryName ? `<div style="font-size:${fontSize - 2}px;color:${colorEn};line-height:1.2;">${escapeHtml(signatoryName)}</div>` : ""}
+          ${signatoryPosition ? `<div style="font-size:${fontSize - 3}px;color:${colorEn};line-height:1.2;">${escapeHtml(signatoryPosition)}</div>` : ""}
+        </div>`
+      : ""
+  }`;
+
+  const docInfoRowsHtml = metaRows
+    .map((row, idx) => {
+      const bord = idx < metaRows.length - 1 ? `border-bottom:1px solid ${divider};` : "";
+      return `<div data-doc-meta-row style="display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.3fr) minmax(0,.95fr);gap:6px 10px;align-items:center;padding:5px 0;${bord}font-size:${fontSize}px;line-height:1.25;box-sizing:border-box;"><div style="color:${colorEn};font-weight:700;font-size:${labelSize}px;text-transform:uppercase;letter-spacing:.04em;">${escapeHtml(row.en)}</div><div style="text-align:center;color:${colorEn};font-weight:800;font-variant-numeric:tabular-nums;min-width:0;word-break:break-word;">${escapeHtml(row.value)}</div><div dir="rtl" style="color:${colorAr};font-weight:700;font-size:${labelSize}px;text-align:right;${arabicTextStyle()}">${escapeHtml(row.ar)}</div></div>`;
+    })
+    .join("");
+
+  const customerRowsHtml = customerRows
+    .map((row, idx) => {
+      const bord = idx < customerRows.length - 1 ? `border-bottom:1px solid ${divider};` : "";
+      const rtlVal = "rtl" in row ? String(row.rtl ?? "") : "";
+      const mid = `${textValue(row.value, "") ? `<div style="color:${colorEn};font-weight:600;font-variant-numeric:tabular-nums;">${escapeHtml(row.value)}</div>` : ""}${textValue(rtlVal, "") ? `<div dir="rtl" style="color:${colorAr};font-size:${Math.max(10, fontSize - 1)}px;${arabicTextStyle()}">${escapeHtml(rtlVal)}</div>` : ""}`;
+      return `<div data-doc-customer-row style="display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr) minmax(0,.9fr);gap:6px 10px;align-items:center;padding:5px 0;${bord}font-size:${fontSize}px;line-height:1.25;box-sizing:border-box;"><div style="color:${colorEn};font-weight:700;font-size:${labelSize}px;">${escapeHtml(row.en)}</div><div style="text-align:center;min-width:0;">${mid}</div><div dir="rtl" style="color:${colorAr};font-weight:700;font-size:${labelSize}px;text-align:right;${arabicTextStyle()}">${escapeHtml(row.ar)}</div></div>`;
+    })
+    .join("");
+
   const sectionMarkup: Record<string, string> = {
-    header: `<section data-doc-section="header" style="display:grid; grid-template-columns:40% 20% 40%; gap:0; align-items:start; padding-bottom:16px; border-bottom:1px solid ${divider}; margin-bottom:16px;">
-      <div style="display:grid; gap:4px; align-content:start; text-align:left; font-size:${fontSize}px; line-height:1.5; color:${text}; padding-right:12px;">
-        <div style="font-size:${fontSize + 6}px; font-weight:800; line-height:1.15;">${escapeHtml(presentation.sellerNameEn)}</div>
+    header: `<section data-doc-section="header" style="display:grid; grid-template-columns:40% 20% 40%; gap:0; align-items:start; padding-bottom:12px; border-bottom:1px solid ${divider}; margin-bottom:12px;">
+      <div style="display:grid; gap:3px; align-content:start; text-align:left; font-size:${fontSize}px; line-height:1.45; color:${colorEn}; padding-right:12px;">
+        <div style="font-size:${fontSize + 6}px; font-weight:800; line-height:1.15;color:${colorEn};">${escapeHtml(presentation.sellerNameEn)}</div>
         ${presentation.sellerAddressEn ? `<div>${escapeHtml(presentation.sellerAddressEn)}</div>` : ""}
         ${presentation.sellerEmail || presentation.sellerPhone ? `<div>${escapeHtml([presentation.sellerEmail, presentation.sellerPhone].filter(Boolean).join(" / "))}</div>` : ""}
       </div>
-      <div style="display:flex; justify-content:center; align-items:flex-start; min-height:72px; padding:0 8px;">${logoMarkup}</div>
-      <div dir="rtl" style="display:grid; gap:4px; align-content:start; font-size:${fontSize}px; line-height:1.6; color:${text}; padding-left:12px; ${arabicTextStyle()}">
-        ${presentation.sellerNameAr ? `<div style="font-size:${fontSize + 6}px; font-weight:800; line-height:1.2;">${escapeHtml(presentation.sellerNameAr)}</div>` : ""}
+      <div style="display:flex; justify-content:center; align-items:flex-start; min-height:64px; padding:0 8px;">${logoMarkup}</div>
+      <div dir="rtl" style="display:grid; gap:3px; align-content:start; font-size:${fontSize}px; line-height:1.5; color:${colorAr}; padding-left:12px; ${arabicTextStyle()}">
+        ${presentation.sellerNameAr ? `<div style="font-size:${fontSize + 6}px; font-weight:800; line-height:1.2;color:${colorAr};">${escapeHtml(presentation.sellerNameAr)}</div>` : ""}
         ${presentation.sellerAddressAr ? `<div>${escapeHtml(presentation.sellerAddressAr)}</div>` : ""}
         ${presentation.sellerVat ? `<div>الرقم الضريبي: ${escapeHtml(presentation.sellerVat)}</div>` : ""}
         ${presentation.sellerCr ? `<div>السجل التجاري: ${escapeHtml(presentation.sellerCr)}</div>` : ""}
       </div>
     </section>`,
-    title: `<section data-doc-section="title" style="padding:0 0 16px;">
-      <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:end; border-bottom:1px solid ${divider}; padding-bottom:12px;">
+    title: `<section data-doc-section="title" style="padding:0 0 12px;">
+      <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:end; border-bottom:1px solid ${divider}; padding-bottom:10px;">
         <div data-doc-title="en" style="text-align:left;">
-          <div style="font-size:${fontSize - 1}px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:${muted};">Document</div>
-          <div style="margin-top:8px; font-size:${titleSize}px; font-weight:900; letter-spacing:.01em; line-height:1.05; color:${text};">${escapeHtml(presentation.documentTitle.en)}</div>
+          <div style="font-size:${fontSize - 1}px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:${colorEn}; opacity:0.82;">Document</div>
+          <div style="margin-top:6px; font-size:${titleSize}px; font-weight:900; letter-spacing:.01em; line-height:1.05; color:${colorEn};">${escapeHtml(presentation.documentTitle.en)}</div>
         </div>
         <div data-doc-title="ar" dir="rtl" style="text-align:right; ${arabicTextStyle()}">
-          <div style="font-size:${fontSize - 1}px; font-weight:700; letter-spacing:.08em; color:${muted};">المستند</div>
-          <div style="margin-top:8px; font-size:${titleSize - 1}px; font-weight:900; line-height:1.15; color:${text};">${escapeHtml(presentation.documentTitle.ar)}</div>
+          <div style="font-size:${fontSize - 1}px; font-weight:700; letter-spacing:.08em; color:${colorAr}; opacity:0.88;">المستند</div>
+          <div style="margin-top:6px; font-size:${titleSize - 1}px; font-weight:900; line-height:1.15; color:${colorAr};">${escapeHtml(presentation.documentTitle.ar)}</div>
         </div>
       </div>
     </section>`,
-    "document-info": metaRows.length ? `<section data-doc-section="document-info" style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-bottom:16px;">
-      ${metaRows.map((row) => `<div data-doc-meta-card="true" style="display:grid; min-width:0; border:1px solid ${divider}; background:#fff; padding:12px; gap:8px;">
-        <div data-doc-meta-labels="true" style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:start;">
-          <div data-doc-label="en" style="font-size:${labelSize}px; line-height:1.25; font-weight:700; letter-spacing:.06em; color:${muted}; overflow-wrap:anywhere; text-transform:uppercase;">${escapeHtml(row.en)}</div>
-          <div data-doc-label="ar" dir="rtl" style="font-size:${labelSize}px; font-weight:700; color:${muted}; overflow-wrap:anywhere; ${arabicTextStyle("line-height:1.35; letter-spacing:0;")}">${escapeHtml(row.ar)}</div>
-        </div>
-        <div data-doc-meta-value="true" style="min-width:0; border-top:1px solid ${divider}; padding-top:8px; font-size:${fontSize + 1}px; font-weight:800; color:${text}; line-height:1.35; overflow-wrap:anywhere; word-break:break-word; font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate; text-align:left;">${escapeHtml(row.value)}</div>
-      </div>`).join("")}
-    </section>` : "",
-    delivery: deliveryRows.length ? `<section data-doc-section="delivery" style="border:1px solid ${divider}; background:${panel}; padding:12px; margin-bottom:16px;">
-      <div style="margin-bottom:8px; font-size:${labelSize}px; text-transform:uppercase; letter-spacing:.06em; color:${muted}; font-weight:800;">Delivery / التسليم</div>
-      <div style="display:grid; gap:8px;">
-        ${deliveryRows.map((row) => `<div data-doc-bilingual-row="true" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:${fontSize}px;"><div style="text-align:left;"><strong>${escapeHtml(row.en)}:</strong> ${escapeHtml(row.value)}</div><div dir="rtl" style="${arabicTextStyle()}"><strong>${escapeHtml(row.ar)}:</strong> <span style="direction:ltr; unicode-bidi:isolate;">${escapeHtml(row.value)}</span></div></div>`).join("")}
+    "document-info": docInfoRowsHtml
+      ? `<section data-doc-section="document-info" style="border:1px solid ${divider}; background:#fff; margin-bottom:12px; padding:6px 10px 8px; box-sizing:border-box; max-width:100%;">
+      ${docInfoRowsHtml}
+    </section>`
+      : "",
+    delivery: deliveryRows.length ? `<section data-doc-section="delivery" style="border:1px solid ${divider}; background:${panel}; padding:8px 12px; margin-bottom:12px; box-sizing:border-box; max-width:100%;">
+      <div style="margin-bottom:6px; font-size:${labelSize}px; text-transform:uppercase; letter-spacing:.06em; font-weight:800;"><span style="color:${colorEn};">Delivery</span> <span style="color:${colorAr};" dir="rtl"> / التسليم</span></div>
+      <div style="display:grid; gap:0;">
+        ${deliveryRows.map((row, idx) => {
+          const bord = idx < deliveryRows.length - 1 ? `border-bottom:1px solid ${divider};` : "";
+          return `<div data-doc-bilingual-row="true" style="display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr) minmax(0,.9fr); gap:6px 10px; align-items:center; padding:5px 0; ${bord} font-size:${fontSize}px; line-height:1.25;"><div style="color:${colorEn}; font-weight:700;">${escapeHtml(row.en)}</div><div style="text-align:center; color:${colorEn}; font-weight:600; font-variant-numeric:tabular-nums; min-width:0; word-break:break-word;">${escapeHtml(row.value)}</div><div dir="rtl" style="color:${colorAr}; font-weight:700; text-align:right; ${arabicTextStyle()}">${escapeHtml(row.ar)}</div></div>`;
+        }).join("")}
       </div>
     </section>` : "",
-    customer: `<section data-doc-section="customer" style="display:grid; grid-template-columns:30% 45% 25%; gap:0; border:1px solid ${divider}; margin-bottom:16px; background:#fff;">
-      <div style="padding:12px; border-right:1px solid ${divider}; font-size:${fontSize}px; line-height:1.45; background:transparent;">
-        ${presentation.buyerNameEn ? `<div data-doc-party="en" style="font-size:${fontSize + 1}px; font-weight:800; line-height:1.25;">${escapeHtml(presentation.buyerNameEn)}</div>` : ""}
-        ${presentation.buyerNameAr ? `<div data-doc-party="ar" dir="rtl" style="margin-top:4px; font-size:${fontSize + 1}px; font-weight:800; line-height:1.35; ${arabicTextStyle()}">${escapeHtml(presentation.buyerNameAr)}</div>` : ""}
+    customer: customerRowsHtml
+      ? `<section data-doc-section="customer" style="border:1px solid ${divider}; margin-bottom:12px; background:#fff; padding:6px 10px 8px; box-sizing:border-box; max-width:100%;">
+      ${customerRowsHtml}
+    </section>`
+      : "",
+    items: itemsSectionHtml,
+    totals: totalsQrSection,
+    notes: notes ? `<section data-doc-section="notes" style="border-top:1px solid ${divider}; padding-top:10px; margin-bottom:10px;"><div style="font-size:${fontSize}px; line-height:1.45; color:${colorEn};">${escapeHtml(notes)}</div></section>` : "",
+    footer: `<section data-doc-section="footer" style="border-top:1px solid ${divider}; padding-top:10px; display:grid; gap:8px; min-height:36px;">
+      ${footerHtml ? `<div data-doc-footer-html="true" style="font-size:${fontSize - 1}px; color:${colorEn}; line-height:1.45;">${footerHtml}</div>` : ""}
+      ${complianceMessages.length ? `<div data-doc-compliance="true" style="display:grid; gap:4px; border:1px solid ${divider}; background:${panel}; padding:8px; font-size:${fontSize - 1}px; color:${muted};">
+        ${complianceMessages.map((message) => `<div>${escapeHtml(message)}</div>`).join("")}
+      </div>` : ""}
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap;">
+      <div style="font-size:${fontSize - 1}px; color:${colorEn};">${escapeHtml(presentation.sellerNameEn)}${presentation.sellerVat ? ` · VAT ${escapeHtml(presentation.sellerVat)}` : ""}</div>
+      <div style="display:flex; align-items:flex-end; gap:10px;">${stampSigFooter}</div>
       </div>
-      <div style="padding:12px; border-right:1px solid ${divider}; font-size:${fontSize}px; line-height:1.45;">
-        ${addressLines.map((line) => `<div>${escapeHtml(line)}</div>`).join("")}
-        ${textValue(contactBillingAddress?.line_2_ar, "") ? `<div dir="rtl" style="margin-top:4px; ${arabicTextStyle()}">${escapeHtml(textValue(contactBillingAddress?.line_2_ar, ""))}</div>` : ""}
-        ${presentation.buyerAddressAr ? `<div dir="rtl" style="margin-top:4px; ${arabicTextStyle()}">${escapeHtml(presentation.buyerAddressAr)}</div>` : ""}
-      </div>
-      <div style="padding:12px; font-size:${fontSize}px; line-height:1.45; background:transparent;">
-        ${presentation.buyerVat ? `<div><strong>VAT:</strong> ${escapeHtml(presentation.buyerVat)}</div>` : ""}
-        ${presentation.buyerCr ? `<div><strong>CR:</strong> ${escapeHtml(presentation.buyerCr)}</div>` : ""}
-        ${presentation.buyerPhone ? `<div><strong>Phone:</strong> ${escapeHtml(presentation.buyerPhone)}</div>` : ""}
-        <div dir="rtl" style="margin-top:4px; color:${muted}; font-weight:700; ${arabicTextStyle()}">${escapeHtml(contactLabel.ar)}</div>
-      </div>
-    </section>`,
-    items: `<section data-doc-section="items" style="margin-bottom:${Math.round(sectionGap)}px;">
-      <table style="width:100%; border-collapse:collapse; font-size:${fontSize}px; line-height:1.3; table-layout:fixed;">
-        <thead>
-          <tr>
-            <th style="width:5%; border:1px solid ${divider}; padding:8px; text-align:center; font-weight:800; background:${panel};">#</th>
-            <th style="width:37%; border:1px solid ${divider}; padding:8px; text-align:left; font-weight:800; background:${panel};">Description</th>
-            <th style="width:9%; border:1px solid ${divider}; padding:8px; text-align:right; font-weight:800; background:${panel};">Qty</th>
-            <th style="width:13%; border:1px solid ${divider}; padding:8px; text-align:right; font-weight:800; background:${panel};">Unit Price</th>
-            <th style="width:13%; border:1px solid ${divider}; padding:8px; text-align:right; font-weight:800; background:${panel};">Taxable</th>
-            <th style="width:10%; border:1px solid ${divider}; padding:8px; text-align:right; font-weight:800; background:${panel};">VAT</th>
-            <th style="width:13%; border:1px solid ${divider}; padding:8px; text-align:right; font-weight:800; background:${panel};">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${(document.lines ?? []).map((line, index) => {
-            const taxable = numericValue(line.gross_amount);
-            const vat = getLineVatAmount(line);
-            const total = showTotals ? taxable + vat : taxable;
-            const descriptionAr = textValue(line.metadata?.custom_fields?.description_ar, "");
-            return `<tr>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 4px; text-align:center; vertical-align:top;">${index + 1}</td>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 8px; vertical-align:top; line-height:1.4;"><div>${escapeHtml(line.description)}</div>${descriptionAr ? `<div dir="rtl" style="margin-top:4px; color:${muted}; ${arabicTextStyle()}">${escapeHtml(descriptionAr)}</div>` : ""}</td>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 4px; text-align:right; font-variant-numeric:tabular-nums; vertical-align:top;">${numericValue(line.quantity).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</td>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 4px; text-align:right; font-variant-numeric:tabular-nums; vertical-align:top;">${numericValue(line.unit_price).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 4px; text-align:right; font-variant-numeric:tabular-nums; vertical-align:top;">${taxable.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 4px; text-align:right; font-variant-numeric:tabular-nums; vertical-align:top;">${vat.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-              <td style="border-bottom:1px solid ${divider}; padding:8px 4px; text-align:right; font-weight:800; font-variant-numeric:tabular-nums; vertical-align:top; background:${accentSoft};">${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
-            </tr>`;
-          }).join("")}
-        </tbody>
-      </table>
-    </section>`,
-    totals: showTotals ? `<section data-doc-section="totals" style="display:flex; justify-content:flex-end; margin-bottom:16px;">
-      <div data-doc-total-block="true" style="width:360px; border:1px solid ${divider}; padding:12px; background:linear-gradient(180deg,#ffffff 0%, ${panel} 100%);">
-        <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:8px 0; border-bottom:1px solid ${divider}; font-size:${fontSize}px; line-height:1.3;"><span>Subtotal</span><strong style="text-align:right; font-variant-numeric:tabular-nums;">${numericValue(presentation.subtotal).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>
-        ${showVatSection ? `<div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:8px 0; border-bottom:1px solid ${divider}; font-size:${fontSize}px; line-height:1.3;"><span>Taxable Amount</span><strong style="text-align:right; font-variant-numeric:tabular-nums;">${numericValue(document.taxable_total).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>
-        <div style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:8px 0; border-bottom:1px solid ${divider}; font-size:${fontSize}px; line-height:1.3;"><span>VAT</span><strong style="text-align:right; font-variant-numeric:tabular-nums;">${numericValue(document.tax_total).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></div>` : ""}
-        <div data-doc-total-row="true" style="display:grid; grid-template-columns:minmax(0,1fr) auto; gap:16px; padding:12px 0 8px; font-size:${fontSize + 5}px; line-height:1.1; font-weight:900; border-top:2px solid ${accent}; margin-top:8px;">
-          <span style="display:grid; gap:4px;"><span>TOTAL</span><span dir="rtl" style="font-size:${fontSize + 1}px; line-height:1.2; ${arabicTextStyle()}">الإجمالي</span></span>
-          <strong data-doc-total-value="true" style="text-align:right; font-variant-numeric:tabular-nums;">${numericValue(document.grand_total).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${escapeHtml(currencyCode)}</strong>
-        </div>
-      </div>
-    </section>` : "",
-    notes: notes ? `<section data-doc-section="notes" style="border-top:1px solid ${divider}; padding-top:12px; margin-bottom:12px;"><div style="font-size:${fontSize}px; line-height:1.5;">${escapeHtml(notes)}</div></section>` : "",
-    footer: `<section data-doc-section="footer" style="border-top:1px solid ${divider}; padding-top:12px; display:flex; justify-content:space-between; align-items:flex-end; gap:12px; min-height:40px;">
-      <div style="font-size:${fontSize - 1}px; color:${muted};">${escapeHtml(presentation.sellerNameEn)}${presentation.sellerVat ? ` · VAT ${escapeHtml(presentation.sellerVat)}` : ""}</div>
-      <div style="display:flex; align-items:center; gap:10px;">${assets.stampUrl ? `<img src="${escapeAttribute(assets.stampUrl)}" alt="Stamp" style="max-width:96px; max-height:72px; object-fit:contain;" />` : ""}${assets.signatureUrl ? `<img src="${escapeAttribute(assets.signatureUrl)}" alt="Signature" style="max-width:132px; max-height:44px; object-fit:contain;" />` : ""}${showQr && qrDataUrl ? `<img src="${qrDataUrl}" alt="ZATCA QR" style="width:72px; height:72px; object-fit:contain; background:white; border:1px solid ${frame}; padding:5px;" />` : ""}</div>
     </section>`,
   };
 
-  return `<html><body style="margin:0; padding:0; background:#f1f5f1; font-family:${escapeHtml(fontFamily)}; color:${text};"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style="max-width:980px; margin:0 auto; padding:16px; background:#ffffff;"><article data-doc-root="true" style="background:#ffffff; border:1px solid ${frame}; font-family:${escapeHtml(fontFamily)}; color:${text}; padding:${canvasPadding}px;">${sectionOrder.map((section) => sectionMarkup[section] ?? "").filter(Boolean).join("")}</article></div></body></html>`;
+  return `<html><body style="margin:0; padding:0; background:#f1f5f1; font-family:${escapeHtml(fontFamily)}; color:${text};"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style="max-width:794px; margin:0 auto; padding:12px; background:#ffffff; box-sizing:border-box;"><article data-doc-root="true" style="background:#ffffff; border:1px solid ${frame}; font-family:${escapeHtml(fontFamily)}; color:${text}; padding:${canvasPadding}px; max-width:100%; box-sizing:border-box;">${headerHtml ? `<section data-doc-header-html="true" style="margin-bottom:${Math.round(sectionGap)}px; border:1px solid ${divider}; background:${panel}; padding:12px; font-size:${fontSize}px; line-height:1.5;">${headerHtml}</section>` : ""}${sectionOrder.map((section) => sectionMarkup[section] ?? "").filter(Boolean).join("")}</article></div></body></html>`;
 }
 
 async function resolveTemplateWithLogo(template?: PreviewTemplate) {
@@ -1545,7 +1767,86 @@ export async function updatePreviewTemplate(templateId: number, payload: Omit<Pr
   return updatedTemplate;
 }
 
-export function renderPreviewTemplateHtml(payload: {
+type RenderAssetLike = {
+  id: number;
+  usage?: string | null;
+  public_url?: string;
+  publicUrl?: string;
+  is_active?: boolean;
+  isActive?: boolean;
+};
+
+async function resolveTemplateRenderAssets(
+  template: PreviewTemplate | undefined,
+  availableAssets?: RenderAssetLike[],
+) {
+  const assetCatalog = availableAssets?.length
+    ? availableAssets.map((asset) => ({
+        id: asset.id,
+        usage: asset.usage ?? null,
+        public_url: asset.public_url ?? asset.publicUrl ?? "",
+        is_active: asset.is_active ?? asset.isActive ?? true,
+        type: "document_asset",
+        original_name: "workspace-asset",
+        size_bytes: 0,
+      }))
+    : await listPreviewAssets();
+  const logoAssetId = Number(template?.logo_asset_id ?? 0);
+  const logoAsset = logoAssetId > 0
+    ? assetCatalog.find((asset) => asset.id === logoAssetId)
+    : assetCatalog.find((asset) => asset.usage === "logo");
+  const resolvedTemplate = template
+    ? {
+        ...template,
+        logo_asset: logoAsset?.public_url
+          ? {
+              id: logoAsset.id,
+              public_url: logoAsset.public_url,
+              original_name: logoAsset.original_name,
+            }
+          : template.logo_asset ?? null,
+      }
+    : template;
+  const stampAssetId = Number(resolvedTemplate?.settings?.stamp_asset_id ?? 0);
+  const signatureAssetId = Number(resolvedTemplate?.settings?.signature_asset_id ?? 0);
+  const stampUrl = assetCatalog.find((asset) => asset.id === stampAssetId || asset.usage === "stamp")?.public_url ?? "";
+  const signatureUrl = assetCatalog.find((asset) => asset.id === signatureAssetId || asset.usage === "signature")?.public_url ?? "";
+
+  return {
+    template: resolvedTemplate,
+    stampUrl,
+    signatureUrl,
+  };
+}
+
+export async function renderWorkspaceDocumentHtml(params: {
+  document: PreviewDocument;
+  template?: PreviewTemplate;
+  contact?: PreviewContact | null;
+  availableAssets?: RenderAssetLike[];
+}) {
+  const renderAssets = await resolveTemplateRenderAssets(params.template, params.availableAssets);
+  const presentation = buildInvoicePresentation(params.document, renderAssets.template, params.contact ?? null);
+  const qrDataUrl = ["tax_invoice", "credit_note", "debit_note"].includes(params.document.type) && presentation.sellerVat
+    ? await buildInvoiceQrDataUrl({
+        sellerNameEn: presentation.sellerNameEn,
+        sellerVat: presentation.sellerVat,
+        issueDate: presentation.issueDate,
+        grandTotal: presentation.grandTotal,
+        vatTotal: presentation.vatTotal,
+      }).catch(() => null)
+    : null;
+
+  return buildDocumentHtml(
+    params.document,
+    renderAssets.template,
+    params.contact ?? null,
+    { stampUrl: renderAssets.stampUrl, signatureUrl: renderAssets.signatureUrl },
+    qrDataUrl,
+  );
+}
+
+export async function renderPreviewTemplateHtml(payload: {
   name: string;
   document_types?: string[] | null;
   locale_mode: string;
@@ -1553,80 +1854,95 @@ export function renderPreviewTemplateHtml(payload: {
   watermark_text?: string | null;
   header_html?: string | null;
   footer_html?: string | null;
+  settings?: Record<string, string | number | boolean | null> | null;
+  logo_asset_id?: number | null;
+  is_default?: boolean;
+  is_active?: boolean;
 }, documentType: string) {
-  const assets = [] as Array<{ id: number; usage?: string | null; publicUrl: string; isActive: boolean }>;
-  const model = buildInvoiceRenderModel({
-    company: {
-      legalName: previewCompany.sellerName,
-      tradeName: previewCompany.sellerName,
-      englishName: previewCompany.sellerName,
-      arabicName: previewCompany.sellerNameAr,
-      taxNumber: previewCompany.vatNumber,
-      registrationNumber: previewCompany.registrationNumber,
-      email: previewCompany.sellerEmail,
-      phone: previewCompany.sellerPhone,
-      shortAddress: previewCompany.sellerAddressEn,
-      addressStreet: previewCompany.sellerAddressEn,
-      addressArea: "",
-      addressCity: "Riyadh",
-      addressPostalCode: "12214",
-      addressAdditionalNumber: "3184",
-      addressCountry: "Saudi Arabia",
-      baseCurrency: previewCompany.currency,
-      logoUrl: null,
+  const template: PreviewTemplate = {
+    id: 0,
+    name: payload.name,
+    document_types: payload.document_types ?? [documentType],
+    locale_mode: payload.locale_mode,
+    accent_color: payload.accent_color,
+    watermark_text: payload.watermark_text ?? null,
+    header_html: payload.header_html ?? null,
+    footer_html: payload.footer_html ?? null,
+    settings: payload.settings ?? {},
+    logo_asset_id: payload.logo_asset_id ?? null,
+    is_default: Boolean(payload.is_default),
+    is_active: payload.is_active ?? true,
+  };
+  const document: PreviewDocument = {
+    id: 0,
+    type: documentType,
+    status: "draft",
+    contact_id: 102,
+    document_number: documentType === "delivery_note" ? "DN-2026-1301" : documentType === "proforma_invoice" ? "PRO-2026-1501" : documentType === "credit_note" ? "CN-2026-1201" : documentType === "debit_note" ? "DBN-2026-1202" : "INV-2026-1101",
+    issue_date: "2026-04-13",
+    due_date: "2026-04-20",
+    supply_date: "2026-04-13",
+    grand_total: documentType === "delivery_note" ? 1_000_000 : 1_150_000,
+    balance_due: documentType === "delivery_note" ? 1_000_000 : 1_150_000,
+    paid_total: 0,
+    tax_total: documentType === "delivery_note" ? 0 : 150_000,
+    taxable_total: 1_000_000,
+    contact: { display_name: productionCustomer.display_name },
+    title: "Template Preview Document",
+    language_code: "bilingual",
+    custom_fields: {
+      currency: previewCompany.currency,
+      seller_name_en: previewCompany.sellerName,
+      seller_name_ar: previewCompany.sellerNameAr,
+      seller_vat_number: previewCompany.vatNumber,
+      seller_cr_number: previewCompany.registrationNumber,
+      seller_email: previewCompany.sellerEmail,
+      seller_phone: previewCompany.sellerPhone,
+      seller_address_en: previewCompany.sellerAddressEn,
+      seller_address_ar: previewCompany.sellerAddressAr,
+      buyer_name_en: productionCustomer.display_name,
+      buyer_name_ar: productionCustomer.display_name_ar,
+      buyer_phone: productionCustomer.phone,
+      buyer_vat_number: productionCustomer.vat_number,
+      buyer_address_en: productionCustomer.billing_address.line_1,
+      buyer_address_ar: productionCustomer.billing_address.line_1_ar,
+      buyer_country: "Saudi Arabia",
+      zatca_qr_required: true,
     },
-    assets,
-    document: {
-      id: 0,
-      type: documentType,
-      documentNumber: documentType === "delivery_note" ? "DN-2026-1301" : documentType === "proforma_invoice" ? "PRO-2026-1501" : documentType === "credit_note" ? "CN-2026-1201" : documentType === "debit_note" ? "DBN-2026-1202" : "INV-2026-1101",
-      issueDate: "2026-04-13",
-      dueDate: "2026-04-20",
-      supplyDate: "2026-04-13",
-      taxableTotal: 4000,
-      taxTotal: documentType === "delivery_note" ? 0 : 600,
-      grandTotal: 4600,
-      customFields: {
-        currency: previewCompany.currency,
-        seller_name_en: previewCompany.sellerName,
-        seller_name_ar: previewCompany.sellerNameAr,
-        seller_vat_number: previewCompany.vatNumber,
-        seller_cr_number: previewCompany.registrationNumber,
-        seller_email: previewCompany.sellerEmail,
-        seller_phone: previewCompany.sellerPhone,
-        seller_address_en: previewCompany.sellerAddressEn,
-        seller_address_ar: previewCompany.sellerAddressAr,
-        buyer_name_en: productionCustomer.display_name,
-        buyer_phone: productionCustomer.phone,
-        buyer_vat_number: productionCustomer.vat_number,
-        buyer_address_en: productionCustomer.billing_address.line_1,
+    lines: [
+      {
+        id: 1,
+        item_id: 301,
+        description: "Monthly bookkeeping",
+        quantity: 1,
+        unit_price: 1_000_000,
+        gross_amount: 1_000_000,
+        metadata: { custom_fields: { description_ar: "مسك دفاتر شهري", vat_rate: 15, unit: "srv" } },
       },
-      lines: [
-        {
-          id: 1,
-          description: "Monthly bookkeeping",
-          quantity: 1,
-          unitPrice: 4000,
-          grossAmount: 4000,
-          metadata: { custom_fields: { description_ar: "مسك دفاتر شهري" } },
-        },
-      ],
+    ],
+    compliance_metadata: {
+      zatca_ready: true,
+      xml_ready: true,
+      document_mode: documentType,
     },
-    contact: {
-      displayName: productionCustomer.display_name,
-      displayNameAr: productionCustomer.display_name_ar,
-      vatNumber: productionCustomer.vat_number,
-      phone: productionCustomer.phone,
-      billingAddress: {
-        line1: productionCustomer.billing_address.line_1,
-        line1Ar: productionCustomer.billing_address.line_1_ar,
-        city: "Jeddah",
-      },
+  };
+  const contact: PreviewContact = {
+    id: 102,
+    type: "customer",
+    display_name: productionCustomer.display_name,
+    display_name_ar: productionCustomer.display_name_ar,
+    email: productionCustomer.email,
+    phone: productionCustomer.phone,
+    vat_number: productionCustomer.vat_number,
+    billing_address: {
+      line_1: productionCustomer.billing_address.line_1,
+      line_1_ar: productionCustomer.billing_address.line_1_ar,
+      city: "Jeddah",
     },
-  });
+  };
 
   return {
-    html: buildUnifiedDocumentHtml(model),
+    html: await renderWorkspaceDocumentHtml({ document, template, contact }),
   };
 }
 
@@ -1843,62 +2159,17 @@ export async function getPreviewDocumentPreview(documentId: number, templateId?:
 
   const contacts = await listPreviewContacts();
   const contact = contacts.find((entry) => entry.id === document.contact_id) ?? null;
-  const assets = await listPreviewAssets();
+  const templates = await listPreviewTemplates();
+  const template = (typeof templateId === "number" && templateId > 0
+    ? templates.find((entry) => entry.id === templateId)
+    : document.template?.id
+      ? templates.find((entry) => entry.id === document.template?.id)
+      : templates.find((entry) => entry.is_default && (entry.document_types ?? []).includes(document.type))
+        ?? templates.find((entry) => (entry.document_types ?? []).includes(document.type)))
+    ?? undefined;
 
   return {
-    html: buildUnifiedDocumentHtml(buildInvoiceRenderModel({
-      company: {
-        legalName: textValue(document.custom_fields?.seller_name_en, previewCompany.sellerName),
-        tradeName: textValue(document.custom_fields?.seller_name_en, previewCompany.sellerName),
-        englishName: textValue(document.custom_fields?.seller_name_en, previewCompany.sellerName),
-        arabicName: textValue(document.custom_fields?.seller_name_ar, previewCompany.sellerNameAr),
-        taxNumber: textValue(document.custom_fields?.seller_vat_number, previewCompany.vatNumber),
-        registrationNumber: textValue(document.custom_fields?.seller_cr_number, previewCompany.registrationNumber),
-        email: textValue(document.custom_fields?.seller_email, previewCompany.sellerEmail),
-        phone: textValue(document.custom_fields?.seller_phone, previewCompany.sellerPhone),
-        shortAddress: textValue(document.custom_fields?.seller_address_en, previewCompany.sellerAddressEn),
-        addressStreet: textValue(document.custom_fields?.seller_address_en, previewCompany.sellerAddressEn),
-        addressArea: "",
-        addressCity: textValue(contact?.billing_address?.city, "Riyadh"),
-        addressPostalCode: textValue(document.custom_fields?.buyer_postal_code, ""),
-        addressAdditionalNumber: "",
-        addressCountry: textValue(document.custom_fields?.buyer_country, "Saudi Arabia"),
-        baseCurrency: textValue(document.custom_fields?.currency, previewCompany.currency),
-        logoUrl: null,
-      },
-      assets: assets.map((asset) => ({ id: asset.id, usage: asset.usage, publicUrl: asset.public_url, isActive: asset.is_active })),
-      document: {
-        id: document.id,
-        type: document.type,
-        documentNumber: document.document_number,
-        issueDate: document.issue_date,
-        dueDate: document.due_date,
-        supplyDate: document.supply_date,
-        taxableTotal: document.taxable_total,
-        taxTotal: document.tax_total,
-        grandTotal: document.grand_total,
-        customFields: document.custom_fields,
-        lines: (document.lines ?? []).map((line) => ({
-          id: line.id,
-          description: line.description,
-          quantity: line.quantity,
-          unitPrice: line.unit_price,
-          grossAmount: line.gross_amount,
-          metadata: line.metadata,
-        })),
-      },
-      contact: contact ? {
-        displayName: contact.display_name,
-        displayNameAr: contact.display_name_ar,
-        vatNumber: contact.vat_number,
-        phone: contact.phone,
-        billingAddress: {
-          line1: contact.billing_address?.line_1,
-          line1Ar: contact.billing_address?.line_1_ar,
-          city: contact.billing_address?.city,
-        },
-      } : null,
-    })),
+    html: await renderWorkspaceDocumentHtml({ document, template, contact }),
   };
 }
 

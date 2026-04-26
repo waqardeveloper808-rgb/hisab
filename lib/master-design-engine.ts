@@ -67,7 +67,7 @@ export type MasterDesignSnapshot = {
 
 export function getMasterDesignTargetMap(): MasterDesignTargetMap {
   return {
-    productName: "Gulf Hisab",
+    productName: "Hisabix",
     phase: "Phase 1",
     activeCountryProduct: "KSA",
     futureCountryProducts: ["France", "Future country slots"],

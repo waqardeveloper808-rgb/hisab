@@ -38,6 +38,7 @@ type RegisterNotice = {
 
 type InvoiceSortField = "issue_date" | "grand_total";
 type InvoiceSortOption = "latest" | "oldest" | "amount-high" | "amount-low";
+type InvoiceColumnKey = "invoice" | "customer" | "date" | "status" | "total" | "balance";
 
 type DocumentLinkSummary = {
   documentId?: number | null;
@@ -246,6 +247,23 @@ export function InvoiceRegister() {
   const [detailReloadKey, setDetailReloadKey] = useState(0);
   const [registerNotice, setRegisterNotice] = useState<RegisterNotice | null>(null);
   const [sortOption, setSortOption] = useState<InvoiceSortOption>("latest");
+  const [columnMenuOpen, setColumnMenuOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<Record<InvoiceColumnKey, boolean>>({
+    invoice: true,
+    customer: true,
+    date: true,
+    status: true,
+    total: true,
+    balance: true,
+  });
+  const [columnWidths, setColumnWidths] = useState<Record<InvoiceColumnKey, number>>({
+    invoice: 220,
+    customer: 180,
+    date: 110,
+    status: 110,
+    total: 110,
+    balance: 110,
+  });
   const deferredInvoiceNumberQuery = useDeferredValue(invoiceNumberQuery);
 
   useEffect(() => {
@@ -715,6 +733,34 @@ export function InvoiceRegister() {
   }, [queueReload]);
 
   const viewMode: "register" | "split" = selectedInvoice ? "split" : "register";
+  const activeColumns = (Object.entries(visibleColumns) as Array<[InvoiceColumnKey, boolean]>)
+    .filter(([, visible]) => visible)
+    .map(([key]) => key);
+
+  function toggleColumn(key: InvoiceColumnKey) {
+    setVisibleColumns((current) => {
+      const nextVisible = !current[key];
+      const visibleCount = Object.values(current).filter(Boolean).length;
+      if (!nextVisible && visibleCount <= 2) {
+        return current;
+      }
+      return { ...current, [key]: nextVisible };
+    });
+  }
+
+  function startResize(key: InvoiceColumnKey, startX: number) {
+    const initialWidth = columnWidths[key];
+    const handleMove = (event: MouseEvent) => {
+      const nextWidth = Math.max(84, initialWidth + event.clientX - startX);
+      setColumnWidths((current) => ({ ...current, [key]: nextWidth }));
+    };
+    const handleUp = () => {
+      window.removeEventListener("mousemove", handleMove);
+      window.removeEventListener("mouseup", handleUp);
+    };
+    window.addEventListener("mousemove", handleMove);
+    window.addEventListener("mouseup", handleUp);
+  }
 
   return (
     <div className="space-y-1" data-inspector-split-view="true">
@@ -738,6 +784,28 @@ export function InvoiceRegister() {
           <button type="button" onClick={() => setFiltersOpen((c) => !c)} className={["h-7 rounded-md border px-2 text-[11px] font-semibold", filtersOpen ? "border-primary bg-primary-soft text-primary" : "border-line bg-white text-muted hover:text-ink"].join(" ")}>
             {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : "Filter"}
           </button>
+          <div className="relative">
+            <button type="button" onClick={() => setColumnMenuOpen((current) => !current)} className={["h-7 rounded-md border px-2 text-[11px] font-semibold", columnMenuOpen ? "border-primary bg-primary-soft text-primary" : "border-line bg-white text-muted hover:text-ink"].join(" ")}>
+              Columns
+            </button>
+            {columnMenuOpen ? (
+              <div className="absolute right-0 top-8 z-20 min-w-[12rem] rounded-lg border border-line bg-white p-2 shadow-[0_20px_40px_-28px_rgba(17,32,24,0.22)]">
+                {([
+                  ["invoice", "Invoice"],
+                  ["customer", "Customer"],
+                  ["date", "Issue date"],
+                  ["status", "Status"],
+                  ["total", "Total"],
+                  ["balance", "Balance"],
+                ] as Array<[InvoiceColumnKey, string]>).map(([key, label]) => (
+                  <label key={key} className="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-[11px] text-ink hover:bg-surface-soft">
+                    <span>{label}</span>
+                    <input type="checkbox" checked={visibleColumns[key]} onChange={() => toggleColumn(key)} />
+                  </label>
+                ))}
+              </div>
+            ) : null}
+          </div>
           {viewMode === "split" ? (
             <button type="button" onClick={() => { setSelectedInvoiceId(null); setMobilePane("register"); }} className="h-7 rounded-md border border-line bg-white px-2 text-[11px] font-semibold text-muted hover:text-ink">Close preview</button>
           ) : null}
@@ -882,59 +950,97 @@ export function InvoiceRegister() {
             {/* Register pane */}
             <div className={["overflow-hidden", viewMode === "split" ? "border-r border-line" : "", mobilePane === "preview" ? "hidden lg:block" : "block"].join(" ")}>
               <div className="h-full overflow-auto">
-                {/* Table header */}
-                <div className="sticky top-0 z-10 grid grid-cols-[auto_minmax(0,1fr)_7rem_5.5rem_6rem] gap-2 border-b border-line bg-surface-soft/95 px-2 py-1 text-[9px] font-bold uppercase tracking-[0.1em] text-muted backdrop-blur">
-                  <input type="checkbox" checked={filteredInvoices.length > 0 && filteredInvoices.every((inv) => selectedInvoiceIds.includes(inv.id))} onChange={(e) => toggleSelectAllVisible(e.target.checked)} aria-label="Select all" className="mt-0.5" />
-                  <span>Invoice</span>
-                  <span>Date</span>
-                  <span className="text-right">Total</span>
-                  <span className="text-right">Balance</span>
-                </div>
-                {/* Rows */}
-                <div className="divide-y divide-line/50">
-                  {loading ? <div className="px-3 py-3 text-xs text-muted">Loading…</div> : null}
-                  {!loading && filteredInvoices.length > 0 ? filteredInvoices.map((invoice) => {
-                    const normalizedStatus = normalizeInvoiceStatus(invoice);
-                    const isSelected = invoice.id === selectedInvoiceId;
-                    const isChecked = selectedInvoiceIds.includes(invoice.id);
-                    return (
-                      <div key={invoice.id} data-inspector-register-row="true" className={["grid grid-cols-[auto_minmax(0,1fr)_7rem_5.5rem_6rem] items-center gap-2 px-2 py-1.5 cursor-pointer", isSelected ? "bg-primary-soft/30" : "hover:bg-surface-soft/40"].join(" ")}>
-                        <input type="checkbox" checked={isChecked} onChange={(e) => toggleInvoiceSelection(invoice.id, e.target.checked)} aria-label={`Select ${invoice.number}`} />
-                        <div
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => handleInvoiceSelection(invoice.id)}
-                          onDoubleClick={() => openInvoiceWorkspace(invoice.id)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              handleInvoiceSelection(invoice.id);
-                            }
-                          }}
-                          className="min-w-0 text-left"
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-semibold text-ink truncate">{invoice.number}</span>
-                            <span className={["inline-flex h-4 items-center rounded border px-1 text-[8px] font-bold uppercase tracking-wider", statusClasses(normalizedStatus)].join(" ")}>{statusLabel(normalizedStatus)}</span>
+                <table className="min-w-full table-fixed border-separate border-spacing-0 text-xs">
+                  <colgroup>
+                    <col style={{ width: 40 }} />
+                    {activeColumns.map((column) => <col key={column} style={{ width: columnWidths[column] }} />)}
+                  </colgroup>
+                  <thead className="sticky top-0 z-10 bg-surface-soft/95 backdrop-blur">
+                    <tr className="border-b border-line">
+                      <th className="border-b border-line px-2 py-2 text-left">
+                        <input type="checkbox" checked={filteredInvoices.length > 0 && filteredInvoices.every((inv) => selectedInvoiceIds.includes(inv.id))} onChange={(e) => toggleSelectAllVisible(e.target.checked)} aria-label="Select all" className="mt-0.5" />
+                      </th>
+                      {activeColumns.map((column) => (
+                        <th key={column} className="group relative border-b border-line px-2 py-2 text-left text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+                          <div className="flex items-center justify-between gap-2">
+                            <button
+                              type="button"
+                              className="truncate text-left"
+                              onClick={() => {
+                                if (column === "date") setSortOption((current) => current === "oldest" ? "latest" : "oldest");
+                                if (column === "total") setSortOption((current) => current === "amount-low" ? "amount-high" : "amount-low");
+                              }}
+                            >
+                              {{
+                                invoice: "Invoice",
+                                customer: "Customer",
+                                date: "Issue date",
+                                status: "Status",
+                                total: "Total",
+                                balance: "Balance",
+                              }[column]}
+                            </button>
+                            <span
+                              role="separator"
+                              aria-orientation="vertical"
+                              onMouseDown={(event) => startResize(column, event.clientX)}
+                              className="absolute right-0 top-1/2 h-5 w-2 -translate-y-1/2 cursor-col-resize rounded bg-transparent transition group-hover:bg-primary/10"
+                            />
                           </div>
-                          <div className="truncate text-[11px] text-muted mt-0.5">{invoice.contactName || "—"}</div>
-                          {documentTrackingSummary(invoice) ? <div className="truncate text-[10px] text-muted mt-0.5">{documentTrackingSummary(invoice)}</div> : null}
-                          {documentTrackingLinks(invoice).length ? (
-                            <div className="mt-1 flex flex-wrap gap-1">
-                              {documentTrackingLinks(invoice).map((link) => (
-                                <DocumentLinkTrigger key={`${invoice.id}-${link.documentType}-${link.documentNumber}`} link={link} onPreview={setLinkPreview} className="text-[10px] text-primary underline-offset-2 hover:underline" />
-                              ))}
-                            </div>
-                          ) : null}
-                        </div>
-                        <span className="text-[11px] text-muted">{formatDate(invoice.issueDate)}</span>
-                        <span className="text-right text-xs font-semibold text-ink">{currency(invoice.grandTotal)}</span>
-                        <span className={["text-right text-xs font-semibold", invoice.balanceDue > 0 ? "text-amber-700" : "text-emerald-700"].join(" ")}>{currency(invoice.balanceDue)}</span>
-                      </div>
-                    );
-                  }) : null}
-                  {!loading && filteredInvoices.length === 0 ? <div className="px-3 py-3 text-xs text-muted">{invoices.length === 0 ? "No invoices yet." : "No match."}</div> : null}
-                </div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr><td colSpan={activeColumns.length + 1} className="px-3 py-3 text-xs text-muted">Loading…</td></tr>
+                    ) : null}
+                    {!loading && filteredInvoices.length > 0 ? filteredInvoices.map((invoice) => {
+                      const normalizedStatus = normalizeInvoiceStatus(invoice);
+                      const isSelected = invoice.id === selectedInvoiceId;
+                      const isChecked = selectedInvoiceIds.includes(invoice.id);
+                      return (
+                        <tr key={invoice.id} data-inspector-register-row="true" className={[isSelected ? "bg-primary-soft/30" : "hover:bg-surface-soft/40", "cursor-pointer"].join(" ")}>
+                          <td className="border-b border-line/60 px-2 py-2 align-top">
+                            <input type="checkbox" checked={isChecked} onChange={(e) => toggleInvoiceSelection(invoice.id, e.target.checked)} aria-label={`Select ${invoice.number}`} />
+                          </td>
+                          {activeColumns.map((column) => (
+                            <td
+                              key={column}
+                              className="border-b border-line/60 px-2 py-2 align-top"
+                              onClick={() => handleInvoiceSelection(invoice.id)}
+                              onDoubleClick={() => openInvoiceWorkspace(invoice.id)}
+                            >
+                              {column === "invoice" ? (
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="truncate text-xs font-semibold text-ink">{invoice.number}</span>
+                                  </div>
+                                  {documentTrackingSummary(invoice) ? <div className="mt-0.5 truncate text-[10px] text-muted">{documentTrackingSummary(invoice)}</div> : null}
+                                  {documentTrackingLinks(invoice).length ? (
+                                    <div className="mt-1 flex flex-wrap gap-1">
+                                      {documentTrackingLinks(invoice).map((link) => (
+                                        <DocumentLinkTrigger key={`${invoice.id}-${link.documentType}-${link.documentNumber}`} link={link} onPreview={setLinkPreview} className="text-[10px] text-primary underline-offset-2 hover:underline" />
+                                      ))}
+                                    </div>
+                                  ) : null}
+                                </div>
+                              ) : null}
+                              {column === "customer" ? <span className="block truncate text-[11px] text-muted">{invoice.contactName || "—"}</span> : null}
+                              {column === "date" ? <span className="text-[11px] text-muted">{formatDate(invoice.issueDate)}</span> : null}
+                              {column === "status" ? <span className={["inline-flex h-5 items-center rounded border px-1.5 text-[9px] font-bold uppercase tracking-wider", statusClasses(normalizedStatus)].join(" ")}>{statusLabel(normalizedStatus)}</span> : null}
+                              {column === "total" ? <span className="block text-right text-xs font-semibold text-ink">{currency(invoice.grandTotal)}</span> : null}
+                              {column === "balance" ? <span className={["block text-right text-xs font-semibold", invoice.balanceDue > 0 ? "text-amber-700" : "text-emerald-700"].join(" ")}>{currency(invoice.balanceDue)}</span> : null}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    }) : null}
+                    {!loading && filteredInvoices.length === 0 ? (
+                      <tr><td colSpan={activeColumns.length + 1} className="px-3 py-3 text-xs text-muted">{invoices.length === 0 ? "No invoices yet." : "No match."}</td></tr>
+                    ) : null}
+                  </tbody>
+                </table>
               </div>
             </div>
 

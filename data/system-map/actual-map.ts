@@ -57,7 +57,7 @@ const blockers: Record<string, SystemBlocker> = {
 };
 
 export const actualSystemMap = {
-  productName: "Gulf Hisab KSA",
+  productName: "Hisabix KSA",
   phase: "Phase 1",
   updatedAt,
   modules: [

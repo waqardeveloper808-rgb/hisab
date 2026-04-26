@@ -37,15 +37,28 @@ class TemplateEngineRuntimeService
             ->with('logoAsset')
             ->orderByDesc('is_default')
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->each(function (DocumentTemplate $template): void {
+                $normalizedName = $this->normalizePresetName($template->name, (string) $template->layout);
+                if ($normalizedName !== $template->name) {
+                    $template->setAttribute('name', $normalizedName);
+                }
+            });
     }
 
     public function getTemplateById(Company $company, int $templateId): DocumentTemplate
     {
-        return DocumentTemplate::query()
+        $template = DocumentTemplate::query()
             ->where('company_id', $company->id)
             ->with('logoAsset')
             ->findOrFail($templateId);
+
+        $normalizedName = $this->normalizePresetName($template->name, (string) $template->layout);
+        if ($normalizedName !== $template->name) {
+            $template->setAttribute('name', $normalizedName);
+        }
+
+        return $template;
     }
 
     public function createTemplate(Company $company, array $payload): DocumentTemplate
@@ -320,5 +333,15 @@ class TemplateEngineRuntimeService
             ->all();
 
         return $configured !== [] ? $configured : self::DEFAULT_SECTIONS;
+    }
+
+    private function normalizePresetName(string $name, string $layout): string
+    {
+        return match (true) {
+            $layout === 'classic_corporate' && $name === 'Classic Corporate' => 'Standard',
+            $layout === 'modern_carded' && $name === 'Modern Carded' => 'Modern',
+            $layout === 'industrial_supply' && $name === 'Industrial / Supply Chain' => 'Compact',
+            default => $name,
+        };
     }
 }

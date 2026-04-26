@@ -114,7 +114,7 @@
     "id": 204,
     "type": "customer",
     "display_name": "PW Diagnostic Customer 3",
-    "email": "customer.204@gulfhisab.example",
+    "email": "customer.204@hisabix.example",
     "phone": "+966510000006",
     "billing_address": {
       "city": "Riyadh",
@@ -133,7 +133,7 @@
     "id": 205,
     "type": "customer",
     "display_name": "PW Diagnostic Customer Fixed",
-    "email": "customer.205@gulfhisab.example",
+    "email": "customer.205@hisabix.example",
     "phone": "+966510000007",
     "billing_address": {
       "city": "Riyadh",
@@ -152,7 +152,7 @@
     "id": 206,
     "type": "customer",
     "display_name": "Verification Customer 1",
-    "email": "customer.206@gulfhisab.example",
+    "email": "customer.206@hisabix.example",
     "phone": "+966510000008",
     "billing_address": {
       "city": "Riyadh",
@@ -171,7 +171,7 @@
     "id": 207,
     "type": "customer",
     "display_name": "Verification Customer 2",
-    "email": "customer.207@gulfhisab.example",
+    "email": "customer.207@hisabix.example",
     "phone": "+966510000009",
     "billing_address": {
       "city": "Riyadh",

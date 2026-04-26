@@ -4,15 +4,42 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { useWorkspaceAccess } from "@/components/workspace/WorkspaceAccessProvider";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { listPlatformCustomers, type PlatformCustomerRecord } from "@/lib/workspace-api";
 
+const previewCustomers: PlatformCustomerRecord[] = [
+  {
+    id: 1,
+    legalName: "Gulf Horizon Services",
+    tradeName: "Gulf Horizon",
+    taxNumber: "300123456780003",
+    registrationNumber: "1010345678",
+    baseCurrency: "SAR",
+    locale: "en-SA",
+    timezone: "Asia/Riyadh",
+    isActive: true,
+    suspendedReason: "",
+    owner: { name: "Mona Adel", email: "mona@gulfhorizon.sa" },
+    users: [{ id: 1, name: "Mona Adel", email: "mona@gulfhorizon.sa", role: "owner", isActive: true }],
+    subscription: { planId: 1, status: "trialing", planCode: "zatca-monthly", planName: "Operational Plan", monthlyPriceSar: 40 },
+    referralSource: { referralCode: "RAMI45", agentName: "Rami Khaled" },
+  },
+];
+
 export function AssistantSupportOverview() {
+  const access = useWorkspaceAccess();
+  const isPreview = !access;
   const [customers, setCustomers] = useState<PlatformCustomerRecord[]>([]);
 
   useEffect(() => {
+    if (isPreview) {
+      setCustomers(previewCustomers);
+      return;
+    }
+
     listPlatformCustomers({}).then(setCustomers).catch((err: unknown) => { console.error('[AssistantSupportOverview] listPlatformCustomers failed:', err); setCustomers([]); });
-  }, []);
+  }, [isPreview]);
 
   const summary = useMemo(() => ({
     total: customers.length,
@@ -90,6 +117,12 @@ export function AssistantSupportOverview() {
           </div>
         </Card>
       </div>
+
+      {isPreview ? (
+        <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">
+          Preview mode uses controlled support data so this workspace stays navigable without authentication.
+        </div>
+      ) : null}
     </div>
   );
 }

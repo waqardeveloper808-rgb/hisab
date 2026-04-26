@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
+import { useWorkspaceAccess } from "@/components/workspace/WorkspaceAccessProvider";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { currency } from "@/components/workflow/utils";
 import { getAgentDashboard, type AgentDashboardSnapshot } from "@/lib/workspace-api";
@@ -25,13 +26,54 @@ const emptyState: AgentDashboardSnapshot = {
   backendReady: false,
 };
 
+const previewState: AgentDashboardSnapshot = {
+  agent: {
+    referralCode: "RAMI45",
+    commissionRate: 20,
+    isActive: true,
+  },
+  summary: {
+    totalReferrals: 14,
+    totalSignups: 9,
+    totalSubscriptions: 6,
+    activeSubscriptions: 4,
+    pendingCommission: 320,
+    earnedCommission: 640,
+  },
+  referrals: [
+    {
+      id: 1,
+      name: "Blue Palm Trading",
+      email: "owner@bluepalm.sa",
+      signedUpAt: "2026-04-20",
+      commissionAmount: 160,
+      commissionStatus: "pending",
+      subscription: {
+        planName: "Operational Plan",
+        status: "trialing",
+        monthlyPriceSar: 40,
+        trialEndsAt: "2026-05-20",
+        activatedAt: "",
+      },
+    },
+  ],
+  backendReady: false,
+};
+
 export function AgentOverview() {
+  const access = useWorkspaceAccess();
+  const isPreview = !access;
   const [snapshot, setSnapshot] = useState<AgentDashboardSnapshot>(emptyState);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    if (isPreview) {
+      setSnapshot(previewState);
+      return;
+    }
+
     getAgentDashboard().then(setSnapshot).catch((err: unknown) => { console.error('[AgentOverview] getAgentDashboard failed:', err); });
-  }, []);
+  }, [isPreview]);
 
   const referralLink = useMemo(() => {
     if (!snapshot.agent.referralCode) {
@@ -62,7 +104,7 @@ export function AgentOverview() {
           <div className="max-w-3xl">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Agents</p>
             <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Share one referral link, then track signups, trials, and commission from one dashboard.</h1>
-            <p className="mt-2 text-sm leading-6 text-muted">This is the sales view for partners and internal agents who bring businesses into Gulf Hisab.</p>
+            <p className="mt-2 text-sm leading-6 text-muted">This is the sales view for partners and internal agents who bring businesses into Hisabix.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Button onClick={handleCopy} disabled={!referralLink}>{copied ? "Copied link" : "Copy referral link"}</Button>
@@ -90,7 +132,7 @@ export function AgentOverview() {
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-ink">Your referral link</h2>
-            <p className="mt-1 text-sm text-muted">Share this link with businesses that should start the Gulf Hisab trial under your referral code.</p>
+            <p className="mt-1 text-sm text-muted">Share this link with businesses that should start the Hisabix trial under your referral code.</p>
           </div>
           <span className="rounded-full bg-surface-soft px-3 py-1 text-xs font-semibold text-muted">
             {snapshot.backendReady ? `${snapshot.agent.commissionRate}% commission rate` : "Waiting for backend data"}
@@ -115,6 +157,8 @@ export function AgentOverview() {
           { header: "Status", render: (row) => row.commissionStatus.replaceAll("_", " ") },
         ]}
       />
+
+      {isPreview ? <div className="rounded-lg border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-800">Preview mode keeps the agent dashboard usable with demo referral activity. Sign in to connect this screen to live referrals and commission data.</div> : null}
     </div>
   );
 }

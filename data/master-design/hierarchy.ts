@@ -118,7 +118,7 @@ const rawHierarchy = node({
   id: "whole-system",
   title: "Whole System",
   type: "system",
-  description: "Command view of Gulf Hisab delivery across product layers, engines, workspaces, standards, proof, and remaining execution risk.",
+  description: "Command view of Hisabix delivery across product layers, engines, workspaces, standards, proof, and remaining execution risk.",
   status: "PARTIAL",
   completionPercentage: 61,
   linkedStandards: ["Product truth before polish", "No fake completion", "Country expansion must remain unblocked"],

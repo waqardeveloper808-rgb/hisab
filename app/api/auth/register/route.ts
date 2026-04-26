@@ -4,6 +4,7 @@ import {
   authSessionMaxAge,
   createAuthSessionValue,
 } from "@/lib/auth-session";
+import { getWorkspaceApiToken } from "@/lib/workspace-session";
 
 export const dynamic = "force-dynamic";
 
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
     userId: payload.data.id,
     name: payload.data.name,
     email: payload.data.email,
+    authToken: getWorkspaceApiToken() ?? undefined,
     platformRole: payload.data.platform_role,
   };
   const sessionValue = await createAuthSessionValue(sessionPayload);

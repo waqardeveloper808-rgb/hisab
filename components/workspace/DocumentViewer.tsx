@@ -28,8 +28,8 @@ export function DocumentViewer({ htmlContent, fileName = "document", pdfUrl }: D
   const fitToWidth = useCallback(() => {
     if (!containerRef.current || !contentRef.current) return;
     const containerWidth = containerRef.current.clientWidth;
-    const contentWidth = 210; // A4 width in mm at 96dpi
-    const calculatedZoom = (containerWidth - 40) / (contentWidth * 3.779527559); // mm to pixels
+    const contentWidth = contentRef.current.scrollWidth || 794;
+    const calculatedZoom = (containerWidth - 40) / contentWidth;
     setZoom(Math.round(calculatedZoom * 100));
     setFitMode("width");
   }, []);
@@ -38,12 +38,11 @@ export function DocumentViewer({ htmlContent, fileName = "document", pdfUrl }: D
     if (!containerRef.current || !contentRef.current) return;
     const containerWidth = containerRef.current.clientWidth;
     const containerHeight = containerRef.current.clientHeight;
-    const contentWidth = 210; // A4 width in mm
-    const contentHeight = 297; // A4 height in mm
-    const pxPerMm = 3.779527559;
-    
-    const zoomWidth = (containerWidth - 40) / (contentWidth * pxPerMm);
-    const zoomHeight = (containerHeight - 40) / (contentHeight * pxPerMm);
+    const contentWidth = contentRef.current.scrollWidth || 794;
+    const contentHeight = contentRef.current.scrollHeight || 1123;
+
+    const zoomWidth = (containerWidth - 40) / contentWidth;
+    const zoomHeight = (containerHeight - 40) / contentHeight;
     const calculatedZoom = Math.min(zoomWidth, zoomHeight);
     setZoom(Math.round(calculatedZoom * 100));
     setFitMode("page");

@@ -1,0 +1,3 @@
+C:\hisab\lib\workspace-preview.ts
+C:\hisab\components\workspace\DocumentTemplatesRegister.tsx
+C:\hisab\backend\app\Services\DocumentTemplateRendererService.php

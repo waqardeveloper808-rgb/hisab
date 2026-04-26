@@ -1,44 +1,63 @@
 [
   {
-    "header_html": null,
-    "is_active": true,
-    "is_default": true,
-    "logo_asset_id": null,
-    "settings": {
-      "canvas_padding": 16,
-      "section_gap": 12,
-      "top_bar_height": 3,
-      "card_style": "none",
-      "spacing_scale": 1,
-      "section_grid_columns": 2,
-      "section_order": "header,title,document-info,delivery,customer,items,totals,notes,footer",
-      "layout": "classic_corporate"
-    },
-    "watermark_text": null,
+    "name": "Standard QA",
     "document_types": [
       "tax_invoice",
       "quotation",
       "proforma_invoice",
       "credit_note",
       "debit_note",
-      "delivery_note"
+      "delivery_note",
+      "cash_invoice",
+      "api_invoice",
+      "vendor_bill",
+      "purchase_invoice",
+      "purchase_order",
+      "purchase_credit_note"
     ],
-    "name": "Classic Corporate",
     "locale_mode": "bilingual",
-    "footer_html": null,
     "accent_color": "#1f7a53",
+    "watermark_text": null,
+    "header_html": null,
+    "footer_html": null,
+    "settings": {
+      "layout": "classic_corporate",
+      "card_style": "none",
+      "section_order": "header,title,document-info,delivery,customer,items,totals,notes,footer",
+      "section_grid_columns": 2,
+      "section_gap": 8,
+      "spacing_scale": 0.9,
+      "canvas_padding": 14,
+      "top_bar_height": 3,
+      "watermark_enabled": true,
+      "watermark_logo_mode": "full-width",
+      "font_family": "Segoe UI",
+      "font_size": 12,
+      "title_font_size": 26,
+      "show_qr": true,
+      "show_footer": true
+    },
+    "logo_asset_id": null,
+    "is_default": true,
+    "is_active": true,
     "id": 801
   },
   {
     "id": 802,
-    "name": "Modern Carded",
+    "name": "Modern",
     "document_types": [
       "tax_invoice",
       "quotation",
       "proforma_invoice",
       "credit_note",
       "debit_note",
-      "delivery_note"
+      "delivery_note",
+      "cash_invoice",
+      "api_invoice",
+      "vendor_bill",
+      "purchase_invoice",
+      "purchase_order",
+      "purchase_credit_note"
     ],
     "locale_mode": "bilingual",
     "accent_color": "#0f766e",
@@ -47,19 +66,28 @@
     "footer_html": null,
     "settings": {
       "layout": "modern_carded",
-      "section_order": "header,seller-buyer,totals,items,notes,footer,qr",
       "card_style": "outlined",
+      "section_order": "header,title,customer,document-info,items,notes,totals,delivery,footer",
+      "section_grid_columns": 2,
+      "section_gap": 14,
+      "spacing_scale": 1.04,
+      "canvas_padding": 20,
+      "top_bar_height": 5,
+      "watermark_enabled": true,
       "watermark_logo_mode": "centered",
-      "watermark_enabled": true
+      "font_family": "Segoe UI",
+      "font_size": 12,
+      "title_font_size": 27,
+      "show_qr": true,
+      "show_footer": true
     },
     "logo_asset_id": null,
-    "logo_asset": null,
     "is_default": false,
     "is_active": true
   },
   {
     "id": 803,
-    "name": "Industrial / Supply Chain",
+    "name": "Compact",
     "document_types": [
       "tax_invoice",
       "quotation",
@@ -67,9 +95,12 @@
       "credit_note",
       "debit_note",
       "delivery_note",
-      "purchase_order",
+      "cash_invoice",
+      "api_invoice",
+      "vendor_bill",
       "purchase_invoice",
-      "vendor_bill"
+      "purchase_order",
+      "purchase_credit_note"
     ],
     "locale_mode": "bilingual",
     "accent_color": "#1f4f63",
@@ -78,179 +109,20 @@
     "footer_html": null,
     "settings": {
       "layout": "industrial_supply",
-      "section_order": "header,seller-buyer,items,notes,totals,footer,qr",
-      "card_style": "solid",
+      "card_style": "none",
+      "section_order": "header,title,document-info,delivery,customer,items,notes,totals,footer",
+      "section_grid_columns": 3,
+      "section_gap": 10,
+      "spacing_scale": 0.9,
+      "canvas_padding": 16,
+      "top_bar_height": 4,
+      "watermark_enabled": true,
       "watermark_logo_mode": "full-width",
-      "watermark_enabled": true
-    },
-    "logo_asset_id": null,
-    "logo_asset": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 804,
-    "name": "Retail Counter",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "bilingual",
-    "accent_color": "#1f7a53",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_1",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "outlined"
-    },
-    "logo_asset_id": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 805,
-    "name": "Distribution Ledger",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "en",
-    "accent_color": "#0f4c81",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_2",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "solid"
-    },
-    "logo_asset_id": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 806,
-    "name": "Service Detail",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "bilingual",
-    "accent_color": "#7a4e1d",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_3",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "outlined"
-    },
-    "logo_asset_id": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 807,
-    "name": "Executive Minimal",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "en",
-    "accent_color": "#374151",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_4",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "solid"
-    },
-    "logo_asset_id": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 808,
-    "name": "Blue Freight",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "bilingual",
-    "accent_color": "#8b5e3c",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_5",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "outlined"
-    },
-    "logo_asset_id": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 809,
-    "name": "Manufacturing Batch",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "en",
-    "accent_color": "#0d9488",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_6",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "solid"
-    },
-    "logo_asset_id": null,
-    "is_default": false,
-    "is_active": true
-  },
-  {
-    "id": 810,
-    "name": "Professional VAT",
-    "document_types": [
-      "tax_invoice",
-      "quotation",
-      "credit_note",
-      "debit_note",
-      "delivery_note"
-    ],
-    "locale_mode": "bilingual",
-    "accent_color": "#b45309",
-    "watermark_text": null,
-    "header_html": null,
-    "footer_html": null,
-    "settings": {
-      "layout": "seeded_layout_7",
-      "section_order": "header,seller-buyer,items,totals,notes,footer,qr",
-      "card_style": "outlined"
+      "font_family": "Tahoma",
+      "font_size": 12,
+      "title_font_size": 25,
+      "show_qr": true,
+      "show_footer": true
     },
     "logo_asset_id": null,
     "is_default": false,
