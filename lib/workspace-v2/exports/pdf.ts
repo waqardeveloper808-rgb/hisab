@@ -642,13 +642,26 @@ function drawInfoTable(
   layout: LayoutPlan,
 ): number {
   const il = layout.infoLayout;
-  const rowHeight = 14 + il.rowPaddingYPx * 2 + il.rowGapPx;
+  const rowContentH = 14 + il.rowPaddingYPx * 2;
+  const betweenGap = il.rowGapPx;
   const topPad = il.cardPaddingPx;
-  const computedHeight = topPad + Math.max(rows.length, 1) * rowHeight + il.cardPaddingPx;
-  const h = Math.max(sec.minHeightPx, computedHeight);
+  const n = Math.max(rows.length, 1);
+  const computedHeight =
+    topPad + n * rowContentH + Math.max(0, n - 1) * betweenGap + topPad;
+  const fixedShellH =
+    sec.id === "customer"
+      ? il.clientCardHeightPx
+      : sec.id === "docInfo"
+        ? il.documentCardHeightPx
+        : 0;
+  const h =
+    fixedShellH > 0
+      ? Math.max(fixedShellH, sec.minHeightPx)
+      : Math.max(sec.minHeightPx, computedHeight);
   drawSectionFrameAt(ctx, sec.xPx, yPx, sec.widthPx, h);
-  const tableX = sec.xPx + 14;
-  const tableW = sec.widthPx - 28;
+  const sidePad = il.cardPaddingPx;
+  const tableX = sec.xPx + sidePad;
+  const tableW = Math.max(0, sec.widthPx - 2 * sidePad);
   const gap = 8;
   let enW = il.englishColumnWidthPx;
   let valW = il.valueColumnWidthPx;
@@ -660,13 +673,16 @@ function drawInfoTable(
     valW *= sc;
     arW *= sc;
   }
+  // Match preview: value column absorbs remaining width so Arabic track is flush to the right edge.
+  valW = Math.max(1, tableW - enW - arW - 2 * gap);
   const enRgb = rgbFromLayoutEn(layout);
   const arRgb = rgbFromLayoutAr(layout);
   let cursorY = yPx + topPad;
   let xEn = tableX;
   const xVal = xEn + enW + gap;
   const xAr = xVal + valW + gap;
-  for (const row of rows) {
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i]!;
     ctx.page.drawLine({
       start: { x: px(tableX), y: topY(advY(cursorY, ctx)) },
       end: { x: px(tableX + tableW), y: topY(advY(cursorY, ctx)) },
@@ -679,7 +695,8 @@ function drawInfoTable(
     const rightLabel = language === "english" ? "" : row.labelAr;
     const rightFont = language === "english" ? ctx.helv : ctx.arFont;
     drawTextAlign(ctx, rightLabel, il.arabicAlign, xAr, arW, cursorY + 4, 10, rightFont, arRgb, 0);
-    cursorY += rowHeight;
+    cursorY += rowContentH;
+    if (i < rows.length - 1) cursorY += betweenGap;
   }
   return h;
 }

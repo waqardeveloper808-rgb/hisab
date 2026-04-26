@@ -1,5 +1,1 @@
-import { redirect } from "next/navigation";
-
-export default function Page() {
-  redirect("/workspace/user/reconciliation");
-}
+export { default, metadata } from "../../../workspace-v2/user/import/page";

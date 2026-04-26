@@ -1,0 +1,7 @@
+lib/workspace-v2/template-ui-settings.ts
+lib/workspace-v2/document-template-renderer.ts
+components/workspace-v2/WorkspaceV2DocumentRenderer.tsx
+components/workspace-v2/WorkspaceV2TemplateStudio.tsx
+app/workspace-v2/v2.css
+lib/workspace-v2/exports/pdf.ts
+tools/capture-template-studio-screens.mjs

@@ -1,4 +1,5 @@
 # Execution time
 
-- Elapsed ms: 23393
-- Finished: 2026-04-26T12:32:42.610Z
+- Suite: totals-amount-117
+- Elapsed ms: 10488
+- Finished: 2026-04-26T14:44:56.260Z

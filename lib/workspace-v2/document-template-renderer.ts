@@ -20,7 +20,6 @@ import {
   getItemsTableInnerTargetPx,
 } from "./item-column-resize";
 import {
-  COLUMN_LABELS,
   FIELD_LABELS,
   PAGE_GEOMETRY,
   SECTION_LABELS,
@@ -37,6 +36,7 @@ import {
 import {
   DEFAULT_HEADER_BLOCK,
   DEFAULT_INFO_CARD_LAYOUT,
+  DEFAULT_ITEM_HEADER_LABELS,
   DEFAULT_STAMP_SIGNATURE_BLOCK,
   DEFAULT_TOTALS_BLOCK,
   DEFAULT_TYPOGRAPHY,
@@ -595,11 +595,12 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
               ? wG
               : col.widthPx;
         const labels = ui?.itemHeaderLabels[col.key];
+        const def = DEFAULT_ITEM_HEADER_LABELS[col.key];
         return {
           ...col,
           widthPx: w,
-          labelEn: labels?.en?.trim() || COLUMN_LABELS[col.key].en,
-          labelAr: labels?.ar?.trim() || COLUMN_LABELS[col.key].ar,
+          labelEn: labels?.en?.trim() || def.en,
+          labelAr: labels?.ar?.trim() || def.ar,
         };
       }),
     schema.itemColumns,
@@ -695,6 +696,30 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
     ...DEFAULT_INFO_CARD_LAYOUT,
     ...ui?.infoCardLayout,
   };
+
+  sections = sections.map((s) => {
+    if (s.id === "customer") {
+      const w =
+        infoLayout.clientCardWidthPx > 0
+          ? Math.min(Math.round(infoLayout.clientCardWidthPx), PAGE_GEOMETRY.safeWidthPx)
+          : s.widthPx;
+      const minH =
+        infoLayout.clientCardMinHeightPx > 0 ? Math.round(infoLayout.clientCardMinHeightPx) : 0;
+      return { ...s, widthPx: w, minHeightPx: minH };
+    }
+    if (s.id === "docInfo") {
+      const w =
+        infoLayout.documentCardWidthPx > 0
+          ? Math.min(Math.round(infoLayout.documentCardWidthPx), PAGE_GEOMETRY.safeWidthPx)
+          : s.widthPx;
+      const minH =
+        infoLayout.documentCardMinHeightPx > 0
+          ? Math.round(infoLayout.documentCardMinHeightPx)
+          : 0;
+      return { ...s, widthPx: w, minHeightPx: minH };
+    }
+    return s;
+  });
 
   return {
     language,

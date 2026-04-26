@@ -1,4 +1,5 @@
-import { WorkspaceShell } from "@/components/workspace/WorkspaceShell";
+import "../workspace-v2/v2.css";
+import { WorkspaceDualShell } from "@/components/workspace/WorkspaceDualShell";
 import { WorkspaceAccessProvider } from "@/components/workspace/WorkspaceAccessProvider";
 import { WorkspacePathProvider } from "@/components/workspace/WorkspacePathProvider";
 import { WorkspaceDataProvider } from "@/components/workflow/WorkspaceDataProvider";
@@ -13,14 +14,17 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       <WorkspaceAccessProvider value={access} session={session} accessStatus={accessStatus}>
         <WorkspaceDataProvider>
           <LayoutEditorProvider>
-            <WorkspaceShell session={{
-              ...session,
-              activeCompanyId: session.workspaceContext?.activeCompany?.id ?? session.companyId ?? null,
-              activeCompanyLegalName: session.workspaceContext?.activeCompany?.legalName ?? null,
-              accessStatus,
-            }} access={access}>
+            <WorkspaceDualShell
+              session={{
+                ...session,
+                activeCompanyId: session.workspaceContext?.activeCompany?.id ?? session.companyId ?? null,
+                activeCompanyLegalName: session.workspaceContext?.activeCompany?.legalName ?? null,
+                accessStatus,
+              }}
+              access={access}
+            >
               {children}
-            </WorkspaceShell>
+            </WorkspaceDualShell>
           </LayoutEditorProvider>
         </WorkspaceDataProvider>
       </WorkspaceAccessProvider>

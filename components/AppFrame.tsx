@@ -17,7 +17,10 @@ export function AppFrame({ children, supportHref }: AppFrameProps) {
   const pathname = usePathname();
   const isWorkspace = pathname.startsWith("/workspace");
   const isLanding = pathname === "/";
-  const isTemplateStudio = pathname.includes("/document-templates") || pathname.includes("/settings/templates");
+  const isTemplateStudio =
+    pathname.includes("/document-templates")
+    || pathname.includes("/settings/templates")
+    || pathname.includes("/templates/studio");
   const isDocumentPreviewRoute = [
     "/workspace/invoices",
     "/workspace/sales",

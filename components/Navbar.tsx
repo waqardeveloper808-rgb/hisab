@@ -15,8 +15,8 @@ const links = [
 ];
 
 const devEntryLinks = [
-  { href: "/workspace/user", label: "Enter Workspace" },
-  { href: "/workspace-v2/user", label: "Workspace V2" },
+  { href: "/workspace/user", label: "Workspace" },
+  { href: "/workspace-v2/user", label: "Workspace alias" },
   { href: "/system/master-design", label: "Open System Monitor" },
 ];
 

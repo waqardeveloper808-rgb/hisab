@@ -1,0 +1,4 @@
+components/workspace-v2/WorkspaceV2DocumentRenderer.tsx
+lib/workspace-v2/exports/pdf.ts
+app/workspace-v2/v2.css
+tools/capture-template-studio-screens.mjs

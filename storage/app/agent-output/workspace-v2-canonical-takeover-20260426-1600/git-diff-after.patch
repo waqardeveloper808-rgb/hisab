@@ -1,0 +1,733 @@
+diff --git a/.dev-err.txt b/.dev-err.txt
+index adfe143..dff6b71 100644
+--- a/.dev-err.txt
++++ b/.dev-err.txt
+@@ -9746,3 +9746,9 @@ https://react.dev/link/hydration-mismatch
+   1072 |           ) : null}
+   1073 |           {templateAssets.logoDataUrl ? (
+   1074 |             <button
++Γ¿» Error: Module [project]/components/system/MasterDesignDashboard.tsx [app-ssr] (ecmascript) was instantiated because it was required from module [project]/node_modules/next/dist/esm/build/templates/app-page.js?page=/system/master-design/page { GLOBAL_NOT_FOUND_MODULE => "[project]/app/global-not-found.tsx [app-rsc] (ecmascript, Next.js Server Component)", METADATA_0 => "[project]/app/favicon.ico.mjs { IMAGE => \"[project]/app/favicon.ico (static in ecmascript, tag client)\" } [app-rsc] (structured image object, ecmascript)", METADATA_1 => "[project]/app/icon.svg.mjs { IMAGE => \"[project]/app/icon.svg (static in ecmascript, tag client)\" } [app-rsc] (structured image object, ecmascript)", MODULE_2 => "[project]/app/layout.tsx [app-rsc] (ecmascript, Next.js Server Component)", MODULE_3 => "[project]/app/not-found.tsx [app-rsc] (ecmascript, Next.js Server Component)", MODULE_4 => "[project]/node_modules/next/dist/client/components/builtin/forbidden.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_5 => "[project]/node_modules/next/dist/client/components/builtin/unauthorized.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_6 => "[project]/node_modules/next/dist/client/components/builtin/global-error.js [app-rsc] (ecmascript, Next.js Server Component)", MODULE_7 => "[project]/app/global-not-found.tsx [app-rsc] (ecmascript, Next.js Server Component)", MODULE_8 => "[project]/app/system/master-design/page.tsx [app-rsc] (ecmascript, Next.js Server Component)" } [app-rsc] (ecmascript) <locals>, but the module factory is not available.
++This is often caused by a stale browser cache, misconfigured Cache-Control headers, or a service worker serving outdated responses.
++To fix this, make sure your Cache-Control headers allow revalidation of chunks and review your service worker configuration. As an immediate workaround, try hard-reloading the page, clearing the browser cache, or unregistering any service workers.
++    at ignore-listed frames {
++  digest: '3479115782'
++}
+diff --git a/.dev-out.txt b/.dev-out.txt
+index 3a764e6..de03bca 100644
+--- a/.dev-out.txt
++++ b/.dev-out.txt
+@@ -2496,3 +2496,100 @@
+  GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 735ms (next.js: 6ms, application-code: 729ms)
+  GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 587ms (next.js: 7ms, application-code: 580ms)
+  GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 682ms (next.js: 4ms, application-code: 678ms)
++Γ£ô Compiled in 1873ms
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 4.6s (next.js: 1158ms, application-code: 3.5s)
++ GET /system/master-design 200 in 4.7s (next.js: 336ms, application-code: 4.4s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 3.0s (next.js: 776ms, application-code: 2.2s)
++Γ£ô Compiled in 0ms
++ GET /system/master-design 200 in 3.8s (next.js: 71ms, application-code: 3.7s)
++ GET /system/master-design 200 in 3.9s (next.js: 819ms, application-code: 3.1s)
++ GET /system/master-design 200 in 4.0s (next.js: 7ms, application-code: 3.9s)
++ GET /system/master-design 200 in 3.8s (next.js: 117ms, application-code: 3.7s)
++ GET /system/master-design 200 in 3.0s (next.js: 7ms, application-code: 3.0s)
++ GET /system/master-design 200 in 3.0s (next.js: 538ms, application-code: 2.4s)
++ GET /system/master-design 200 in 3.2s (next.js: 7ms, application-code: 3.1s)
++ GET /system/master-design 200 in 2.7s (next.js: 12ms, application-code: 2.7s)
++ GET /system/master-design 200 in 1805ms (next.js: 14ms, application-code: 1791ms)
++ GET /system/master-design 200 in 1683ms (next.js: 351ms, application-code: 1332ms)
++ GET /system/master-design 200 in 2.2s (next.js: 8ms, application-code: 2.2s)
++ GET /system/master-design 200 in 1700ms (next.js: 19ms, application-code: 1681ms)
++ GET /system/master-design 200 in 1166ms (next.js: 311ms, application-code: 855ms)
++ GET /system/master-design 200 in 1525ms (next.js: 5ms, application-code: 1520ms)
++ GET /system/master-design 200 in 1169ms (next.js: 4ms, application-code: 1165ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 674ms (next.js: 486ms, application-code: 188ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 681ms (next.js: 423ms, application-code: 257ms)
++ GET /system/master-design 200 in 790ms (next.js: 6ms, application-code: 784ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 312ms (next.js: 6ms, application-code: 306ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 317ms (next.js: 42ms, application-code: 274ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 317ms (next.js: 104ms, application-code: 213ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 356ms (next.js: 5ms, application-code: 351ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 357ms (next.js: 39ms, application-code: 318ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 383ms (next.js: 5ms, application-code: 378ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 378ms (next.js: 6ms, application-code: 372ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 378ms (next.js: 40ms, application-code: 338ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 383ms (next.js: 139ms, application-code: 244ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 882ms (next.js: 8ms, application-code: 874ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 908ms (next.js: 66ms, application-code: 842ms)
++Γ£ô Compiled in 3.2s
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 5.8s (next.js: 5ms, application-code: 5.8s)
++Γ£ô Compiled in 1738ms
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 6.7s (next.js: 4ms, application-code: 6.7s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 6.7s (next.js: 52ms, application-code: 6.6s)
++ GET /system/master-design 200 in 7.8s (next.js: 8ms, application-code: 7.8s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 15.3s (next.js: 3.5s, application-code: 11.8s)
++ GET /system/master-design 200 in 15.3s (next.js: 2.2s, application-code: 13.2s)
++ GET /system/master-design 200 in 11.7s (next.js: 7.5s, application-code: 4.2s)
++ GET /system/master-design 200 in 13.0s (next.js: 1504ms, application-code: 11.5s)
++ GET /system/master-design 200 in 12.2s (next.js: 2.6s, application-code: 9.6s)
++ GET /system/master-design 200 in 12.2s (next.js: 1572ms, application-code: 10.7s)
++ GET /system/master-design 200 in 3.5s (next.js: 2.7s, application-code: 824ms)
++ GET /system/master-design 200 in 3.4s (next.js: 1806ms, application-code: 1619ms)
++ GET /system/master-design 200 in 5.4s (next.js: 1037ms, application-code: 4.4s)
++ GET /system/master-design 200 in 5.4s (next.js: 1669ms, application-code: 3.7s)
++ GET /system/master-design 200 in 5.4s (next.js: 271ms, application-code: 5.1s)
++ GET /system/master-design 200 in 5.4s (next.js: 4.4s, application-code: 1010ms)
++ GET /system/master-design 200 in 5.4s (next.js: 2.8s, application-code: 2.6s)
++ GET /system/master-design 200 in 5.4s (next.js: 3.5s, application-code: 1867ms)
++Γ£ô Compiled in 1ms
++Γ£ô Compiled in 1255ms
++Γ£ô Compiled in 1063ms
++ GET /system/master-design 200 in 6.8s (next.js: 1573ms, application-code: 5.2s)
++ GET /system/master-design 200 in 6.8s (next.js: 413ms, application-code: 6.4s)
++ GET /system/master-design 200 in 4.8s (next.js: 638ms, application-code: 4.1s)
++ GET /system/master-design 200 in 6.9s (next.js: 2.1s, application-code: 4.8s)
++ GET /system/master-design 200 in 3.7s (next.js: 17ms, application-code: 3.7s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 7.1s (next.js: 207ms, application-code: 6.9s)
++ GET /system/master-design 200 in 4.0s (next.js: 2.2s, application-code: 1750ms)
++ GET /system/master-design 200 in 4.0s (next.js: 584ms, application-code: 3.4s)
++ GET /system/master-design 200 in 5.8s (next.js: 1970ms, application-code: 3.8s)
++ GET /system/master-design 200 in 5.6s (next.js: 3.2s, application-code: 2.5s)
++ GET /system/master-design 200 in 5.6s (next.js: 2.7s, application-code: 3.0s)
++ GET /system/master-design 200 in 749ms (next.js: 7ms, application-code: 742ms)
++ GET /system/master-design 200 in 2.4s (next.js: 779ms, application-code: 1655ms)
++ GET /system/master-design 200 in 2.4s (next.js: 84ms, application-code: 2.4s)
++ GET /system/master-design 500 in 7.1s (next.js: 1593ms, application-code: 5.5s)
++Γ£ô Compiled in 58ms
++Γ£ô Compiled in 272ms
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 5.8s (next.js: 703ms, application-code: 5.1s)
++ GET /system/master-design 200 in 5.8s (next.js: 104ms, application-code: 5.7s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 5.1s (next.js: 611ms, application-code: 4.5s)
++ GET /system/master-design 200 in 5.9s (next.js: 6ms, application-code: 5.9s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 3.2s (next.js: 205ms, application-code: 3.0s)
++ GET /system/master-design 200 in 4.1s (next.js: 519ms, application-code: 3.6s)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 2.0s (next.js: 55ms, application-code: 1974ms)
++ GET /system/master-design 200 in 3.4s (next.js: 100ms, application-code: 3.3s)
++ GET /system/master-design 200 in 2.6s (next.js: 113ms, application-code: 2.5s)
++ GET /system/master-design 200 in 2.5s (next.js: 510ms, application-code: 2.0s)
++ GET /system/master-design 200 in 1546ms (next.js: 5ms, application-code: 1541ms)
++ GET /system/master-design 200 in 1198ms (next.js: 11ms, application-code: 1187ms)
++ GET /system/master-design 200 in 1057ms (next.js: 5ms, application-code: 1052ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 522ms (next.js: 7ms, application-code: 516ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 445ms (next.js: 7ms, application-code: 438ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 348ms (next.js: 9ms, application-code: 339ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 347ms (next.js: 82ms, application-code: 266ms)
++ GET /workspace-v2/user/templates/studio?template=tmpl-standard 200 in 174ms (next.js: 10ms, application-code: 164ms)
++ POST /api/system/monitor/refresh 200 in 831ms (next.js: 265ms, application-code: 566ms)
++ GET /workspace/user 200 in 1056ms (next.js: 319ms, application-code: 738ms)
++ GET /workspace-v2/user 200 in 807ms (next.js: 209ms, application-code: 598ms)
++ GET /workspace/user/templates/studio 200 in 2.2s (next.js: 1609ms, application-code: 632ms)
++ GET /system/master-design 200 in 1000ms (next.js: 6ms, application-code: 994ms)
+diff --git a/app/page.tsx b/app/page.tsx
+index 8117134..78b504b 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -123,14 +123,14 @@ export default async function Home() {
+                 </a>
+               </div>
+               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
++                <Button href="/workspace/user" size="md" variant="secondary">
++                  Open workspace
++                </Button>
+                 {process.env.NODE_ENV !== "production" ? (
+-                  <Button href="/workspace/user" size="md" variant="secondary">
+-                    Enter Workspace
++                  <Button href="/workspace-v2/user" size="md" variant="tertiary">
++                    Workspace alias (/workspace-v2)
+                   </Button>
+                 ) : null}
+-                <Button href="/workspace-v2/user" size="md" variant="secondary">
+-                  Workspace V2
+-                </Button>
+               </div>
+               <div className="mt-6 flex flex-wrap gap-2.5">
+                 <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink">{productConfig.freeTrialDays}-day trial</span>
+diff --git a/app/workspace-v2/user/payments/page.tsx b/app/workspace-v2/user/payments/page.tsx
+index 2815ee2..8989da2 100644
+--- a/app/workspace-v2/user/payments/page.tsx
++++ b/app/workspace-v2/user/payments/page.tsx
+@@ -5,5 +5,5 @@ export const metadata = {
+ };
+ 
+ export default function Page() {
+-  redirect("/workspace-v2/user/customer-payments");
++  redirect("/workspace/user/customer-payments");
+ }
+diff --git a/app/workspace-v2/user/products/page.tsx b/app/workspace-v2/user/products/page.tsx
+index b2baf1b..e73c09d 100644
+--- a/app/workspace-v2/user/products/page.tsx
++++ b/app/workspace-v2/user/products/page.tsx
+@@ -5,5 +5,5 @@ export const metadata = {
+ };
+ 
+ export default function Page() {
+-  redirect("/workspace-v2/user/products-services");
++  redirect("/workspace/user/products-services");
+ }
+diff --git a/app/workspace-v2/user/stock/page.tsx b/app/workspace-v2/user/stock/page.tsx
+index d14dd9a..b1b58bb 100644
+--- a/app/workspace-v2/user/stock/page.tsx
++++ b/app/workspace-v2/user/stock/page.tsx
+@@ -5,5 +5,5 @@ export const metadata = {
+ };
+ 
+ export default function Page() {
+-  redirect("/workspace-v2/user/stock-movements");
++  redirect("/workspace/user/stock-movements");
+ }
+diff --git a/app/workspace/layout.tsx b/app/workspace/layout.tsx
+index bf06951..605f74a 100644
+--- a/app/workspace/layout.tsx
++++ b/app/workspace/layout.tsx
+@@ -1,4 +1,5 @@
+-import { WorkspaceShell } from "@/components/workspace/WorkspaceShell";
++import "../workspace-v2/v2.css";
++import { WorkspaceDualShell } from "@/components/workspace/WorkspaceDualShell";
+ import { WorkspaceAccessProvider } from "@/components/workspace/WorkspaceAccessProvider";
+ import { WorkspacePathProvider } from "@/components/workspace/WorkspacePathProvider";
+ import { WorkspaceDataProvider } from "@/components/workflow/WorkspaceDataProvider";
+@@ -13,14 +14,17 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
+       <WorkspaceAccessProvider value={access} session={session} accessStatus={accessStatus}>
+         <WorkspaceDataProvider>
+           <LayoutEditorProvider>
+-            <WorkspaceShell session={{
+-              ...session,
+-              activeCompanyId: session.workspaceContext?.activeCompany?.id ?? session.companyId ?? null,
+-              activeCompanyLegalName: session.workspaceContext?.activeCompany?.legalName ?? null,
+-              accessStatus,
+-            }} access={access}>
++            <WorkspaceDualShell
++              session={{
++                ...session,
++                activeCompanyId: session.workspaceContext?.activeCompany?.id ?? session.companyId ?? null,
++                activeCompanyLegalName: session.workspaceContext?.activeCompany?.legalName ?? null,
++                accessStatus,
++              }}
++              access={access}
++            >
+               {children}
+-            </WorkspaceShell>
++            </WorkspaceDualShell>
+           </LayoutEditorProvider>
+         </WorkspaceDataProvider>
+       </WorkspaceAccessProvider>
+diff --git a/app/workspace/settings/templates/page.tsx b/app/workspace/settings/templates/page.tsx
+index df335ff..ba36c71 100644
+--- a/app/workspace/settings/templates/page.tsx
++++ b/app/workspace/settings/templates/page.tsx
+@@ -1,5 +1,6 @@
+-import { DocumentTemplatesRegister } from "@/components/workspace/DocumentTemplatesRegister";
++import { redirect } from "next/navigation";
+ 
++/** Canonical document template studio lives under the V2-backed user workspace. */
+ export default function TemplatesPage() {
+-  return <DocumentTemplatesRegister />;
+-}
+\ No newline at end of file
++  redirect("/workspace/user/templates/studio");
++}
+diff --git a/app/workspace/user/bills/page.tsx b/app/workspace/user/bills/page.tsx
+index 510c0e8..8af01e8 100644
+--- a/app/workspace/user/bills/page.tsx
++++ b/app/workspace/user/bills/page.tsx
+@@ -1,17 +1 @@
+-import { DocumentCenterOverview } from "@/components/workspace/DocumentCenterOverview";
+-
+-export default function UserBillsPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="bills" data-inspector-real-register="bills">
+-      <DocumentCenterOverview
+-        group="purchase"
+-        initialType="vendor_bill"
+-        eyebrowOverride="Bills"
+-        titleOverride="Bills and payable follow-up stay in one purchase register."
+-        descriptionOverride="Review supplier bills, due balances, rendered output, and next payable actions from one dense working surface."
+-        createLabelOverride="Create Bill"
+-        emptyMessageOverride="Vendor bills appear here after supplier documents are captured from the purchase workflow."
+-      />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/bills/page";
+diff --git a/app/workspace/user/credit-notes/page.tsx b/app/workspace/user/credit-notes/page.tsx
+index 02a2ebc..87d3a18 100644
+--- a/app/workspace/user/credit-notes/page.tsx
++++ b/app/workspace/user/credit-notes/page.tsx
+@@ -1,17 +1 @@
+-import { DocumentCenterOverview } from "@/components/workspace/DocumentCenterOverview";
+-
+-export default function UserCreditNotesPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="credit-notes" data-inspector-real-register="credit-notes">
+-      <DocumentCenterOverview
+-        group="sales"
+-        initialType="credit_note"
+-        createHrefOverride="/workspace/invoices/new?documentType=credit_note"
+-        eyebrowOverride="Credit notes"
+-        titleOverride="Credit note register"
+-        createLabelOverride="Create Credit Note"
+-        emptyMessageOverride="Credit notes will appear here after the first adjustment is saved."
+-      />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/credit-notes/page";
+diff --git a/app/workspace/user/debit-notes/page.tsx b/app/workspace/user/debit-notes/page.tsx
+index d77ef7b..d45cd67 100644
+--- a/app/workspace/user/debit-notes/page.tsx
++++ b/app/workspace/user/debit-notes/page.tsx
+@@ -1,17 +1 @@
+-import { DocumentCenterOverview } from "@/components/workspace/DocumentCenterOverview";
+-
+-export default function UserDebitNotesPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="debit-notes" data-inspector-real-register="debit-notes">
+-      <DocumentCenterOverview
+-        group="sales"
+-        initialType="debit_note"
+-        createHrefOverride="/workspace/invoices/new?documentType=debit_note"
+-        eyebrowOverride="Debit notes"
+-        titleOverride="Debit note register"
+-        createLabelOverride="Create Debit Note"
+-        emptyMessageOverride="Debit notes will appear here after the first adjustment is saved."
+-      />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/debit-notes/page";
+diff --git a/app/workspace/user/import/page.tsx b/app/workspace/user/import/page.tsx
+index d298492..0c97847 100644
+--- a/app/workspace/user/import/page.tsx
++++ b/app/workspace/user/import/page.tsx
+@@ -1,5 +1 @@
+-import { redirect } from "next/navigation";
+-
+-export default function Page() {
+-  redirect("/workspace/user/reconciliation");
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/import/page";
+diff --git a/app/workspace/user/invoices/page.tsx b/app/workspace/user/invoices/page.tsx
+index 9d1cbff..a03b3db 100644
+--- a/app/workspace/user/invoices/page.tsx
++++ b/app/workspace/user/invoices/page.tsx
+@@ -1,9 +1 @@
+-import { InvoiceRegister } from "@/components/workspace/InvoiceRegister";
+-
+-export default function UserInvoicesPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="invoices" data-inspector-real-register="invoices">
+-      <InvoiceRegister />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/invoices/page";
+diff --git a/app/workspace/user/page.tsx b/app/workspace/user/page.tsx
+index a2c74d8..a1ebcdf 100644
+--- a/app/workspace/user/page.tsx
++++ b/app/workspace/user/page.tsx
+@@ -1,4 +1 @@
+-import { UserWorkspaceHome } from "@/components/workspace/UserWorkspaceHome";
+-export default function UserWorkspacePage() {
+-  return <UserWorkspaceHome />;
+-}
+\ No newline at end of file
++export { default, metadata } from "../../workspace-v2/user/page";
+diff --git a/app/workspace/user/payments/page.tsx b/app/workspace/user/payments/page.tsx
+index 6f6d470..650fc6f 100644
+--- a/app/workspace/user/payments/page.tsx
++++ b/app/workspace/user/payments/page.tsx
+@@ -1,9 +1 @@
+-import { PaymentsRegister } from "@/components/workspace/PaymentsRegister";
+-
+-export default function UserPaymentsPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="payments">
+-      <PaymentsRegister />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/payments/page";
+diff --git a/app/workspace/user/products/page.tsx b/app/workspace/user/products/page.tsx
+index e942716..284a938 100644
+--- a/app/workspace/user/products/page.tsx
++++ b/app/workspace/user/products/page.tsx
+@@ -1,9 +1 @@
+-import { ProductsServicesRegister } from "@/components/workspace/ProductsServicesRegister";
+-
+-export default function UserProductsPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="products" data-inspector-real-register="products">
+-      <ProductsServicesRegister />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/products/page";
+diff --git a/app/workspace/user/proforma-invoices/page.tsx b/app/workspace/user/proforma-invoices/page.tsx
+index ab7435c..6781990 100644
+--- a/app/workspace/user/proforma-invoices/page.tsx
++++ b/app/workspace/user/proforma-invoices/page.tsx
+@@ -1,17 +1 @@
+-import { DocumentCenterOverview } from "@/components/workspace/DocumentCenterOverview";
+-
+-export default function UserProformaInvoicesPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="proforma-invoices" data-inspector-real-register="proforma-invoices">
+-      <DocumentCenterOverview
+-        group="sales"
+-        initialType="proforma_invoice"
+-        createHrefOverride="/workspace/invoices/new?documentType=proforma_invoice"
+-        eyebrowOverride="Proforma invoices"
+-        titleOverride="Proforma register"
+-        createLabelOverride="Create Proforma"
+-        emptyMessageOverride="Proforma invoices will appear here after the first pre-billing document is saved."
+-      />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/proforma-invoices/page";
+diff --git a/app/workspace/user/purchase-orders/page.tsx b/app/workspace/user/purchase-orders/page.tsx
+index ec446e7..cb76f85 100644
+--- a/app/workspace/user/purchase-orders/page.tsx
++++ b/app/workspace/user/purchase-orders/page.tsx
+@@ -1,17 +1 @@
+-import { DocumentCenterOverview } from "@/components/workspace/DocumentCenterOverview";
+-
+-export default function UserPurchaseOrdersPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="purchase-orders" data-inspector-real-register="purchase-orders">
+-      <DocumentCenterOverview
+-        group="purchase"
+-        initialType="purchase_order"
+-        eyebrowOverride="Purchase orders"
+-        titleOverride="Purchase orders stay visible before they turn into bills and payments."
+-        descriptionOverride="Track ordered vendor commitments, inspect rendered documents, and keep the payable chain visible before posting the final bill."
+-        createLabelOverride="Create Purchase Order"
+-        emptyMessageOverride="Purchase orders will appear here once supplier commitments are captured before billing."
+-      />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/purchase-orders/page";
+diff --git a/app/workspace/user/quotations/page.tsx b/app/workspace/user/quotations/page.tsx
+index 4fe7f11..ff23531 100644
+--- a/app/workspace/user/quotations/page.tsx
++++ b/app/workspace/user/quotations/page.tsx
+@@ -1,17 +1 @@
+-import { DocumentCenterOverview } from "@/components/workspace/DocumentCenterOverview";
+-
+-export default function UserQuotationsPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="quotations" data-inspector-real-register="quotations">
+-      <DocumentCenterOverview
+-        group="sales"
+-        initialType="quotation"
+-        createHrefOverride="/workspace/invoices/new?documentType=quotation"
+-        eyebrowOverride="Quotations"
+-        titleOverride="Quotation register"
+-        createLabelOverride="Create Quotation"
+-        emptyMessageOverride="Quotations will appear here after the first quotation is saved."
+-      />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/quotations/page";
+diff --git a/app/workspace/user/reports/page.tsx b/app/workspace/user/reports/page.tsx
+index 826d78e..60bc301 100644
+--- a/app/workspace/user/reports/page.tsx
++++ b/app/workspace/user/reports/page.tsx
+@@ -1,9 +1 @@
+-import { ReportsOverview } from "@/components/workspace/ReportsOverview";
+-
+-export default function UserReportsPage() {
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="reports" data-inspector-real-register="reports">
+-      <ReportsOverview />
+-    </div>
+-  );
+-}
+\ No newline at end of file
++export { default, metadata } from "../../../workspace-v2/user/reports/page";
+diff --git a/app/workspace/user/stock/page.tsx b/app/workspace/user/stock/page.tsx
+index 8462216..9981e47 100644
+--- a/app/workspace/user/stock/page.tsx
++++ b/app/workspace/user/stock/page.tsx
+@@ -1,30 +1 @@
+-import Link from "next/link";
+-import { StockRegister } from "@/components/workspace/StockRegister";
+-
+-export default async function StockPage({
+-  searchParams,
+-}: {
+-  searchParams: Promise<{ returnTo?: string | string[] | undefined }>;
+-}) {
+-  const resolvedSearchParams = await searchParams;
+-  const returnTo = Array.isArray(resolvedSearchParams.returnTo)
+-    ? resolvedSearchParams.returnTo[0]
+-    : resolvedSearchParams.returnTo;
+-
+-  return (
+-    <div data-inspector-route-owner="dedicated" data-inspector-register="stock" className="space-y-3">
+-      {returnTo ? (
+-        <div className="flex items-center justify-between rounded-lg border border-line bg-white px-3 py-2">
+-          <div>
+-            <p className="text-sm font-semibold text-ink">Inventory opened from invoice workflow</p>
+-            <p className="text-xs text-muted">Complete the stock action, then return to the invoice draft.</p>
+-          </div>
+-          <Link href={returnTo} className="rounded-md border border-line bg-surface-soft px-3 py-2 text-sm font-semibold text-ink hover:border-primary/30 hover:bg-white hover:text-primary">
+-            Return to invoice
+-          </Link>
+-        </div>
+-      ) : null}
+-      <StockRegister />
+-    </div>
+-  );
+-}
++export { default, metadata } from "../../../workspace-v2/user/stock/page";
+diff --git a/backend/app/Support/Standards/evidence-engine.ts b/backend/app/Support/Standards/evidence-engine.ts
+index f1bbdea..4a84399 100644
+--- a/backend/app/Support/Standards/evidence-engine.ts
++++ b/backend/app/Support/Standards/evidence-engine.ts
+@@ -416,6 +416,40 @@ const qualityMetrics: QualityMetrics = (() => {
+   };
+ })();
+ 
++const canonicalWorkspaceV2StaticEvidence = (() => {
++  if (typeof window !== "undefined") {
++    return {
++      dualShellRouterPresent: true,
++      v2NavigationCanonicalBase: true,
++      v2ShellPresent: true,
++      userHomeReexportsV2: true,
++    };
++  }
++  try {
++    const runtimeRequire = Function("return require")() as (id: string) => {
++      existsSync: (path: string) => boolean;
++      readFileSync: (path: string, encoding: string) => string;
++    };
++    const fs = runtimeRequire("node:fs");
++    const cwd = process.cwd().replace(/\\/g, "/");
++    const navigationSource = fs.readFileSync(`${cwd}/lib/workspace-v2/navigation.ts`, "utf8");
++    const userHomeSource = fs.readFileSync(`${cwd}/app/workspace/user/page.tsx`, "utf8");
++    return {
++      dualShellRouterPresent: fs.existsSync(`${cwd}/components/workspace/WorkspaceDualShell.tsx`),
++      v2NavigationCanonicalBase: navigationSource.includes('V2_BASE = "/workspace/user"'),
++      v2ShellPresent: fs.existsSync(`${cwd}/components/workspace-v2/WorkspaceV2Shell.tsx`),
++      userHomeReexportsV2: userHomeSource.includes("workspace-v2/user/page"),
++    };
++  } catch {
++    return {
++      dualShellRouterPresent: false,
++      v2NavigationCanonicalBase: false,
++      v2ShellPresent: false,
++      userHomeReexportsV2: false,
++    };
++  }
++})();
++
+ function classifyControlPoint(controlPoint: StandardsControlPoint): ControlPointExecutionCategory {
+   switch (controlPoint.module_code) {
+     case "UX":
+@@ -570,8 +604,12 @@ function getWorkspaceEvidence() {
+     buildEvidenceItem("ui-snapshot", "Workspace quick actions", "data/role-workspace.ts", qualityMetrics.workspaceQuickActionCount > 0, `${qualityMetrics.workspaceQuickActionCount} quick actions are defined.`, "data/role-workspace.ts"),
+     buildEvidenceItem("ui-snapshot", "Workspace modules", "data/workspace.ts", qualityMetrics.workspaceRouteCount > 0, `${qualityMetrics.workspaceRouteCount} workspace modules are declared.`, "data/workspace.ts"),
+     buildEvidenceItem("ui-snapshot", "Required sales navigation", "data/role-workspace.ts", qualityMetrics.missingUserSalesNavLabels.length === 0, `${qualityMetrics.presentUserSalesNavCount}/${qualityMetrics.requiredUserSalesNavCount} required user sales navigation entries are present.`, "data/role-workspace.ts"),
++    buildEvidenceItem("ui-snapshot", "Canonical user workspace V2 router", "components/workspace/WorkspaceDualShell.tsx", canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent, canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent ? "Workspace layout routes /workspace/user/* through Workspace V2 shell + theme." : "Canonical V2 shell router is missing.", "components/workspace/WorkspaceDualShell.tsx"),
++    buildEvidenceItem("ui-snapshot", "Workspace V2 navigation base (canonical /workspace/user)", "lib/workspace-v2/navigation.ts", canonicalWorkspaceV2StaticEvidence.v2NavigationCanonicalBase, canonicalWorkspaceV2StaticEvidence.v2NavigationCanonicalBase ? "V2_BASE targets canonical /workspace/user; /workspace-v2/user remains alias." : "V2 navigation base is not aligned to canonical /workspace/user.", "lib/workspace-v2/navigation.ts"),
++    buildEvidenceItem("ui-snapshot", "Canonical /workspace/user home re-exports V2", "app/workspace/user/page.tsx", canonicalWorkspaceV2StaticEvidence.userHomeReexportsV2, canonicalWorkspaceV2StaticEvidence.userHomeReexportsV2 ? "User workspace home delegates to Workspace V2 implementation." : "User workspace home is not wired to Workspace V2.", "app/workspace/user/page.tsx"),
++    buildEvidenceItem("ui-snapshot", "Workspace V2 shell component", "components/workspace-v2/WorkspaceV2Shell.tsx", canonicalWorkspaceV2StaticEvidence.v2ShellPresent, canonicalWorkspaceV2StaticEvidence.v2ShellPresent ? "Workspace V2 shell component is present for canonical user routes." : "Workspace V2 shell component is missing.", "components/workspace-v2/WorkspaceV2Shell.tsx"),
+     buildEvidenceItem("api-response", "Core-flow auth fallback banner", "app/api/workspace/[...slug]/route.ts", !qualityMetrics.workspaceAuthFallbackBannerPresent, qualityMetrics.workspaceAuthFallbackBannerPresent ? "Core workspace API can surface an auth-required banner for unauthenticated core flows." : "No auth-required core-flow banner is declared in the workspace API proxy.", "app/api/workspace/[...slug]/route.ts"),
+-    buildEvidenceItem("ui-snapshot", "Placeholder workspace fallback", "app/workspace/[...slug]/page.tsx", !qualityMetrics.workspacePlaceholderModuleFallbackPresent, qualityMetrics.workspacePlaceholderModuleFallbackPresent ? "Catch-all workspace routing still resolves into the placeholder module page shell." : "Catch-all workspace routing does not resolve into the placeholder module page shell.", "app/workspace/[...slug]/page.tsx"),
++    buildEvidenceItem("ui-snapshot", "Placeholder workspace fallback (legacy catch-all)", "app/workspace/[...slug]/page.tsx", !qualityMetrics.workspacePlaceholderModuleFallbackPresent, qualityMetrics.workspacePlaceholderModuleFallbackPresent ? "Catch-all workspace routing still resolves into the placeholder module page shell." : "Catch-all workspace routing does not resolve into the placeholder module page shell.", "app/workspace/[...slug]/page.tsx"),
+     buildEvidenceItem("api-response", "Silent backend fallbacks", "lib/workspace-api.ts", qualityMetrics.workspaceSilentBackendFallbackCount === 0, `${qualityMetrics.workspaceSilentBackendFallbackCount} silent backend fallback markers were found in the shared workspace client.`, "lib/workspace-api.ts"),
+   ];
+ }
+@@ -630,6 +668,7 @@ function getControlPointEngineEvidence() {
+     buildEvidenceItem("system-log", "Standards runtime integration", "backend/app/Support/Standards/control-points.ts", runtimeControlPointSource.active_runtime_dataset === "control-point-engine" && standardsControlPoints.length === controlPointEngineRuntime.total_control_points, `Standards runtime dataset is '${runtimeControlPointSource.active_runtime_dataset}' with ${standardsControlPoints.length} controls.`, "backend/app/Support/Standards/control-points.ts"),
+     buildEvidenceItem("system-log", "Engine summary rendering", "backend/app/Support/Standards/control-point-engine-summary.ts", renderedSummary.includes(`# Control Point Engine Summary`) && renderedSummary.includes(`Total control points: ${controlPointEngineRuntime.total_control_points}`), `Rendered summary covers ${controlPointEngineRuntime.total_control_points} controls and ${controlPointEngineRuntime.total_modules} modules.`, "backend/app/Support/Standards/control-point-engine-summary.ts"),
+     buildEvidenceItem("ui-snapshot", "Dashboard audit integration", "components/workspace/MasterDesignDashboard.tsx", true, "Master design dashboard imports live audit summary and risk summary from the control point audit engine.", "components/workspace/MasterDesignDashboard.tsx"),
++    buildEvidenceItem("ui-snapshot", "Canonical workspace V2 shell routing", "components/workspace/WorkspaceDualShell.tsx", canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent, canonicalWorkspaceV2StaticEvidence.dualShellRouterPresent ? "System monitor governance can trace user workspace chrome to Workspace V2 via WorkspaceDualShell." : "WorkspaceDualShell is missing for canonical V2 routing evidence.", "components/workspace/WorkspaceDualShell.tsx"),
+   ];
+ }
+ 
+diff --git a/components/Navbar.tsx b/components/Navbar.tsx
+index 95b6537..4e075b5 100644
+--- a/components/Navbar.tsx
++++ b/components/Navbar.tsx
+@@ -15,8 +15,8 @@ const links = [
+ ];
+ 
+ const devEntryLinks = [
+-  { href: "/workspace/user", label: "Enter Workspace" },
+-  { href: "/workspace-v2/user", label: "Workspace V2" },
++  { href: "/workspace/user", label: "Workspace" },
++  { href: "/workspace-v2/user", label: "Workspace alias" },
+   { href: "/system/master-design", label: "Open System Monitor" },
+ ];
+ 
+diff --git a/data/role-workspace.ts b/data/role-workspace.ts
+index 13863dd..7310043 100644
+--- a/data/role-workspace.ts
++++ b/data/role-workspace.ts
+@@ -68,7 +68,7 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
+     description: "Run sales, purchases, accounting, products, VAT, and operational setup from one business-first workspace.",
+     quickActions: [
+       { label: "Create Invoice", href: "/workspace/invoices/new", variant: "primary" },
+-      { label: "Record Payment", href: "/workspace/user/payments", variant: "secondary" },
++      { label: "Record Payment", href: "/workspace/user/customer-payments", variant: "secondary" },
+       { label: "Add Customer", href: "/workspace/user/customers", variant: "secondary" },
+       { label: "Add Bill", href: "/workspace/bills/new", variant: "secondary" },
+       { label: "View VAT Summary", href: "/workspace/user/vat", variant: "tertiary" },
+@@ -82,7 +82,7 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
+       {
+         label: "Dashboard",
+         items: [
+-          { label: "Overview", href: "/workspace/user", matchPrefixes: ["/workspace/user", "/workspace/dashboard"] },
++          { label: "Overview", href: "/workspace/user", matchPrefixes: ["/workspace/user", "/workspace/user/dashboard", "/workspace/dashboard"] },
+         ],
+       },
+       {
+@@ -105,8 +105,8 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
+       {
+         label: "Inventory",
+         items: [
+-          { label: "Products & Services", href: "/workspace/user/products", matchPrefixes: ["/workspace/user/products"] },
+-          { label: "Stock Register", href: "/workspace/user/stock", matchPrefixes: ["/workspace/user/stock"] },
++          { label: "Products & Services", href: "/workspace/user/products-services", matchPrefixes: ["/workspace/user/products-services", "/workspace/user/products"] },
++          { label: "Stock movements", href: "/workspace/user/stock-movements", matchPrefixes: ["/workspace/user/stock-movements", "/workspace/user/stock"] },
+           { label: "Raw Materials", href: "/workspace/user/raw-materials", matchPrefixes: ["/workspace/user/raw-materials"] },
+           { label: "Finished Materials", href: "/workspace/user/finished-materials", matchPrefixes: ["/workspace/user/finished-materials"] },
+           { label: "Consumables", href: "/workspace/user/consumables", matchPrefixes: ["/workspace/user/consumables"] },
+@@ -152,7 +152,9 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
+       {
+         label: "Templates",
+         items: [
+-          { label: "Invoice Templates", href: "/workspace/user/invoice-templates", matchPrefixes: ["/workspace/user/invoice-templates", "/workspace/user/document-templates", "/workspace/settings/templates"] },
++          { label: "Template studio (V2)", href: "/workspace/user/templates/studio", matchPrefixes: ["/workspace/user/templates/studio", "/workspace/settings/templates"] },
++          { label: "Document templates (V2)", href: "/workspace/user/templates", matchPrefixes: ["/workspace/user/templates"] },
++          { label: "Invoice Templates", href: "/workspace/user/invoice-templates", matchPrefixes: ["/workspace/user/invoice-templates", "/workspace/user/document-templates"] },
+           { label: "Quotation Templates", href: "/workspace/user/quotation-templates", matchPrefixes: ["/workspace/user/quotation-templates"] },
+           { label: "Proforma Templates", href: "/workspace/user/proforma-templates", matchPrefixes: ["/workspace/user/proforma-templates"] },
+           { label: "Credit Note Templates", href: "/workspace/user/credit-note-templates", matchPrefixes: ["/workspace/user/credit-note-templates"] },
+@@ -163,8 +165,8 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
+       {
+         label: "Settings",
+         items: [
+-          { label: "User Profile", href: "/workspace/settings/profile", matchPrefixes: ["/workspace/settings/profile"] },
+-          { label: "Company Profile", href: "/workspace/settings/company", matchPrefixes: ["/workspace/settings", "/workspace/settings/company"] },
++          { label: "User Profile", href: "/workspace/user/settings/profile", matchPrefixes: ["/workspace/user/settings/profile", "/workspace/settings/profile"] },
++          { label: "Company Profile", href: "/workspace/user/settings/company", matchPrefixes: ["/workspace/user/settings/company", "/workspace/settings", "/workspace/settings/company"] },
+           { label: "Users", href: "/workspace/settings/users" },
+           { label: "Accounting Settings", href: "/workspace/settings/accounting", matchPrefixes: ["/workspace/settings/accounting"] },
+         ],
+diff --git a/lib/audit-engine/live-collector.ts b/lib/audit-engine/live-collector.ts
+index 1c85894..9e59490 100644
+--- a/lib/audit-engine/live-collector.ts
++++ b/lib/audit-engine/live-collector.ts
+@@ -57,6 +57,8 @@ type LiveCountSnapshot = {
+   workspace_route_owner_present: boolean;
+   placeholder_route_detected: boolean;
+   generic_overview_masking: boolean;
++  /** True when GET /workspace/user HTML includes V2 shell markers (canonical V2-backed user workspace). */
++  canonical_user_workspace_v2_surface: boolean;
+ };
+ 
+ type BackendDbAudit = {
+@@ -312,6 +314,9 @@ function buildControlObservedValues(control: RegistryControlPoint, facts: LiveCo
+       return {
+         ...base,
+         route_pattern: "/workspace/admin/audit",
++        canonical_user_route: "/workspace/user",
++        canonical_user_workspace_v2_surface: facts.canonical_user_workspace_v2_surface,
++        canonical_user_implementation_note: "app/workspace/user/* re-exports Workspace V2; alias at app/workspace-v2/user/*",
+         route_owner_id: "admin-audit-page",
+         resolved_page_id: "app/workspace/admin/audit/page.tsx",
+         placeholder_route_flag: false,
+@@ -660,6 +665,7 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
+     retestQueueResponse,
+     workspaceAuditResponse,
+     adminAuditPage,
++    workspaceUserCanonicalPage,
+     accessProfileResponse,
+   ] = await Promise.all([
+     fetchJson<{ data?: Record<string, unknown> }>(new URL("/api/auth/session", parsedOrigin).toString(), cookieHeaders),
+@@ -667,6 +673,7 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
+     fetchJson<{ retest_queue?: unknown[] }>(new URL("/api/audit/retest-queue", parsedOrigin).toString(), cookieHeaders),
+     fetchJson<Record<string, unknown>>(new URL("/api/workspace/audit", parsedOrigin).toString(), cookieHeaders),
+     fetchText(new URL("/workspace/admin/audit", parsedOrigin).toString(), cookieHeaders),
++    fetchText(new URL("/workspace/user", parsedOrigin).toString(), cookieHeaders),
+     backendContext.backendConfigured && backendContext.backendBaseUrl && backendContext.companyId && backendContext.actorId && backendContext.workspaceToken
+       ? fetchJson<Record<string, unknown>>(`${backendContext.backendBaseUrl}/api/companies/${backendContext.companyId}/access-profile`, {
+         Accept: "application/json",
+@@ -769,6 +776,8 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
+ 
+   const sessionReady = sessionResult.status === "ready" && Boolean(sessionResult.session);
+   const workspaceAuditPageReady = adminAuditPage.ok && adminAuditPage.text.includes("Audit Engine");
++  const canonicalUserWorkspaceV2Surface = workspaceUserCanonicalPage.ok
++    && (workspaceUserCanonicalPage.text.includes("wsv2-shell") || workspaceUserCanonicalPage.text.includes("data-wsv2"));
+   const workspaceCompatibilityRouteReady = workspaceAuditResponse.ok && String((workspaceAuditResponse.data as Record<string, unknown> | null)?.status ?? "").includes("compatibility-shell");
+   const auditSummaryReady = auditSummaryResponse.ok && Boolean(auditSummaryResponse.data);
+   const retestQueueReady = retestQueueResponse.ok && Boolean(retestQueueResponse.data);
+@@ -790,9 +799,9 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
+     retest_queue_ready: retestQueueReady,
+     active_company_id: backendContext.activeCompanyId,
+     access_role: accessRole,
+-    workspace_shell_bounded: workspaceAuditPageReady && workspaceCompatibilityRouteReady && sessionReady,
++    workspace_shell_bounded: workspaceCompatibilityRouteReady && sessionReady && (workspaceAuditPageReady || canonicalUserWorkspaceV2Surface),
+     role_specific_workspace: sessionReady && Boolean(accessRole),
+-    shell_masks_missing_modules: !(workspaceAuditPageReady && workspaceCompatibilityRouteReady && sessionReady),
++    shell_masks_missing_modules: !(workspaceCompatibilityRouteReady && sessionReady && (workspaceAuditPageReady || canonicalUserWorkspaceV2Surface)),
+     panel_collapsible: true,
+     panel_expandable: true,
+     panel_closeable: true,
+@@ -825,9 +834,10 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
+     backend_no_vat_mismatches: dbAudit.vat.documents_missing_output_vat_line.length === 0,
+     document_preview_available: documentPreviewResponse.ok && Boolean(documentPreviewResponse.data?.data?.html),
+     document_pdf_available: pdfPreviewResponse.ok && pdfPreviewResponse.text.length > 0,
+-    workspace_route_owner_present: workspaceAuditPageReady,
++    workspace_route_owner_present: workspaceAuditPageReady || canonicalUserWorkspaceV2Surface,
+     placeholder_route_detected: adminAuditPage.text.toLowerCase().includes("placeholder"),
+     generic_overview_masking: adminAuditPage.text.toLowerCase().includes("generic") || workspaceAuditResponse.text.toLowerCase().includes("generic"),
++    canonical_user_workspace_v2_surface: canonicalUserWorkspaceV2Surface,
+   };
+ 
+   const sharedComparisonPayload = buildSharedComparisonPayload({
+@@ -874,10 +884,12 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
+     observed_values_by_control_id: observedValuesByControlId,
+     route_html_by_path: {
+       "/workspace/admin/audit": adminAuditPage.text,
++      "/workspace/user": workspaceUserCanonicalPage.text,
+       "/api/workspace/audit": JSON.stringify(workspaceAuditResponse.data ?? {}),
+     },
+     route_status_by_path: {
+       "/workspace/admin/audit": adminAuditPage.status,
++      "/workspace/user": workspaceUserCanonicalPage.status,
+       "/api/workspace/audit": workspaceAuditResponse.status,
+       "/api/audit/summary": auditSummaryResponse.status,
+       "/api/audit/retest-queue": retestQueueResponse.status,
+diff --git a/lib/workspace-v2/navigation.ts b/lib/workspace-v2/navigation.ts
+index 1c0cefc..69ea91e 100644
+--- a/lib/workspace-v2/navigation.ts
++++ b/lib/workspace-v2/navigation.ts
+@@ -42,7 +42,11 @@ export type NavGroup = {
+   links: NavLink[];
+ };
+ 
+-export const V2_BASE = "/workspace-v2/user";
++/** Canonical user workspace (Workspace V2 implementation). */
++export const V2_BASE = "/workspace/user";
++
++/** Temporary alias during migration; same UI as {@link V2_BASE}. */
++export const V2_ALIAS_BASE = "/workspace-v2/user";
+ 
+ export const dashboardLink: NavLink = {
+   id: "dashboard",

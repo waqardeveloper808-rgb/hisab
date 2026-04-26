@@ -72,6 +72,7 @@ import {
 import {
   DEFAULT_HEADER_BLOCK,
   DEFAULT_INFO_CARD_LAYOUT,
+  DEFAULT_ITEM_HEADER_LABELS,
   DEFAULT_QR_BLOCK,
   DEFAULT_STAMP_SIGNATURE_BLOCK,
   DEFAULT_STUDIO_LAYOUT,
@@ -86,6 +87,7 @@ import {
   readTemplateAssetsFromStorage,
   writeTemplateAsset,
   clearTemplateUiStorage,
+  type InfoCardLayoutSettings,
   type InfoTextAlign,
   type QrBlockSettings,
   type StudioDocumentTypeSlug,
@@ -99,6 +101,28 @@ import {
 } from "./WorkspaceV2DocumentRenderer";
 
 const ZOOM_STEPS = [0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.25, 1.5];
+
+/** Stable id slug per column for heading editor (`wsv2-item-col-{slug}-label-en`). */
+const ITEM_COL_HEADING_SLUG: Partial<Record<ColumnKey, string>> = {
+  index: "number",
+  description: "description",
+  quantity: "qty",
+  unit: "unit",
+  price: "rate",
+  taxableAmount: "taxable",
+  vatRate: "vat-rate",
+  vatAmount: "vat",
+  lineTotal: "total",
+  deliveredQuantity: "delivered-qty",
+  pendingQuantity: "pending-qty",
+  remarks: "remarks",
+  discount: "discount",
+};
+
+function itemColHeadingInputId(col: ColumnKey, lang: "en" | "ar"): string {
+  const slug = ITEM_COL_HEADING_SLUG[col] ?? String(col).replace(/([A-Z])/g, "-$1").toLowerCase();
+  return `wsv2-item-col-${slug}-label-${lang}`;
+}
 
 // Map a TemplateRecord.documentType to the schema's SchemaDocType.
 const TEMPLATE_TO_SCHEMA: Record<string, SchemaDocType> = {
@@ -189,12 +213,47 @@ type Props = {
   templateId?: string;
 };
 
-type InfoLayoutPatch = Partial<typeof DEFAULT_INFO_CARD_LAYOUT>;
+type InfoLayoutPatch = Partial<InfoCardLayoutSettings>;
+
+function FieldVisibilitySwitch({
+  label,
+  checked,
+  onChange,
+  hint,
+  disabled,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+  hint?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="wsv2-field-toggle-row" data-disabled={disabled ? "true" : undefined}>
+      <span className="wsv2-field-toggle-label">
+        <span>{label}</span>
+        {hint ? <span className="wsv2-field-toggle-hint">{hint}</span> : null}
+      </span>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        disabled={disabled}
+        className={`wsv2-switch ${checked ? "wsv2-switch-on" : "wsv2-switch-off"}`}
+        aria-label={`${label}: ${checked ? "visible" : "hidden"}`}
+        onClick={onChange}
+      >
+        <span className="wsv2-switch-knob" aria-hidden />
+      </button>
+    </div>
+  );
+}
 
 function InfoCardLayoutControls(props: {
+  variant: "client" | "document";
   heading: string;
   note: string;
-  ids: {
+  colIds: {
     enW: string;
     valW: string;
     arW: string;
@@ -202,16 +261,36 @@ function InfoCardLayoutControls(props: {
     valAlign: string;
     arAlign: string;
   };
-  il: typeof DEFAULT_INFO_CARD_LAYOUT;
+  il: InfoCardLayoutSettings;
   setTemplateUi: Dispatch<SetStateAction<ReturnType<typeof defaultTemplateUi>>>;
 }) {
-  const { heading, note, ids, il, setTemplateUi } = props;
+  const { variant, heading, note, colIds, il, setTemplateUi } = props;
+  const sid =
+    variant === "client"
+      ? {
+          cardW: "wsv2-client-card-width",
+          cardMinH: "wsv2-client-card-min-height",
+          cardH: "wsv2-client-card-height",
+          pad: "wsv2-client-card-padding",
+          rowPy: "wsv2-client-row-padding-y",
+          rowGap: "wsv2-client-row-gap",
+        }
+      : {
+          cardW: "wsv2-docinfo-card-width",
+          cardMinH: "wsv2-docinfo-card-min-height",
+          cardH: "wsv2-docinfo-card-height",
+          pad: "wsv2-docinfo-card-padding",
+          rowPy: "wsv2-docinfo-row-padding-y",
+          rowGap: "wsv2-docinfo-row-gap",
+        };
+
   const patch = (p: InfoLayoutPatch) =>
     setTemplateUi((prev) =>
       mergeTemplateUi(prev, {
         infoCardLayout: { ...DEFAULT_INFO_CARD_LAYOUT, ...prev.infoCardLayout, ...p },
       }),
     );
+
   return (
     <>
       <h5>{heading}</h5>
@@ -226,9 +305,59 @@ function InfoCardLayoutControls(props: {
         {note}
       </p>
       <div className="wsv2-field">
-        <label htmlFor={`${ids.enW}-pad`}>Card padding (px)</label>
+        <label htmlFor={sid.cardW}>Card width (px, 0 = auto)</label>
         <input
-          id={`${ids.enW}-pad`}
+          id={sid.cardW}
+          type="number"
+          min={0}
+          max={900}
+          step={1}
+          value={variant === "client" ? il.clientCardWidthPx : il.documentCardWidthPx}
+          onChange={(e) => {
+            const n = parseInt(e.target.value, 10);
+            if (!Number.isFinite(n) || n < 0) return;
+            patch(variant === "client" ? { clientCardWidthPx: n } : { documentCardWidthPx: n });
+          }}
+        />
+      </div>
+      <div className="wsv2-field">
+        <label htmlFor={sid.cardMinH}>Card min height (px, 0 = auto)</label>
+        <input
+          id={sid.cardMinH}
+          type="number"
+          min={0}
+          max={600}
+          step={1}
+          value={variant === "client" ? il.clientCardMinHeightPx : il.documentCardMinHeightPx}
+          onChange={(e) => {
+            const n = parseInt(e.target.value, 10);
+            if (!Number.isFinite(n) || n < 0) return;
+            patch(
+              variant === "client" ? { clientCardMinHeightPx: n } : { documentCardMinHeightPx: n },
+            );
+          }}
+        />
+      </div>
+      <div className="wsv2-field">
+        <label htmlFor={sid.cardH}>Card fixed height (px, 0 = auto)</label>
+        <input
+          id={sid.cardH}
+          type="number"
+          min={0}
+          max={600}
+          step={1}
+          value={variant === "client" ? il.clientCardHeightPx : il.documentCardHeightPx}
+          onChange={(e) => {
+            const n = parseInt(e.target.value, 10);
+            if (!Number.isFinite(n) || n < 0) return;
+            patch(variant === "client" ? { clientCardHeightPx: n } : { documentCardHeightPx: n });
+          }}
+        />
+      </div>
+      <div className="wsv2-field">
+        <label htmlFor={sid.pad}>Card padding (px)</label>
+        <input
+          id={sid.pad}
           type="number"
           min={0}
           max={40}
@@ -242,9 +371,9 @@ function InfoCardLayoutControls(props: {
         />
       </div>
       <div className="wsv2-field">
-        <label htmlFor={`${ids.enW}-rowpy`}>Row padding Y (px)</label>
+        <label htmlFor={sid.rowPy}>Row padding Y (px)</label>
         <input
-          id={`${ids.enW}-rowpy`}
+          id={sid.rowPy}
           type="number"
           min={0}
           max={24}
@@ -258,9 +387,9 @@ function InfoCardLayoutControls(props: {
         />
       </div>
       <div className="wsv2-field">
-        <label htmlFor={`${ids.enW}-rowgap`}>Row gap (px)</label>
+        <label htmlFor={sid.rowGap}>Row gap (px)</label>
         <input
-          id={`${ids.enW}-rowgap`}
+          id={sid.rowGap}
           type="number"
           min={0}
           max={16}
@@ -274,9 +403,9 @@ function InfoCardLayoutControls(props: {
         />
       </div>
       <div className="wsv2-field">
-        <label htmlFor={ids.enW}>English column width (px)</label>
+        <label htmlFor={colIds.enW}>English column width (px)</label>
         <input
-          id={ids.enW}
+          id={colIds.enW}
           type="number"
           min={48}
           step={1}
@@ -289,9 +418,9 @@ function InfoCardLayoutControls(props: {
         />
       </div>
       <div className="wsv2-field">
-        <label htmlFor={ids.valW}>Value column width (px)</label>
+        <label htmlFor={colIds.valW}>Value column width (px)</label>
         <input
-          id={ids.valW}
+          id={colIds.valW}
           type="number"
           min={64}
           step={1}
@@ -304,9 +433,9 @@ function InfoCardLayoutControls(props: {
         />
       </div>
       <div className="wsv2-field">
-        <label htmlFor={ids.arW}>Arabic column width (px)</label>
+        <label htmlFor={colIds.arW}>Arabic column width (px)</label>
         <input
-          id={ids.arW}
+          id={colIds.arW}
           type="number"
           min={48}
           step={1}
@@ -319,9 +448,9 @@ function InfoCardLayoutControls(props: {
         />
       </div>
       <div className="wsv2-field">
-        <label htmlFor={ids.enAlign}>English alignment</label>
+        <label htmlFor={colIds.enAlign}>English alignment</label>
         <select
-          id={ids.enAlign}
+          id={colIds.enAlign}
           value={il.englishAlign}
           onChange={(e) => patch({ englishAlign: e.target.value as InfoTextAlign })}
         >
@@ -331,9 +460,9 @@ function InfoCardLayoutControls(props: {
         </select>
       </div>
       <div className="wsv2-field">
-        <label htmlFor={ids.valAlign}>Value alignment</label>
+        <label htmlFor={colIds.valAlign}>Value alignment</label>
         <select
-          id={ids.valAlign}
+          id={colIds.valAlign}
           value={il.valueAlign}
           onChange={(e) => patch({ valueAlign: e.target.value as InfoTextAlign })}
         >
@@ -343,9 +472,9 @@ function InfoCardLayoutControls(props: {
         </select>
       </div>
       <div className="wsv2-field">
-        <label htmlFor={ids.arAlign}>Arabic alignment</label>
+        <label htmlFor={colIds.arAlign}>Arabic alignment</label>
         <select
-          id={ids.arAlign}
+          id={colIds.arAlign}
           value={il.arabicAlign}
           onChange={(e) => patch({ arabicAlign: e.target.value as InfoTextAlign })}
         >
@@ -803,6 +932,21 @@ export function WorkspaceV2TemplateStudio({ templateId }: Props) {
     },
     [previewLayout.itemColumns, setItemColumnWidthPx],
   );
+
+  const setItemHeaderLabel = useCallback((key: ColumnKey, lang: "en" | "ar", value: string) => {
+    setTemplateUi((prev) => {
+      const prevPair = prev.itemHeaderLabels?.[key] ?? {};
+      const def = DEFAULT_ITEM_HEADER_LABELS[key];
+      return mergeTemplateUi(prev, {
+        itemHeaderLabels: {
+          [key]: {
+            en: lang === "en" ? value : (prevPair.en ?? def.en),
+            ar: lang === "ar" ? value : (prevPair.ar ?? def.ar),
+          },
+        },
+      });
+    });
+  }, []);
 
   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
@@ -1787,19 +1931,20 @@ export function WorkspaceV2TemplateStudio({ templateId }: Props) {
               <>
                 <h5>Customer fields</h5>
                 {optionalCustomerFields(schema).map((field) => (
-                  <CompactToggle
+                  <FieldVisibilitySwitch
                     key={field}
                     label={FIELD_LABELS[field].en}
-                    value={!hiddenFields[field]}
+                    checked={!hiddenFields[field]}
                     onChange={() => toggleField(field)}
                   />
                 ))}
               </>
             ) : null}
             <InfoCardLayoutControls
-              heading="Client / document information cards"
-              note="These dimensions and alignments apply to both client and document information cards (shared layout)."
-              ids={{
+              variant="client"
+              heading="Client company information card"
+              note="Card size applies to the client section only. Column layout is shared with the document information card."
+              colIds={{
                 enW: "wsv2-customer-en-col-width",
                 valW: "wsv2-customer-value-col-width",
                 arW: "wsv2-customer-ar-col-width",
@@ -1819,19 +1964,20 @@ export function WorkspaceV2TemplateStudio({ templateId }: Props) {
               <>
                 <h5>Document info fields</h5>
                 {documentMetaFields(schema).map((field) => (
-                  <CompactToggle
+                  <FieldVisibilitySwitch
                     key={field}
                     label={FIELD_LABELS[field].en}
-                    value={!hiddenFields[field]}
+                    checked={!hiddenFields[field]}
                     onChange={() => toggleField(field)}
                   />
                 ))}
               </>
             ) : null}
             <InfoCardLayoutControls
-              heading="Card layout (shared)"
-              note="Same settings as the Client section — edit in either place."
-              ids={{
+              variant="document"
+              heading="Document information card"
+              note="Card size applies to the document information section only. Column layout is shared with the client card."
+              colIds={{
                 enW: "wsv2-docinfo-en-col-width",
                 valW: "wsv2-docinfo-value-col-width",
                 arW: "wsv2-docinfo-ar-col-width",
@@ -1865,8 +2011,12 @@ export function WorkspaceV2TemplateStudio({ templateId }: Props) {
         <div className="wsv2-col-builder" role="group" aria-label="Item table columns">
           {columnOrder.map((col, idx) => {
             const required = schema.requiredItemColumns.includes(col);
-            const visible = !hiddenItemColumns[col];
+            const visible = required ? true : !hiddenItemColumns[col];
             const plCol = previewLayout.itemColumns.find((c) => c.key === col);
+            const defLbl = DEFAULT_ITEM_HEADER_LABELS[col];
+            const stored = templateUi.itemHeaderLabels?.[col];
+            const enHeading = stored?.en ?? defLbl.en;
+            const arHeading = stored?.ar ?? defLbl.ar;
             const widthValue = plCol
               ? Math.round(plCol.widthPx)
               : Math.round(
@@ -1876,12 +2026,36 @@ export function WorkspaceV2TemplateStudio({ templateId }: Props) {
                     40,
                 );
             return (
-              <div key={col} className="wsv2-col-row" data-required={required}>
-                <div className="wsv2-col-name">
-                  <span>
-                    {COLUMN_LABELS[col].en}
-                    {required ? <em className="wsv2-col-tag">required</em> : null}
-                  </span>
+              <div
+                key={col}
+                className="wsv2-item-heading-editor-row wsv2-col-row"
+                data-required={required}
+              >
+                <div className="wsv2-item-heading-editor-head">
+                  <FieldVisibilitySwitch
+                    label={`${COLUMN_LABELS[col].en}${required ? " (required)" : ""}`}
+                    checked={visible}
+                    disabled={required}
+                    onChange={() => toggleColumn(col)}
+                  />
+                  <div className="wsv2-col-actions">
+                    <button
+                      type="button"
+                      aria-label={`Move ${COLUMN_LABELS[col].en} up`}
+                      onClick={() => moveColumn(col, -1)}
+                      disabled={idx === 0}
+                    >
+                      <ArrowUp size={11} />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`Move ${COLUMN_LABELS[col].en} down`}
+                      onClick={() => moveColumn(col, 1)}
+                      disabled={idx === columnOrder.length - 1}
+                    >
+                      <ArrowDown size={11} />
+                    </button>
+                  </div>
                 </div>
                 {visible && plCol ? (
                   <div className="wsv2-col-width" aria-label="Column width in pixels">
@@ -1918,50 +2092,38 @@ export function WorkspaceV2TemplateStudio({ templateId }: Props) {
                     </span>
                   </div>
                 ) : !visible && !required ? (
-                  <div className="wsv2-col-width-muted" title="Unhide the column to edit width in context">
+                  <div className="wsv2-col-width-muted" title="Turn the column on to edit width and headings">
                     —
                   </div>
                 ) : null}
-                <div className="wsv2-col-actions">
-                  <button
-                    type="button"
-                    aria-label={`Move ${COLUMN_LABELS[col].en} up`}
-                    onClick={() => moveColumn(col, -1)}
-                    disabled={idx === 0}
-                  >
-                    <ArrowUp size={11} />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Move ${COLUMN_LABELS[col].en} down`}
-                    onClick={() => moveColumn(col, 1)}
-                    disabled={idx === columnOrder.length - 1}
-                  >
-                    <ArrowDown size={11} />
-                  </button>
-                  <button
-                    type="button"
-                    id={col === "vatRate" ? "wsv2-item-col-vat-rate-visible" : undefined}
-                    className="wsv2-col-eye"
-                    data-on={visible ? "true" : "false"}
-                    aria-label={
-                      visible
-                        ? `Hide ${COLUMN_LABELS[col].en} column`
-                        : `Show ${COLUMN_LABELS[col].en} column`
-                    }
-                    onClick={() => toggleColumn(col)}
-                    disabled={required}
-                    title={
-                      required
-                        ? "Required column for this document type"
-                        : visible
-                        ? "Hide column"
-                        : "Show column"
-                    }
-                  >
-                    {visible ? <Eye size={12} /> : <EyeOff size={12} />}
-                  </button>
-                </div>
+                {visible ? (
+                  <>
+                    <div className="wsv2-field wsv2-item-heading-input">
+                      <label htmlFor={itemColHeadingInputId(col, "en")}>Heading (English)</label>
+                      <input
+                        id={itemColHeadingInputId(col, "en")}
+                        type="text"
+                        className="wsv2-item-heading-input"
+                        value={enHeading}
+                        onChange={(e) => setItemHeaderLabel(col, "en", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                    <div className="wsv2-field wsv2-item-heading-input">
+                      <label htmlFor={itemColHeadingInputId(col, "ar")}>Heading (Arabic)</label>
+                      <input
+                        id={itemColHeadingInputId(col, "ar")}
+                        type="text"
+                        className="wsv2-item-heading-input"
+                        dir="rtl"
+                        lang="ar"
+                        value={arHeading}
+                        onChange={(e) => setItemHeaderLabel(col, "ar", e.target.value)}
+                        autoComplete="off"
+                      />
+                    </div>
+                  </>
+                ) : null}
               </div>
             );
           })}

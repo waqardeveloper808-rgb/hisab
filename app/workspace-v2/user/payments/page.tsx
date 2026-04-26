@@ -5,5 +5,5 @@ export const metadata = {
 };
 
 export default function Page() {
-  redirect("/workspace-v2/user/customer-payments");
+  redirect("/workspace/user/customer-payments");
 }

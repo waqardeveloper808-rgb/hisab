@@ -1,4 +1,1 @@
-import { UserWorkspaceHome } from "@/components/workspace/UserWorkspaceHome";
-export default function UserWorkspacePage() {
-  return <UserWorkspaceHome />;
-}
+export { default, metadata } from "../../workspace-v2/user/page";

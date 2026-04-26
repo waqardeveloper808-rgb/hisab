@@ -1,0 +1,3 @@
+NOTE: The first Phase 0 PowerShell one-liner failed ($d variable stripped). Use `git-diff-after.patch` plus this folder’s documentation for the authoritative change set.
+
+Run `git status` before any migration in a clean shell if a pristine “before” snapshot is required.

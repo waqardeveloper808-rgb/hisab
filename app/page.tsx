@@ -123,14 +123,14 @@ export default async function Home() {
                 </a>
               </div>
               <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                <Button href="/workspace/user" size="md" variant="secondary">
+                  Open workspace
+                </Button>
                 {process.env.NODE_ENV !== "production" ? (
-                  <Button href="/workspace/user" size="md" variant="secondary">
-                    Enter Workspace
+                  <Button href="/workspace-v2/user" size="md" variant="tertiary">
+                    Workspace alias (/workspace-v2)
                   </Button>
                 ) : null}
-                <Button href="/workspace-v2/user" size="md" variant="secondary">
-                  Workspace V2
-                </Button>
               </div>
               <div className="mt-6 flex flex-wrap gap-2.5">
                 <span className="rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink">{productConfig.freeTrialDays}-day trial</span>

@@ -68,7 +68,7 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
     description: "Run sales, purchases, accounting, products, VAT, and operational setup from one business-first workspace.",
     quickActions: [
       { label: "Create Invoice", href: "/workspace/invoices/new", variant: "primary" },
-      { label: "Record Payment", href: "/workspace/user/payments", variant: "secondary" },
+      { label: "Record Payment", href: "/workspace/user/customer-payments", variant: "secondary" },
       { label: "Add Customer", href: "/workspace/user/customers", variant: "secondary" },
       { label: "Add Bill", href: "/workspace/bills/new", variant: "secondary" },
       { label: "View VAT Summary", href: "/workspace/user/vat", variant: "tertiary" },
@@ -82,7 +82,7 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Dashboard",
         items: [
-          { label: "Overview", href: "/workspace/user", matchPrefixes: ["/workspace/user", "/workspace/dashboard"] },
+          { label: "Overview", href: "/workspace/user", matchPrefixes: ["/workspace/user", "/workspace/user/dashboard", "/workspace/dashboard"] },
         ],
       },
       {
@@ -105,8 +105,8 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Inventory",
         items: [
-          { label: "Products & Services", href: "/workspace/user/products", matchPrefixes: ["/workspace/user/products"] },
-          { label: "Stock Register", href: "/workspace/user/stock", matchPrefixes: ["/workspace/user/stock"] },
+          { label: "Products & Services", href: "/workspace/user/products-services", matchPrefixes: ["/workspace/user/products-services", "/workspace/user/products"] },
+          { label: "Stock movements", href: "/workspace/user/stock-movements", matchPrefixes: ["/workspace/user/stock-movements", "/workspace/user/stock"] },
           { label: "Raw Materials", href: "/workspace/user/raw-materials", matchPrefixes: ["/workspace/user/raw-materials"] },
           { label: "Finished Materials", href: "/workspace/user/finished-materials", matchPrefixes: ["/workspace/user/finished-materials"] },
           { label: "Consumables", href: "/workspace/user/consumables", matchPrefixes: ["/workspace/user/consumables"] },
@@ -152,7 +152,9 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Templates",
         items: [
-          { label: "Invoice Templates", href: "/workspace/user/invoice-templates", matchPrefixes: ["/workspace/user/invoice-templates", "/workspace/user/document-templates", "/workspace/settings/templates"] },
+          { label: "Template studio (V2)", href: "/workspace/user/templates/studio", matchPrefixes: ["/workspace/user/templates/studio", "/workspace/settings/templates"] },
+          { label: "Document templates (V2)", href: "/workspace/user/templates", matchPrefixes: ["/workspace/user/templates"] },
+          { label: "Invoice Templates", href: "/workspace/user/invoice-templates", matchPrefixes: ["/workspace/user/invoice-templates", "/workspace/user/document-templates"] },
           { label: "Quotation Templates", href: "/workspace/user/quotation-templates", matchPrefixes: ["/workspace/user/quotation-templates"] },
           { label: "Proforma Templates", href: "/workspace/user/proforma-templates", matchPrefixes: ["/workspace/user/proforma-templates"] },
           { label: "Credit Note Templates", href: "/workspace/user/credit-note-templates", matchPrefixes: ["/workspace/user/credit-note-templates"] },
@@ -163,8 +165,8 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Settings",
         items: [
-          { label: "User Profile", href: "/workspace/settings/profile", matchPrefixes: ["/workspace/settings/profile"] },
-          { label: "Company Profile", href: "/workspace/settings/company", matchPrefixes: ["/workspace/settings", "/workspace/settings/company"] },
+          { label: "User Profile", href: "/workspace/user/settings/profile", matchPrefixes: ["/workspace/user/settings/profile", "/workspace/settings/profile"] },
+          { label: "Company Profile", href: "/workspace/user/settings/company", matchPrefixes: ["/workspace/user/settings/company", "/workspace/settings", "/workspace/settings/company"] },
           { label: "Users", href: "/workspace/settings/users" },
           { label: "Accounting Settings", href: "/workspace/settings/accounting", matchPrefixes: ["/workspace/settings/accounting"] },
         ],

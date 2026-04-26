@@ -1,0 +1,86 @@
+diff --git a/app/workspace-v2/user/payments/page.tsx b/app/workspace-v2/user/payments/page.tsx
+index 2815ee2..8989da2 100644
+--- a/app/workspace-v2/user/payments/page.tsx
++++ b/app/workspace-v2/user/payments/page.tsx
+@@ -5,5 +5,5 @@ export const metadata = {
+ };
+ 
+ export default function Page() {
+-  redirect("/workspace-v2/user/customer-payments");
++  redirect("/workspace/user/customer-payments");
+ }
+diff --git a/app/workspace-v2/user/products/page.tsx b/app/workspace-v2/user/products/page.tsx
+index b2baf1b..e73c09d 100644
+--- a/app/workspace-v2/user/products/page.tsx
++++ b/app/workspace-v2/user/products/page.tsx
+@@ -5,5 +5,5 @@ export const metadata = {
+ };
+ 
+ export default function Page() {
+-  redirect("/workspace-v2/user/products-services");
++  redirect("/workspace/user/products-services");
+ }
+diff --git a/app/workspace-v2/user/stock/page.tsx b/app/workspace-v2/user/stock/page.tsx
+index d14dd9a..b1b58bb 100644
+--- a/app/workspace-v2/user/stock/page.tsx
++++ b/app/workspace-v2/user/stock/page.tsx
+@@ -5,5 +5,5 @@ export const metadata = {
+ };
+ 
+ export default function Page() {
+-  redirect("/workspace-v2/user/stock-movements");
++  redirect("/workspace/user/stock-movements");
+ }
+diff --git a/app/workspace/layout.tsx b/app/workspace/layout.tsx
+index bf06951..605f74a 100644
+--- a/app/workspace/layout.tsx
++++ b/app/workspace/layout.tsx
+@@ -1,4 +1,5 @@
+-import { WorkspaceShell } from "@/components/workspace/WorkspaceShell";
++import "../workspace-v2/v2.css";
++import { WorkspaceDualShell } from "@/components/workspace/WorkspaceDualShell";
+ import { WorkspaceAccessProvider } from "@/components/workspace/WorkspaceAccessProvider";
+ import { WorkspacePathProvider } from "@/components/workspace/WorkspacePathProvider";
+ import { WorkspaceDataProvider } from "@/components/workflow/WorkspaceDataProvider";
+@@ -13,14 +14,17 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
+       <WorkspaceAccessProvider value={access} session={session} accessStatus={accessStatus}>
+         <WorkspaceDataProvider>
+           <LayoutEditorProvider>
+-            <WorkspaceShell session={{
+-              ...session,
+-              activeCompanyId: session.workspaceContext?.activeCompany?.id ?? session.companyId ?? null,
+-              activeCompanyLegalName: session.workspaceContext?.activeCompany?.legalName ?? null,
+-              accessStatus,
+-            }} access={access}>
++            <WorkspaceDualShell
++              session={{
++                ...session,
++                activeCompanyId: session.workspaceContext?.activeCompany?.id ?? session.companyId ?? null,
++                activeCompanyLegalName: session.workspaceContext?.activeCompany?.legalName ?? null,
++                accessStatus,
++              }}
++              access={access}
++            >
+               {children}
+-            </WorkspaceShell>
++            </WorkspaceDualShell>
+           </LayoutEditorProvider>
+         </WorkspaceDataProvider>
+       </WorkspaceAccessProvider>
+diff --git a/lib/workspace-v2/navigation.ts b/lib/workspace-v2/navigation.ts
+index 1c0cefc..69ea91e 100644
+--- a/lib/workspace-v2/navigation.ts
++++ b/lib/workspace-v2/navigation.ts
+@@ -42,7 +42,11 @@ export type NavGroup = {
+   links: NavLink[];
+ };
+ 
+-export const V2_BASE = "/workspace-v2/user";
++/** Canonical user workspace (Workspace V2 implementation). */
++export const V2_BASE = "/workspace/user";
++
++/** Temporary alias during migration; same UI as {@link V2_BASE}. */
++export const V2_ALIAS_BASE = "/workspace-v2/user";
+ 
+ export const dashboardLink: NavLink = {
+   id: "dashboard",

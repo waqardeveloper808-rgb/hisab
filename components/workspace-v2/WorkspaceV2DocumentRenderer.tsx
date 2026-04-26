@@ -370,9 +370,10 @@ function InfoTable({
   const avail = Math.max(220, innerWidthPx);
   const scale = rawSum > avail ? avail / rawSum : 1;
   const enW = Math.max(56, Math.round(infoLayout.englishColumnWidthPx * scale));
-  const valW = Math.max(72, Math.round(infoLayout.valueColumnWidthPx * scale));
+  const valMin = Math.max(72, Math.round(infoLayout.valueColumnWidthPx * scale));
   const arW = Math.max(56, Math.round(infoLayout.arabicColumnWidthPx * scale));
-  const gridTemplateColumns = `${enW}px ${valW}px ${arW}px`;
+  /** Middle track grows so the grid always spans the card — no empty “fourth” slack column on the right. */
+  const gridTemplateColumns = `${enW}px minmax(${valMin}px, 1fr) ${arW}px`;
 
   return (
     <div
@@ -383,6 +384,8 @@ function InfoTable({
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "stretch",
       }}
     >
       {rows.map((row) => (
@@ -393,40 +396,49 @@ function InfoTable({
             display: "grid",
             gridTemplateColumns,
             columnGap: colGap,
-            alignItems: "center",
+            alignItems: "start",
             paddingBlock: infoLayout.rowPaddingYPx,
           }}
         >
           <div
             className="wsv2-info-cell-en wsv2-wf-info-label-en"
-            dir={infoLayout.englishDirection}
+            dir="ltr"
             style={{
               textAlign: infoLayout.englishAlign,
               color: textColors.english,
               fontFamily: bodyFonts.english,
+              lineHeight: 1.3,
+              justifySelf: "stretch",
+              width: "100%",
             }}
           >
             {language === "arabic" ? "\u00A0" : row.labelEn}
           </div>
           <div
             className="wsv2-info-cell-value wsv2-wf-info-value"
-            dir={infoLayout.valueDirection}
+            dir="ltr"
             style={{
               textAlign: infoLayout.valueAlign,
               color: textColors.english,
               fontFamily: bodyFonts.english,
+              lineHeight: 1.3,
+              justifySelf: "stretch",
+              width: "100%",
             }}
           >
             {row.value || "—"}
           </div>
           <div
             className="wsv2-info-cell-ar wsv2-wf-info-label-ar wsv2-wf-type-ar"
-            dir={infoLayout.arabicDirection}
+            dir="rtl"
             lang="ar"
             style={{
               textAlign: infoLayout.arabicAlign,
               color: textColors.arabic,
               fontFamily: bodyFonts.arabic,
+              lineHeight: 1.3,
+              justifySelf: "stretch",
+              width: "100%",
             }}
           >
             {language === "english" ? "\u00A0" : row.labelAr}
@@ -1024,11 +1036,35 @@ type SectionShellProps = {
   children: ReactNode;
   /** Override pixel x/width when laid out inside a split row. */
   styleOverride?: CSSProperties;
+  /** Extra classes (e.g. info card client/document). */
+  shellClass?: string;
 };
 
-function SectionShell({ section, active, onSelect, setRef, children, styleOverride }: SectionShellProps) {
+function infoCardShellClassAndStyle(
+  sectionId: "customer" | "docInfo",
+  il: LayoutPlan["infoLayout"],
+): { shellClass: string; style: CSSProperties } {
+  const isClient = sectionId === "customer";
+  const wPx = isClient ? il.clientCardWidthPx : il.documentCardWidthPx;
+  const fixH = isClient ? il.clientCardHeightPx : il.documentCardHeightPx;
+  const shellClass = [
+    isClient ? "wsv2-info-card-client" : "wsv2-info-card-document",
+    fixH > 0 ? "wsv2-info-card-fixed-height" : "wsv2-info-card-auto-height",
+  ].join(" ");
+  const style: CSSProperties = {};
+  if (wPx > 0) {
+    style.width = wPx;
+    style.maxWidth = wPx;
+  }
+  if (fixH > 0) {
+    style.height = fixH;
+  }
+  return { shellClass, style };
+}
+
+function SectionShell({ section, active, onSelect, setRef, children, styleOverride, shellClass }: SectionShellProps) {
   const computed: CSSProperties = {
-    minHeight: section.minHeightPx,
+    ...(section.minHeightPx > 0 ? { minHeight: section.minHeightPx } : {}),
     maxWidth: "100%",
     minWidth: 0,
     boxSizing: "border-box",
@@ -1039,7 +1075,7 @@ function SectionShell({ section, active, onSelect, setRef, children, styleOverri
       ref={(node) => setRef?.(section.id, node)}
       data-section={section.id}
       data-section-active={active ? "true" : "false"}
-      className="wsv2-wf-section"
+      className={["wsv2-wf-section", shellClass].filter(Boolean).join(" ")}
       style={computed}
       onClick={(event) => {
         if (!onSelect) return;
@@ -1205,6 +1241,27 @@ export const WorkspaceV2DocumentRenderer = forwardRef<HTMLDivElement, RendererOp
       const isFooter = section.id === "footer";
       const isTotals = section.id === "totals";
       const isStampSig = section.id === "stampSignature";
+      const isCustomer = section.id === "customer";
+      const isDocInfo = section.id === "docInfo";
+      const infoExtras =
+        isCustomer || isDocInfo
+          ? infoCardShellClassAndStyle(isCustomer ? "customer" : "docInfo", layout.infoLayout)
+          : null;
+      const baseOverride = isFooter
+        ? { padding: 0, border: "none" }
+        : isTotals
+          ? totalsShellStyle()
+          : isStampSig
+            ? {
+                display: "flex",
+                flexDirection: "column",
+                minHeight: section.minHeightPx,
+              }
+            : undefined;
+      const mergedOverride =
+        infoExtras && Object.keys(infoExtras.style).length > 0
+          ? { ...baseOverride, ...infoExtras.style }
+          : baseOverride;
       sectionRows.push({
         rowKey: section.id,
         sectionId: section.id,
@@ -1215,19 +1272,8 @@ export const WorkspaceV2DocumentRenderer = forwardRef<HTMLDivElement, RendererOp
             active={activeSection === section.id}
             onSelect={onSectionSelect}
             setRef={setSectionRef}
-            styleOverride={
-              isFooter
-                ? { padding: 0, border: "none" }
-                : isTotals
-                  ? totalsShellStyle()
-                  : isStampSig
-                    ? {
-                        display: "flex",
-                        flexDirection: "column",
-                        minHeight: section.minHeightPx,
-                      }
-                    : undefined
-            }
+            shellClass={infoExtras?.shellClass}
+            styleOverride={mergedOverride}
           >
             {body}
           </SectionShell>

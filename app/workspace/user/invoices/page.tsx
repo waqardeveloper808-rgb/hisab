@@ -1,9 +1,1 @@
-import { InvoiceRegister } from "@/components/workspace/InvoiceRegister";
-
-export default function UserInvoicesPage() {
-  return (
-    <div data-inspector-route-owner="dedicated" data-inspector-register="invoices" data-inspector-real-register="invoices">
-      <InvoiceRegister />
-    </div>
-  );
-}
+export { default, metadata } from "../../../workspace-v2/user/invoices/page";

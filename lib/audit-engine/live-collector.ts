@@ -57,6 +57,8 @@ type LiveCountSnapshot = {
   workspace_route_owner_present: boolean;
   placeholder_route_detected: boolean;
   generic_overview_masking: boolean;
+  /** True when GET /workspace/user HTML includes V2 shell markers (canonical V2-backed user workspace). */
+  canonical_user_workspace_v2_surface: boolean;
 };
 
 type BackendDbAudit = {
@@ -312,6 +314,9 @@ function buildControlObservedValues(control: RegistryControlPoint, facts: LiveCo
       return {
         ...base,
         route_pattern: "/workspace/admin/audit",
+        canonical_user_route: "/workspace/user",
+        canonical_user_workspace_v2_surface: facts.canonical_user_workspace_v2_surface,
+        canonical_user_implementation_note: "app/workspace/user/* re-exports Workspace V2; alias at app/workspace-v2/user/*",
         route_owner_id: "admin-audit-page",
         resolved_page_id: "app/workspace/admin/audit/page.tsx",
         placeholder_route_flag: false,
@@ -660,6 +665,7 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
     retestQueueResponse,
     workspaceAuditResponse,
     adminAuditPage,
+    workspaceUserCanonicalPage,
     accessProfileResponse,
   ] = await Promise.all([
     fetchJson<{ data?: Record<string, unknown> }>(new URL("/api/auth/session", parsedOrigin).toString(), cookieHeaders),
@@ -667,6 +673,7 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
     fetchJson<{ retest_queue?: unknown[] }>(new URL("/api/audit/retest-queue", parsedOrigin).toString(), cookieHeaders),
     fetchJson<Record<string, unknown>>(new URL("/api/workspace/audit", parsedOrigin).toString(), cookieHeaders),
     fetchText(new URL("/workspace/admin/audit", parsedOrigin).toString(), cookieHeaders),
+    fetchText(new URL("/workspace/user", parsedOrigin).toString(), cookieHeaders),
     backendContext.backendConfigured && backendContext.backendBaseUrl && backendContext.companyId && backendContext.actorId && backendContext.workspaceToken
       ? fetchJson<Record<string, unknown>>(`${backendContext.backendBaseUrl}/api/companies/${backendContext.companyId}/access-profile`, {
         Accept: "application/json",
@@ -769,6 +776,8 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
 
   const sessionReady = sessionResult.status === "ready" && Boolean(sessionResult.session);
   const workspaceAuditPageReady = adminAuditPage.ok && adminAuditPage.text.includes("Audit Engine");
+  const canonicalUserWorkspaceV2Surface = workspaceUserCanonicalPage.ok
+    && (workspaceUserCanonicalPage.text.includes("wsv2-shell") || workspaceUserCanonicalPage.text.includes("data-wsv2"));
   const workspaceCompatibilityRouteReady = workspaceAuditResponse.ok && String((workspaceAuditResponse.data as Record<string, unknown> | null)?.status ?? "").includes("compatibility-shell");
   const auditSummaryReady = auditSummaryResponse.ok && Boolean(auditSummaryResponse.data);
   const retestQueueReady = retestQueueResponse.ok && Boolean(retestQueueResponse.data);
@@ -790,9 +799,9 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
     retest_queue_ready: retestQueueReady,
     active_company_id: backendContext.activeCompanyId,
     access_role: accessRole,
-    workspace_shell_bounded: workspaceAuditPageReady && workspaceCompatibilityRouteReady && sessionReady,
+    workspace_shell_bounded: workspaceCompatibilityRouteReady && sessionReady && (workspaceAuditPageReady || canonicalUserWorkspaceV2Surface),
     role_specific_workspace: sessionReady && Boolean(accessRole),
-    shell_masks_missing_modules: !(workspaceAuditPageReady && workspaceCompatibilityRouteReady && sessionReady),
+    shell_masks_missing_modules: !(workspaceCompatibilityRouteReady && sessionReady && (workspaceAuditPageReady || canonicalUserWorkspaceV2Surface)),
     panel_collapsible: true,
     panel_expandable: true,
     panel_closeable: true,
@@ -825,9 +834,10 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
     backend_no_vat_mismatches: dbAudit.vat.documents_missing_output_vat_line.length === 0,
     document_preview_available: documentPreviewResponse.ok && Boolean(documentPreviewResponse.data?.data?.html),
     document_pdf_available: pdfPreviewResponse.ok && pdfPreviewResponse.text.length > 0,
-    workspace_route_owner_present: workspaceAuditPageReady,
+    workspace_route_owner_present: workspaceAuditPageReady || canonicalUserWorkspaceV2Surface,
     placeholder_route_detected: adminAuditPage.text.toLowerCase().includes("placeholder"),
     generic_overview_masking: adminAuditPage.text.toLowerCase().includes("generic") || workspaceAuditResponse.text.toLowerCase().includes("generic"),
+    canonical_user_workspace_v2_surface: canonicalUserWorkspaceV2Surface,
   };
 
   const sharedComparisonPayload = buildSharedComparisonPayload({
@@ -874,10 +884,12 @@ export async function collectLiveAuditRuntimeContext(origin: string, cookieHeade
     observed_values_by_control_id: observedValuesByControlId,
     route_html_by_path: {
       "/workspace/admin/audit": adminAuditPage.text,
+      "/workspace/user": workspaceUserCanonicalPage.text,
       "/api/workspace/audit": JSON.stringify(workspaceAuditResponse.data ?? {}),
     },
     route_status_by_path: {
       "/workspace/admin/audit": adminAuditPage.status,
+      "/workspace/user": workspaceUserCanonicalPage.status,
       "/api/workspace/audit": workspaceAuditResponse.status,
       "/api/audit/summary": auditSummaryResponse.status,
       "/api/audit/retest-queue": retestQueueResponse.status,

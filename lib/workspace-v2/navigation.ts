@@ -42,7 +42,11 @@ export type NavGroup = {
   links: NavLink[];
 };
 
-export const V2_BASE = "/workspace-v2/user";
+/** Canonical user workspace (Workspace V2 implementation). */
+export const V2_BASE = "/workspace/user";
+
+/** Temporary alias during migration; same UI as {@link V2_BASE}. */
+export const V2_ALIAS_BASE = "/workspace-v2/user";
 
 export const dashboardLink: NavLink = {
   id: "dashboard",

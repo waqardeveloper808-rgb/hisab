@@ -1,0 +1,42 @@
+ M .dev-err.txt
+ M .dev-out.txt
+ M app/page.tsx
+ M app/workspace-v2/user/payments/page.tsx
+ M app/workspace-v2/user/products/page.tsx
+ M app/workspace-v2/user/stock/page.tsx
+ M app/workspace/layout.tsx
+ M app/workspace/settings/templates/page.tsx
+ M app/workspace/user/bills/page.tsx
+ M app/workspace/user/credit-notes/page.tsx
+ M app/workspace/user/debit-notes/page.tsx
+ M app/workspace/user/import/page.tsx
+ M app/workspace/user/invoices/page.tsx
+ M app/workspace/user/page.tsx
+ M app/workspace/user/payments/page.tsx
+ M app/workspace/user/products/page.tsx
+ M app/workspace/user/proforma-invoices/page.tsx
+ M app/workspace/user/purchase-orders/page.tsx
+ M app/workspace/user/quotations/page.tsx
+ M app/workspace/user/reports/page.tsx
+ M app/workspace/user/stock/page.tsx
+ M backend/app/Support/Standards/evidence-engine.ts
+ M components/Navbar.tsx
+ M data/role-workspace.ts
+ M lib/audit-engine/live-collector.ts
+ M lib/workspace-v2/navigation.ts
+?? app/workspace/user/cash-expenses/
+?? app/workspace/user/customer-payments/
+?? app/workspace/user/dashboard/
+?? app/workspace/user/expense-categories/
+?? app/workspace/user/help/
+?? app/workspace/user/products-services/
+?? app/workspace/user/purchase-returns/
+?? app/workspace/user/recurring-bills/
+?? app/workspace/user/settings/
+?? app/workspace/user/stock-movements/
+?? app/workspace/user/supplier-credits/
+?? app/workspace/user/supplier-payments/
+?? app/workspace/user/templates/
+?? app/workspace/user/vendor-records/
+?? components/workspace/WorkspaceDualShell.tsx
+?? storage/app/agent-output/workspace-v2-canonical-takeover-20260426-1600/

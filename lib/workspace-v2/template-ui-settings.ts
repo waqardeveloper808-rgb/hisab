@@ -1,7 +1,12 @@
 // Workspace V2 — Template UI settings (Template Studio + preview + PDF).
 // Preview persistence: localStorage only (no backend claim).
 
-import type { ColumnKey, SchemaDocType, SectionKey } from "./document-template-schemas";
+import {
+  COLUMN_LABELS,
+  type ColumnKey,
+  type SchemaDocType,
+  type SectionKey,
+} from "./document-template-schemas";
 
 /** Millimetres → CSS pixels at 96dpi. */
 export function mmToPx(mm: number): number {
@@ -113,7 +118,7 @@ export const DEFAULT_TOTALS_BLOCK: TotalsBlockSettings = {
   rowGapPx: 6,
   totals_desc_col_width_px: 260,
   totals_currency_col_width_px: 10,
-  totals_amount_col_width_px: 100,
+  totals_amount_col_width_px: 117,
   totals_desc_align: "left",
   totals_currency_align: "center",
   totals_amount_align: "right",
@@ -123,6 +128,15 @@ export const DEFAULT_TOTALS_BLOCK: TotalsBlockSettings = {
 export type InfoTextAlign = "left" | "center" | "right";
 
 export type InfoCardLayoutSettings = {
+  /** 0 = full width (schema content width). */
+  clientCardWidthPx: number;
+  /** 0 = no extra min-height; shell shrinks to content. */
+  clientCardMinHeightPx: number;
+  /** 0 = auto height; >0 = fixed shell height (preview/PDF frame). */
+  clientCardHeightPx: number;
+  documentCardWidthPx: number;
+  documentCardMinHeightPx: number;
+  documentCardHeightPx: number;
   rowPaddingYPx: number;
   rowGapPx: number;
   cardPaddingPx: number;
@@ -139,12 +153,18 @@ export type InfoCardLayoutSettings = {
 
 /** Defaults aligned from Workspace V2 Studio verified state on 2026-04-26. */
 export const DEFAULT_INFO_CARD_LAYOUT: InfoCardLayoutSettings = {
+  clientCardWidthPx: 0,
+  clientCardMinHeightPx: 0,
+  clientCardHeightPx: 0,
+  documentCardWidthPx: 0,
+  documentCardMinHeightPx: 0,
+  documentCardHeightPx: 0,
   rowPaddingYPx: 8,
   rowGapPx: 2,
   cardPaddingPx: 18,
-  englishColumnWidthPx: 160,
-  valueColumnWidthPx: 330,
-  arabicColumnWidthPx: 160,
+  englishColumnWidthPx: 150,
+  valueColumnWidthPx: 250,
+  arabicColumnWidthPx: 150,
   englishAlign: "left",
   valueAlign: "center",
   arabicAlign: "right",
@@ -152,6 +172,29 @@ export const DEFAULT_INFO_CARD_LAYOUT: InfoCardLayoutSettings = {
   valueDirection: "ltr",
   arabicDirection: "rtl",
 };
+
+/** Default EN/AR item table headings (Studio reset + migration). */
+export const DEFAULT_ITEM_HEADER_LABELS: Record<ColumnKey, { en: string; ar: string }> = {
+  ...COLUMN_LABELS,
+};
+
+function mergeItemHeaderLabels(
+  base: Partial<Record<ColumnKey, { en: string; ar: string }>>,
+  patch: Partial<Record<ColumnKey, { en: string; ar: string }>> | undefined,
+): Partial<Record<ColumnKey, { en: string; ar: string }>> {
+  if (!patch) return { ...base };
+  const out: Partial<Record<ColumnKey, { en: string; ar: string }>> = { ...base };
+  for (const k of Object.keys(patch) as ColumnKey[]) {
+    const p = patch[k];
+    if (!p) continue;
+    const prev = out[k];
+    out[k] = {
+      en: p.en ?? prev?.en ?? DEFAULT_ITEM_HEADER_LABELS[k].en,
+      ar: p.ar ?? prev?.ar ?? DEFAULT_ITEM_HEADER_LABELS[k].ar,
+    };
+  }
+  return out;
+}
 
 /** Header row: three separate cards (English | Logo | Arabic). */
 export type HeaderTextAlign = "left" | "center" | "right";
@@ -508,6 +551,18 @@ export function migrateTemplateUiPayload(input: unknown): Partial<TemplateUiSett
   delete loose.english_font_color;
   delete loose.arabic_font_color;
 
+  const icRaw = out.infoCardLayout as Record<string, unknown> | undefined;
+  if (icRaw && typeof icRaw === "object") {
+    const merged = { ...DEFAULT_INFO_CARD_LAYOUT, ...icRaw } as InfoCardLayoutSettings;
+    const legacyMin = icRaw.cardMinHeightPx;
+    if (typeof legacyMin === "number" && legacyMin > 0) {
+      if (merged.clientCardMinHeightPx === 0) merged.clientCardMinHeightPx = legacyMin;
+      if (merged.documentCardMinHeightPx === 0) merged.documentCardMinHeightPx = legacyMin;
+    }
+    delete (merged as Record<string, unknown>).cardMinHeightPx;
+    out.infoCardLayout = merged;
+  }
+
   return out;
 }
 
@@ -589,7 +644,7 @@ export function mergeTemplateUi(
       ...base.itemColumnWidthsByTemplateId,
       ...patch.itemColumnWidthsByTemplateId,
     },
-    itemHeaderLabels: { ...base.itemHeaderLabels, ...patch.itemHeaderLabels },
+    itemHeaderLabels: mergeItemHeaderLabels(base.itemHeaderLabels, patch.itemHeaderLabels),
     hiddenItemColumns: { ...base.hiddenItemColumns, ...patch.hiddenItemColumns },
     infoCardLayout: {
       ...DEFAULT_INFO_CARD_LAYOUT,

@@ -1,5 +1,6 @@
-import { DocumentTemplatesRegister } from "@/components/workspace/DocumentTemplatesRegister";
+import { redirect } from "next/navigation";
 
+/** Canonical document template studio lives under the V2-backed user workspace. */
 export default function TemplatesPage() {
-  return <DocumentTemplatesRegister />;
+  redirect("/workspace/user/templates/studio");
 }

@@ -1,35 +1,22 @@
-# Validation — stamp/panels/title
+# Validation — Workspace V2 Totals Amount column default (117)
 
 - URL: http://localhost:3000/workspace-v2/user/templates/studio?template=tmpl-standard
-- **localStorage key:** \`hisabix.wsv2.templateUi.v1\` (`studioLayout.leftPanelWidthPx`, `studioLayout.rightPanelWidthPx`)
-- **Stamp defaults:** 150×90 stamp + 150×90 signature (inspector inputs).
-- **Title colors:** English/Arabic document title use typography colors (see canvas screenshots).
-- **Layout telemetry (JSON):**
+- localStorage key: `hisabix.wsv2.templateUi.v1` — removed to verify clean default
+- **DEFAULT_TOTALS_BLOCK.totals_amount_col_width_px** must be **117** (inspector `#wsv2-totals-col-amount`).
+- **Reset studio defaults** restores Amount column to **117** after a user edit.
+- **Preview:** see `after-preview-totals-canvas.png`.
+- **PDF:** `C:\hisab\storage\app\agent-output\workspace-v2-stamp-panels-title-fix-20260426-1605\after-pdf-export-totals-117.pdf`
+
+## Telemetry
 
 ```json
 {
-  "layoutBefore": {
-    "leftPanelWidthPx": 220,
-    "rightPanelWidthPx": 320
-  },
-  "stampDefaults": {
-    "code": 0,
-    "stW": "150",
-    "stH": "90",
-    "sigW": "150",
-    "sigH": "90"
-  },
-  "layoutAfterDrag": {
-    "leftPanelWidthPx": 275,
-    "rightPanelWidthPx": 370
-  },
-  "layoutAfterReload": {
-    "leftPanelWidthPx": 275,
-    "rightPanelWidthPx": 370
-  }
+  "cleanLocalStorageAmountColumnPx": "117",
+  "amountAfterUserEdit": "888",
+  "afterResetStudioDefaultsAmountColumnPx": "117",
+  "pdfPath": "C:\\hisab\\storage\\app\\agent-output\\workspace-v2-stamp-panels-title-fix-20260426-1605\\after-pdf-export-totals-117.pdf"
 }
 ```
 
-- **PDF:** `C:\hisab\storage\app\agent-output\workspace-v2-stamp-panels-title-fix-20260426-1605\after-pdf-export.pdf`
-- Exit: 0
+- Exit code: 0
 - Blockers: none
