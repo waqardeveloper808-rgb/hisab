@@ -47,17 +47,13 @@ type DocumentLinkSummary = {
   status?: string | null;
 };
 
-function dedupeInvoices(records: DocumentCenterRecord[]) {
-  const seen = new Set<string>();
-
-  return records.filter((record) => {
+function duplicateDocumentNumberKeys(records: DocumentCenterRecord[]): string[] {
+  const counts = new Map<string, number>();
+  for (const record of records) {
     const key = `${record.type}:${record.number}`;
-    if (seen.has(key)) {
-      return false;
-    }
-    seen.add(key);
-    return true;
-  });
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.entries()].filter(([, count]) => count > 1).map(([key]) => key);
 }
 
 function documentTrackingLinks(document: DocumentCenterRecord): DocumentLinkSummary[] {
@@ -294,10 +290,9 @@ export function InvoiceRegister() {
       direction: sortConfig.direction,
     });
 
-    const uniqueInvoices = dedupeInvoices(nextInvoices);
-    setInvoices(uniqueInvoices);
-    setSelectedInvoiceId((current) => current && uniqueInvoices.some((invoice) => invoice.id === current) ? current : null);
-    setSelectedInvoiceIds((current) => current.filter((id) => uniqueInvoices.some((invoice) => invoice.id === id)));
+    setInvoices(nextInvoices);
+    setSelectedInvoiceId((current) => current && nextInvoices.some((invoice) => invoice.id === current) ? current : null);
+    setSelectedInvoiceIds((current) => current.filter((id) => nextInvoices.some((invoice) => invoice.id === id)));
   }, [deferredInvoiceNumberQuery, fromDate, sortConfig.direction, sortConfig.sort, toDate]);
 
   useEffect(() => {
@@ -359,6 +354,8 @@ export function InvoiceRegister() {
     });
   }, [customerFilter, fromDate, invoices, maxAmount, minAmount, statusFilter, toDate, vatFilter]);
 
+  const duplicateNumberKeys = useMemo(() => duplicateDocumentNumberKeys(invoices), [invoices]);
+
   const selectedInvoice = filteredInvoices.find((invoice) => invoice.id === selectedInvoiceId) ?? invoices.find((invoice) => invoice.id === selectedInvoiceId) ?? null;
   const selectedInvoices = invoices.filter((invoice) => selectedInvoiceIds.includes(invoice.id));
   const actionableInvoices = selectedInvoiceIds.length ? selectedInvoices : selectedInvoice ? [selectedInvoice] : [];
@@ -376,7 +373,7 @@ export function InvoiceRegister() {
   ].filter(Boolean).length;
 
   const handleDocumentChanged = useCallback((nextDocument: DocumentCenterRecord) => {
-    setInvoices((current) => dedupeInvoices(current.map((invoice) => invoice.id === nextDocument.id ? { ...invoice, ...nextDocument } : invoice)));
+    setInvoices((current) => current.map((invoice) => invoice.id === nextDocument.id ? { ...invoice, ...nextDocument } : invoice));
     setDetailReloadKey((current) => current + 1);
   }, []);
 
@@ -452,7 +449,7 @@ export function InvoiceRegister() {
     try {
       if (action === "send") {
         const updatedDocuments = await Promise.all(targetInvoices.map((invoice) => sendDocument(invoice.id)));
-        setInvoices((current) => dedupeInvoices(current.map((invoice) => updatedDocuments.find((updated) => updated.id === invoice.id) ?? invoice)));
+        setInvoices((current) => current.map((invoice) => updatedDocuments.find((updated) => updated.id === invoice.id) ?? invoice));
         setRegisterNotice({ tone: "success", text: `${updatedDocuments.length} invoice${updatedDocuments.length === 1 ? "" : "s"} sent successfully.` });
         setDetailReloadKey((current) => current + 1);
       }
@@ -466,7 +463,7 @@ export function InvoiceRegister() {
 
         const duplicated = await duplicateDocument(primaryInvoice.id);
         const duplicatedDetail = await getDocument(duplicated.id);
-        setInvoices((current) => dedupeInvoices([duplicatedDetail, ...current.filter((invoice) => invoice.id !== duplicatedDetail.id)]));
+        setInvoices((current) => [duplicatedDetail, ...current.filter((invoice) => invoice.id !== duplicatedDetail.id)]);
         setSelectedInvoiceId(duplicatedDetail.id);
         setMobilePane("preview");
         setRegisterNotice({ tone: "success", text: `${duplicatedDetail.number} duplicated as a new draft.` });
@@ -860,6 +857,16 @@ export function InvoiceRegister() {
       </div>
 
       {registerNotice ? <div className={["rounded-md px-2.5 py-1.5 text-xs", registerNotice.tone === "success" ? "border border-emerald-200 bg-emerald-50 text-emerald-800" : "border border-red-200 bg-red-50 text-red-700"].join(" ")}>{registerNotice.text}</div> : null}
+
+      {duplicateNumberKeys.length > 0 ? (
+        <div className="rounded-md border border-amber-300 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-950" role="alert">
+          Data integrity: duplicate document numbers in this register ({duplicateNumberKeys.length} key{duplicateNumberKeys.length === 1 ? "" : "s"}).
+          {" "}
+          <span className="font-mono text-[11px]">{duplicateNumberKeys.slice(0, 8).join(", ")}{duplicateNumberKeys.length > 8 ? "…" : ""}</span>
+          {" "}
+          — all matching rows are shown; resolve duplicates in the backend or renumber documents.
+        </div>
+      ) : null}
 
       {authLimited ? (
         <div className="rounded-lg border border-line bg-white p-2.5 text-sm">

@@ -1,0 +1,24 @@
+{
+  "version": "1",
+  "source": "Hisabix accounting parity — logical posting patterns (Wafeq-style benchmark, not auto-posting code)",
+  "entries": [
+    { "id": "SALES_INVOICE", "name": "Sales Invoice", "lines": [ { "side": "Dr", "account": "Accounts Receivable" }, { "side": "Cr", "account": "Sales Revenue" }, { "side": "Cr", "account": "Output VAT" } ] },
+    { "id": "CUSTOMER_PAYMENT", "name": "Customer Payment", "lines": [ { "side": "Dr", "account": "Bank / Cash" }, { "side": "Cr", "account": "Accounts Receivable" } ] },
+    { "id": "CREDIT_NOTE", "name": "Credit Note", "lines": [ { "side": "Dr", "account": "Sales Returns / Credit Note Adjustment" }, { "side": "Dr", "account": "Output VAT" }, { "side": "Cr", "account": "Accounts Receivable" } ] },
+    { "id": "DEBIT_NOTE_CUST", "name": "Debit Note to Customer", "lines": [ { "side": "Dr", "account": "Accounts Receivable" }, { "side": "Cr", "account": "Debit Note Revenue Adjustment" }, { "side": "Cr", "account": "Output VAT" } ] },
+    { "id": "PURCHASE_BILL", "name": "Purchase Bill / RM Purchase", "lines": [ { "side": "Dr", "account": "Raw Material Inventory or Expense" }, { "side": "Dr", "account": "Input VAT" }, { "side": "Cr", "account": "Accounts Payable" } ] },
+    { "id": "SUPPLIER_PAYMENT", "name": "Supplier Payment", "lines": [ { "side": "Dr", "account": "Accounts Payable" }, { "side": "Cr", "account": "Bank / Cash" } ] },
+    { "id": "PURCHASE_RETURN", "name": "Purchase Return / Supplier Credit", "lines": [ { "side": "Dr", "account": "Accounts Payable" }, { "side": "Cr", "account": "Raw Material or Expense" }, { "side": "Cr", "account": "Input VAT" } ] },
+    { "id": "CASH_EXPENSE", "name": "Cash Expense", "lines": [ { "side": "Dr", "account": "Expense" }, { "side": "Dr", "account": "Input VAT (if applicable)" }, { "side": "Cr", "account": "Cash / Bank" } ] },
+    { "id": "FG_PRODUCTION", "name": "Finished Goods Production", "lines": [ { "side": "Dr", "account": "Finished Goods Inventory" }, { "side": "Cr", "account": "Raw Material Inventory" }, { "side": "Cr", "account": "Direct Labor / Overhead (if supported)" } ] },
+    { "id": "COGS_SALE", "name": "COGS on Sale", "lines": [ { "side": "Dr", "account": "COGS" }, { "side": "Cr", "account": "Finished Goods Inventory" } ] },
+    { "id": "DEFECT", "name": "Defective Inventory", "lines": [ { "side": "Dr", "account": "Inventory Defect / Loss" }, { "side": "Cr", "account": "Inventory" } ] },
+    { "id": "REPAIR", "name": "Inventory Repair / Rework", "lines": [ { "side": "Dr", "account": "Repair / WIP" }, { "side": "Cr", "account": "Cash / AP / Materials" } ] },
+    { "id": "FA_PURCHASE", "name": "Fixed Asset Purchase", "lines": [ { "side": "Dr", "account": "Fixed Asset" }, { "side": "Dr", "account": "Input VAT" }, { "side": "Cr", "account": "Bank / AP" } ] },
+    { "id": "DEPRECIATION", "name": "Depreciation", "lines": [ { "side": "Dr", "account": "Depreciation Expense" }, { "side": "Cr", "account": "Accumulated Depreciation" } ] },
+    { "id": "VAT_RECON", "name": "VAT Reconciliation (net position)", "lines": [ { "side": "Dr/Cr", "account": "Output vs Input vs VAT Payable" }, { "side": "note", "account": "Net to VAT Payable or Receivable per period rules" } ] },
+    { "id": "VAT_PAY_GOV", "name": "VAT Payment to Government", "lines": [ { "side": "Dr", "account": "VAT Payable" }, { "side": "Cr", "account": "Bank" } ] },
+    { "id": "PERIOD_CLOSE", "name": "Period Closing (summary)", "lines": [ { "side": "Dr/Cr", "account": "Close revenue and expense to Income Summary / Retained Earnings per Hisabix rules" } ] },
+    { "id": "BANK_RECON_ADJ", "name": "Bank Reconciliation Adjustment", "lines": [ { "side": "Dr/Cr", "account": "Bank charges, interest, suspense" }, { "side": "Cr/Dr", "account": "Bank" } ] }
+  ]
+}

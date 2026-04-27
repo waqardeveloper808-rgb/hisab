@@ -41,6 +41,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} ${inter.variable} h-full antialiased`}>
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body className="min-h-full bg-canvas text-ink">
         <AppFrame supportHref={buildWhatsAppHref(productConfig.supportWhatsappNumber)}>{children}</AppFrame>
       </body>

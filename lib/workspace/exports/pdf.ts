@@ -7,11 +7,25 @@
 //   - PDF uses points; conversion is `px * 0.75`
 //   - PDF y-axis is bottom-up; we use `topY(yPx)` to convert top-down y to PDF y
 //
-// Arabic: Noto Naskh is embedded; Arabic text uses `shapeArabicForPdf` (no full-line reverse).
+// Arabic: Noto Sans Arabic (UI-aligned) is embedded; Arabic text uses `shapeArabicForPdf` (no full-line reverse).
 // Riyal totals symbol (⃁) is drawn with the embedded font — Helvetica is WinAnsi-only.
-// Not PDF/A-3 (no AFRelationship XML attachment, no ICC output intent).
+//
+// PDF/A-3 readiness (honest scope):
+// - Foundation UBL 2.1 XML is attached with AFRelationship=Data for schemas with
+//   zatcaClassification === "foundation_only" (same subset as the XML download button).
+// - Document info metadata (title, author, dates, language hint) is set on the PDF.
+// - Full PDF/A-3b/c conformance (XMP extension schema, output intent, veraPDF pass) is NOT
+//   claimed; validate externally if legal archival certification is required.
 
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
+import {
+  AFRelationship,
+  PDFDocument,
+  StandardFonts,
+  rgb,
+  type PDFFont,
+  type PDFImage,
+  type PDFPage,
+} from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import {
   DEFAULT_QR_BLOCK,
@@ -19,6 +33,7 @@ import {
   DEFAULT_TOTALS_BLOCK,
   mmToPx,
   normalizeStampSignatureBlock,
+  CURRENCY_DISPLAY_SYMBOL,
   TOTALS_RIYAL_GLYPH,
   type TemplateUiSettings,
 } from "@/lib/workspace/template-ui-settings";
@@ -45,7 +60,9 @@ import {
   type RenderCustomer,
   type RenderSeller,
 } from "@/lib/workspace/document-template-renderer";
+import { getItemsTableInnerTargetPx, getPrintableContentWidthPx } from "@/lib/workspace/item-column-resize";
 import { buildPhase1Qr } from "./qr";
+import { buildInvoiceUbl } from "./xml";
 
 export type PdfSeller = RenderSeller;
 export type PdfCustomer = RenderCustomer;
@@ -75,12 +92,17 @@ export type BuildPdfInput = {
     signatoryName?: string;
     signatoryDesignation?: string;
   };
+  /**
+   * When false, skip embedding the foundation UBL XML attachment (tests / size-sensitive paths).
+   * Default: attach for foundation_only tax documents (ZATCA-ready document layer).
+   */
+  attachFoundationUblXml?: boolean;
 };
 
-async function loadNotoNaskhBytes(): Promise<Uint8Array> {
+async function loadNotoSansArabicPdfBytes(): Promise<Uint8Array> {
   if (typeof window !== "undefined") {
     const res = await fetch(
-      new URL("/fonts/NotoNaskhArabic-Regular.ttf", window.location.origin).href,
+      new URL("/fonts/NotoSansArabic-Regular.ttf", window.location.origin).href,
     );
     if (!res.ok) throw new Error("Failed to load Arabic font");
     return new Uint8Array(await res.arrayBuffer());
@@ -88,7 +110,7 @@ async function loadNotoNaskhBytes(): Promise<Uint8Array> {
   const { readFileSync } = await import("node:fs");
   const { join } = await import("node:path");
   return new Uint8Array(
-    readFileSync(join(process.cwd(), "public", "fonts", "NotoNaskhArabic-Regular.ttf")),
+    readFileSync(join(process.cwd(), "public", "fonts", "NotoSansArabic-Regular.ttf")),
   );
 }
 
@@ -122,7 +144,12 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
 const inkColor    = (() => { const c = hexToRgb(COLORS.ink); return rgb(c.r, c.g, c.b); })();
 const subtleColor = (() => { const c = hexToRgb(COLORS.inkSubtle); return rgb(c.r, c.g, c.b); })();
 const borderLight = (() => { const c = hexToRgb(COLORS.borderLight); return rgb(c.r, c.g, c.b); })();
-const tableHeaderBg = (() => { const c = hexToRgb(COLORS.tableHeaderBg); return rgb(c.r, c.g, c.b); })();
+
+function rgbFromLayoutHeaderRow(layout: LayoutPlan): ReturnType<typeof rgb> {
+  const hex = layout.headerRowColor?.trim() || COLORS.tableHeaderBg;
+  const c = hexToRgb(hex);
+  return rgb(c.r, c.g, c.b);
+}
 
 /** WinAnsi-safe text. Arabic glyphs are stripped + flagged. */
 function safeAscii(input: string | undefined | null, warnings: string[]): string {
@@ -130,6 +157,7 @@ function safeAscii(input: string | undefined | null, warnings: string[]): string
   let strippedArabic = false;
   const out = Array.from(input)
     .map((ch) => {
+      if (ch === CURRENCY_DISPLAY_SYMBOL || ch === TOTALS_RIYAL_GLYPH) return ch;
       const code = ch.charCodeAt(0);
       if (code >= 32 && code <= 126) return ch;
       if (code >= 160 && code <= 255) return ch;
@@ -209,6 +237,25 @@ function wrapByWidth(
   return lines;
 }
 
+/** Greedy character wrap for reshaped Arabic (LTR glyph string for pdf-lib). */
+function wrapArabicLineBreaks(font: PDFFont, shaped: string, size: number, maxWidthPt: number): string[] {
+  const s = shaped || "";
+  if (!s.trim()) return [""];
+  const lines: string[] = [];
+  let buf = "";
+  for (const ch of Array.from(s)) {
+    const cand = buf + ch;
+    if (font.widthOfTextAtSize(cand, size) <= maxWidthPt) {
+      buf = cand;
+    } else {
+      if (buf) lines.push(buf);
+      buf = ch;
+    }
+  }
+  if (buf) lines.push(buf);
+  return lines.length ? lines : [""];
+}
+
 type DrawCtx = {
   page: PDFPage;
   helv: PDFFont;
@@ -255,7 +302,31 @@ function advY(y: number, ctx: DrawCtx): number {
 }
 
 function fontForString(ctx: DrawCtx, s: string, fallBack: PDFFont): PDFFont {
+  if (!s) return fallBack;
+  if (s.includes(CURRENCY_DISPLAY_SYMBOL) || s.includes(TOTALS_RIYAL_GLYPH)) return ctx.arFont;
   return containsArabic(s) ? ctx.arFont : fallBack;
+}
+
+function wrapItemCellLines(
+  ctx: DrawCtx,
+  text: string,
+  preferredFont: PDFFont,
+  size: number,
+  cellWidthPx: number,
+  padPx: number,
+): { lines: string[]; font: PDFFont } {
+  const font =
+    containsArabic(text) || text.includes(CURRENCY_DISPLAY_SYMBOL) || text.includes(TOTALS_RIYAL_GLYPH)
+      ? ctx.arFont
+      : preferredFont;
+  const innerWPt = Math.max(1, px(cellWidthPx - 2 * padPx));
+  if (font === ctx.arFont) {
+    const sh = shapeArabicForPdf(text);
+    const lines = wrapArabicLineBreaks(ctx.arFont, sh, size, innerWPt);
+    return { lines: lines.length ? lines : [""], font: ctx.arFont };
+  }
+  const lines = wrapByWidth(text, font, size, innerWPt, ctx.warnings, false);
+  return { lines: lines.length ? lines : [""], font };
 }
 
 function drawText(
@@ -360,9 +431,20 @@ function drawTotalsRowLabel(
   const fEn = row.emphasis ? ctx.helvBold : ctx.helv;
   const prefix = `${row.labelEn} / `;
   const shAr = shapeArabicForPdf(row.labelAr);
-  const xStart = px(advX(secX, ctx));
   const yDraw = topY(advY(yPx, ctx)) - size;
   const wP = fEn.widthOfTextAtSize(prefix, size);
+  const wA = ctx.arFont.widthOfTextAtSize(shAr, size);
+  const totalWPt = wP + wA;
+  const innerLeftPt = px(advX(secX, ctx));
+  const innerRightPt = px(advX(secX + labelW, ctx));
+  let xStart: number;
+  if (descAlign === "center") {
+    xStart = (innerLeftPt + innerRightPt) / 2 - totalWPt / 2;
+  } else if (descAlign === "right") {
+    xStart = innerRightPt - totalWPt;
+  } else {
+    xStart = innerLeftPt;
+  }
   const cEn = row.emphasis ? enRgb : fallback;
   const cAr = row.emphasis ? arRgb : fallback;
   ctx.page.drawText(prefix, { x: xStart, y: yDraw, size, font: fEn, color: cEn });
@@ -435,10 +517,26 @@ function drawHeader(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: L
   const rowY = bodyTop + innerPad;
   const availW = sec.widthPx - 2 * padX;
   const g = hb.cardGapPx;
+  const twoColHeader = hb.structure === "two_column_logo_in_title";
   let wEn: number;
   let wLogo: number;
   let wAr: number;
-  if (hb.columnWidthMode !== "custom") {
+  if (twoColHeader) {
+    wLogo = 0;
+    if (hb.columnWidthMode !== "custom") {
+      const inner = Math.max(0, availW - g);
+      wEn = wAr = inner / 2;
+    } else {
+      wEn = hb.englishCardWidthPx;
+      wAr = hb.arabicCardWidthPx;
+      const raw = wEn + wAr + g;
+      if (raw > availW && raw > 0) {
+        const s = availW / raw;
+        wEn *= s;
+        wAr *= s;
+      }
+    }
+  } else if (hb.columnWidthMode !== "custom") {
     const inner = Math.max(0, availW - 2 * g);
     wEn = wLogo = wAr = inner / 3;
   } else {
@@ -524,41 +622,43 @@ function drawHeader(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: L
   }
 
   xCursor += wEn + g;
-  drawCardRect(xCursor, wLogo);
-  const logoPad = hb.cardPaddingPx;
-  const logoInnerL = xCursor + logoPad;
-  const logoInnerW = Math.max(20, wLogo - 2 * logoPad);
-  const logoInnerH = Math.max(20, cardH - 2 * logoPad);
-  const lw = hb.logoWidthPx;
-  const lh = hb.logoHeightPx;
-  const boxW = Math.min(lw, logoInnerW);
-  const boxH = Math.min(lh, logoInnerH);
-  let drawW = boxW;
-  let drawH = boxH;
-  if (ctx.logoImage) {
-    const ar0 = ctx.logoImage.width / ctx.logoImage.height;
-    drawW = boxW;
-    drawH = drawW / ar0;
-    if (drawH > boxH) {
-      drawH = boxH;
-      drawW = drawH * ar0;
+  if (!twoColHeader) {
+    drawCardRect(xCursor, wLogo);
+    const logoPad = hb.cardPaddingPx;
+    const logoInnerL = xCursor + logoPad;
+    const logoInnerW = Math.max(20, wLogo - 2 * logoPad);
+    const logoInnerH = Math.max(20, cardH - 2 * logoPad);
+    const lw = hb.logoWidthPx;
+    const lh = hb.logoHeightPx;
+    const boxW = Math.min(lw, logoInnerW);
+    const boxH = Math.min(lh, logoInnerH);
+    let drawW = boxW;
+    let drawH = boxH;
+    if (ctx.logoImage) {
+      const ar0 = ctx.logoImage.width / ctx.logoImage.height;
+      drawW = boxW;
+      drawH = drawW / ar0;
+      if (drawH > boxH) {
+        drawH = boxH;
+        drawW = drawH * ar0;
+      }
+      const lx =
+        hb.logoAlign === "right"
+          ? logoInnerL + logoInnerW - drawW
+          : hb.logoAlign === "center"
+            ? logoInnerL + (logoInnerW - drawW) / 2
+            : logoInnerL;
+      const lyTop = rowY + logoPad + (logoInnerH - drawH) / 2;
+      ctx.page.drawImage(ctx.logoImage, {
+        x: px(lx),
+        y: topY(lyTop + drawH),
+        width: px(drawW),
+        height: px(drawH),
+      });
     }
-    const lx =
-      hb.logoAlign === "right"
-        ? logoInnerL + logoInnerW - drawW
-        : hb.logoAlign === "center"
-          ? logoInnerL + (logoInnerW - drawW) / 2
-          : logoInnerL;
-    const lyTop = rowY + logoPad + (logoInnerH - drawH) / 2;
-    ctx.page.drawImage(ctx.logoImage, {
-      x: px(lx),
-      y: topY(lyTop + drawH),
-      width: px(drawW),
-      height: px(drawH),
-    });
-  }
 
-  xCursor += wLogo + g;
+    xCursor += wLogo + g;
+  }
   drawCardRect(xCursor, wAr);
   const arPad = hb.cardPaddingPx;
   const arInnerR = xCursor + wAr - arPad;
@@ -639,6 +739,8 @@ function drawTitle(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
   const h = sec.minHeightPx;
   const y0 = advY(yPx, ctx);
   const x0 = advX(sec.xPx, ctx);
+  const hb = layout.headerBlock;
+  const logoInTitle = hb.structure === "two_column_logo_in_title";
   const enSize = Math.round(ctx.ui?.title?.enFontPx ?? TYPOGRAPHY.titleEnPx);
   const arSize = Math.round(ctx.ui?.title?.arFontPx ?? TYPOGRAPHY.titleArPx);
   const enHex = layout.textColors.english;
@@ -661,12 +763,48 @@ function drawTitle(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
     borderWidth: 0.5,
     color: rgb(1, 1, 1),
   });
+  let yTextBase = y0 + 8;
+  if (logoInTitle) {
+    const maxLogoW = Math.max(20, sec.widthPx - 24);
+    const lw = Math.min(hb.logoWidthPx, maxLogoW);
+    const lh = Math.min(hb.logoHeightPx, 96);
+    const lx0 = x0 + (sec.widthPx - lw) / 2;
+    if (ctx.logoImage) {
+      const ar0 = ctx.logoImage.width / ctx.logoImage.height;
+      let drawW = lw;
+      let drawH = drawW / ar0;
+      if (drawH > lh) {
+        drawH = lh;
+        drawW = drawH * ar0;
+      }
+      const lxDraw = x0 + (sec.widthPx - drawW) / 2;
+      ctx.page.drawImage(ctx.logoImage, {
+        x: px(lxDraw),
+        y: topY(yTextBase + drawH),
+        width: px(drawW),
+        height: px(drawH),
+      });
+      yTextBase += drawH + 10;
+    } else {
+      ctx.page.drawRectangle({
+        x: px(lx0),
+        y: topY(yTextBase + lh),
+        width: px(lw),
+        height: px(lh),
+        borderColor: borderLight,
+        borderWidth: 0.5,
+        borderDashArray: [3, 3],
+        color: rgb(0.99, 0.99, 0.99),
+      });
+      yTextBase += lh + 10;
+    }
+  }
   if (language !== "arabic") {
     const text = safeAscii(layout.title.en, ctx.warnings);
     const w = ctx.helvBold.widthOfTextAtSize(text, enSize);
     ctx.page.drawText(text, {
       x: px(x0) + (px(sec.widthPx) - w) / 2,
-      y: topY(y0 + 12) - enSize,
+      y: topY(logoInTitle ? yTextBase + 4 : y0 + 12) - enSize,
       size: enSize,
       font: ctx.helvBold,
       color: enColor,
@@ -677,9 +815,14 @@ function drawTitle(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
     if (raw) {
       const shaped = shapeArabicForPdf(raw);
       const w = ctx.arFont.widthOfTextAtSize(shaped, arSize);
+      const arY = logoInTitle
+        ? language === "bilingual"
+          ? yTextBase + 4 + Math.ceil(enSize * 1.25) + 4
+          : yTextBase + 4
+        : y0 + 38;
       ctx.page.drawText(shaped, {
         x: px(x0) + (px(sec.widthPx) - w) / 2,
-        y: topY(y0 + 38) - arSize,
+        y: topY(arY) - arSize,
         size: arSize,
         font: ctx.arFont,
         color: arColor,
@@ -703,9 +846,10 @@ function drawInfoTable(
   const rowContentH = 15 + il.rowPaddingYPx * 2;
   const betweenGap = il.rowGapPx;
   const topPad = il.cardPaddingPx;
+  const barH = 4;
   const n = Math.max(rows.length, 1);
   const computedHeight =
-    topPad + n * rowContentH + Math.max(0, n - 1) * betweenGap + topPad;
+    barH + topPad + n * rowContentH + Math.max(0, n - 1) * betweenGap + topPad;
   const fixedShellH =
     sec.id === "customer"
       ? il.clientCardHeightPx
@@ -717,6 +861,14 @@ function drawInfoTable(
       ? Math.max(fixedShellH, sec.minHeightPx)
       : Math.max(sec.minHeightPx, computedHeight);
   drawSectionFrameAt(ctx, sec.xPx, yPx, sec.widthPx, h);
+  const headerRowRgb = rgbFromLayoutHeaderRow(layout);
+  ctx.page.drawRectangle({
+    x: px(advX(sec.xPx, ctx)),
+    y: topY(advY(yPx + barH, ctx)),
+    width: px(sec.widthPx),
+    height: px(barH),
+    color: headerRowRgb,
+  });
   const sidePad = il.cardPaddingPx;
   const tableX = sec.xPx + sidePad;
   const tableW = Math.max(0, sec.widthPx - 2 * sidePad);
@@ -735,7 +887,7 @@ function drawInfoTable(
   valW = Math.max(1, tableW - enW - arW - 2 * gap);
   const enRgb = rgbFromLayoutEn(layout);
   const arRgb = rgbFromLayoutAr(layout);
-  let cursorY = yPx + topPad;
+  let cursorY = yPx + barH + topPad;
   let xEn = tableX;
   const xVal = xEn + enW + gap;
   const xAr = xVal + valW + gap;
@@ -759,67 +911,88 @@ function drawInfoTable(
   return h;
 }
 
-function drawArCellHeader(
-  ctx: DrawCtx,
-  text: string,
-  col: { widthPx: number; align: string },
-  cellLeftPx: number,
-  yLine: number,
-  size: number,
-  color: ReturnType<typeof rgb> = inkColor,
-) {
-  const sh = shapeArabicForPdf(text);
-  const w = ctx.arFont.widthOfTextAtSize(sh, size);
-  const leftP = advX(cellLeftPx, ctx);
-  const rightP = advX(cellLeftPx + col.widthPx, ctx);
-  let xDraw: number;
-  if (col.align === "right") {
-    xDraw = px(rightP) - 4 - w;
-  } else if (col.align === "center") {
-    xDraw = (px(leftP) + px(rightP)) / 2 - w / 2;
-  } else {
-    xDraw = px(leftP) + 4;
-  }
-  ctx.page.drawText(sh, {
-    x: xDraw,
-    y: topY(advY(yLine, ctx)) - size,
-    size,
-    font: ctx.arFont,
-    color,
-  });
-}
-
 function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: LayoutSection, yPx: number): number {
   const topPad = 8;
-  const enHeaderH = language === "arabic" ? 0 : 19;
-  const arHeaderH = language === "english" ? 0 : 17;
-  const headerBlockH = (language === "bilingual" ? enHeaderH + arHeaderH : Math.max(enHeaderH, arHeaderH)) || 20;
-  const itemRowH = 28;
-  const computedHeight = topPad + headerBlockH + layout.itemRows.length * itemRowH + 12;
-  const h = Math.max(sec.minHeightPx, computedHeight);
-  drawSectionFrameAt(ctx, sec.xPx, yPx, sec.widthPx, h);
+  const padPx = Number(SPACING.tableCellPaddingXPx);
+  const hdrPadPx = 4;
   const cols = layout.itemColumns;
   const totalDeclaredWidth = cols.reduce((sum, c) => sum + c.widthPx, 0);
+  // Same cap as `buildDocumentLayout` / preview (`getItemsTableInnerTargetPx`), not `sec.widthPx - 28` only — when Template Studio margins differ from 10+10mm, `CONTENT_W` and printable width diverge and column fit vs PDF scale get out of sync.
+  const printableW = getPrintableContentWidthPx(ctx.ui?.margins ?? null);
+  const tableW = getItemsTableInnerTargetPx(ctx.ui?.margins ?? null);
   const tableX = sec.xPx + 14;
-  const tableW = sec.widthPx - 28;
-  const scale = tableW / totalDeclaredWidth;
+  const scale = totalDeclaredWidth > tableW ? tableW / totalDeclaredWidth : 1;
+  const usedTableW = totalDeclaredWidth * scale;
   const scaledCols = cols.map((c) => ({ ...c, widthPx: c.widthPx * scale }));
+
+  const enHdrSize = TYPOGRAPHY.itemsHeaderEnPx;
+  const arHdrSize = TYPOGRAPHY.itemsHeaderArPx;
+  const cellSize = TYPOGRAPHY.itemsCellPx;
+  const enHdrStep = Math.ceil(enHdrSize * 1.35);
+  const arHdrStep = Math.ceil(arHdrSize * 1.35);
+  const cellStep = Math.ceil(cellSize * 1.35);
+
+  let maxEnHdrLines = 1;
+  if (language !== "arabic") {
+    for (const col of scaledCols) {
+      const innerWPt = Math.max(1, px(col.widthPx - 2 * padPx));
+      const lines = wrapByWidth(col.labelEn, ctx.helvBold, enHdrSize, innerWPt, ctx.warnings, false);
+      maxEnHdrLines = Math.max(maxEnHdrLines, lines.length);
+    }
+  }
+  let maxArHdrLines = 1;
+  if (language !== "english") {
+    for (const col of scaledCols) {
+      const innerWPt = Math.max(1, px(col.widthPx - 2 * hdrPadPx));
+      const lines = wrapArabicLineBreaks(ctx.arFont, shapeArabicForPdf(col.labelAr), arHdrSize, innerWPt);
+      maxArHdrLines = Math.max(maxArHdrLines, lines.length);
+    }
+  }
+
+  const enHeaderH = language === "arabic" ? 0 : Math.max(20, 4 + maxEnHdrLines * enHdrStep);
+  const arHeaderH = language === "english" ? 0 : Math.max(18, 4 + maxArHdrLines * arHdrStep);
+  const headerBlockH = (language === "bilingual" ? enHeaderH + arHeaderH : Math.max(enHeaderH, arHeaderH)) || 20;
+
+  const rowHeights: number[] = [];
+  for (const row of layout.itemRows) {
+    let maxLines = 1;
+    for (const col of scaledCols) {
+      const text = row.cells[col.key] ?? "";
+      const preferred = col.key === "lineTotal" ? ctx.helvBold : ctx.helv;
+      const { lines } = wrapItemCellLines(ctx, text, preferred, cellSize, col.widthPx, padPx);
+      maxLines = Math.max(maxLines, lines.length);
+    }
+    rowHeights.push(Math.max(28, 6 + maxLines * cellStep + 4));
+  }
+
+  const bodyH = rowHeights.reduce((a, b) => a + b, 0);
+  const computedHeight = topPad + headerBlockH + bodyH + 12;
+  const h = Math.max(sec.minHeightPx, computedHeight);
+  drawSectionFrameAt(ctx, sec.xPx, yPx, printableW, h);
+
   const headerY = yPx + topPad;
   const tx0 = advX(tableX, ctx);
   const bandH = language === "bilingual" ? enHeaderH + arHeaderH : headerBlockH;
   ctx.page.drawRectangle({
     x: px(tx0),
     y: topY(advY(headerY + bandH, ctx)),
-    width: px(tableW),
+    width: px(usedTableW),
     height: px(bandH),
-    color: tableHeaderBg,
+    color: rgbFromLayoutHeaderRow(layout),
   });
   const enRgb = rgbFromLayoutEn(layout);
   const arRgb = rgbFromLayoutAr(layout);
+
   if (language !== "arabic") {
     let cl = tableX;
     for (const col of scaledCols) {
-      drawTextAlign(ctx, col.labelEn, col.align, cl, col.widthPx, headerY + 2, TYPOGRAPHY.itemsHeaderEnPx, ctx.helvBold, enRgb);
+      const innerWPt = Math.max(1, px(col.widthPx - 2 * padPx));
+      const lines = wrapByWidth(col.labelEn, ctx.helvBold, enHdrSize, innerWPt, ctx.warnings, false);
+      let y = headerY + 2;
+      for (const ln of lines) {
+        drawTextAlign(ctx, ln, col.align, cl, col.widthPx, y, enHdrSize, ctx.helvBold, enRgb, padPx);
+        y += enHdrStep;
+      }
       cl += col.widthPx;
     }
   }
@@ -827,35 +1000,59 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
     const arY = language === "bilingual" ? headerY + enHeaderH : headerY;
     let cl = tableX;
     for (const col of scaledCols) {
-      drawArCellHeader(ctx, col.labelAr, col, cl, arY + 2, TYPOGRAPHY.itemsHeaderArPx, arRgb);
+      const innerWPt = Math.max(1, px(col.widthPx - 2 * hdrPadPx));
+      const lines = wrapArabicLineBreaks(ctx.arFont, shapeArabicForPdf(col.labelAr), arHdrSize, innerWPt);
+      let y = arY + 2;
+      for (const line of lines) {
+        const w = ctx.arFont.widthOfTextAtSize(line, arHdrSize);
+        const leftP = advX(cl, ctx);
+        const rightP = advX(cl + col.widthPx, ctx);
+        let xDraw: number;
+        if (col.align === "right") {
+          xDraw = px(rightP) - hdrPadPx - w;
+        } else if (col.align === "center") {
+          xDraw = (px(leftP) + px(rightP)) / 2 - w / 2;
+        } else {
+          xDraw = px(leftP) + hdrPadPx;
+        }
+        ctx.page.drawText(line, {
+          x: xDraw,
+          y: topY(advY(y, ctx)) - arHdrSize,
+          size: arHdrSize,
+          font: ctx.arFont,
+          color: arRgb,
+        });
+        y += arHdrStep;
+      }
       cl += col.widthPx;
     }
   }
+
   let rowY = headerY + bandH;
-  for (const row of layout.itemRows) {
+  for (let ri = 0; ri < layout.itemRows.length; ri++) {
+    const row = layout.itemRows[ri]!;
+    const rh = rowHeights[ri] ?? 28;
     let cellLeftCursor = tableX;
     for (const col of scaledCols) {
       const text = row.cells[col.key] ?? "";
-      drawTextAlign(
-        ctx,
-        text,
-        col.align,
-        cellLeftCursor,
-        col.widthPx,
-        rowY + 6,
-        TYPOGRAPHY.itemsCellPx,
-        col.key === "lineTotal" ? ctx.helvBold : ctx.helv,
-        inkColor,
-      );
+      const preferred = col.key === "lineTotal" ? ctx.helvBold : ctx.helv;
+      const { lines, font } = wrapItemCellLines(ctx, text, preferred, cellSize, col.widthPx, padPx);
+      let y = rowY + 6;
+      for (const ln of lines) {
+        if (ln) {
+          drawTextAlign(ctx, ln, col.align, cellLeftCursor, col.widthPx, y, cellSize, font, inkColor, padPx);
+        }
+        y += cellStep;
+      }
       cellLeftCursor += col.widthPx;
     }
     ctx.page.drawLine({
-      start: { x: px(tx0), y: topY(advY(rowY + itemRowH, ctx)) },
-      end: { x: px(tx0 + tableW), y: topY(advY(rowY + itemRowH, ctx)) },
+      start: { x: px(tx0), y: topY(advY(rowY + rh, ctx)) },
+      end: { x: px(tx0 + usedTableW), y: topY(advY(rowY + rh, ctx)) },
       thickness: 0.4,
       color: borderLight,
     });
-    rowY += itemRowH;
+    rowY += rh;
   }
   return h;
 }
@@ -876,7 +1073,8 @@ function drawTotalsBlock(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, s
     cW *= scale;
     aW *= scale;
   }
-  const dAlign = tb.totals_desc_align ?? "left";
+  void tb.totals_desc_align;
+  const dAlign: "center" = "center";
   const cAlign = tb.totals_currency_align ?? "center";
   const aAlign = tb.totals_amount_align ?? "right";
   const enRgb = rgbFromLayoutEn(layout);
@@ -1226,13 +1424,28 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
   pdf.registerFontkit(fontkit);
   pdf.setTitle(`${schema.title.en} ${doc.number}`);
   pdf.setAuthor(seller.name);
+  pdf.setCreationDate(new Date(doc.issueDate));
+  pdf.setModificationDate(new Date());
+  pdf.setProducer("Hisabix workspace PDF export (pdf-lib)");
+  pdf.setCreator("Hisabix");
+  pdf.setKeywords(["Hisabix", "workspace-document", "UBL-XML-optional-attachment"]);
+  pdf.setSubject(
+    `Document export (${schema.documentType}) — foundation UBL XML may be embedded; not ZATCA-cleared.`,
+  );
+  if (language === "arabic") {
+    pdf.setLanguage("ar");
+  } else if (language === "english") {
+    pdf.setLanguage("en");
+  } else {
+    pdf.setLanguage("ar-SA");
+  }
 
   const page = pdf.addPage([PAGE_W_PT, PAGE_H_PT]);
   const helv = await pdf.embedFont(StandardFonts.Helvetica);
   const helvBold = await pdf.embedFont(StandardFonts.HelveticaBold);
   let arFont: PDFFont;
   try {
-    const noto = await loadNotoNaskhBytes();
+    const noto = await loadNotoSansArabicPdfBytes();
     arFont = await pdf.embedFont(noto, { subset: true });
   } catch {
     arFont = helv;
@@ -1328,7 +1541,7 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
     ui: input.ui,
   });
 
-  const ctx: DrawCtx = {
+  let ctx: DrawCtx = {
     page,
     helv,
     helvBold,
@@ -1344,6 +1557,12 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
     dlx,
     dty,
     ui,
+  };
+
+  const startNewPdfPage = (): number => {
+    const newPage = pdf.addPage([PAGE_W_PT, PAGE_H_PT]);
+    ctx = { ...ctx, page: newPage };
+    return PAGE_GEOMETRY.contentYStartPx;
   };
 
   // Track the running y-cursor in pixels (top-down).
@@ -1394,15 +1613,59 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
       case "qr":
         drewHeight = drawQrBlock(ctx, layout, language, sec, cursorY);
         break;
-      case "stampSignature":
+      case "stampSignature": {
+        const need = sec.minHeightPx + SPACING.sectionGapPx + 32;
+        if (cursorY + need > PAGE_GEOMETRY.bottomLimitPx) {
+          cursorY = startNewPdfPage();
+        }
         drewHeight = drawStampSignature(ctx, layout, language, sec, cursorY);
         break;
-      case "footer":
+      }
+      case "footer": {
+        const need = sec.minHeightPx + SPACING.sectionGapPx + 24;
+        if (cursorY + need > PAGE_GEOMETRY.bottomLimitPx) {
+          cursorY = startNewPdfPage();
+        }
         drewHeight = drawFooter(ctx, layout, language, sec, cursorY);
         break;
+      }
     }
     cursorY += drewHeight + SPACING.sectionGapPx;
     i += 1;
+  }
+
+  const attachXml = input.attachFoundationUblXml !== false;
+  if (attachXml && schema.zatcaClassification === "foundation_only") {
+    try {
+      const xml = buildInvoiceUbl(
+        doc,
+        {
+          name: seller.name,
+          nameAr: seller.nameAr,
+          vatNumber: seller.vatNumber,
+          registrationNumber: seller.registrationNumber,
+          addressEn: seller.addressEn,
+        },
+        {
+          name: customer.name,
+          nameAr: customer.nameAr,
+          vatNumber: customer.vatNumber,
+          city: customer.city,
+          country: customer.country,
+        },
+        schema,
+      );
+      const enc = new TextEncoder().encode(xml);
+      await pdf.attach(enc, `${doc.number}-ubl.xml`, {
+        mimeType: "application/xml",
+        description: "UBL 2.1 Invoice XML (foundation_only — not ZATCA-cleared)",
+        afRelationship: AFRelationship.Data,
+        creationDate: new Date(doc.issueDate),
+        modificationDate: new Date(),
+      });
+    } catch {
+      warnings.push("ubl-xml-attach-failed");
+    }
   }
 
   const dedup = Array.from(new Set(warnings));

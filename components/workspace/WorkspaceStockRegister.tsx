@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { Plus, Search } from "lucide-react";
 import { products } from "@/data/workspace/products";
 import { stockItems } from "@/data/workspace/stock";
@@ -49,6 +49,36 @@ const STOCK_COLS: ColumnDef[] = [
 
 const DEFAULT_STOCK = STOCK_COLS.map((c) => c.id);
 const REG_STOCK = "v2.register.stock";
+
+/** Fixed widths for products register — pairs with table-layout: fixed in workspace.css */
+const PRODUCT_COL_STYLE: Record<string, CSSProperties> = {
+  code: { width: 120, minWidth: 120, maxWidth: 120 },
+  status: { width: 100, minWidth: 100, maxWidth: 100 },
+  name: { width: 200, minWidth: 200, maxWidth: 200 },
+  description: { width: 300, minWidth: 300, maxWidth: 300 },
+  type: { width: 88, minWidth: 88, maxWidth: 88 },
+  category: { width: 128, minWidth: 128, maxWidth: 128 },
+  salePrice: { width: 120, minWidth: 120, maxWidth: 120 },
+  tracking: { width: 130, minWidth: 130, maxWidth: 130 },
+  qty: { width: 100, minWidth: 100, maxWidth: 100 },
+  avg: { width: 120, minWidth: 120, maxWidth: 120 },
+  value: { width: 140, minWidth: 140, maxWidth: 140 },
+  actions: { width: 100, minWidth: 100, maxWidth: 100 },
+};
+
+const STOCK_COL_STYLE: Record<string, CSSProperties> = {
+  code: { width: 120, minWidth: 120, maxWidth: 120 },
+  status: { width: 100, minWidth: 100, maxWidth: 100 },
+  name: { width: 180, minWidth: 180, maxWidth: 180 },
+  description: { width: 260, minWidth: 260, maxWidth: 260 },
+  tracking: { width: 120, minWidth: 120, maxWidth: 120 },
+  qty: { width: 100, minWidth: 100, maxWidth: 100 },
+  avg: { width: 110, minWidth: 110, maxWidth: 110 },
+  value: { width: 130, minWidth: 130, maxWidth: 130 },
+  last: { width: 120, minWidth: 120, maxWidth: 120 },
+  warehouse: { width: 140, minWidth: 140, maxWidth: 140 },
+  actions: { width: 100, minWidth: 100, maxWidth: 100 },
+};
 
 function initVis(reg: string, defaults: string[]) {
   if (typeof window === "undefined") return defaults;
@@ -202,45 +232,45 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
               <table className="wsv2-table">
                 <thead>
                   <tr>
-                    {show("code") ? <th>Item code</th> : null}
-                    {show("status") ? <th>Status</th> : null}
-                    {show("name") ? <th>Item name</th> : null}
-                    {show("description") ? <th>Description</th> : null}
-                    {show("tracking") ? <th>Inventory tracking</th> : null}
-                    {show("qty") ? <th className="num">Qty on hand</th> : null}
-                    {show("avg") ? <th className="num">Avg unit cost</th> : null}
-                    {show("value") ? <th className="num">Inventory value +/–</th> : null}
-                    {show("last") ? <th>Last movement</th> : null}
-                    {show("warehouse") ? <th>Warehouse / location</th> : null}
-                    {show("actions") ? <th style={{ textAlign: "right" }}>Actions</th> : null}
+                    {show("code") ? <th style={STOCK_COL_STYLE.code}>Item code</th> : null}
+                    {show("status") ? <th style={STOCK_COL_STYLE.status}>Status</th> : null}
+                    {show("name") ? <th style={STOCK_COL_STYLE.name}>Item name</th> : null}
+                    {show("description") ? <th className="wsv2-cell-desc" style={STOCK_COL_STYLE.description}>Description</th> : null}
+                    {show("tracking") ? <th style={STOCK_COL_STYLE.tracking}>Inventory tracking</th> : null}
+                    {show("qty") ? <th className="num" style={STOCK_COL_STYLE.qty}>Qty on hand</th> : null}
+                    {show("avg") ? <th className="num" style={STOCK_COL_STYLE.avg}>Avg unit cost</th> : null}
+                    {show("value") ? <th className="num" style={STOCK_COL_STYLE.value}>Inventory value +/–</th> : null}
+                    {show("last") ? <th style={STOCK_COL_STYLE.last}>Last movement</th> : null}
+                    {show("warehouse") ? <th style={STOCK_COL_STYLE.warehouse}>Warehouse / location</th> : null}
+                    {show("actions") ? <th style={{ ...STOCK_COL_STYLE.actions, textAlign: "right" }}>Actions</th> : null}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredStock.map((item) => (
                     <tr key={item.id}>
                       {show("code") ? (
-                        <td style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 600 }}>
+                        <td style={{ ...STOCK_COL_STYLE.code, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 600 }}>
                           {item.sku}
                         </td>
                       ) : null}
                       {show("status") ? (
-                        <td>
+                        <td style={STOCK_COL_STYLE.status}>
                           <span className="wsv2-pill" data-tone={statusTone(item.status)}>
                             <span className="wsv2-status-dot" /> {statusLabel(item.status)}
                           </span>
                         </td>
                       ) : null}
-                      {show("name") ? <td>{item.name}</td> : null}
-                      {show("description") ? <td style={{ color: "var(--wsv2-ink-subtle)", maxWidth: 200 }}>{item.description ?? "—"}</td> : null}
-                      {show("tracking") ? <td>{item.inventoryTracking ? "Tracked" : "—"}</td> : null}
+                      {show("name") ? <td style={STOCK_COL_STYLE.name}>{item.name}</td> : null}
+                      {show("description") ? <td className="wsv2-cell-desc" style={{ ...STOCK_COL_STYLE.description, color: "var(--wsv2-ink-subtle)" }}>{item.description ?? "—"}</td> : null}
+                      {show("tracking") ? <td style={STOCK_COL_STYLE.tracking}>{item.inventoryTracking ? "Tracked" : "—"}</td> : null}
                       {show("qty") ? (
-                        <td className="num">
+                        <td className="num" style={STOCK_COL_STYLE.qty}>
                           {formatNumber(item.onHand)} {item.unit}
                         </td>
                       ) : null}
-                      {show("avg") ? <td className="num">{formatCurrency(item.avgUnitCost)}</td> : null}
+                      {show("avg") ? <td className="num" style={STOCK_COL_STYLE.avg}>{formatCurrency(item.avgUnitCost)}</td> : null}
                       {show("value") ? (
-                        <td className="num">
+                        <td className="num" style={STOCK_COL_STYLE.value}>
                           {formatCurrency(item.onHand * item.avgUnitCost)}
                           <div style={{ fontSize: 11, color: "var(--wsv2-ink-subtle)" }}>
                             {item.inventoryValueDelta >= 0 ? "+" : ""}
@@ -248,10 +278,10 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
                           </div>
                         </td>
                       ) : null}
-                      {show("last") ? <td>{formatDate(item.lastMovement)}</td> : null}
-                      {show("warehouse") ? <td>{item.warehouse ?? "—"}</td> : null}
+                      {show("last") ? <td style={STOCK_COL_STYLE.last}>{formatDate(item.lastMovement)}</td> : null}
+                      {show("warehouse") ? <td style={STOCK_COL_STYLE.warehouse}>{item.warehouse ?? "—"}</td> : null}
                       {show("actions") ? (
-                        <td>
+                        <td style={STOCK_COL_STYLE.actions}>
                           <div className="actions">
                             <WorkspaceMoreActions
                               actions={[
@@ -274,30 +304,30 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
             <table className="wsv2-table">
               <thead>
                 <tr>
-                  {show("code") ? <th>Code</th> : null}
-                  {show("status") ? <th>Status</th> : null}
-                  {show("name") ? <th>Name</th> : null}
-                  {show("description") ? <th>Description</th> : null}
-                  {show("type") ? <th>Type</th> : null}
-                  {show("category") ? <th>Category</th> : null}
-                  {show("salePrice") ? <th className="num">Sale / base price</th> : null}
-                  {show("tracking") ? <th>Inventory tracking</th> : null}
-                  {show("qty") ? <th className="num">Qty on hand</th> : null}
-                  {show("avg") ? <th className="num">Avg unit cost</th> : null}
-                  {show("value") ? <th className="num">Inventory value +/–</th> : null}
-                  {show("actions") ? <th style={{ textAlign: "right" }}>Actions</th> : null}
+                  {show("code") ? <th style={PRODUCT_COL_STYLE.code}>Code</th> : null}
+                  {show("status") ? <th style={PRODUCT_COL_STYLE.status}>Status</th> : null}
+                  {show("name") ? <th style={PRODUCT_COL_STYLE.name}>Name</th> : null}
+                  {show("description") ? <th className="wsv2-cell-desc" style={PRODUCT_COL_STYLE.description}>Description</th> : null}
+                  {show("type") ? <th style={PRODUCT_COL_STYLE.type}>Type</th> : null}
+                  {show("category") ? <th style={PRODUCT_COL_STYLE.category}>Category</th> : null}
+                  {show("salePrice") ? <th className="num" style={PRODUCT_COL_STYLE.salePrice}>Sale / base price</th> : null}
+                  {show("tracking") ? <th style={PRODUCT_COL_STYLE.tracking}>Inventory tracking</th> : null}
+                  {show("qty") ? <th className="num" style={PRODUCT_COL_STYLE.qty}>Qty on hand</th> : null}
+                  {show("avg") ? <th className="num" style={PRODUCT_COL_STYLE.avg}>Avg unit cost</th> : null}
+                  {show("value") ? <th className="num" style={PRODUCT_COL_STYLE.value}>Inventory value +/–</th> : null}
+                  {show("actions") ? <th style={{ ...PRODUCT_COL_STYLE.actions, textAlign: "right" }}>Actions</th> : null}
                 </tr>
               </thead>
               <tbody>
                 {filteredProducts.map((product) => (
                   <tr key={product.id}>
                     {show("code") ? (
-                      <td style={{ fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 600 }}>
+                      <td style={{ ...PRODUCT_COL_STYLE.code, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 600 }}>
                         {product.sku}
                       </td>
                     ) : null}
                     {show("status") ? (
-                      <td>
+                      <td style={PRODUCT_COL_STYLE.status}>
                         <span
                           className="wsv2-pill"
                           data-tone={product.status === "active" ? "success" : "neutral"}
@@ -308,25 +338,25 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
                       </td>
                     ) : null}
                     {show("name") ? (
-                      <td>
+                      <td style={PRODUCT_COL_STYLE.name}>
                         <div style={{ fontWeight: 500 }}>{product.name}</div>
                       </td>
                     ) : null}
                     {show("description") ? (
-                      <td style={{ color: "var(--wsv2-ink-subtle)", maxWidth: 220 }}>{product.description ?? "—"}</td>
+                      <td className="wsv2-cell-desc" style={{ ...PRODUCT_COL_STYLE.description, color: "var(--wsv2-ink-subtle)" }}>{product.description ?? "—"}</td>
                     ) : null}
-                    {show("type") ? <td>{product.type === "product" ? "Product" : "Service"}</td> : null}
-                    {show("category") ? <td>{product.category}</td> : null}
-                    {show("salePrice") ? <td className="num">{formatCurrency(product.salePrice)}</td> : null}
-                    {show("tracking") ? <td>{product.inventoryTracking ? "Yes" : "No"}</td> : null}
+                    {show("type") ? <td style={PRODUCT_COL_STYLE.type}>{product.type === "product" ? "Product" : "Service"}</td> : null}
+                    {show("category") ? <td style={PRODUCT_COL_STYLE.category}>{product.category}</td> : null}
+                    {show("salePrice") ? <td className="num" style={PRODUCT_COL_STYLE.salePrice}>{formatCurrency(product.salePrice)}</td> : null}
+                    {show("tracking") ? <td style={PRODUCT_COL_STYLE.tracking}>{product.inventoryTracking ? "Yes" : "No"}</td> : null}
                     {show("qty") ? (
-                      <td className="num">{product.qtyOnHand == null ? "—" : formatNumber(product.qtyOnHand)}</td>
+                      <td className="num" style={PRODUCT_COL_STYLE.qty}>{product.qtyOnHand == null ? "—" : formatNumber(product.qtyOnHand)}</td>
                     ) : null}
                     {show("avg") ? (
-                      <td className="num">{product.avgUnitCost == null ? "—" : formatCurrency(product.avgUnitCost)}</td>
+                      <td className="num" style={PRODUCT_COL_STYLE.avg}>{product.avgUnitCost == null ? "—" : formatCurrency(product.avgUnitCost)}</td>
                     ) : null}
                     {show("value") ? (
-                      <td className="num">
+                      <td className="num" style={PRODUCT_COL_STYLE.value}>
                         {product.inventoryValueDelta == null ? (
                           "—"
                         ) : (
@@ -341,7 +371,7 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
                       </td>
                     ) : null}
                     {show("actions") ? (
-                      <td>
+                      <td style={PRODUCT_COL_STYLE.actions}>
                         <div className="actions">
                           <WorkspaceMoreActions
                             actions={[

@@ -15,6 +15,8 @@ export function containsArabic(s: string): boolean {
  */
 export function shapeArabicForPdf(s: string): string {
   if (!s) return "";
+  // Latin / symbols only (e.g. Saudi Riyal ⃁): reshaper must not run — it corrupts non-Arabic runs.
+  if (!containsArabic(s)) return s;
   return ArabicReshaper.convertArabic(s);
 }
 

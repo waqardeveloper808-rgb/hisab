@@ -1,16 +1,66 @@
-// Item table column width helpers — shared by template studio drag + buildDocumentLayout.
-import { SPACING, PAGE_GEOMETRY, type ColumnKey, type ItemColumnSpec } from "./document-template-schemas";
+// Item table column width helpers — Template Studio drag + buildDocumentLayout + PDF.
+// Hard constraint: sum(widths) <= ITEMS_TABLE_MAX_WIDTH_PX always; min column 40px.
+
+import { PAGE_GEOMETRY, type ColumnKey, type ItemColumnSpec } from "./document-template-schemas";
 import { mmToPx, type TemplateMargins } from "./template-ui-settings";
 
-/** Line monetary value column (UI label "Total" / line total); fixed width policy for templates. */
+/** Card / table hard max width (px) — matches printable content width minus padding. */
+export const ITEMS_TABLE_MAX_WIDTH_PX = Math.max(400, Math.round(PAGE_GEOMETRY.safeWidthPx - 16));
+
+/** Single safety floor for every column (per product spec). */
+export const ITEM_COLUMN_SAFETY_MIN_PX = 40;
+
+/** Line monetary value column (UI label "Total" / line total). */
 export const ITEM_TABLE_VALUE_COLUMN_KEY: ColumnKey = "lineTotal";
+/** @deprecated Use {@link ITEMS_TABLE_MAX_WIDTH_PX} budget. */
 export const ITEM_TABLE_VALUE_COLUMN_FIXED_PX = 225;
-export const ITEM_TABLE_DESCRIPTION_BASE_PX = 300;
+export const ITEM_TABLE_DESCRIPTION_BASE_PX = 225;
+export const ITEM_TABLE_DESCRIPTION_RESPONSIVE_DEFAULT_PX = 225;
+export const ITEM_TABLE_DESCRIPTION_RESPONSIVE_MIN_PX = 150;
 export const ITEM_TABLE_DESCRIPTION_MAX_PX = 420;
 export const ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX = 100;
 
+/** @deprecated All keys use {@link ITEM_COLUMN_SAFETY_MIN_PX}. */
+export const ITEM_COLUMN_MIN_PX: Record<ColumnKey, number> = {
+  index: ITEM_COLUMN_SAFETY_MIN_PX,
+  description: ITEM_COLUMN_SAFETY_MIN_PX,
+  quantity: ITEM_COLUMN_SAFETY_MIN_PX,
+  unit: ITEM_COLUMN_SAFETY_MIN_PX,
+  price: ITEM_COLUMN_SAFETY_MIN_PX,
+  taxableAmount: ITEM_COLUMN_SAFETY_MIN_PX,
+  vatRate: ITEM_COLUMN_SAFETY_MIN_PX,
+  vatAmount: ITEM_COLUMN_SAFETY_MIN_PX,
+  lineTotal: ITEM_COLUMN_SAFETY_MIN_PX,
+  deliveredQuantity: ITEM_COLUMN_SAFETY_MIN_PX,
+  pendingQuantity: ITEM_COLUMN_SAFETY_MIN_PX,
+  remarks: ITEM_COLUMN_SAFETY_MIN_PX,
+  discount: ITEM_COLUMN_SAFETY_MIN_PX,
+};
+
+/** @deprecated Use {@link ITEM_COLUMN_SAFETY_MIN_PX}. */
+export const ITEM_COLUMN_HARD_MIN_PX: Record<ColumnKey, number> = {
+  index: ITEM_COLUMN_SAFETY_MIN_PX,
+  description: ITEM_COLUMN_SAFETY_MIN_PX,
+  quantity: ITEM_COLUMN_SAFETY_MIN_PX,
+  unit: ITEM_COLUMN_SAFETY_MIN_PX,
+  price: ITEM_COLUMN_SAFETY_MIN_PX,
+  taxableAmount: ITEM_COLUMN_SAFETY_MIN_PX,
+  vatRate: ITEM_COLUMN_SAFETY_MIN_PX,
+  vatAmount: ITEM_COLUMN_SAFETY_MIN_PX,
+  lineTotal: ITEM_COLUMN_SAFETY_MIN_PX,
+  deliveredQuantity: ITEM_COLUMN_SAFETY_MIN_PX,
+  pendingQuantity: ITEM_COLUMN_SAFETY_MIN_PX,
+  remarks: ITEM_COLUMN_SAFETY_MIN_PX,
+  discount: ITEM_COLUMN_SAFETY_MIN_PX,
+};
+
+export function itemColumnMinPx(_key: ColumnKey): number {
+  return ITEM_COLUMN_SAFETY_MIN_PX;
+}
+
 /**
- * Printable content width (px) for A4 after left/right page margins.
+ * Printable content width (px) for A4 after left/right page margins — informational only.
+ * Items table budget is {@link ITEMS_TABLE_MAX_WIDTH_PX}.
  */
 export function getPrintableContentWidthPx(margins?: TemplateMargins | null): number {
   const left = margins?.leftMm ?? 10;
@@ -19,69 +69,128 @@ export function getPrintableContentWidthPx(margins?: TemplateMargins | null): nu
 }
 
 /**
- * Inner width of the items table inside a section card: printable width minus
- * horizontal card padding (matches `.wsv2-wf-section` `padding: … 14px`).
+ * Hard items-table width budget — fixed 580px (card max). Preview, layout builder, and PDF use the same cap.
  */
-export function getItemsTableInnerTargetPx(margins?: TemplateMargins | null): number {
-  return Math.max(0, getPrintableContentWidthPx(margins) - 2 * SPACING.cardPaddingXPx);
+export function getItemsTableInnerTargetPx(_margins?: TemplateMargins | null): number {
+  void _margins;
+  return ITEMS_TABLE_MAX_WIDTH_PX;
 }
 
-/** Minimum width per column; keeps VAT / Total grabbable on narrow layouts. */
-export const ITEM_COLUMN_MIN_PX: Record<ColumnKey, number> = {
-  index: 22,
-  description: 100,
-  quantity: 28,
-  unit: 24,
-  price: 44,
-  taxableAmount: 48,
-  vatRate: 32,
-  vatAmount: 44,
-  lineTotal: ITEM_TABLE_VALUE_COLUMN_FIXED_PX,
-  deliveredQuantity: 28,
-  pendingQuantity: 28,
-  remarks: 32,
-  discount: 40,
-};
-
-function minForKey(key: ColumnKey, schemaDefault: number): number {
-  const m = ITEM_COLUMN_MIN_PX[key];
-  if (m != null) return m;
-  return Math.max(20, Math.min(32, Math.floor(schemaDefault * 0.35)));
+export function buildMinWidthGetter(_cols: ItemColumnSpec[]): (key: ColumnKey) => number {
+  void _cols;
+  return itemColumnMinPx;
 }
 
 /**
- * Move delta px from col `rightIndex` to col `rightIndex-1` (drag handle between the two).
- * Preserves the sum of all widths. Clamps to per-column minima; may not apply full delta
- * if a boundary hits its minimum.
+ * Phase 2–3: clamp mins, then if sum > TABLE_MAX scale all columns proportionally; iterate until sum <= max.
+ */
+export function normalizeWidthsToTableMax(keys: ColumnKey[], raw: number[]): number[] {
+  if (keys.length === 0) return raw;
+  const n = keys.length;
+  const minTotal = n * ITEM_COLUMN_SAFETY_MIN_PX;
+  if (minTotal > ITEMS_TABLE_MAX_WIDTH_PX) {
+    return keys.map(() => ITEM_COLUMN_SAFETY_MIN_PX);
+  }
+  let w = keys.map((_, i) => Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.round(raw[i] ?? 0)));
+  let sum = w.reduce((a, b) => a + b, 0);
+  if (sum <= ITEMS_TABLE_MAX_WIDTH_PX) return w;
+
+  let guard = 0;
+  while (sum > ITEMS_TABLE_MAX_WIDTH_PX && guard < 64) {
+    const scale = ITEMS_TABLE_MAX_WIDTH_PX / sum;
+    w = w.map((x) => Math.max(ITEM_COLUMN_SAFETY_MIN_PX, x * scale));
+    w = w.map((x) => Math.round(x));
+    sum = w.reduce((a, b) => a + b, 0);
+    if (sum <= ITEMS_TABLE_MAX_WIDTH_PX) break;
+    const excess = sum - ITEMS_TABLE_MAX_WIDTH_PX;
+    const flex = w.map((x) => Math.max(0, x - ITEM_COLUMN_SAFETY_MIN_PX));
+    const flexSum = flex.reduce((a, b) => a + b, 0);
+    if (flexSum <= 0) break;
+    w = w.map((x, i) =>
+      Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.floor(x - (flex[i]! / flexSum) * excess)),
+    );
+    sum = w.reduce((a, b) => a + b, 0);
+    guard++;
+  }
+  return w;
+}
+
+/**
+ * Phase 4: user sets one column — keep it (clamped to min), shrink *other* columns proportionally if over budget.
+ */
+export function fitWidthsWithLockedColumn(
+  keys: ColumnKey[],
+  current: number[],
+  lockedIndex: number,
+  lockedWidthPx: number,
+): number[] {
+  const n = keys.length;
+  if (n === 0) return current;
+  const w = keys.map((_, i) => Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.round(current[i] ?? 0)));
+  w[lockedIndex] = Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.round(lockedWidthPx));
+  const otherIdx = keys.map((_, i) => i).filter((i) => i !== lockedIndex);
+  const maxOthers = ITEMS_TABLE_MAX_WIDTH_PX - w[lockedIndex]!;
+  const minOthers = otherIdx.length * ITEM_COLUMN_SAFETY_MIN_PX;
+  if (maxOthers < minOthers) {
+    w[lockedIndex] = ITEMS_TABLE_MAX_WIDTH_PX - minOthers;
+    for (const i of otherIdx) w[i] = ITEM_COLUMN_SAFETY_MIN_PX;
+    return w;
+  }
+  let othersSum = 0;
+  for (const i of otherIdx) othersSum += w[i]!;
+  if (othersSum <= maxOthers) return w;
+  const scale = maxOthers / othersSum;
+  for (const i of otherIdx) {
+    w[i] = Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.round(w[i]! * scale));
+  }
+  let sum = w.reduce((a, b) => a + b, 0);
+  let guard = 0;
+  while (sum > ITEMS_TABLE_MAX_WIDTH_PX && guard < 5000) {
+    const excess = sum - ITEMS_TABLE_MAX_WIDTH_PX;
+    const flex = w.map((x, i) => (i === lockedIndex ? 0 : Math.max(0, x - ITEM_COLUMN_SAFETY_MIN_PX)));
+    const flexSum = flex.reduce((a, b) => a + b, 0);
+    if (flexSum <= 0) break;
+    for (let i = 0; i < n; i++) {
+      if (i === lockedIndex) continue;
+      w[i] = Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.floor(w[i]! - (flex[i]! / flexSum) * excess));
+    }
+    sum = w.reduce((a, b) => a + b, 0);
+    guard++;
+  }
+  return w;
+}
+
+/**
+ * Drag handle between columns `rightIndex-1` and `rightIndex`: redistribute pair, then normalize whole table to max.
  */
 export function applyBoundaryDragPx(
   keys: ColumnKey[],
   widths: number[],
-  /** Index of the right column in the pair (handle between rightIndex-1 and rightIndex). */
   rightIndex: number,
   delta: number,
-  minPx: (key: ColumnKey) => number,
 ): number[] {
+  const MIN = ITEM_COLUMN_SAFETY_MIN_PX;
   if (rightIndex < 1 || rightIndex >= keys.length) return widths;
   const w = [...widths];
   const i = rightIndex - 1;
   const j = rightIndex;
-  const pair = w[i] + w[j];
-  const minI = minPx(keys[i]);
-  const minJ = minPx(keys[j]);
-  if (pair <= minI + minJ) return w;
-  let a = w[i] + delta;
-  a = Math.max(minI, Math.min(pair - minJ, a));
+  const pair = w[i]! + w[j]!;
+  if (pair <= MIN * 2) return normalizeWidthsToTableMax(keys, w);
+  let a = w[i]! + delta;
+  a = Math.max(MIN, Math.min(pair - MIN, a));
   w[i] = Math.round(a);
-  w[j] = Math.round(pair - w[i]);
-  return w;
+  w[j] = Math.round(pair - w[i]!);
+  return normalizeWidthsToTableMax(keys, w);
 }
 
-export function buildMinWidthGetter(cols: ItemColumnSpec[]): (key: ColumnKey) => number {
-  return (key: ColumnKey) => {
-    const c = cols.find((x) => x.key === key);
-    return minForKey(key, c?.widthPx ?? 40);
-  };
+export function computeResponsiveDescriptionWidthPx(visibleColumnKeys: ColumnKey[]): number {
+  const hasUnit = visibleColumnKeys.includes("unit");
+  const hasVatRate = visibleColumnKeys.includes("vatRate");
+  const hi = ITEM_TABLE_DESCRIPTION_RESPONSIVE_DEFAULT_PX;
+  const lo = ITEM_TABLE_DESCRIPTION_RESPONSIVE_MIN_PX;
+  if (!hasUnit && !hasVatRate) return hi;
+  if (hasUnit && hasVatRate) return lo;
+  return Math.round(hi - (hi - lo) / 2);
 }
 
 export function widthsArrayToRecord(keys: ColumnKey[], widths: number[]): Partial<Record<ColumnKey, number>> {
@@ -92,160 +201,36 @@ export function widthsArrayToRecord(keys: ColumnKey[], widths: number[]): Partia
   return o;
 }
 
-/** Rounds to integer px; fixes off-by-one vs target. Pair-drag keeps sum; this only nudges. */
-/**
- * Adjusts raw pixel widths so their sum equals `target`, respecting per-column minimums.
- * Used by the inspector when a single column width changes.
- */
 export function fitRawWidthsToTarget(
   keys: ColumnKey[],
   raw: number[],
-  target: number,
-  minGetter: (k: ColumnKey) => number,
+  _target: number,
+  _minGetter: (k: ColumnKey) => number,
 ): number[] {
-  if (keys.length === 0) return raw;
-  const clamped = keys.map((k, i) => Math.max(minGetter(k), Math.floor(raw[i] ?? 0)));
-  const total = clamped.reduce((a, b) => a + b, 0);
-  if (total <= 0) {
-    const w = Math.max(minGetter(keys[0]!), Math.floor(target / keys.length));
-    return keys.map((k) => Math.max(minGetter(k), w));
-  }
-  if (total > target) {
-    const scale = target / total;
-    const scaled = keys.map((k, i) =>
-      Math.max(minGetter(k), Math.floor((clamped[i] ?? 0) * scale)),
-    );
-    let sum = scaled.reduce((a, b) => a + b, 0);
-    let g = 0;
-    while (sum < target && g < 3000) {
-      const j = g % keys.length;
-      scaled[j]! += 1;
-      sum += 1;
-      g += 1;
-    }
-    return scaled;
-  }
-  // total <= target — grow description (or last col) to absorb slack
-  const out = [...clamped];
-  let d = target - total;
-  const di = keys.indexOf("description");
-  const fix = di >= 0 ? di : keys.length - 1;
-  let g = 0;
-  while (d > 0 && g < 3000) {
-    out[fix]! += 1;
-    d -= 1;
-    g += 1;
-  }
-  return out;
+  void _target;
+  void _minGetter;
+  return normalizeWidthsToTableMax(keys, raw);
 }
 
-/**
- * Fits item table column widths to `target` px with:
- * - Line value column (`lineTotal`) fixed at {@link ITEM_TABLE_VALUE_COLUMN_FIXED_PX} when present
- * - Description default/cap between min-shrink and {@link ITEM_TABLE_DESCRIPTION_MAX_PX}
- * - On overflow: shrink description first, then other columns to readability mins
- */
+/** Normalizes to {@link ITEMS_TABLE_MAX_WIDTH_PX}; `_target` and `_minGetter` are ignored (legacy signature). */
 export function fitItemColumnWidthsToTarget(
   keys: ColumnKey[],
   raw: number[],
-  target: number,
-  minGetter: (k: ColumnKey) => number,
+  _target: number,
+  _minGetter: (k: ColumnKey) => number,
 ): number[] {
-  if (keys.length === 0) return raw;
-  const hasFixedValue = keys.includes(ITEM_TABLE_VALUE_COLUMN_KEY);
-  const di = keys.indexOf("description");
-
-  const out = keys.map((k, i) => {
-    let w = Math.max(minGetter(k), Math.floor(raw[i] ?? 0));
-    if (k === ITEM_TABLE_VALUE_COLUMN_KEY) {
-      w = ITEM_TABLE_VALUE_COLUMN_FIXED_PX;
-    } else if (k === "description") {
-      w = Math.min(
-        ITEM_TABLE_DESCRIPTION_MAX_PX,
-        Math.max(ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX, w),
-      );
-    }
-    return w;
-  });
-
-  if (hasFixedValue) {
-    const vi = keys.indexOf(ITEM_TABLE_VALUE_COLUMN_KEY);
-    out[vi] = ITEM_TABLE_VALUE_COLUMN_FIXED_PX;
-  }
-
-  let sum = out.reduce((a, b) => a + b, 0);
-
-  if (sum > target) {
-    if (di >= 0) {
-      let deficit = sum - target;
-      const minD = Math.max(minGetter(keys[di]!), ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX);
-      const canTake = Math.max(0, out[di] - minD);
-      const take = Math.min(deficit, canTake);
-      out[di] -= take;
-      sum -= take;
-    }
-    if (sum > target) {
-      const flexIdx = keys.map((_, i) => i).filter((i) => keys[i] !== ITEM_TABLE_VALUE_COLUMN_KEY);
-      let guard = 0;
-      while (sum > target && guard < 12000) {
-        let reduced = false;
-        for (const i of flexIdx) {
-          if (sum <= target) break;
-          const minI = minGetter(keys[i]!);
-          if (out[i] > minI) {
-            out[i]--;
-            sum--;
-            reduced = true;
-          }
-        }
-        if (!reduced) break;
-        guard++;
-      }
-    }
-  } else if (sum < target) {
-    let slack = target - sum;
-    if (di >= 0) {
-      const room = ITEM_TABLE_DESCRIPTION_MAX_PX - out[di];
-      const add = Math.min(slack, room);
-      out[di] += add;
-      slack -= add;
-    }
-    const growers = keys.map((_, i) => i).filter((i) => keys[i] !== ITEM_TABLE_VALUE_COLUMN_KEY);
-    let g = 0;
-    while (slack > 0 && growers.length > 0 && g < 12000) {
-      const i = growers[g % growers.length]!;
-      out[i]++;
-      slack--;
-      g++;
-    }
-  }
-
-  return out;
+  void _target;
+  void _minGetter;
+  return normalizeWidthsToTableMax(keys, raw);
 }
 
 export function roundWidthsToTarget(
   keys: ColumnKey[],
   widths: number[],
-  target: number,
-  minGetter: (key: ColumnKey) => number,
+  _target: number,
+  _minGetter: (key: ColumnKey) => number,
 ): number[] {
-  const w = widths.map((x) => Math.max(0, Math.round(x)));
-  const sum0 = w.reduce((a, b) => a + b, 0);
-  let d = target - sum0;
-  const desc = keys.indexOf("description");
-  const idx = (i: number) => (i + keys.length) % keys.length;
-  let p = desc >= 0 ? desc : 0;
-  let guard = 0;
-  while (d !== 0 && guard < 4000) {
-    const j = idx(p);
-    if (d > 0) {
-      w[j]! += 1;
-      d -= 1;
-    } else if (w[j]! > minGetter(keys[j]!)) {
-      w[j]! -= 1;
-      d += 1;
-    } else p += 1;
-    guard += 1;
-  }
-  return w;
+  void _target;
+  void _minGetter;
+  return normalizeWidthsToTableMax(keys, widths);
 }

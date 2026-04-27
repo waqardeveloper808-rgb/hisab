@@ -31,7 +31,8 @@ export function AppFrame({ children, supportHref }: AppFrameProps) {
     "/workspace/user/debit-notes",
     "/workspace/user/purchase-orders",
   ].some((prefix) => pathname.startsWith(prefix));
-  const hideFloatingSupport = isTemplateStudio || isDocumentPreviewRoute;
+  const isJournalRegisterRoute = pathname === "/workspace/user/journal-entries" || pathname.startsWith("/workspace/user/journal-entries/");
+  const hideFloatingSupport = isTemplateStudio || isDocumentPreviewRoute || isJournalRegisterRoute;
   const referralCapture = (
     <Suspense fallback={null}>
       <ReferralCapture />

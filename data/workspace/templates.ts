@@ -38,7 +38,7 @@ export const templates: TemplateRecord[] = [
   },
   {
     id: "tmpl-modern",
-    name: "Hisabix Modern — Wide accent",
+    name: "Modern",
     documentType: "invoice",
     style: "modern",
     language: "bilingual",

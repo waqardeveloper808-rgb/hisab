@@ -134,7 +134,7 @@ export const phase5DocumentEngineControlPoints: readonly Phase5ControlPointDefin
     evidence_required: ["open-source-document-proof.png", "open-source-document-api-payload.json"],
     source_standard_clause: "Document Engine.CP-04.open_source_document",
     source_standard_document: sourceDocument,
-    linked_project_modules: ["document-engine", "accounting-engine", "workspace-ui"],
+    linked_project_modules: ["document-engine", "accounting-engine", "ui-ux-shell"],
     linked_files: ["components/workspace/JournalEntriesRegister.tsx", "components/workspace/InvoiceDetailWorkspace.tsx"],
     control_weight: 8,
     risk_priority: "high",

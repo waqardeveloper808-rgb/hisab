@@ -1,0 +1,152 @@
+{
+  "schema": "hisab.ui-api-proof.v1",
+  "generatedAt": "2026-04-26T22:11:24.534Z",
+  "source": "preview-store-cross-links",
+  "description": "Canonical UI/API proof manifest derived from committed preview stores (document lines with ledger IDs, inventory journal linkage, allocated payments).",
+  "document": {
+    "id": 2155,
+    "number": "AHN-DBN-QMS-0506",
+    "status": "posted",
+    "lineLedgerAccounts": [
+      4100
+    ]
+  },
+  "inventory": {
+    "id": 9004,
+    "journal_entry_number": "JE-SALE-9004",
+    "document_links": [
+      {
+        "documentId": 1101,
+        "documentNumber": "INV-2026-1101",
+        "documentType": "tax_invoice",
+        "status": "sent"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2118,
+        "documentNumber": "AHN-DLV-QMS-5001",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2121,
+        "documentNumber": "AHN-DLV-QMS-0506",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2124,
+        "documentNumber": "AHN-DLV-QMS-5005",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2127,
+        "documentNumber": "AHN-DLV-QMS-5006",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2126,
+        "documentNumber": "AHN-PRO-QMS-5006",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2132,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2129,
+        "documentNumber": "AHN-PRO-QMS-5007",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2128,
+        "documentNumber": "AHN-INV-QMS-5008",
+        "documentType": "tax_invoice",
+        "status": "paid"
+      },
+      {
+        "documentId": 2130,
+        "documentNumber": "AHN-DLV-QMS-5007",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2151,
+        "documentNumber": "AHN-DLV-QMS-5009",
+        "documentType": "delivery_note",
+        "status": "posted"
+      },
+      {
+        "documentId": 2135,
+        "documentNumber": "AHN-PRO-QMS-5010",
+        "documentType": "proforma_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": 2149,
+        "documentNumber": "AHN-INV-QMS-5021",
+        "documentType": "tax_invoice",
+        "status": "finalized"
+      },
+      {
+        "documentId": null,
+        "documentNumber": "AHN-DLV-QMS-5008",
+        "documentType": "delivery_note",
+        "status": "linked"
+      }
+    ]
+  },
+  "payment": {
+    "id": 5013,
+    "reference": null,
+    "allocated_total": 1437.5,
+    "document_id": 2153
+  }
+}

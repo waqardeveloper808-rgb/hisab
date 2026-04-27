@@ -1,4 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
 import { defaultChartOfAccounts } from "@/lib/accounting-engine";
+import { getActualSystemMap } from "@/lib/mapping-engine";
 import { actualSystemMap } from "@/data/system-map/actual-map";
 import { workspaceRoles } from "@/data/role-workspace";
 import { workspaceModules } from "@/data/workspace";
@@ -13,7 +16,9 @@ import previewInventory from "@/data/preview-inventory-store.json";
 import previewItems from "@/data/preview-item-store.json";
 import previewPayments from "@/data/preview-payment-store.json";
 import type { StandardsControlPoint } from "@/data/standards/control-points";
-import type { BlockerSeverity, ProofStatus } from "@/types/system-map";
+import type { ActualModuleRecord, ActualSystemMap, BlockerSeverity, ProofStatus } from "@/types/system-map";
+
+const staticActualSystemMap = actualSystemMap as unknown as ActualSystemMap;
 
 export type ControlPointExecutionCategory =
   | "UI/UX CPs"
@@ -180,16 +185,15 @@ type TemplateEngineRuntime = {
   }>;
 };
 
-function resolveActualSystemMap() {
+function resolveActualSystemMap(): ActualSystemMap {
   if (typeof window !== "undefined") {
-    return actualSystemMap;
+    return staticActualSystemMap;
   }
 
   try {
-    const runtimeRequire = Function("return require")() as (id: string) => { getActualSystemMap: () => typeof actualSystemMap };
-    return runtimeRequire(`${process.cwd().replace(/\\/g, "/")}/lib/mapping-engine.ts`).getActualSystemMap();
+    return getActualSystemMap();
   } catch {
-    return actualSystemMap;
+    return staticActualSystemMap;
   }
 }
 
@@ -199,10 +203,7 @@ function resolveTemplateEngineRuntime(): TemplateEngineRuntime {
   }
 
   try {
-    const runtimeRequire = Function("return require")() as (id: string) => { readFileSync: (path: string, encoding: string) => string };
-    const fs = runtimeRequire("node:fs");
-    const runtimePath = `${process.cwd().replace(/\\/g, "/")}/backend/storage/app/private/template-engine-runtime.json`;
-
+    const runtimePath = path.join(process.cwd(), "backend", "storage", "app", "private", "template-engine-runtime.json");
     return JSON.parse(fs.readFileSync(runtimePath, "utf8")) as TemplateEngineRuntime;
   } catch {
     return {};
@@ -210,9 +211,17 @@ function resolveTemplateEngineRuntime(): TemplateEngineRuntime {
 }
 
 const runtimeAuditResults = (runtimeAuditData as RuntimeAuditPayload).results ?? {};
-const liveActualSystemMap = resolveActualSystemMap();
 const templateEngineRuntime = resolveTemplateEngineRuntime();
-const actualModules = new Map(liveActualSystemMap.modules.map((module) => [module.id, module]));
+
+let evidenceLiveSystemMapOverride: ActualSystemMap | null = null;
+
+export function setEvidenceLiveSystemMapOverride(map: ActualSystemMap | null) {
+  evidenceLiveSystemMapOverride = map;
+}
+
+function getEvidenceLiveSystemMap(): ActualSystemMap {
+  return evidenceLiveSystemMapOverride ?? resolveActualSystemMap();
+}
 const workspaceSurfaceMetrics = (() => {
   const requiredUserSalesRoutes = [
     { label: "Invoices", href: "/workspace/user/invoices" },
@@ -239,14 +248,12 @@ const workspaceSurfaceMetrics = (() => {
   }
 
   try {
-    const runtimeRequire = Function("return require")() as (id: string) => { readFileSync: (path: string, encoding: string) => string };
-    const fs = runtimeRequire("node:fs");
-    const cwd = process.cwd().replace(/\\/g, "/");
-    const workspaceApiRouteSource = fs.readFileSync(`${cwd}/app/api/workspace/[...slug]/route.ts`, "utf8");
-    const workspaceCatchAllSource = fs.readFileSync(`${cwd}/app/workspace/[...slug]/page.tsx`, "utf8");
-    const workspaceModulePageSource = fs.readFileSync(`${cwd}/components/workspace/WorkspaceModulePage.tsx`, "utf8");
-    const workspaceClientSource = fs.readFileSync(`${cwd}/lib/workspace-api.ts`, "utf8");
-    const roleWorkspaceSource = fs.readFileSync(`${cwd}/data/role-workspace.ts`, "utf8");
+    const cwd = process.cwd();
+    const workspaceApiRouteSource = fs.readFileSync(path.join(cwd, "app", "api", "workspace", "[...slug]", "route.ts"), "utf8");
+    const workspaceCatchAllSource = fs.readFileSync(path.join(cwd, "app", "workspace", "[...slug]", "page.tsx"), "utf8");
+    const workspaceModulePageSource = fs.readFileSync(path.join(cwd, "components", "workspace", "WorkspaceModulePage.tsx"), "utf8");
+    const workspaceClientSource = fs.readFileSync(path.join(cwd, "lib", "workspace-api.ts"), "utf8");
+    const roleWorkspaceSource = fs.readFileSync(path.join(cwd, "data", "role-workspace.ts"), "utf8");
 
     return {
       requiredUserSalesNavCount: requiredUserSalesRoutes.length,
@@ -297,14 +304,12 @@ const communicationRuntimeMetrics: CommunicationRuntimeMetrics = (() => {
   }
 
   try {
-    const runtimeRequire = Function("return require")() as (id: string) => { existsSync: (path: string) => boolean; readFileSync: (path: string, encoding: string) => string };
-    const fs = runtimeRequire("node:fs");
-    const cwd = process.cwd().replace(/\\/g, "/");
-    const routeSource = fs.readFileSync(`${cwd}/backend/routes/api.php`, "utf8");
-    const workspaceRouteSource = fs.readFileSync(`${cwd}/app/api/workspace/[...slug]/route.ts`, "utf8");
-    const workspaceApiSource = fs.readFileSync(`${cwd}/lib/workspace-api.ts`, "utf8");
-    const invoiceDetailSource = fs.readFileSync(`${cwd}/components/workspace/InvoiceDetailWorkspace.tsx`, "utf8");
-    const exists = (path: string) => fs.existsSync(`${cwd}/${path}`);
+    const cwd = process.cwd();
+    const routeSource = fs.readFileSync(path.join(cwd, "backend", "routes", "api.php"), "utf8");
+    const workspaceRouteSource = fs.readFileSync(path.join(cwd, "app", "api", "workspace", "[...slug]", "route.ts"), "utf8");
+    const workspaceApiSource = fs.readFileSync(path.join(cwd, "lib", "workspace-api.ts"), "utf8");
+    const invoiceDetailSource = fs.readFileSync(path.join(cwd, "components", "workspace", "InvoiceDetailWorkspace.tsx"), "utf8");
+    const exists = (relative: string) => fs.existsSync(path.join(cwd, ...relative.split("/")));
 
     return {
       communicationRoutesPresent: routeSource.includes("/communications") && routeSource.includes("CommunicationController::class"),
@@ -426,18 +431,13 @@ const canonicalUserWorkspaceStaticEvidence = (() => {
     };
   }
   try {
-    const runtimeRequire = Function("return require")() as (id: string) => {
-      existsSync: (path: string) => boolean;
-      readFileSync: (path: string, encoding: string) => string;
-    };
-    const fs = runtimeRequire("node:fs");
-    const cwd = process.cwd().replace(/\\/g, "/");
-    const navigationSource = fs.readFileSync(`${cwd}/lib/workspace/navigation.ts`, "utf8");
-    const userHomeSource = fs.readFileSync(`${cwd}/app/workspace/user/page.tsx`, "utf8");
+    const cwd = process.cwd();
+    const navigationSource = fs.readFileSync(path.join(cwd, "lib", "workspace", "navigation.ts"), "utf8");
+    const userHomeSource = fs.readFileSync(path.join(cwd, "app", "workspace", "user", "page.tsx"), "utf8");
     return {
-      dualShellRouterPresent: fs.existsSync(`${cwd}/components/workspace/WorkspaceDualShell.tsx`),
+      dualShellRouterPresent: fs.existsSync(path.join(cwd, "components", "workspace", "WorkspaceDualShell.tsx")),
       navigationCanonicalBase: navigationSource.includes('USER_WORKSPACE_BASE = "/workspace/user"'),
-      userAppShellPresent: fs.existsSync(`${cwd}/components/workspace/WorkspaceAppShell.tsx`),
+      userAppShellPresent: fs.existsSync(path.join(cwd, "components", "workspace", "WorkspaceAppShell.tsx")),
       userHomeWiresWorkspaceDashboard: userHomeSource.includes("@/components/workspace/WorkspaceDashboard"),
     };
   } catch {
@@ -527,7 +527,7 @@ function getClauseText(controlPoint: StandardsControlPoint) {
   return `${controlPoint.source_standard_clause} ${controlPoint.title} ${controlPoint.description} ${controlPoint.control_rule} ${controlPoint.evaluation_method}`.toLowerCase();
 }
 
-function getLinkedModuleHealth(controlPoint: StandardsControlPoint): LinkedModuleHealth[] {
+function getLinkedModuleHealth(controlPoint: StandardsControlPoint, actualModules: Map<string, ActualModuleRecord>): LinkedModuleHealth[] {
   return controlPoint.linked_project_modules.map((moduleId) => {
     const module = actualModules.get(moduleId);
     const proofStatus: LinkedModuleHealth["proofStatus"] = (module?.proof.status as ProofStatus | undefined) ?? "MISSING";
@@ -629,9 +629,9 @@ function getCrossModuleEvidence() {
   ];
 }
 
-function getAuditEvidence(controlPointId: string) {
+function getAuditEvidence(controlPointId: string, liveModules: ActualModuleRecord[]) {
   const runtimeMatch = runtimeAuditResults[controlPointId] ?? null;
-  const proofModules = liveActualSystemMap.modules.filter((module) => module.proof.evidence.length > 0);
+  const proofModules = liveModules.filter((module) => module.proof.evidence.length > 0);
   return [
     buildEvidenceItem("system-log", "Runtime audit payload coverage", "data/audit-runtime/control-point-runtime-results.json", runtimeMatch != null, runtimeMatch ? `Explicit runtime audit result exists for ${controlPointId}.` : `No explicit runtime audit payload exists for ${controlPointId}.`, "data/audit-runtime/control-point-runtime-results.json"),
     buildEvidenceItem("system-log", "Proof-enabled modules", "lib/mapping-engine.ts", proofModules.length > 0, `${proofModules.length} modules expose proof evidence in the live actual system map.`, "lib/mapping-engine.ts"),
@@ -892,11 +892,13 @@ export function collectControlPointEvidence(controlPoint: StandardsControlPoint)
   const category = classifyControlPoint(controlPoint);
   const evaluatorKey = getEvaluatorKey(controlPoint);
   const runtimeMatch = runtimeAuditResults[controlPoint.id] ?? null;
-  const linkedModuleHealth = getLinkedModuleHealth(controlPoint);
+  const liveActualSystemMap = getEvidenceLiveSystemMap();
+  const actualModules = new Map(liveActualSystemMap.modules.map((module) => [module.id, module]));
+  const linkedModuleHealth = getLinkedModuleHealth(controlPoint, actualModules);
 
   const evidence: EvidenceItem[] = [
     ...getWorkspaceEvidence(),
-    ...getAuditEvidence(controlPoint.id),
+    ...getAuditEvidence(controlPoint.id, liveActualSystemMap.modules),
     ...getModuleEvidence(linkedModuleHealth),
   ];
 

@@ -2,6 +2,7 @@
 // Preview persistence: localStorage only (no backend claim).
 
 import {
+  COLORS,
   COLUMN_LABELS,
   type ColumnKey,
   type SchemaDocType,
@@ -15,6 +16,9 @@ export function mmToPx(mm: number): number {
 
 /** Riyal display in totals (per product spec — Unicode Saudi Riyal / legacy forms vary by font). */
 export const TOTALS_RIYAL_GLYPH = "⃁";
+
+/** Single canonical currency glyph for SAR in preview + PDF (engine contract). */
+export const CURRENCY_DISPLAY_SYMBOL = TOTALS_RIYAL_GLYPH;
 
 /**
  * Workspace Template Studio persisted UI (documented for migration).
@@ -119,7 +123,7 @@ export const DEFAULT_TOTALS_BLOCK: TotalsBlockSettings = {
   totals_desc_col_width_px: 260,
   totals_currency_col_width_px: 10,
   totals_amount_col_width_px: 117,
-  totals_desc_align: "left",
+  totals_desc_align: "center",
   totals_currency_align: "center",
   totals_amount_align: "right",
 };
@@ -159,11 +163,11 @@ export const DEFAULT_INFO_CARD_LAYOUT: InfoCardLayoutSettings = {
   documentCardWidthPx: 0,
   documentCardMinHeightPx: 0,
   documentCardHeightPx: 0,
-  rowPaddingYPx: 8,
-  rowGapPx: 2,
-  cardPaddingPx: 18,
+  rowPaddingYPx: 3,
+  rowGapPx: 3,
+  cardPaddingPx: 0,
   englishColumnWidthPx: 150,
-  valueColumnWidthPx: 250,
+  valueColumnWidthPx: 225,
   arabicColumnWidthPx: 150,
   englishAlign: "left",
   valueAlign: "center",
@@ -202,7 +206,12 @@ export type HeaderTextAlign = "left" | "center" | "right";
 /** `equal` = three columns share width inside page (safe default). `custom` = pixel widths (clamped in renderers). */
 export type HeaderColumnWidthMode = "equal" | "custom";
 
+/** `three_column` = EN | logo | AR in one row. `two_column_logo_in_title` = EN | AR only; logo + title in title section. */
+export type HeaderStructureMode = "three_column" | "two_column_logo_in_title";
+
 export type HeaderBlockSettings = {
+  /** Default `three_column` (Wafeq baseline). */
+  structure?: HeaderStructureMode;
   columnWidthMode: HeaderColumnWidthMode;
   /** Used when `columnWidthMode === "custom"` (inspector hints; clamped to content width). */
   englishCardWidthPx: number;
@@ -218,6 +227,7 @@ export type HeaderBlockSettings = {
 };
 
 export const DEFAULT_HEADER_BLOCK: HeaderBlockSettings = {
+  structure: "three_column",
   columnWidthMode: "equal",
   englishCardWidthPx: 240,
   /** Middle column: wide enough for default logo box (150px) + card padding without crowding. */
@@ -404,6 +414,11 @@ export type TemplateUiSettings = {
   selectedSection?: SectionKey;
   /** Template Studio: left / right sidebar widths (px). */
   studioLayout?: StudioLayoutSettings;
+  /**
+   * Table header row + optional card title bars (preview/PDF).
+   * Default matches schema `COLORS.tableHeaderBg`.
+   */
+  headerRowColor?: string;
 };
 
 export const DEFAULT_MARGINS_MM: TemplateMargins = {
@@ -425,8 +440,9 @@ export const DEFAULT_TITLE: TemplateTitleSettings = {
 };
 
 export const DEFAULT_TYPOGRAPHY: TemplateTypography = {
-  enFontStack: "Inter, system-ui, 'Segoe UI', Roboto, Arial, sans-serif",
-  arFontStack: "'Noto Naskh Arabic', 'Noto Sans Arabic', 'Arial Unicode MS', Tahoma, sans-serif",
+  enFontStack: 'var(--font-body), "Segoe UI", Tahoma, system-ui, sans-serif',
+  arFontStack:
+    'var(--font-noto-sans-arabic), var(--font-ibm-plex-sans-arabic), "Segoe UI", Tahoma, Arial, sans-serif',
   enSizeScale: 1,
   arSizeScale: 1,
   enColor: "#111827",
@@ -458,7 +474,48 @@ export function defaultTemplateUi(): TemplateUiSettings {
     stampSignatureBlock: { ...DEFAULT_STAMP_SIGNATURE_BLOCK },
     studioLayout: { ...DEFAULT_STUDIO_LAYOUT },
     studioDocumentType: "tax-invoice",
+    headerRowColor: COLORS.tableHeaderBg,
   };
+}
+
+/**
+ * "Modern" (slot #2) — compact 9px-class body, logo under company row, bilingual info cards,
+ * header row tint, two-column company header. Used for `tmpl-modern` when no custom UI in storage.
+ */
+export function modernTemplatePresetUi(): TemplateUiSettings {
+  return mergeTemplateUi(defaultTemplateUi(), {
+    showHeaderGreenAccent: false,
+    headerRowColor: "#E8F4EC",
+    headerBlock: {
+      ...DEFAULT_HEADER_BLOCK,
+      structure: "two_column_logo_in_title",
+      columnWidthMode: "equal",
+      logoWidthPx: 100,
+      logoHeightPx: 64,
+    },
+    typography: {
+      ...DEFAULT_TYPOGRAPHY,
+      enSizeScale: 0.75,
+      arSizeScale: 0.75,
+    },
+    title: {
+      ...DEFAULT_TITLE,
+      enFontPx: 16,
+      arFontPx: 14,
+    },
+    totalsBlock: {
+      ...DEFAULT_TOTALS_BLOCK,
+      totals_desc_align: "center",
+      totals_currency_align: "center",
+      totals_amount_align: "right",
+    },
+    infoCardLayout: {
+      ...DEFAULT_INFO_CARD_LAYOUT,
+      rowPaddingYPx: 2,
+      rowGapPx: 2,
+      cardPaddingPx: 6,
+    },
+  });
 }
 
 /** Preset: plain workspace default. */
@@ -668,6 +725,7 @@ export function mergeTemplateUi(
     }),
     studioDocumentType: patch.studioDocumentType ?? base.studioDocumentType,
     selectedSection: patch.selectedSection ?? base.selectedSection,
+    headerRowColor: patch.headerRowColor ?? base.headerRowColor,
   };
 }
 

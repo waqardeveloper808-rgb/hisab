@@ -188,7 +188,7 @@ export function WorkspaceRegister({ config }: Props) {
                 <thead>
                   <tr>
                     {show("number") ? <th>Document No.</th> : null}
-                    {show("customer") ? <th>Customer</th> : null}
+                    {show("customer") ? <th className="wsv2-cell-desc">Customer</th> : null}
                     {show("issue") ? <th>Issue date</th> : null}
                     {show("due") ? <th>Due date</th> : null}
                     {show("status") ? <th>Status</th> : null}
@@ -211,7 +211,7 @@ export function WorkspaceRegister({ config }: Props) {
                           <td style={{ fontWeight: 600 }}>{doc.number}</td>
                         ) : null}
                         {show("customer") ? (
-                          <td>
+                          <td className="wsv2-cell-desc">
                             <div style={{ fontWeight: 500 }}>{customer?.legalName ?? "—"}</div>
                             <div style={{ fontSize: 11.5, color: "var(--wsv2-ink-subtle)" }}>
                               {customer?.city ?? ""}

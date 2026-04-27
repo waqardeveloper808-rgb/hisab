@@ -150,9 +150,7 @@ function evaluateWithEvidence(controlPoint: StandardsControlPoint, bundle: Contr
   const someDirectChecksPassed = checkSummary.passedDirectChecks.length > 0;
   const noViolations = bundle.violations.length === 0;
   const baseChecksPassed = checkSummary.baseChecks.every((check) => check.passed);
-  const strongHealth = controlPoint.module_code === "CPE"
-    ? true
-    : linkedHealth.averageCompletion >= 75 && linkedHealth.proofScore >= 60;
+  const strongHealth = linkedHealth.averageCompletion >= 75 && linkedHealth.proofScore >= 60;
 
   if (hasCriticalViolation || (checkSummary.directChecks.length > 0 && !someDirectChecksPassed) || bundle.missingData.length > 0 && !someDirectChecksPassed) {
     const riskLevel = deriveRiskLevel(bundle, strictScore, "FAIL");

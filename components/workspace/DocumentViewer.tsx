@@ -1,5 +1,9 @@
 "use client";
 
+// HTML/PDF zoom viewer for arbitrary uploads — not the schema canvas.
+// Invoice layout styles (Standard / Modern / Compact) are documented in
+// data/workspace/template-specs.md and rendered via WorkspaceDocumentRenderer.
+
 import { useCallback, useRef, useState } from "react";
 import { Button } from "@/components/Button";
 

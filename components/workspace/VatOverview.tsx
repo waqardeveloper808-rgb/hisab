@@ -43,7 +43,12 @@ export function VatOverview() {
   const [intelligence, setIntelligence] = useState<IntelligenceSnapshot | null>(null);
 
   useEffect(() => {
-    getReportsSnapshot().then(setSnapshot).catch((err: unknown) => { console.error('[VatOverview] getReportsSnapshot failed:', err); });
+    getReportsSnapshot()
+      .then(setSnapshot)
+      .catch((err: unknown) => {
+        console.error("[VatOverview] getReportsSnapshot failed:", err);
+        setSnapshot(emptyState);
+      });
     getReportIntelligence().then(setIntelligence).catch((err: unknown) => { console.error('[VatOverview] getReportIntelligence failed:', err); });
   }, []);
 
@@ -56,10 +61,16 @@ export function VatOverview() {
     Promise.all([
       listVatReceivedDetails(filters),
       listVatPaidDetails(filters),
-    ]).then(([receivedRows, paidRows]) => {
-      setReceived(receivedRows);
-      setPaid(paidRows);
-    });
+    ])
+      .then(([receivedRows, paidRows]) => {
+        setReceived(receivedRows);
+        setPaid(paidRows);
+      })
+      .catch((err: unknown) => {
+        console.error("[VatOverview] VAT detail lists failed:", err);
+        setReceived([]);
+        setPaid([]);
+      });
   }, [fromDate, toDate]);
 
   const vatReceived = received.reduce((sum, row) => sum + row.vatAmount, 0);
@@ -119,11 +130,11 @@ export function VatOverview() {
         rows={snapshot.vatSummary}
         emptyMessage="VAT summary rows will appear here when posted sales or purchases carry tax."
         columns={[
-          { header: "Code", render: (row) => row.code },
-          { header: "Name", render: (row) => row.name },
-          { header: "Rate", align: "right", render: (row) => `${row.rate}%` },
-          { header: "Taxable", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
-          { header: "Tax", align: "right", render: (row) => `${currency(row.taxAmount)} SAR` },
+          { header: "Code", width: "100px", render: (row) => row.code },
+          { header: "Name", width: "220px", cellVariant: "description", render: (row) => row.name },
+          { header: "Rate", width: "80px", align: "right", render: (row) => `${row.rate}%` },
+          { header: "Taxable", width: "140px", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
+          { header: "Tax", width: "140px", align: "right", render: (row) => `${currency(row.taxAmount)} SAR` },
         ]}
       />
 
@@ -162,11 +173,11 @@ export function VatOverview() {
                 rows={received}
                 emptyMessage="No invoices matched the current VAT period."
                 columns={[
-                  { header: "Invoice number", render: (row) => row.invoiceNumber },
-                  { header: "Date", render: (row) => row.date },
-                  { header: "Customer", render: (row) => row.customer },
-                  { header: "Taxable amount", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
-                  { header: "VAT amount", align: "right", render: (row) => `${currency(row.vatAmount)} SAR` },
+                  { header: "Invoice number", width: "128px", render: (row) => row.invoiceNumber },
+                  { header: "Date", width: "110px", render: (row) => row.date },
+                  { header: "Customer", width: "200px", cellVariant: "description", render: (row) => row.customer },
+                  { header: "Taxable amount", width: "130px", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
+                  { header: "VAT amount", width: "120px", align: "right", render: (row) => `${currency(row.vatAmount)} SAR` },
                 ]}
               />
             ) : (
@@ -176,11 +187,11 @@ export function VatOverview() {
                 rows={paid}
                 emptyMessage="No purchase-side VAT records matched the current VAT period."
                 columns={[
-                  { header: "Reference", render: (row) => row.reference },
-                  { header: "Date", render: (row) => row.date },
-                  { header: "Vendor", render: (row) => row.vendor },
-                  { header: "Category", render: (row) => row.category.replaceAll("_", " ") },
-                  { header: "VAT amount", align: "right", render: (row) => `${currency(row.vatAmount)} SAR` },
+                  { header: "Reference", width: "130px", render: (row) => row.reference },
+                  { header: "Date", width: "110px", render: (row) => row.date },
+                  { header: "Vendor", width: "200px", cellVariant: "description", render: (row) => row.vendor },
+                  { header: "Category", width: "120px", render: (row) => row.category.replaceAll("_", " ") },
+                  { header: "VAT amount", width: "120px", align: "right", render: (row) => `${currency(row.vatAmount)} SAR` },
                 ]}
               />
             )}

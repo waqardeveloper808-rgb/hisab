@@ -572,11 +572,11 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
         rows={snapshot.vatSummary}
         emptyMessage="VAT activity will appear after posting invoices and bills."
         columns={[
-          { header: "Code", render: (r) => r.code },
-          { header: "Name", render: (r) => r.name },
-          { header: "Rate", align: "right", render: (r) => `${r.rate}%` },
-          { header: "Taxable", align: "right", render: (r) => `${currency(r.taxableAmount)} SAR` },
-          { header: "Tax", align: "right", render: (r) => `${currency(r.taxAmount)} SAR` },
+          { header: "Code", width: "100px", render: (r) => r.code },
+          { header: "Name", width: "220px", cellVariant: "description", render: (r) => r.name },
+          { header: "Rate", width: "80px", align: "right", render: (r) => `${r.rate}%` },
+          { header: "Taxable", width: "140px", align: "right", render: (r) => `${currency(r.taxableAmount)} SAR` },
+          { header: "Tax", width: "140px", align: "right", render: (r) => `${currency(r.taxAmount)} SAR` },
         ]}
       />
       <WorkspaceDataTable
@@ -585,12 +585,12 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
         rows={snapshot.vatDetail}
         emptyMessage="VAT detail appears after posted invoice and purchase activity."
         columns={[
-          { header: "Code", render: (r) => r.code },
-          { header: "Name", render: (r) => r.name },
-          { header: "Output Taxable", align: "right", render: (r) => `${currency(r.outputTaxableAmount)} SAR` },
-          { header: "Output VAT", align: "right", render: (r) => `${currency(r.outputTaxAmount)} SAR` },
-          { header: "Input Taxable", align: "right", render: (r) => `${currency(r.inputTaxableAmount)} SAR` },
-          { header: "Input VAT", align: "right", render: (r) => `${currency(r.inputTaxAmount)} SAR` },
+          { header: "Code", width: "90px", render: (r) => r.code },
+          { header: "Name", width: "180px", cellVariant: "description", render: (r) => r.name },
+          { header: "Output Taxable", width: "130px", align: "right", render: (r) => `${currency(r.outputTaxableAmount)} SAR` },
+          { header: "Output VAT", width: "120px", align: "right", render: (r) => `${currency(r.outputTaxAmount)} SAR` },
+          { header: "Input Taxable", width: "130px", align: "right", render: (r) => `${currency(r.inputTaxableAmount)} SAR` },
+          { header: "Input VAT", width: "120px", align: "right", render: (r) => `${currency(r.inputTaxAmount)} SAR` },
         ]}
       />
       <div className="grid gap-2.5 xl:grid-cols-2">
@@ -600,11 +600,11 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
           rows={snapshot.vatReceivedDetails}
           emptyMessage="VAT received details will appear after sales documents are finalized."
           columns={[
-            { header: "Invoice", render: (r) => r.invoiceNumber },
-            { header: "Date", render: (r) => r.date },
-            { header: "Customer", render: (r) => r.customer || "—" },
-            { header: "Taxable", align: "right", render: (r) => `${currency(r.taxableAmount)} SAR` },
-            { header: "VAT", align: "right", render: (r) => `${currency(r.vatAmount)} SAR` },
+            { header: "Invoice", width: "128px", render: (r) => r.invoiceNumber },
+            { header: "Date", width: "110px", render: (r) => r.date },
+            { header: "Customer", width: "200px", cellVariant: "description", render: (r) => r.customer || "—" },
+            { header: "Taxable", width: "130px", align: "right", render: (r) => `${currency(r.taxableAmount)} SAR` },
+            { header: "VAT", width: "120px", align: "right", render: (r) => `${currency(r.vatAmount)} SAR` },
           ]}
         />
         <WorkspaceDataTable
@@ -613,11 +613,11 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
           rows={snapshot.vatPaidDetails}
           emptyMessage="VAT paid details will appear after purchase documents are finalized."
           columns={[
-            { header: "Reference", render: (r) => r.reference },
-            { header: "Date", render: (r) => r.date },
-            { header: "Vendor", render: (r) => r.vendor || "—" },
-            { header: "Category", render: (r) => r.category || "—" },
-            { header: "VAT", align: "right", render: (r) => `${currency(r.vatAmount)} SAR` },
+            { header: "Reference", width: "130px", render: (r) => r.reference },
+            { header: "Date", width: "110px", render: (r) => r.date },
+            { header: "Vendor", width: "200px", cellVariant: "description", render: (r) => r.vendor || "—" },
+            { header: "Category", width: "120px", render: (r) => r.category || "—" },
+            { header: "VAT", width: "120px", align: "right", render: (r) => `${currency(r.vatAmount)} SAR` },
           ]}
         />
       </div>

@@ -5,6 +5,7 @@ import {
   getExecutionCategory,
   getExecutionEvaluatorKey,
   getExactRootCauseDetails,
+  setEvidenceLiveSystemMapOverride,
 } from "@/backend/app/Support/Standards/evidence-engine";
 import type { StandardsControlPoint } from "@/data/standards/control-points";
 import runtimeAuditData from "@/data/audit-runtime/control-point-runtime-results.json";
@@ -101,7 +102,10 @@ function applySeverity(
 export function buildSystemMonitorControlPoints(isoTime = new Date().toISOString()): SystemMonitorControlPoint[] {
   const snap = collectTraceabilitySnapshot();
   const modToGroup = buildMonitorModuleToGroup();
-  const moduleNameById = new Map(getActualSystemMap().modules.map((m) => [m.id, m.name]));
+  const liveSystemMap = getActualSystemMap();
+  const moduleNameById = new Map(liveSystemMap.modules.map((m) => [m.id, m.name]));
+  setEvidenceLiveSystemMapOverride(liveSystemMap);
+  try {
   return engineRegisteredControlPoints.map((cp) => {
     const result = evaluateControlPointExecution(cp);
     const bundle = collectControlPointEvidence(cp);
@@ -171,4 +175,7 @@ export function buildSystemMonitorControlPoints(isoTime = new Date().toISOString
       lastCheckedAt: timestamp,
     } satisfies SystemMonitorControlPoint;
   });
+  } finally {
+    setEvidenceLiveSystemMapOverride(null);
+  }
 }

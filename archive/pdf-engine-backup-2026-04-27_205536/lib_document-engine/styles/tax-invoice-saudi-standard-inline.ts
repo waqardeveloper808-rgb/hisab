@@ -1,0 +1,72 @@
+export const taxInvoiceSaudiStandardCss = `
+.saudi-tax-invoice {
+  font-family: "Noto Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  color: #172226;
+  background: #ffffff;
+  padding: 8mm 10mm;
+  display: grid;
+  gap: 10px;
+}
+.saudi-ar { direction: rtl; text-align: right; }
+.saudi-center { text-align: center; }
+.saudi-right { text-align: right; white-space: nowrap; }
+.saudi-strong { font-weight: 700; }
+.saudi-header { border-bottom: 1px solid #d6dde3; padding-bottom: 8px; }
+.saudi-header-grid { display: grid; gap: 8px; }
+.saudi-seller-block { display: grid; grid-template-columns: 96px 1fr; gap: 12px; align-items: start; }
+.saudi-logo-wrap {
+  width: 96px; height: 72px; border: 1px solid #d6dde3; background: #f8fafb;
+  border-radius: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.saudi-logo-placeholder { display: none; }
+.saudi-logo { max-width: 100%; max-height: 100%; object-fit: contain; }
+.saudi-company-name-en { font-size: 22px; font-weight: 800; line-height: 1.15; }
+.saudi-company-name-ar { font-size: 19px; font-weight: 800; line-height: 1.2; margin-top: 2px; }
+.saudi-seller-address-en,
+.saudi-seller-address-ar,
+.saudi-seller-contact,
+.saudi-seller-national-address { font-size: 11px; line-height: 1.4; margin-top: 2px; }
+.saudi-seller-ids { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; margin-top: 4px; }
+.saudi-title-block { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid #e8edf1; padding-top: 6px; }
+.saudi-title-en { font-size: 20px; font-weight: 800; letter-spacing: 0.04em; }
+.saudi-title-ar { font-size: 20px; font-weight: 800; }
+.saudi-meta-grid {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px;
+  border: 1px solid #d6dde3; background: #fbfcfd; border-radius: 4px; padding: 8px;
+}
+.saudi-meta-cell { display: grid; gap: 2px; }
+.saudi-meta-label { font-size: 10px; font-weight: 700; color: #64727f; text-transform: uppercase; letter-spacing: 0.03em; }
+.saudi-meta-value { font-size: 12px; font-weight: 600; color: #172226; }
+.saudi-lines { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #d6dde3; font-size: 11px; }
+.saudi-lines th, .saudi-lines td { border: 1px solid #d6dde3; padding: 6px 6px; vertical-align: top; }
+.saudi-lines thead th { background: #edf2f7; font-size: 10px; font-weight: 700; letter-spacing: 0.02em; }
+.saudi-lines tbody tr:nth-child(even) { background: #fafcfd; }
+.saudi-line-en { font-weight: 600; line-height: 1.35; }
+.saudi-line-ar { font-size: 10px; color: #5f6d79; line-height: 1.35; margin-top: 2px; }
+.saudi-vat-rate { font-size: 10px; color: #64727f; margin-top: 2px; }
+.saudi-qr-and-totals { display: grid; grid-template-columns: 1fr 320px; gap: 12px; align-items: start; }
+.saudi-qr-block {
+  border: 1px dashed #bcc6cf; background: #fafcfd; border-radius: 4px; padding: 8px;
+  display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center;
+}
+.saudi-qr-img { width: 92px; height: 92px; border: 1px solid #d6dde3; background: #ffffff; border-radius: 3px; }
+.saudi-qr-note { font-size: 11px; line-height: 1.45; }
+.saudi-totals {
+  border: 1px solid #d6dde3; background: #fbfcfd; border-radius: 4px;
+  padding: 8px; display: grid; gap: 4px;
+}
+.saudi-totals-row {
+  display: grid; grid-template-columns: 1fr 1fr auto; align-items: center;
+  gap: 8px; font-size: 11px; padding: 4px 0;
+}
+.saudi-totals-grand { border-top: 1px solid #d6dde3; padding-top: 6px; margin-top: 2px; font-size: 12px; font-weight: 800; }
+.saudi-footer { border-top: 1px solid #d6dde3; padding-top: 6px; display: grid; gap: 4px; font-size: 10px; color: #5b6772; }
+.saudi-footer-top { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.saudi-footer-assets { display: flex; gap: 10px; align-items: center; min-height: 44px; }
+.saudi-stamp, .saudi-signature { max-height: 44px; max-width: 120px; object-fit: contain; }
+.saudi-footer-page { text-align: right; }
+@media print {
+  .saudi-tax-invoice { padding: 0; gap: 8px; }
+  .saudi-lines tbody tr, .saudi-qr-and-totals, .saudi-footer { break-inside: avoid; }
+}
+`;

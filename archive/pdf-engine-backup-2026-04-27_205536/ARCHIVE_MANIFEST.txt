@@ -1,0 +1,8 @@
+PHASE 1 — PDF engine backup (pre controlled demolition)
+Root: archive/pdf-engine-backup-2026-04-27_205536/
+
+Contents:
+- lib_document-engine/  (full copy of lib/document-engine at archive time)
+- pdf.ts                (copy of lib/workspace/exports/pdf.ts)
+
+Restore: copy lib_document-engine back to lib/document-engine ; copy pdf.ts to lib/workspace/exports/pdf.ts

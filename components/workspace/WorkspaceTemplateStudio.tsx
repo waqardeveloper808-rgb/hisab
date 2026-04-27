@@ -45,6 +45,7 @@ import { buildPhase1Qr } from "@/lib/workspace/exports/qr";
 import { buildInvoicePdf } from "@/lib/workspace/exports/pdf";
 import { buildInvoiceUbl } from "@/lib/workspace/exports/xml";
 import { downloadBytes, downloadXml } from "@/lib/workspace/exports/download";
+import { TEMPLATE_STYLE_OPTIONS } from "@/lib/template-engine";
 import {
   COLUMN_LABELS,
   DOCUMENT_TEMPLATE_SCHEMAS,
@@ -64,12 +65,9 @@ import {
 } from "@/lib/workspace/document-template-schemas";
 import { buildDocumentLayout } from "@/lib/workspace/document-template-renderer";
 import {
-  ITEM_TABLE_DESCRIPTION_MAX_PX,
-  ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX,
-  ITEM_TABLE_VALUE_COLUMN_KEY,
-  buildMinWidthGetter,
-  fitItemColumnWidthsToTarget,
+  fitWidthsWithLockedColumn,
   getItemsTableInnerTargetPx,
+  ITEM_COLUMN_SAFETY_MIN_PX,
   widthsArrayToRecord,
 } from "@/lib/workspace/item-column-resize";
 import {
@@ -83,6 +81,7 @@ import {
   SCHEMA_TO_SLUG,
   SLUG_TO_SCHEMA,
   defaultTemplateUi,
+  modernTemplatePresetUi,
   zatcaStandardPresetUi,
   mergeTemplateUi,
   readTemplateUiFromStorage,
@@ -97,6 +96,10 @@ import {
   type TemplateAssetState,
   type TotalsColAlign,
 } from "@/lib/workspace/template-ui-settings";
+import {
+  WSV2_TEMPLATE_AR_FONT_STACK,
+  WSV2_TEMPLATE_LATIN_FONT_STACK,
+} from "@/lib/workspace/template-font-stacks";
 import {
   WorkspaceDocumentRenderer,
   makeRendererCustomer,
@@ -187,24 +190,24 @@ const SECTION_INSPECTOR_LABEL: Record<SectionKey, string> = {
 
 const EN_FONT_PRESETS: { label: string; value: string }[] = [
   {
-    label: "Inter (default)",
-    value: "Inter, system-ui, 'Segoe UI', Roboto, Arial, sans-serif",
+    label: "UI / Inter (default)",
+    value: WSV2_TEMPLATE_LATIN_FONT_STACK,
   },
   {
     label: "System UI",
-    value: "system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+    value: "system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif",
   },
   { label: "Georgia", value: "Georgia, 'Times New Roman', serif" },
 ];
 
 const AR_FONT_PRESETS: { label: string; value: string }[] = [
   {
-    label: "Noto Arabic (default)",
-    value: "'Noto Naskh Arabic', 'Noto Sans Arabic', 'Arial Unicode MS', Tahoma, sans-serif",
+    label: "Noto Sans + IBM Plex (default, UI match)",
+    value: WSV2_TEMPLATE_AR_FONT_STACK,
   },
   {
     label: "Tahoma",
-    value: "Tahoma, 'Arial Unicode MS', sans-serif",
+    value: "Tahoma, Tahoma, 'Segoe UI', sans-serif",
   },
   {
     label: "System Arabic",
@@ -534,8 +537,12 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     setHiddenSections({});
     setHiddenFields({});
     setColumnOrderState(defaultColumnKeys);
-    setTemplateUi((prev) => mergeTemplateUi(prev, { hiddenItemColumns: {} }));
-  }, [docType, defaultColumnKeys]);
+    setTemplateUi((prev) =>
+      mergeTemplateUi(prev, {
+        hiddenItemColumns: {},
+      }),
+    );
+  }, [docType, defaultColumnKeys, initialTemplate.id]);
 
   const toggleSection = (key: SectionKey) =>
     setHiddenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -545,8 +552,9 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     if (schema.requiredItemColumns.includes(key)) return;
     setTemplateUi((prev) => {
       const cur = prev.hiddenItemColumns ?? {};
+      const nextHidden = { ...cur, [key]: !cur[key] };
       return mergeTemplateUi(prev, {
-        hiddenItemColumns: { ...cur, [key]: !cur[key] },
+        hiddenItemColumns: nextHidden,
       });
     });
   };
@@ -605,9 +613,11 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
   const [density, setDensity] = useState<"compact" | "normal" | "wide">("normal");
   const [zoom, setZoom] = useState<number>(1);
 
-  const [templateUi, setTemplateUi] = useState(
-    () => readTemplateUiFromStorage() ?? defaultTemplateUi(),
-  );
+  const [templateUi, setTemplateUi] = useState(() => {
+    const stored = readTemplateUiFromStorage();
+    if (stored) return stored;
+    return initialTemplate.id === "tmpl-modern" ? modernTemplatePresetUi() : defaultTemplateUi();
+  });
   const hiddenItemColumns = templateUi.hiddenItemColumns ?? {};
   const infoLayoutMerged = { ...DEFAULT_INFO_CARD_LAYOUT, ...templateUi.infoCardLayout };
   const [templateAssets, setTemplateAssets] = useState<TemplateAssetState>(() =>
@@ -624,10 +634,6 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
   const tableInnerTarget = useMemo(
     () => getItemsTableInnerTargetPx(templateUi.margins),
     [templateUi.margins],
-  );
-  const columnMinGetter = useMemo(
-    () => buildMinWidthGetter(schema.itemColumns),
-    [schema],
   );
   const previewLayout = useMemo(
     () =>
@@ -909,39 +915,20 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
 
   const setItemColumnWidthPx = useCallback(
     (key: ColumnKey, nextPx: number) => {
-      if (key === ITEM_TABLE_VALUE_COLUMN_KEY) {
-        return;
-      }
       const keys = previewLayout.itemColumns.map((c) => c.key);
       if (keys.length === 0) return;
       const raw = previewLayout.itemColumns.map((c) => c.widthPx);
       const idx = keys.indexOf(key);
       if (idx < 0) return;
-      let px = Math.floor(nextPx);
-      if (key === "description") {
-        px = Math.min(
-          ITEM_TABLE_DESCRIPTION_MAX_PX,
-          Math.max(ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX, px),
-        );
-      } else {
-        px = Math.max(1, px);
-      }
-      const nextRaw = [...raw];
-      nextRaw[idx] = px;
-      const fitted = fitItemColumnWidthsToTarget(
-        keys,
-        nextRaw,
-        tableInnerTarget,
-        columnMinGetter,
-      );
+      const px = Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.floor(nextPx));
+      const fitted = fitWidthsWithLockedColumn(keys, raw, idx, px);
       onItemColumnWidthChange(widthsArrayToRecord(keys, fitted));
     },
-    [previewLayout, tableInnerTarget, columnMinGetter, onItemColumnWidthChange],
+    [previewLayout, onItemColumnWidthChange],
   );
 
   const adjustItemColumnWidthPx = useCallback(
     (key: ColumnKey, delta: number) => {
-      if (key === ITEM_TABLE_VALUE_COLUMN_KEY) return;
       const col = previewLayout.itemColumns.find((c) => c.key === key);
       if (!col) return;
       setItemColumnWidthPx(key, col.widthPx + delta);
@@ -1190,21 +1177,25 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
 
         <h5>Layout</h5>
         <div className="wsv2-field">
-          <label>Template style</label>
-          <div className="wsv2-style-tabs" role="tablist" aria-label="Template style">
-            {styleVariantsForDocType.map((variant) => (
-              <button
-                key={variant}
-                type="button"
-                role="tab"
-                aria-selected={style === variant}
-                data-active={style === variant ? "true" : "false"}
-                onClick={() => setStyle(variant)}
-              >
-                {variant.charAt(0).toUpperCase() + variant.slice(1)}
-              </button>
-            ))}
-          </div>
+          <label htmlFor="wsv2-select-template-style">Select Template Style</label>
+          <select
+            id="wsv2-select-template-style"
+            className="wsv2-template-style-select"
+            aria-label="Select template style"
+            value={style}
+            onChange={(e) => setStyle(e.target.value as TemplateStyle)}
+          >
+            {styleVariantsForDocType.map((value) => {
+              const opt = TEMPLATE_STYLE_OPTIONS.find((o) => o.value === value);
+              const label =
+                opt?.label ?? value.charAt(0).toUpperCase() + value.slice(1);
+              return (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              );
+            })}
+          </select>
           {styleVariantsForDocType.length === 1 ? (
             <span
               style={{
@@ -1525,6 +1516,32 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
               ))}
             </select>
           </div>
+        </div>
+
+        <div className="wsv2-field wsv2-color-row">
+          <label htmlFor="wsv2-header-row-color">Header row color</label>
+          <input
+            id="wsv2-header-row-color"
+            type="color"
+            value={templateUi.headerRowColor ?? "#E8F4EC"}
+            onChange={(e) => {
+              const v = e.target.value;
+              setTemplateUi((p) => mergeTemplateUi(p, { headerRowColor: v }));
+            }}
+            className="wsv2-color-swatch"
+          />
+          <input
+            type="text"
+            className="wsv2-hex-input"
+            value={templateUi.headerRowColor ?? ""}
+            onChange={(e) => {
+              const v = e.target.value.trim();
+              if (v && !/^#[0-9A-Fa-f]{6}$/.test(v)) return;
+              setTemplateUi((p) => mergeTemplateUi(p, { headerRowColor: v || undefined }));
+            }}
+            placeholder="#E8F4EC"
+            aria-label="Header row color hex"
+          />
         </div>
 
         <h5>Typography / colors</h5>
@@ -2042,7 +2059,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                     40,
                 );
             const colTitle = `${COLUMN_LABELS[col].en}${required ? " (required)" : ""}`;
-            const isValueLocked = col === ITEM_TABLE_VALUE_COLUMN_KEY;
+            const colWidthMin = ITEM_COLUMN_SAFETY_MIN_PX;
             return (
               <div
                 key={col}
@@ -2055,17 +2072,17 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                   </span>
                   <button
                     type="button"
-                    role="switch"
-                    aria-checked={visible}
+                    className="wsv2-icon-btn wsv2-item-col-visibility-btn"
+                    aria-pressed={visible}
                     aria-labelledby={`wsv2-item-col-label-${col}`}
                     disabled={required}
-                    className={`wsv2-switch ${visible ? "wsv2-switch-on" : "wsv2-switch-off"}`}
-                    title={required ? "Required column" : visible ? "Column visible" : "Column hidden"}
+                    title={required ? "Required column" : visible ? "Hide column" : "Show column"}
+                    data-on={visible ? "true" : "false"}
                     onClick={() => {
                       if (!required) toggleColumn(col);
                     }}
                   >
-                    <span className="wsv2-switch-knob" aria-hidden />
+                    {visible ? <Eye size={14} /> : <EyeOff size={14} className="wsv2-col-picker-off" />}
                   </button>
                   <div className="wsv2-col-actions">
                     <button
@@ -2085,20 +2102,11 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                       <ArrowDown size={11} />
                     </button>
                   </div>
-                  {visible && plCol && isValueLocked ? (
+                  {visible && plCol ? (
                     <div
-                      className="wsv2-col-width wsv2-col-width-locked"
-                      title="Line total (value) column is fixed at 225 px for all templates."
-                      aria-label="Total column width fixed at 225 px"
+                      className="wsv2-col-width"
+                      aria-label="Column width in pixels"
                     >
-                      <span className="wsv2-col-width-locked-val">225</span>
-                      <span className="wsv2-col-width-unit" aria-hidden="true">
-                        px
-                      </span>
-                    </div>
-                  ) : null}
-                  {visible && plCol && !isValueLocked ? (
-                    <div className="wsv2-col-width" aria-label="Column width in pixels">
                       <button
                         type="button"
                         className="wsv2-icon-btn wsv2-col-width-bump"
@@ -2111,17 +2119,12 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                         id={col === "vatRate" ? "wsv2-item-col-vat-rate-width" : undefined}
                         className="wsv2-col-width-input"
                         type="number"
-                        min={col === "description" ? ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX : 1}
-                        max={col === "description" ? ITEM_TABLE_DESCRIPTION_MAX_PX : undefined}
+                        min={colWidthMin}
                         value={widthValue}
                         onChange={(e) => {
                           const n = parseInt(e.target.value, 10);
                           if (!Number.isFinite(n)) return;
-                          if (col === "description") {
-                            if (n >= ITEM_TABLE_DESCRIPTION_MIN_SHRINK_PX && n <= ITEM_TABLE_DESCRIPTION_MAX_PX) {
-                              setItemColumnWidthPx(col, n);
-                            }
-                          } else if (n > 0) {
+                          if (n >= colWidthMin) {
                             setItemColumnWidthPx(col, n);
                           }
                         }}

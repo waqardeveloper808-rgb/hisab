@@ -14,20 +14,20 @@ import type { DocumentRecord, Customer } from "@/lib/workspace/types";
 import { previewCompany } from "@/data/preview-company";
 import {
   PAGE_GEOMETRY,
+  SECTION_LABELS,
   SPACING,
   type ColumnKey,
   type DocumentTemplateSchema,
   type FieldKey,
-  type ItemColumnSpec,
   type LangMode,
   type SectionKey,
   type TemplateStyle,
 } from "@/lib/workspace/document-template-schemas";
 import {
   applyBoundaryDragPx,
-  buildMinWidthGetter,
   fitItemColumnWidthsToTarget,
   getItemsTableInnerTargetPx,
+  ITEMS_TABLE_MAX_WIDTH_PX,
   widthsArrayToRecord,
 } from "@/lib/workspace/item-column-resize";
 import {
@@ -42,7 +42,6 @@ import {
 import {
   containsArabic,
   isPrimarilyArabicBlock,
-  ltrIsolateStyle,
   rtlPlaintextBlockStyle,
 } from "@/lib/workspace/document-bidi";
 import {
@@ -121,8 +120,23 @@ function HeaderSection({
   const headerSec = layout.sections.find((s) => s.id === "header");
   const avail = headerSec ? Math.max(200, headerSec.widthPx - 28) : 640;
   const gap = hb.cardGapPx;
+  const twoColTitleLogo = hb.structure === "two_column_logo_in_title";
   let gridTemplateColumns: string;
-  if (hb.columnWidthMode === "custom") {
+  if (twoColTitleLogo) {
+    if (hb.columnWidthMode === "custom") {
+      let wEn = hb.englishCardWidthPx;
+      let wAr = hb.arabicCardWidthPx;
+      const raw = wEn + wAr + gap;
+      if (raw > avail && raw > 0) {
+        const s = avail / raw;
+        wEn *= s;
+        wAr *= s;
+      }
+      gridTemplateColumns = `${wEn}px ${wAr}px`;
+    } else {
+      gridTemplateColumns = "minmax(0, 1fr) minmax(0, 1fr)";
+    }
+  } else if (hb.columnWidthMode === "custom") {
     let wEn = hb.englishCardWidthPx;
     let wLogo = hb.logoCardWidthPx;
     let wAr = hb.arabicCardWidthPx;
@@ -252,6 +266,7 @@ function HeaderSection({
         ) : null}
       </div>
 
+      {twoColTitleLogo ? null : (
       <div
         className="wsv2-header-card-logo"
         style={{
@@ -284,6 +299,7 @@ function HeaderSection({
           />
         )}
       </div>
+      )}
 
       <div
         className="wsv2-header-card-ar"
@@ -327,24 +343,68 @@ function HeaderSection({
             ) : null}
             {layout.seller.vatValue ? (
               <div
-                className="wsv2-wf-line"
-                style={{ color: textColors.arabic, ...rtlPlaintextBlockStyle(arAlignKey) }}
+                className="wsv2-header-seller-meta-row"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "minmax(0, 1fr) auto",
+                  columnGap: 10,
+                  rowGap: 2,
+                  alignItems: "baseline",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  color: textColors.arabic,
+                }}
               >
-                <span className="wsv2-wf-line-label" style={{ color: textColors.arabic }}>
+                <span
+                  className="wsv2-wf-line-label"
+                  style={{ color: textColors.arabic, textAlign: "right", minWidth: 0 }}
+                >
                   {layout.seller.vatLabelAr}
                 </span>
-                <span style={ltrIsolateStyle()}>{"\u200e "}{layout.seller.vatValue}</span>
+                <span
+                  dir="ltr"
+                  style={{
+                    color: textColors.arabic,
+                    unicodeBidi: "plaintext",
+                    textAlign: "right",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {layout.seller.vatValue}
+                </span>
               </div>
             ) : null}
             {layout.seller.crValue ? (
               <div
-                className="wsv2-wf-line"
-                style={{ color: textColors.arabic, ...rtlPlaintextBlockStyle(arAlignKey) }}
+                className="wsv2-header-seller-meta-row"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "minmax(0, 1fr) auto",
+                  columnGap: 10,
+                  rowGap: 2,
+                  alignItems: "baseline",
+                  width: "100%",
+                  boxSizing: "border-box",
+                  color: textColors.arabic,
+                }}
               >
-                <span className="wsv2-wf-line-label" style={{ color: textColors.arabic }}>
+                <span
+                  className="wsv2-wf-line-label"
+                  style={{ color: textColors.arabic, textAlign: "right", minWidth: 0 }}
+                >
                   {layout.seller.crLabelAr}
                 </span>
-                <span style={ltrIsolateStyle()}>{"\u200e "}{layout.seller.crValue}</span>
+                <span
+                  dir="ltr"
+                  style={{
+                    color: textColors.arabic,
+                    unicodeBidi: "plaintext",
+                    textAlign: "right",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {layout.seller.crValue}
+                </span>
               </div>
             ) : null}
           </>
@@ -354,21 +414,82 @@ function HeaderSection({
   );
 }
 
-function TitleSection({ layout, language }: { layout: LayoutPlan; language: LangMode }) {
+function TitleSection({
+  layout,
+  language,
+  logoDataUrl,
+  titleUi,
+}: {
+  layout: LayoutPlan;
+  language: LangMode;
+  logoDataUrl: string | null;
+  titleUi: TemplateUiSettings["title"];
+}) {
   const en = layout.textColors.english;
   const ar = layout.textColors.arabic;
   const arFont = layout.bodyFonts.arabic;
+  const hb = layout.headerBlock;
+  const logoInTitle = hb.structure === "two_column_logo_in_title";
+  const enPx = titleUi.enFontPx > 0 ? titleUi.enFontPx : 25;
+  const arPx = titleUi.arFontPx > 0 ? titleUi.arFontPx : 21;
   return (
     <div className="wsv2-wf-title">
+      {logoInTitle ? (
+        <div
+          className="wsv2-wf-title-logo-wrap"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 10,
+            minHeight: hb.logoHeightPx,
+            alignItems: "center",
+          }}
+        >
+          {logoDataUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoDataUrl}
+              alt=""
+              style={{
+                maxWidth: hb.logoWidthPx,
+                maxHeight: hb.logoHeightPx,
+                objectFit: "contain",
+                display: "block",
+              }}
+            />
+          ) : (
+            <div
+              className="wsv2-wf-logo-box"
+              style={{
+                width: hb.logoWidthPx,
+                height: hb.logoHeightPx,
+                boxSizing: "border-box",
+                borderStyle: "dashed",
+                opacity: 0.6,
+              }}
+              aria-label="Logo placeholder"
+            />
+          )}
+        </div>
+      ) : null}
       {language !== "arabic" ? (
-        <div className="wsv2-wf-title-en" style={{ color: en }}>{layout.title.en}</div>
+        <div className="wsv2-wf-title-en" style={{ color: en, fontSize: enPx, lineHeight: 1.2 }}>
+          {layout.title.en}
+        </div>
       ) : null}
       {language !== "english" ? (
         <div
           className="wsv2-wf-title-ar"
           dir="rtl"
           lang="ar"
-          style={{ color: ar, fontFamily: arFont, unicodeBidi: "plaintext", textAlign: "center" }}
+          style={{
+            color: ar,
+            fontFamily: arFont,
+            fontSize: arPx,
+            unicodeBidi: "plaintext",
+            textAlign: "center",
+            lineHeight: 1.2,
+          }}
         >
           {layout.title.ar}
         </div>
@@ -491,9 +612,70 @@ function InfoTable({
   );
 }
 
+function InfoCardHeaderBar({
+  titleEn,
+  titleAr,
+  language,
+  headerBg,
+  enColor,
+  arColor,
+}: {
+  titleEn: string;
+  titleAr: string;
+  language: LangMode;
+  headerBg: string;
+  enColor: string;
+  arColor: string;
+}) {
+  return (
+    <div
+      className="wsv2-wf-info-card-header-bar"
+      style={{
+        flexShrink: 0,
+        backgroundColor: headerBg,
+        borderRadius: "4px 4px 0 0",
+      }}
+    >
+      <div className="wsv2-wf-info-card-header-title">
+        {language === "english" ? (
+          <span style={{ color: enColor }}>{titleEn}</span>
+        ) : language === "arabic" ? (
+          <span className="wsv2-wf-type-ar" style={{ color: arColor, ...rtlPlaintextBlockStyle("right") }}>
+            {titleAr || titleEn}
+          </span>
+        ) : titleAr ? (
+          <>
+            <span style={{ color: enColor }}>{titleEn}</span>
+            <span style={{ color: enColor }}> / </span>
+            <span
+              className="wsv2-wf-type-ar"
+              style={{ color: arColor, ...rtlPlaintextBlockStyle("right"), display: "inline-block" }}
+            >
+              {titleAr}
+            </span>
+          </>
+        ) : (
+          <span style={{ color: enColor }}>{titleEn}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function CustomerSection({ layout, language }: { layout: LayoutPlan; language: LangMode }) {
   return (
-    <div className="wsv2-wf-section-body wsv2-wf-naked-section">
+    <div
+      className="wsv2-wf-section-body wsv2-wf-naked-section"
+      style={{ display: "flex", flexDirection: "column", minWidth: 0 }}
+    >
+      <InfoCardHeaderBar
+        titleEn={layout.customerLabel.en}
+        titleAr={layout.customerLabel.ar}
+        language={language}
+        headerBg={layout.headerRowColor}
+        enColor={layout.textColors.english}
+        arColor={layout.textColors.arabic}
+      />
       <InfoTable
         rows={layout.customerRows}
         language={language}
@@ -507,8 +689,20 @@ function CustomerSection({ layout, language }: { layout: LayoutPlan; language: L
 }
 
 function DocInfoSection({ layout, language }: { layout: LayoutPlan; language: LangMode }) {
+  const dl = SECTION_LABELS.docInfo;
   return (
-    <div className="wsv2-wf-section-body wsv2-wf-naked-section">
+    <div
+      className="wsv2-wf-section-body wsv2-wf-naked-section"
+      style={{ display: "flex", flexDirection: "column", minWidth: 0 }}
+    >
+      <InfoCardHeaderBar
+        titleEn={dl.en}
+        titleAr={dl.ar}
+        language={language}
+        headerBg={layout.headerRowColor}
+        enColor={layout.textColors.english}
+        arColor={layout.textColors.arabic}
+      />
       <InfoTable
         rows={layout.documentInfoRows}
         language={language}
@@ -538,49 +732,30 @@ function ItemsSection({
   resizable?: boolean;
   onWidthChange?: (widths: Partial<Record<ColumnKey, number>>) => void;
   schema: DocumentTemplateSchema;
-  /** Canonical max inner width (card); live resize uses measured wrap when available. */
+  /** @deprecated Budget is {@link ITEMS_TABLE_MAX_WIDTH_PX}; prop kept for call-site compatibility. */
   tableTargetPx: number;
   textColors: { english: string; arabic: string };
   bodyFonts: LayoutPlan["bodyFonts"];
 }) {
+  void schema;
+  void tableTargetPx;
   const cols = layout.itemColumns;
   const keys = useMemo(() => cols.map((c) => c.key), [cols]);
-  const minGetter = useMemo(
-    () => buildMinWidthGetter(schema.itemColumns as ItemColumnSpec[]),
-    [schema.itemColumns],
-  );
   const tableRef = useRef<HTMLTableElement | null>(null);
   const tableWrapRef = useRef<HTMLDivElement | null>(null);
   const [tableHeight, setTableHeight] = useState(0);
-  const [wrapW, setWrapW] = useState(0);
 
   const sumW = useMemo(
     () => Math.max(1, cols.reduce((s, c) => s + c.widthPx, 0)),
     [cols],
   );
-  const colPcts = useMemo(() => {
-    if (cols.length === 0) return [] as number[];
-    const p: number[] = [];
-    let acc = 0;
-    for (let i = 0; i < cols.length; i++) {
-      if (i === cols.length - 1) {
-        p.push(100 - acc);
-      } else {
-        const t = (100 * cols[i]!.widthPx) / sumW;
-        p.push(t);
-        acc += t;
-      }
-    }
-    return p;
-  }, [cols, sumW]);
 
   const emitWidths = useCallback(
     (arr: number[]) => {
-      const cap = wrapW > 0 ? Math.round(wrapW) : tableTargetPx;
-      const r = fitItemColumnWidthsToTarget(keys, arr, cap, minGetter);
+      const r = fitItemColumnWidthsToTarget(keys, arr, ITEMS_TABLE_MAX_WIDTH_PX, () => 40);
       onWidthChange?.(widthsArrayToRecord(keys, r));
     },
-    [keys, onWidthChange, tableTargetPx, wrapW, minGetter],
+    [keys, onWidthChange],
   );
 
   useLayoutEffect(() => {
@@ -588,14 +763,12 @@ function ItemsSection({
     const tbl = tableRef.current;
     if (!wrap || !tbl) return;
     const ro = new ResizeObserver(() => {
-      setWrapW(wrap.clientWidth);
       setTableHeight(tbl.offsetHeight);
     });
     ro.observe(wrap);
-    setWrapW(wrap.clientWidth);
     setTableHeight(tbl.offsetHeight);
     return () => ro.disconnect();
-  }, [layout.itemColumns, layout.itemRows, language, density, colPcts]);
+  }, [layout.itemColumns, layout.itemRows, language, density, sumW]);
 
   const onHandlePointerDown = (rightIndex: number, e: ReactPointerEvent<HTMLDivElement>) => {
     if (!onWidthChange) return;
@@ -608,7 +781,7 @@ function ItemsSection({
     const move = (ev: PointerEvent) => {
       if (ev.pointerId !== pointerId) return;
       const delta = ev.clientX - startX;
-      const next = applyBoundaryDragPx(keys, startWidths, rightIndex, delta, minGetter);
+      const next = applyBoundaryDragPx(keys, startWidths, rightIndex, delta);
       emitWidths(next);
     };
     const up = (ev: PointerEvent) => {
@@ -652,14 +825,14 @@ function ItemsSection({
           }}
         >
           <colgroup>
-            {cols.map((col, i) => (
+            {cols.map((col) => (
               <col
                 key={col.key}
-                style={{ width: `${colPcts[i]!}%` }}
+                style={{ width: `${(col.widthPx / sumW) * 100}%` }}
               />
             ))}
           </colgroup>
-          <thead>
+          <thead style={{ backgroundColor: layout.headerRowColor }}>
             {language !== "arabic" ? (
               <tr className="wsv2-wf-hdr-en">
                 {cols.map((col) => {
@@ -675,7 +848,12 @@ function ItemsSection({
                     style={{
                       textAlign: col.align,
                       color: textColors.english,
-                      whiteSpace: hdrLtr ? "nowrap" : undefined,
+                      wordBreak: "break-word",
+                      overflowWrap: "anywhere",
+                      verticalAlign: "top",
+                      lineHeight: 1.25,
+                      minWidth: 0,
+                      boxSizing: "border-box",
                     }}
                     className="wsv2-wf-th"
                     scope="col"
@@ -700,7 +878,12 @@ function ItemsSection({
                     style={{
                       textAlign: col.align,
                       color: textColors.arabic,
-                      whiteSpace: hdrLtr ? "nowrap" : undefined,
+                      wordBreak: "break-word",
+                      overflowWrap: "anywhere",
+                      verticalAlign: "top",
+                      lineHeight: 1.25,
+                      minWidth: 0,
+                      boxSizing: "border-box",
                     }}
                     className="wsv2-wf-th wsv2-wf-type-ar"
                     dir={hdrLtr ? "ltr" : "rtl"}
@@ -738,7 +921,11 @@ function ItemsSection({
                       color: textColors.english,
                       unicodeBidi: "plaintext",
                       fontFamily: arCell ? bodyFonts.arabic : undefined,
-                      whiteSpace: forceLtrNumeric ? "nowrap" : undefined,
+                      wordBreak: "break-word",
+                      overflowWrap: "anywhere",
+                      verticalAlign: "top",
+                      minWidth: 0,
+                      boxSizing: "border-box",
                     }}
                     className={["wsv2-wf-td", arCell ? "wsv2-wf-type-ar" : ""].filter(Boolean).join(" ")}
                   >
@@ -753,8 +940,7 @@ function ItemsSection({
         {showHandles && cols.length > 1
           ? Array.from({ length: cols.length - 1 }, (_, hIdx) => {
               const rightIndex = hIdx + 1;
-              const leftFrac = cols.slice(0, rightIndex).reduce((s, c) => s + c.widthPx, 0) / sumW;
-              const leftPx = (wrapW > 0 ? leftFrac * wrapW : 0) - 4;
+              const leftPx = cols.slice(0, rightIndex).reduce((s, c) => s + c.widthPx, 0) - 4;
               return (
                 <div
                   key={`h-${rightIndex}`}
@@ -777,7 +963,7 @@ function ItemsSection({
                     e.preventDefault();
                     const w = cols.map((x) => x.widthPx);
                     const delta = e.key === "ArrowRight" ? 2 : -2;
-                    const next = applyBoundaryDragPx(keys, w, rightIndex, delta, minGetter);
+                    const next = applyBoundaryDragPx(keys, w, rightIndex, delta);
                     emitWidths(next);
                   }}
                 />
@@ -805,7 +991,7 @@ function TotalsSection({
   const amtW = Math.max(48, tb.totals_amount_col_width_px);
   const curW = Math.max(22, tb.totals_currency_col_width_px);
   const gridTemplateColumns = `${tb.totals_desc_col_width_px}px ${curW}px ${amtW}px`;
-  const dAlign = tb.totals_desc_align ?? "left";
+  void tb.totals_desc_align;
   const cAlign = tb.totals_currency_align ?? "center";
   const aAlign = tb.totals_amount_align ?? "right";
   return (
@@ -825,7 +1011,6 @@ function TotalsSection({
           <div
             className="wsv2-wf-totals-label wsv2-wf-totals-desc wsv2-totals-desc"
             dir="ltr"
-            style={{ textAlign: dAlign }}
           >
             {language === "english"
               ? <span style={{ color: textColors.english }}>{row.labelEn}</span>
@@ -1162,6 +1347,48 @@ function infoCardShellClassAndStyle(
   return { shellClass, style };
 }
 
+/** Modern template: place customer + document info shells on one row (side by side). */
+function mergeModernInfoCardRows(
+  rows: { rowKey: string; sectionId: SectionKey | null; node: ReactNode }[],
+  style: TemplateStyle,
+): { rowKey: string; sectionId: SectionKey | null; node: ReactNode }[] {
+  if (style !== "modern") return rows;
+  const out: { rowKey: string; sectionId: SectionKey | null; node: ReactNode }[] = [];
+  let j = 0;
+  while (j < rows.length) {
+    const a = rows[j];
+    const b = rows[j + 1];
+    if (a.sectionId === "customer" && b?.sectionId === "docInfo") {
+      out.push({
+        rowKey: "customer+docInfo",
+        sectionId: null,
+        node: (
+          <div
+            key="customer+docInfo"
+            className="wsv2-wf-info-cards-row"
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "flex-start",
+              gap: SPACING.sectionGapPx,
+              width: "100%",
+              minWidth: 0,
+            }}
+          >
+            {a.node}
+            {b.node}
+          </div>
+        ),
+      });
+      j += 2;
+    } else {
+      out.push(a);
+      j += 1;
+    }
+  }
+  return out;
+}
+
 function SectionShell({ section, active, onSelect, setRef, children, styleOverride, shellClass }: SectionShellProps) {
   const computed: CSSProperties = {
     ...(section.minHeightPx > 0 ? { minHeight: section.minHeightPx } : {}),
@@ -1310,7 +1537,7 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
       const body = (() => {
         switch (section.id) {
           case "header":         return <HeaderSection layout={layout} language={language} showHeaderAccent={ui.showHeaderGreenAccent} logoDataUrl={templateAssets.logoDataUrl} textColors={layout.textColors} cardBorder={ui.cardBorder} />;
-          case "title":          return <TitleSection layout={layout} language={language} />;
+          case "title":          return <TitleSection layout={layout} language={language} logoDataUrl={templateAssets.logoDataUrl} titleUi={ui.title} />;
           case "customer":       return <CustomerSection layout={layout} language={language} />;
           case "docInfo":        return <DocInfoSection layout={layout} language={language} />;
           case "items":          return (
@@ -1388,13 +1615,15 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
       i += 1;
     }
 
-    const stampIdx = sectionRows.findIndex((r) => r.sectionId === "stampSignature");
+    const mergedSectionRows = mergeModernInfoCardRows(sectionRows, style);
+
+    const stampIdx = mergedSectionRows.findIndex((r) => r.sectionId === "stampSignature");
     const preferBottom =
       stampIdx >= 0 && layout.stampSignatureBlock.preferBottomWhenSpaceAvailable !== false;
     const rowsWithSpacer: SectionRow[] =
       preferBottom && stampIdx >= 0
         ? [
-            ...sectionRows.slice(0, stampIdx),
+            ...mergedSectionRows.slice(0, stampIdx),
             {
               rowKey: "wsv2-stamp-bottom-spacer",
               sectionId: null,
@@ -1407,19 +1636,22 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
                 />
               ),
             },
-            ...sectionRows.slice(stampIdx),
+            ...mergedSectionRows.slice(stampIdx),
           ]
-        : sectionRows;
+        : mergedSectionRows;
 
     const m = ui.margins;
     const padT = (m.topMm * 96) / 25.4;
     const padB = (m.bottomMm * 96) / 25.4;
     const innerMinH = PAGE_GEOMETRY.heightPx - padT - padB;
+    const typoScale = Math.min(2, Math.max(0.5, ui.typography.enSizeScale));
+    const basePx = 12 * typoScale;
+    const linePx = Math.round(16 * typoScale);
 
     return (
       <div
         ref={ref}
-        className="wsv2-doc-paper-inner wsv2-doc-with-ui"
+        className="wsv2-root wsv2-doc-paper-inner wsv2-doc-with-ui"
         data-style={style}
         data-lang={language}
         data-stamp-bottom-fill={preferBottom ? "true" : undefined}
@@ -1431,6 +1663,8 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
           boxSizing: "border-box",
           margin: 0,
           padding: `${padT}px ${(m.rightMm * 96) / 25.4}px ${padB}px ${(m.leftMm * 96) / 25.4}px`,
+          fontSize: basePx,
+          lineHeight: `${linePx}px`,
           ["--wsv2-en-fg" as string]: layout.textColors.english,
           ["--wsv2-ar-fg" as string]: layout.textColors.arabic,
           ["--wsv2-en-ff" as string]: ui.typography.enFontStack,

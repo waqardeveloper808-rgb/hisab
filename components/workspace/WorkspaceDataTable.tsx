@@ -5,6 +5,10 @@ type WorkspaceColumn<Row> = {
   header: string;
   render: (row: Row) => ReactNode;
   align?: "left" | "right";
+  /** Fixed column width, e.g. "120px" — pairs with table-layout: fixed */
+  width?: string;
+  /** Use for long description text: wrap instead of single-line ellipsis */
+  cellVariant?: "default" | "description";
 };
 
 type WorkspaceDataTableProps<Row> = {
@@ -31,15 +35,19 @@ export function WorkspaceDataTable<Row>({ title, caption, rows, columns, emptyMe
         </div>
       </div>
       <div className="overflow-x-auto">
-        <table className="min-w-full text-xs">
+        <table className="w-full min-w-[640px] text-xs [table-layout:fixed]">
           <thead className="border-b border-line bg-surface-soft/70">
             <tr>
-              {columns.map((column) => (
+              {columns.map((column, colIndex) => (
                 <th
-                  key={column.header}
+                  key={`${column.header}-${colIndex}`}
+                  style={column.width ? { width: column.width, maxWidth: column.width } : undefined}
                   className={[
-                    "px-3 py-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.08em] text-muted",
+                    "min-w-0 px-3 py-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.08em] text-muted",
                     column.align === "right" ? "text-right" : "text-left",
+                    column.cellVariant === "description"
+                      ? "whitespace-normal break-words [word-break:break-word]"
+                      : "overflow-hidden text-ellipsis whitespace-nowrap",
                   ].join(" ")}
                 >
                   {column.header}
@@ -53,14 +61,18 @@ export function WorkspaceDataTable<Row>({ title, caption, rows, columns, emptyMe
                 "border-t border-line/70 text-ink",
                 index % 2 === 0 ? "bg-white" : "bg-surface-soft/25",
               ].join(" ")}>
-                {columns.map((column) => (
+                {columns.map((column, colIndex) => (
                   <td
-                    key={column.header}
+                    key={`${column.header}-${colIndex}`}
+                    style={column.width ? { width: column.width, maxWidth: column.width } : undefined}
                     className={[
-                      "px-3 py-1.5 align-top text-xs leading-5",
+                      "min-w-0 px-3 py-1.5 align-top text-xs leading-5",
                       /debit/i.test(column.header) ? "bg-emerald-50/35" : "",
                       /credit/i.test(column.header) ? "bg-rose-50/30" : "",
                       column.align === "right" ? "text-right" : "text-left",
+                      column.cellVariant === "description"
+                        ? "whitespace-normal break-words [word-break:break-word]"
+                        : "overflow-hidden text-ellipsis whitespace-nowrap",
                     ].join(" ")}
                   >
                     {column.render(row)}

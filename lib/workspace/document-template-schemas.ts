@@ -176,9 +176,10 @@ export const TYPOGRAPHY = {
   /** Info-row / table body (px; PDF pt = px * PAGE_GEOMETRY.pxToPt). */
   infoValuePx: 12,
   infoLabelPx: 11,
-  itemsCellPx: 11,
-  itemsHeaderEnPx: 10,
-  itemsHeaderArPx: 9,
+  /** Items table body — 1 pt smaller than prior baseline; header row stays 1 pt above body. */
+  itemsCellPx: 10,
+  itemsHeaderEnPx: 9,
+  itemsHeaderArPx: 8,
   qrCaptionPx: 10,
   stampCaptionPx: 10,
   stampMetaPx: 9,
@@ -460,7 +461,7 @@ const DEFAULT_DOCUMENT_INFO_ROWS: InfoRow[] = [
 // Wafeq Format 2 invoice item table — exact widthPx values match the schema spec.
 const DEFAULT_ITEM_COLUMNS: ItemColumnSpec[] = [
   { key: "index",           widthPx: 30,  align: "center", required: true },
-  { key: "description",     widthPx: 300, align: "left",   required: true },
+  { key: "description",     widthPx: 225, align: "left",   required: true },
   { key: "quantity",        widthPx: 44,  align: "right",  required: true,  format: "qty" },
   { key: "unit",            widthPx: 40,  align: "center", required: false, format: "text" },
   { key: "price",           widthPx: 68,  align: "right",  required: true,  format: "money" },
@@ -528,7 +529,7 @@ const SIMPLIFIED_TAX_INVOICE: DocumentTemplateSchema = {
   ],
   itemColumns: [
     { key: "index",        widthPx: 30,  align: "center", required: true },
-    { key: "description",  widthPx: 300, align: "left",   required: true },
+    { key: "description",  widthPx: 225, align: "left",   required: true },
     { key: "quantity",     widthPx: 44,  align: "right",  required: true,  format: "qty" },
     { key: "price",        widthPx: 72,  align: "right",  required: true,  format: "money" },
     { key: "vatAmount",    widthPx: 68,  align: "right",  required: true,  format: "money" },
@@ -667,7 +668,7 @@ const DELIVERY_NOTE: DocumentTemplateSchema = {
   ],
   itemColumns: [
     { key: "index",             widthPx: 30,  align: "center", required: true },
-    { key: "description",       widthPx: 300, align: "left",   required: true },
+    { key: "description",       widthPx: 225, align: "left",   required: true },
     { key: "quantity",          widthPx: 56,  align: "right",  required: true,  format: "qty" },
     { key: "unit",              widthPx: 44,  align: "center", required: false, format: "text" },
     { key: "deliveredQuantity", widthPx: 72,  align: "right",  required: true,  format: "qty" },
@@ -704,7 +705,7 @@ const PURCHASE_ORDER: DocumentTemplateSchema = {
   ],
   itemColumns: [
     { key: "index",        widthPx: 30,  align: "center", required: true },
-    { key: "description",  widthPx: 300, align: "left",   required: true },
+    { key: "description",  widthPx: 225, align: "left",   required: true },
     { key: "quantity",     widthPx: 52,  align: "right",  required: true,  format: "qty" },
     { key: "unit",         widthPx: 44,  align: "center", required: false, format: "text" },
     { key: "price",        widthPx: 72,  align: "right",  required: true,  format: "money" },

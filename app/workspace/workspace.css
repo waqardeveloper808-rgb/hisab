@@ -32,6 +32,10 @@
   --wsv2-sidebar-collapsed: 64px;
   --wsv2-topbar-h: 56px;
 
+  /* Template / document: same Arabic stack as next/font in `app/workspace/layout.tsx` */
+  --wsv2-template-ar-font-stack: var(--font-noto-sans-arabic), var(--font-ibm-plex-sans-arabic), "Segoe UI", Tahoma, Arial, sans-serif;
+  --wsv2-template-latin-font-stack: var(--font-body), "Segoe UI", Tahoma, system-ui, sans-serif;
+
   /* Sidebar palette — Hisabix light green theme.
      Future theme switching (Light / Eye-Comfort / Dark) only needs to
      swap the --wsv2-sidebar-* tokens via a [data-wsv2-theme="..."]
@@ -720,6 +724,7 @@
 
 [data-wsv2] table.wsv2-table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 12.5px;
@@ -743,7 +748,16 @@
   top: 0;
   background: var(--wsv2-surface-alt);
   z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+[data-wsv2] .wsv2-table th.wsv2-cell-desc {
+  white-space: normal;
+  word-break: break-word;
+  overflow: visible;
 }
 
 [data-wsv2] .wsv2-table td {
@@ -751,7 +765,17 @@
   border-bottom: 1px solid var(--wsv2-line);
   color: var(--wsv2-ink);
   vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+[data-wsv2] .wsv2-table td.wsv2-cell-desc {
+  white-space: normal;
+  word-break: break-word;
+  overflow: visible;
+  vertical-align: top;
 }
 
 [data-wsv2] .wsv2-table tr:last-child td {
@@ -2532,6 +2556,19 @@
    `lib/workspace-v2/document-template-schemas.ts`.
    ============================================================ */
 
+/* Document template root: Arabic-capable stack matches workspace UI (next/font) */
+[data-wsv2] .wsv2-root {
+  font-family: var(--wsv2-template-ar-font-stack);
+  font-synthesis: none;
+}
+
+[data-wsv2] .wsv2-root [dir="rtl"],
+[data-wsv2] .wsv2-root .arabic {
+  font-family: var(--wsv2-template-ar-font-stack);
+  direction: rtl;
+  text-align: right;
+}
+
 [data-wsv2] .wsv2-doc-paper-inner {
   display: flex;
   flex-direction: column;
@@ -2539,7 +2576,7 @@
   padding: 0;
   background: #ffffff;
   color: #111827;
-  font-family: var(--font-body), Inter, Arial, system-ui, sans-serif;
+  font-family: var(--wsv2-template-ar-font-stack);
   font-size: 12px;
   line-height: 16px;
   width: 100%;
@@ -2548,20 +2585,125 @@
   box-sizing: border-box;
 }
 
-/* Compact / modern style overrides per spec */
-[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] {
-  gap: 8px;
+/* ------------------------------------------------------------------
+   Document canvas layout styles — must match data/workspace/template-specs.md
+   ------------------------------------------------------------------ */
+
+/* Standard — formal baseline (explicit for audit parity with spec). */
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] {
+  gap: 12px;
+  font-size: 12px;
+  line-height: 16px;
 }
-[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-items-table th,
-[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-items-table td {
-  padding: 5px 6px;
-  font-size: 11px;
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] .wsv2-wf-section:not([data-section="footer"]):not([data-section="header"]):not([data-section="customer"]):not([data-section="docInfo"]) {
+  padding: 12px 14px;
+  border-radius: 6px;
+  box-shadow: none;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] .wsv2-wf-header {
+  grid-template-columns: 1fr 164px 1fr;
+  gap: 16px;
+  padding: 12px 14px 14px;
+  border-top-width: 3px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] .wsv2-wf-title-en {
+  font-size: 25px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] .wsv2-wf-title-ar {
+  font-size: 21px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] .wsv2-wf-items-table thead th {
+  padding: 8px 6px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="standard"] .wsv2-wf-items-table tbody td {
+  padding: 7px 6px;
+}
+
+/* Modern — compact rhythm, title/typography from Template Studio (inline scales body via --wsv2). */
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] {
+  gap: 8px;
+  font-size: 12px;
+  line-height: 16px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-section:not([data-section="footer"]):not([data-section="header"]):not([data-section="customer"]):not([data-section="docInfo"]) {
+  padding: 8px 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-header {
-  border-top-width: 4px;
+  grid-template-columns: 1fr 164px 1fr;
+  gap: 10px;
+  padding: 8px 10px 10px;
+  border-top-width: 3px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-title-en {
   font-size: 27px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-title-ar {
+  font-size: 22px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-section-heading {
+  font-size: 11.5px;
+  margin-bottom: 10px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-items-table thead th {
+  padding: 9px 7px;
+  font-size: calc(11px - 1pt);
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-items-table tbody td {
+  padding: 9px 7px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-table th,
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-table td {
+  padding: 8px 7px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-split-row {
+  gap: 16px;
+}
+
+/* Compact — dense register / bulk print. */
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] {
+  gap: 6px;
+  font-size: 11px;
+  line-height: 15px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-section:not([data-section="footer"]):not([data-section="header"]):not([data-section="customer"]):not([data-section="docInfo"]) {
+  padding: 8px 10px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-header {
+  grid-template-columns: 1fr 140px 1fr;
+  gap: 10px;
+  padding: 8px 10px 10px;
+  border-top-width: 3px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-title-en {
+  font-size: 22px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-title-ar {
+  font-size: 18px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-section-heading {
+  font-size: 9px;
+  margin-bottom: 5px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-items-table {
+  font-size: 10px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-items-table thead th {
+  padding: 5px 5px;
+  font-size: 9px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-items-table tbody td {
+  padding: 5px 6px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-info-table th,
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-info-table td {
+  padding: 5px 4px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="compact"] .wsv2-wf-split-row {
+  gap: 8px;
 }
 
 [data-wsv2] .wsv2-wf-section {
@@ -2763,13 +2905,40 @@
   font-size: 21px;
   font-weight: 700;
   color: inherit;
-  font-family: "Noto Naskh Arabic", "Noto Sans Arabic", var(--font-body), Arial;
+  font-family: var(--wsv2-template-ar-font-stack);
 }
 
 /* Stamp/signature toward bottom: sections keep natural height; spacer absorbs slack. */
 [data-wsv2] .wsv2-doc-paper-inner[data-stamp-bottom-fill="true"] > .wsv2-wf-section,
-[data-wsv2] .wsv2-doc-paper-inner[data-stamp-bottom-fill="true"] > .wsv2-wf-split-row {
+[data-wsv2] .wsv2-doc-paper-inner[data-stamp-bottom-fill="true"] > .wsv2-wf-split-row,
+[data-wsv2] .wsv2-doc-paper-inner[data-stamp-bottom-fill="true"] > .wsv2-wf-info-cards-row {
   flex-shrink: 0;
+}
+
+/* Customer + document info cards — header band (preview; matches table header tint). */
+[data-wsv2] .wsv2-wf-info-card-header-bar {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  box-sizing: border-box;
+}
+[data-wsv2] .wsv2-wf-info-card-header-title {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+  line-height: 1.25;
+  width: 100%;
+}
+
+/* Modern: two info shells in one flex row */
+[data-wsv2] .wsv2-wf-info-cards-row {
+  min-width: 0;
+}
+[data-wsv2] .wsv2-wf-info-cards-row > .wsv2-wf-section {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 [data-wsv2] .wsv2-wf-title-ar {
@@ -2813,7 +2982,7 @@
 }
 [data-wsv2] .wsv2-wf-info-label[data-side="right"] {
   text-align: right;
-  font-family: "Noto Naskh Arabic", "Noto Sans Arabic", var(--font-body), Arial;
+  font-family: var(--wsv2-template-ar-font-stack);
 }
 [data-wsv2] .wsv2-wf-info-value {
   font-size: 12px;
@@ -2823,13 +2992,14 @@
   unicode-bidi: plaintext;
 }
 [data-wsv2] .wsv2-wf-type-ar {
-  font-family: var(--wsv2-ar-ff, "Noto Naskh Arabic", "Noto Sans Arabic", Arial, sans-serif);
+  font-family: var(--wsv2-ar-ff, var(--wsv2-template-ar-font-stack));
   color: var(--wsv2-ar-fg, #111827);
   unicode-bidi: plaintext;
 }
+/* Base document face comes from .wsv2-doc-paper-inner / .wsv2-root (Arabic UI stack);
+   per-node English/Arabic use inline --wsv2-en-ff / --wsv2-ar-ff from the renderer. */
 [data-wsv2] .wsv2-doc-with-ui {
   color: var(--wsv2-en-fg, #111827);
-  font-family: var(--wsv2-en-ff, Inter, system-ui, sans-serif);
 }
 [data-wsv2] .wsv2-wf-naked-section {
   border-top: 0;
@@ -2895,16 +3065,24 @@
   max-width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  font-size: 11.5px;
+  font-size: calc(11.5px - 1pt);
+}
+[data-wsv2] .wsv2-wf-items-table thead th,
+[data-wsv2] .wsv2-wf-items-table tbody td {
+  overflow: hidden;
 }
 [data-wsv2] .wsv2-wf-items-table thead th {
   background: #F6FAF4;
   color: #1F6E16;
   font-weight: 700;
-  font-size: 10.5px;
+  font-size: calc(10.5px - 1pt);
   letter-spacing: 0.02em;
   padding: 8px 6px;
   border-bottom: 1px solid #E7ECEF;
+  vertical-align: top;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 [data-wsv2] .wsv2-wf-items-table thead tr.wsv2-wf-hdr-ar th {
   background: #F6FAF4;
@@ -2919,6 +3097,8 @@
   border-bottom: 1px solid #E7ECEF;
   vertical-align: top;
   word-break: break-word;
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 [data-wsv2] .wsv2-wf-items-table tbody tr:last-child td {
   border-bottom: 0;
@@ -2938,7 +3118,7 @@
 [data-wsv2] .wsv2-doc-paper-inner .wsv2-bi-ar {
   display: inline;
   color: var(--wsv2-ar-fg, #111827);
-  font-family: "Noto Naskh Arabic", "Noto Sans Arabic", var(--font-body), Arial;
+  font-family: var(--wsv2-template-ar-font-stack);
 }
 
 /* Split row: QR (left) + totals (right) on the same y */
@@ -2995,6 +3175,7 @@
 [data-wsv2] .wsv2-wf-totals-desc {
   line-height: 1.35;
   word-break: break-word;
+  text-align: center !important;
 }
 [data-wsv2] .wsv2-wf-totals-currency {
   color: #6B7280;
@@ -3078,7 +3259,7 @@
   line-height: 15px;
   color: #6B7280;
   text-align: right;
-  font-family: "Noto Naskh Arabic", "Noto Sans Arabic", var(--font-body), Arial;
+  font-family: var(--wsv2-template-ar-font-stack);
 }
 
 /* Stamp / signature blocks */
@@ -3144,6 +3325,36 @@
   [data-wsv2] .wsv2-doc-paper-inner {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Register / overlay preview: print only the A4 paper, matching PDF export focus. */
+  [data-wsv2] .wsv2-preview-overlay {
+    position: static !important;
+    inset: auto !important;
+    background: transparent !important;
+  }
+  [data-wsv2] .wsv2-preview-panel {
+    position: static !important;
+    max-width: none !important;
+    width: 100% !important;
+    height: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  [data-wsv2] .wsv2-preview-header,
+  [data-wsv2] .wsv2-preview-actions,
+  [data-wsv2] .wsv2-preview-body > .wsv2-suggestion {
+    display: none !important;
+  }
+  [data-wsv2] .wsv2-preview-body {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  [data-wsv2] .wsv2-doc-paper {
+    box-shadow: none !important;
+    margin: 0 auto !important;
+    page-break-after: always;
   }
 }
 
@@ -3329,38 +3540,30 @@
   flex-shrink: 0;
 }
 [data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row .wsv2-col-width,
-[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row .wsv2-col-width-muted,
-[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row .wsv2-col-width-locked {
+[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row .wsv2-col-width-muted {
   margin-left: auto;
   flex-shrink: 0;
 }
-[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row button.wsv2-switch {
-  width: 34px;
-  height: 20px;
+[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row button.wsv2-item-col-visibility-btn {
   flex-shrink: 0;
-}
-[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row .wsv2-switch-knob {
-  width: 14px;
-  height: 14px;
-  top: 3px;
-  left: 3px;
-}
-[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row .wsv2-switch-on .wsv2-switch-knob {
-  transform: translateX(14px);
-}
-[data-wsv2] .wsv2-template-studio .wsv2-col-width-locked {
+  width: 32px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 0 6px;
-  height: 22px;
-  border-radius: 4px;
-  border: 1px dashed var(--wsv2-line);
-  background: var(--wsv2-surface-alt);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--wsv2-ink-subtle);
-  font-variant-numeric: tabular-nums;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--wsv2-line);
+  background: var(--wsv2-surface);
+  color: var(--wsv2-ink);
+}
+[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row button.wsv2-item-col-visibility-btn[data-on="false"] {
+  background: rgba(180, 30, 30, 0.06);
+  border-color: rgba(180, 30, 30, 0.25);
+  color: rgba(180, 30, 30, 0.9);
+}
+[data-wsv2] .wsv2-template-studio .wsv2-item-col-control-row button.wsv2-item-col-visibility-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 [data-wsv2] .wsv2-template-studio .wsv2-item-heading-inputs-row {
   display: grid;
@@ -3771,4 +3974,150 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
+
+/* —— Accounting hub (Wafeq-style organization) —— */
+[data-wsv2] .wsv2-accounting-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 8px;
+}
+[data-wsv2] .wsv2-accounting-tab {
+  border: 1px solid var(--wsv2-line);
+  background: var(--wsv2-surface);
+  color: var(--wsv2-ink-muted);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--wsv2-radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+[data-wsv2] .wsv2-accounting-tab--active {
+  border-color: var(--wsv2-primary);
+  background: var(--wsv2-primary-soft);
+  color: var(--wsv2-ink);
+}
+[data-wsv2] .wsv2-accounting-tab:focus-visible {
+  outline: 2px solid var(--wsv2-primary);
+  outline-offset: 2px;
+}
+[data-wsv2] .wsv2-accounting-intro {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--wsv2-ink-subtle);
+  max-width: 70rem;
+  margin: 0 0 10px;
+}
+[data-wsv2] .wsv2-accounting-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+[data-wsv2] a.wsv2-accounting-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--wsv2-line);
+  border-radius: var(--wsv2-radius-md);
+  background: var(--wsv2-surface);
+  text-decoration: none;
+  color: var(--wsv2-ink);
+  box-shadow: var(--wsv2-shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  min-height: 108px;
+}
+[data-wsv2] a.wsv2-accounting-card:hover {
+  border-color: var(--wsv2-primary);
+  box-shadow: var(--wsv2-shadow-md);
+}
+[data-wsv2] .wsv2-accounting-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+[data-wsv2] .wsv2-accounting-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+[data-wsv2] .wsv2-accounting-card__desc {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--wsv2-ink-subtle);
+  flex: 1;
+}
+[data-wsv2] .wsv2-accounting-card__meta {
+  font-size: 10px;
+  line-height: 1.35;
+  color: var(--wsv2-ink-subtle);
+  margin: 0;
+  margin-top: 2px;
+}
+[data-wsv2] .wsv2-accounting-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+[data-wsv2] .wsv2-accounting-badge--live {
+  background: var(--wsv2-success-soft);
+  color: var(--wsv2-success);
+}
+[data-wsv2] .wsv2-accounting-badge--partial {
+  background: var(--wsv2-warning-soft);
+  color: var(--wsv2-warning);
+}
+[data-wsv2] .wsv2-accounting-badge--foundation {
+  background: var(--wsv2-info-soft);
+  color: var(--wsv2-info);
+}
+
+/* Reports hub — Wafeq-style sections */
+[data-wsv2] .wsv2-reports-section {
+  margin-top: 18px;
+}
+[data-wsv2] .wsv2-reports-section__title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wsv2-ink-subtle);
+  margin: 0 0 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--wsv2-line);
+}
+[data-wsv2] .wsv2-reports-link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+[data-wsv2] a.wsv2-reports-link {
+  display: block;
+  padding: 10px 10px 8px;
+  border: 1px solid var(--wsv2-line);
+  border-radius: var(--wsv2-radius-sm);
+  background: var(--wsv2-surface-alt);
+  text-decoration: none;
+  color: var(--wsv2-ink);
+  font-size: 12px;
+  font-weight: 600;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+[data-wsv2] a.wsv2-reports-link:hover {
+  border-color: var(--wsv2-primary);
+  background: #fff;
+}
+[data-wsv2] .wsv2-reports-link__sub {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--wsv2-ink-subtle);
+  margin-top: 2px;
 }

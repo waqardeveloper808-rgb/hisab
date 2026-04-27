@@ -8,9 +8,11 @@ import type { DocumentRecord } from "@/lib/workspace/types";
 import { findCustomer } from "@/data/workspace/customers";
 import { getSchemaForKind, type LangMode } from "@/lib/workspace/document-template-schemas";
 import { previewCompany } from "@/data/preview-company";
+import { templates } from "@/data/workspace/templates";
 import { buildPhase1Qr } from "@/lib/workspace/exports/qr";
 import {
   defaultTemplateUi,
+  modernTemplatePresetUi,
   readTemplateUiFromStorage,
   readTemplateAssetsFromStorage,
 } from "@/lib/workspace/template-ui-settings";
@@ -25,16 +27,23 @@ type Props = {
   language?: LangMode;
 };
 
+function templateUiForPreview(templateId: string | undefined) {
+  const stored = readTemplateUiFromStorage();
+  if (stored) return stored;
+  return templateId === "tmpl-modern" ? modernTemplatePresetUi() : defaultTemplateUi();
+}
+
 export function WorkspaceDocumentPreview({ document, language = "bilingual" }: Props) {
   const customer = findCustomer(document.customerId);
   const schema = getSchemaForKind(document.kind);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [studioUi, setStudioUi] = useState(() => readTemplateUiFromStorage() ?? defaultTemplateUi());
+  const [studioUi, setStudioUi] = useState(() => templateUiForPreview(document.templateId));
   const [studioAssets, setStudioAssets] = useState(() => readTemplateAssetsFromStorage());
+  const templateStyle = templates.find((t) => t.id === document.templateId)?.style ?? "standard";
   useEffect(() => {
-    setStudioUi(readTemplateUiFromStorage() ?? defaultTemplateUi());
+    setStudioUi(templateUiForPreview(document.templateId));
     setStudioAssets(readTemplateAssetsFromStorage());
-  }, [document.id]);
+  }, [document.id, document.templateId]);
 
   useEffect(() => {
     if (!schema.qr.applicable) {
@@ -70,10 +79,11 @@ export function WorkspaceDocumentPreview({ document, language = "bilingual" }: P
         seller={makeRendererSeller()}
         customer={makeRendererCustomer(customer)}
         language={language}
-        style="standard"
+        style={templateStyle}
         qrImageDataUrl={qrDataUrl}
         ui={studioUi}
         templateAssets={studioAssets}
+        templateId={document.templateId}
       />
     </div>
   );

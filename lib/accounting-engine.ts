@@ -550,3 +550,6 @@ export interface AccountingPeriod {
   endDate: string;
   status: "open" | "locked" | "closed";
 }
+
+/** Wafeq-style COA section labels; maps to `accountGroupHints` (see `lib/workspace/coa-wafeq-groups.ts`). */
+export { WAFEQ_STYLE_COA_HIERARCHY, accountGroupToWafeqPath } from "./workspace/coa-wafeq-groups";

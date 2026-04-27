@@ -3550,12 +3550,16 @@ export type JournalEntryRecord = {
   entryNumber: string;
   entryDate: string;
   postingDate: string;
+  /** Entry-level description from the backend (distinct from line descriptions). */
+  description: string;
   reference: string;
   memo: string;
   sourceType: string | null;
   sourceId: number | null;
   status: string;
   createdByName?: string;
+  /** When the entry was posted (ISO), if provided by API. */
+  postedAt?: string | null;
   metadata?: Record<string, unknown> | null;
   lines: Array<{
     id?: number;
@@ -3592,16 +3596,18 @@ export async function listJournals(filters?: {
   const qs = params.toString();
   const result = await request<ApiEnvelope<Array<{
     id: number; entry_number: string; entry_date: string; posting_date?: string | null;
-    reference?: string | null; memo?: string | null;
+    reference?: string | null; description?: string | null; memo?: string | null;
     source_type?: string | null; source_id?: number | null; status: string; created_by_name?: string | null;
+    posted_at?: string | null;
     metadata?: Record<string, unknown> | null;
     lines: Array<{ id: number; line_no: number; account_id?: number; account_code?: string | null; account_name?: string | null; debit: string | number; credit: string | number; description?: string | null; document_id?: number | null; document_number?: string | null; document_type?: string | null; document_status?: string | null; inventory_item_id?: number | null }>;
   }>>>(`journals${qs ? `?${qs}` : ""}`);
   return result.data.map((j) => ({
     id: j.id, entryNumber: j.entry_number, entryDate: j.entry_date,
     postingDate: j.posting_date ?? j.entry_date, reference: j.reference ?? "",
+    description: j.description ?? "",
     memo: j.memo ?? "", sourceType: j.source_type ?? null, sourceId: j.source_id ?? null,
-    status: j.status, createdByName: j.created_by_name ?? "", metadata: j.metadata ?? null,
+    status: j.status, createdByName: j.created_by_name ?? "", postedAt: j.posted_at ?? null, metadata: j.metadata ?? null,
     lines: j.lines.map((l) => ({
       id: l.id,
       lineNo: l.line_no,
@@ -3619,13 +3625,14 @@ export async function listJournals(filters?: {
 }
 
 export async function createJournal(payload: {
-  entryDate: string; postingDate?: string; reference?: string; memo?: string; metadata?: Record<string, unknown> | null;
+  entryDate: string; postingDate?: string; reference?: string; description?: string; memo?: string; metadata?: Record<string, unknown> | null;
   lines: Array<{ accountId: number; debit: number; credit: number; description?: string; documentId?: number | null; inventoryItemId?: number | null }>;
 }): Promise<JournalEntryRecord> {
   const result = await request<ApiEnvelope<{
     id: number; entry_number: string; entry_date: string; posting_date?: string | null;
-    reference?: string | null; memo?: string | null;
+    reference?: string | null; description?: string | null; memo?: string | null;
     source_type?: string | null; source_id?: number | null; status: string; created_by_name?: string | null;
+    posted_at?: string | null;
     metadata?: Record<string, unknown> | null;
     lines: Array<{ id: number; line_no: number; account_id?: number; account_code?: string | null; account_name?: string | null; debit: string | number; credit: string | number; description?: string | null; document_id?: number | null; document_number?: string | null; document_type?: string | null; document_status?: string | null; inventory_item_id?: number | null }>;
   }>>("journals", {
@@ -3634,6 +3641,7 @@ export async function createJournal(payload: {
       entry_date: payload.entryDate,
       posting_date: payload.postingDate ?? payload.entryDate,
       reference: payload.reference ?? "",
+      description: payload.description ?? "",
       memo: payload.memo ?? "",
       metadata: payload.metadata ?? null,
       lines: payload.lines.map((l) => ({
@@ -3645,8 +3653,9 @@ export async function createJournal(payload: {
   return {
     id: j.id, entryNumber: j.entry_number, entryDate: j.entry_date,
     postingDate: j.posting_date ?? j.entry_date, reference: j.reference ?? "",
+    description: j.description ?? "",
     memo: j.memo ?? "", sourceType: j.source_type ?? null, sourceId: j.source_id ?? null,
-    status: j.status, createdByName: j.created_by_name ?? "", metadata: j.metadata ?? null,
+    status: j.status, createdByName: j.created_by_name ?? "", postedAt: j.posted_at ?? null, metadata: j.metadata ?? null,
     lines: j.lines.map((l) => ({
       id: l.id,
       lineNo: l.line_no,
@@ -3674,8 +3683,9 @@ export async function postJournal(id: number): Promise<JournalEntryRecord> {
   return {
     id: j.id, entryNumber: j.entry_number, entryDate: j.entry_date,
     postingDate: j.posting_date ?? j.entry_date, reference: j.reference ?? "",
+    description: "",
     memo: j.memo ?? "", sourceType: j.source_type ?? null, sourceId: j.source_id ?? null,
-    status: j.status,
+    status: j.status, postedAt: null, metadata: null,
     lines: j.lines.map((l) => ({
       lineNo: l.line_no, accountCode: l.account.code, accountName: l.account.name,
       debit: numberValue(l.debit), credit: numberValue(l.credit), description: l.description ?? null,
@@ -3694,8 +3704,9 @@ export async function reverseJournal(id: number): Promise<JournalEntryRecord> {
   return {
     id: j.id, entryNumber: j.entry_number, entryDate: j.entry_date,
     postingDate: j.posting_date ?? j.entry_date, reference: j.reference ?? "",
+    description: "",
     memo: j.memo ?? "", sourceType: j.source_type ?? null, sourceId: j.source_id ?? null,
-    status: j.status,
+    status: j.status, postedAt: null, metadata: null,
     lines: j.lines.map((l) => ({
       lineNo: l.line_no, accountCode: l.account.code, accountName: l.account.name,
       debit: numberValue(l.debit), credit: numberValue(l.credit), description: l.description ?? null,

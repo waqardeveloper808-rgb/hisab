@@ -11,8 +11,12 @@ import {
 import { processLogoImage } from "@/lib/logo-intelligence";
 import type { Attachment } from "@/lib/accounting-engine";
 import { previewCompany } from "@/data/preview-company";
+import {
+  WSV2_TEMPLATE_AR_FONT_STACK,
+  WSV2_TEMPLATE_LATIN_FONT_STACK,
+} from "@/lib/workspace/template-font-stacks";
 
-type PreviewContact = {
+export type PreviewContact = {
   id: number;
   type: "customer" | "supplier";
   display_name: string;
@@ -40,7 +44,7 @@ type PreviewAsset = {
   metadata?: Record<string, unknown> | null;
 };
 
-type PreviewTemplate = {
+export type PreviewTemplate = {
   id: number;
   name: string;
   document_types?: string[] | null;
@@ -73,7 +77,7 @@ type PreviewItem = {
   } | null;
 };
 
-type PreviewDocumentLine = {
+export type PreviewDocumentLine = {
   id: number;
   item_id?: number | null;
   ledger_account_id?: number | null;
@@ -87,7 +91,7 @@ type PreviewDocumentLine = {
   } | null;
 };
 
-type PreviewDocument = {
+export type PreviewDocument = {
   id: number;
   type: string;
   status: string;
@@ -250,8 +254,8 @@ export function assertExplicitWorkspacePreviewRequest(searchParams: URLSearchPar
   }
 }
 
-const arabicFontStack = "'Noto Naskh Arabic', Tahoma, Arial, sans-serif";
-const documentFontStack = `'Segoe UI', ${arabicFontStack}`;
+const arabicFontStack = WSV2_TEMPLATE_AR_FONT_STACK;
+const documentFontStack = `${WSV2_TEMPLATE_LATIN_FONT_STACK}, ${WSV2_TEMPLATE_AR_FONT_STACK}`;
 
 const productionCustomer = {
   display_name: "Desert Retail Co.",
@@ -1475,7 +1479,7 @@ function buildDocumentHtml(document: PreviewDocument, template: PreviewTemplate 
     </section>`,
   };
 
-  return `<html><body style="margin:0; padding:0; background:#f1f5f1; font-family:${escapeHtml(fontFamily)}; color:${text};"><style>@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700;800&display=swap');</style><div style="max-width:794px; margin:0 auto; padding:12px; background:#ffffff; box-sizing:border-box;"><article data-doc-root="true" style="background:#ffffff; border:1px solid ${frame}; font-family:${escapeHtml(fontFamily)}; color:${text}; padding:${canvasPadding}px; max-width:100%; box-sizing:border-box;">${headerHtml ? `<section data-doc-header-html="true" style="margin-bottom:${Math.round(sectionGap)}px; border:1px solid ${divider}; background:${panel}; padding:12px; font-size:${fontSize}px; line-height:1.5;">${headerHtml}</section>` : ""}${sectionOrder.map((section) => sectionMarkup[section] ?? "").filter(Boolean).join("")}</article></div></body></html>`;
+  return `<html><body style="margin:0; padding:0; background:#f1f5f1; font-family:${escapeHtml(fontFamily)}; color:${text};"><div style="max-width:794px; margin:0 auto; padding:12px; background:#ffffff; box-sizing:border-box;"><article data-doc-root="true" style="background:#ffffff; border:1px solid ${frame}; font-family:${escapeHtml(fontFamily)}; color:${text}; padding:${canvasPadding}px; max-width:100%; box-sizing:border-box;">${headerHtml ? `<section data-doc-header-html="true" style="margin-bottom:${Math.round(sectionGap)}px; border:1px solid ${divider}; background:${panel}; padding:12px; font-size:${fontSize}px; line-height:1.5;">${headerHtml}</section>` : ""}${sectionOrder.map((section) => sectionMarkup[section] ?? "").filter(Boolean).join("")}</article></div></body></html>`;
 }
 
 async function resolveTemplateWithLogo(template?: PreviewTemplate) {
@@ -1817,6 +1821,28 @@ async function resolveTemplateRenderAssets(
     stampUrl,
     signatureUrl,
   };
+}
+
+/**
+ * V2 print HTML: implemented in `document-engine/workspace-v2-guest-pdf-orchestrate.ts` (via
+ * `workspace-v2-guest-pdf-html`) so this module
+ * does not statically import `react-dom/server` (Next.js constraint for shared app modules).
+ * Same `WorkspaceDocumentRenderer` + wsv2-* layout as `WorkspaceDocumentPreview`.
+ */
+export async function renderWorkspaceDocumentHtmlV2(params: {
+  document: PreviewDocument;
+  template?: PreviewTemplate;
+  contact?: PreviewContact | null;
+}): Promise<string> {
+  const { buildGuestPreviewV2PrintHtml } = await import("@/lib/document-engine/workspace-v2-guest-pdf-html");
+  // GuestPrint types are a structural subset; preview rows/lines are forward-compatible.
+  return buildGuestPreviewV2PrintHtml(
+    params as {
+      document: import("@/lib/document-engine/workspace-v2-guest-pdf-html").GuestPreviewDocument;
+      template?: import("@/lib/document-engine/workspace-v2-guest-pdf-html").GuestPreviewTemplate;
+      contact?: import("@/lib/document-engine/workspace-v2-guest-pdf-html").GuestPreviewContact | null;
+    },
+  );
 }
 
 export async function renderWorkspaceDocumentHtml(params: {
@@ -2169,7 +2195,7 @@ export async function getPreviewDocumentPreview(documentId: number, templateId?:
     ?? undefined;
 
   return {
-    html: await renderWorkspaceDocumentHtml({ document, template, contact }),
+    html: await renderWorkspaceDocumentHtmlV2({ document, template, contact }),
   };
 }
 
@@ -3115,31 +3141,45 @@ export async function listPreviewGeneralLedger() {
   return rows;
 }
 
+function trialBalanceRowTypeForAccount(code: string): "asset" | "liability" | "equity" | "income" | "expense" {
+  const account = defaultChartOfAccounts.find((a) => a.code === code);
+  if (!account) {
+    return "asset";
+  }
+  if (account.accountClass === "income") {
+    return "income";
+  }
+  if (account.accountClass === "expense" || account.accountClass === "cost_of_sales") {
+    return "expense";
+  }
+  if (account.accountClass === "liability") {
+    return "liability";
+  }
+  if (account.accountClass === "equity") {
+    return "equity";
+  }
+  if (account.accountClass === "contra" && account.group === "contra_revenue") {
+    return "expense";
+  }
+  if (account.accountClass === "asset" || account.accountClass === "contra") {
+    return "asset";
+  }
+  return "asset";
+}
+
 export async function listPreviewTrialBalance() {
   const ledger = await listPreviewGeneralLedger();
   const accounts = new Map<string, { code: string; name: string; type: string; debit_total: number; credit_total: number; balance: number }>();
 
-  const accountMeta: Record<string, { name: string; type: string }> = {
-    "1010": { name: "Cash in Hand", type: "asset" },
-    "1100": { name: "Accounts Receivable", type: "asset" },
-    "1150": { name: "Inventory — Trading", type: "asset" },
-    "1200": { name: "Main Bank Account", type: "asset" },
-    "1210": { name: "Secondary Bank Account", type: "asset" },
-    "1300": { name: "VAT Receivable (Input VAT)", type: "asset" },
-    "2000": { name: "Accounts Payable", type: "liability" },
-    "2200": { name: "VAT Payable (Output VAT)", type: "liability" },
-    "4000": { name: "Sales Revenue", type: "income" },
-    "4010": { name: "Service Revenue", type: "income" },
-    "5000": { name: "Cost of Goods Sold", type: "expense" },
-    "6000": { name: "Rent Expense", type: "expense" },
-  };
-
   ledger.forEach((row) => {
-    const meta = accountMeta[row.account_code] ?? { name: row.account_name, type: "asset" };
-    const current = accounts.get(row.account_code) ?? { code: row.account_code, name: meta.name, type: meta.type, debit_total: 0, credit_total: 0, balance: 0 };
+    const rowType = trialBalanceRowTypeForAccount(row.account_code);
+    const name = defaultChartOfAccounts.find((a) => a.code === row.account_code)?.name ?? row.account_name;
+    const current = accounts.get(row.account_code) ?? { code: row.account_code, name, type: rowType, debit_total: 0, credit_total: 0, balance: 0 };
     current.debit_total = roundCurrency(current.debit_total + row.debit);
     current.credit_total = roundCurrency(current.credit_total + row.credit);
     current.balance = roundCurrency(current.debit_total - current.credit_total);
+    current.name = name;
+    current.type = rowType;
     accounts.set(row.account_code, current);
   });
 

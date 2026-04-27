@@ -74,6 +74,8 @@ type BackendDocumentDetail = {
   taxable_total: number;
   tax_total: number;
   grand_total: number;
+  balance_due?: number | null;
+  paid_total?: number | null;
   custom_fields?: Record<string, string | number | boolean | null> | null;
   lines?: BackendDocumentLine[];
   contact?: {
@@ -247,6 +249,11 @@ async function fetchBackendTemplateById(params: {
   return response.data.find((template) => template.id === params.templateId) ?? null;
 }
 
+function sanitizeWorkspacePdfFileName(value: string) {
+  const base = value.replace(/[^a-zA-Z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") || "document";
+  return base.toLowerCase().endsWith(".pdf") ? base : `${base}.pdf`;
+}
+
 async function renderAuthenticatedDocumentEngine(params: {
   baseUrl: string;
   companyId: string;
@@ -255,7 +262,7 @@ async function renderAuthenticatedDocumentEngine(params: {
   activeCompanyId: number | null;
   documentId: number;
   templateId?: number | null;
-}) {
+}): Promise<{ html: string; pdfFileName: string }> {
   const [settingsResponse, assetsResponse] = await Promise.all([
     fetchBackendJson<BackendCompanySettingsEnvelope>(`${params.baseUrl}/api/companies/${params.companyId}/settings`, params.actorId, params.apiToken, params.activeCompanyId),
     fetchBackendJson<BackendCompanyAsset[]>(`${params.baseUrl}/api/companies/${params.companyId}/assets`, params.actorId, params.apiToken, params.activeCompanyId),
@@ -272,8 +279,12 @@ async function renderAuthenticatedDocumentEngine(params: {
   }));
   const company = mapBackendCompany(settingsResponse.data, assets);
   const document = documentResponse.data;
+  const grand = Number(document.grand_total ?? 0);
+  const balanceDue = document.balance_due != null && document.balance_due !== undefined ? Number(document.balance_due) : grand;
+  const paidTotal =
+    document.paid_total != null && document.paid_total !== undefined ? Number(document.paid_total) : Math.max(0, grand - balanceDue);
 
-  return await renderWorkspaceDocumentHtml({
+  const html = await renderWorkspaceDocumentHtml({
     availableAssets: assets,
     template: template
       ? {
@@ -297,8 +308,8 @@ async function renderAuthenticatedDocumentEngine(params: {
       due_date: document.due_date,
       supply_date: document.supply_date,
       grand_total: Number(document.grand_total ?? 0),
-      balance_due: Number(document.grand_total ?? 0),
-      paid_total: 0,
+      balance_due: balanceDue,
+      paid_total: paidTotal,
       tax_total: Number(document.tax_total ?? 0),
       taxable_total: Number(document.taxable_total ?? 0),
       contact: {
@@ -346,6 +357,10 @@ async function renderAuthenticatedDocumentEngine(params: {
       },
     } : null,
   });
+
+  const pdfFileName = sanitizeWorkspacePdfFileName(document.document_number || `document-${document.id}`);
+
+  return { html, pdfFileName };
 }
 
 async function renderAuthenticatedTemplatePreview(params: {
@@ -767,7 +782,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   }
 
   if (request.method === "GET" && slug[0] === "documents" && slug[2] === "preview") {
-    const html = await renderAuthenticatedDocumentEngine({
+    const { html } = await renderAuthenticatedDocumentEngine({
       baseUrl: backendBaseUrl,
       companyId,
       actorId,
@@ -780,7 +795,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   }
 
   if (request.method === "GET" && slug[0] === "documents" && (slug[2] === "pdf" || slug[2] === "export-pdf")) {
-    const html = await renderAuthenticatedDocumentEngine({
+    const { html, pdfFileName } = await renderAuthenticatedDocumentEngine({
       baseUrl: backendBaseUrl,
       companyId,
       actorId,
@@ -794,7 +809,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="document-${slug[1]}.pdf"`,
+        "Content-Disposition": `attachment; filename="${pdfFileName}"`,
         "Cache-Control": "no-store",
         "X-Workspace-Mode": "backend",
       },

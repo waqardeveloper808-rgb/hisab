@@ -24,14 +24,8 @@ import {
   getSchemaForKind,
   type LangMode,
 } from "@/lib/workspace/document-template-schemas";
-import { buildInvoicePdf } from "@/lib/workspace/exports/pdf";
 import { buildInvoiceUbl } from "@/lib/workspace/exports/xml";
 import { downloadBytes, downloadXml } from "@/lib/workspace/exports/download";
-import {
-  readTemplateUiFromStorage,
-  readTemplateAssetsFromStorage,
-  defaultTemplateUi,
-} from "@/lib/workspace/template-ui-settings";
 import { WorkspaceDocumentPreview } from "./WorkspaceDocumentPreview";
 import { WorkspaceMoreActions, type MoreAction } from "./WorkspaceMoreActions";
 import { WorkspaceSuggestion } from "./WorkspaceSuggestion";
@@ -79,38 +73,17 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
     setBusy("pdf");
     setError(null);
     try {
-      const result = await buildInvoicePdf({
-        doc: document,
-        schema,
-        language,
-        seller: {
-          name: previewCompany.sellerName,
-          nameAr: previewCompany.sellerNameAr,
-          vatNumber: previewCompany.vatNumber,
-          registrationNumber: previewCompany.registrationNumber,
-          addressEn: previewCompany.sellerAddressEn,
-          addressAr: previewCompany.sellerAddressAr,
-          email: previewCompany.sellerEmail,
-          phone: previewCompany.sellerPhone,
-        },
-        customer: {
-          name: customer?.legalName ?? "Customer",
-          nameAr: customer?.legalNameAr,
-          vatNumber: customer?.vatNumber,
-          city: customer?.city,
-          country: "SA",
-          email: customer?.email,
-          phone: customer?.phone,
-        },
-        ui: readTemplateUiFromStorage() ?? defaultTemplateUi(),
-        templateAssets: {
-          logoDataUrl: readTemplateAssetsFromStorage().logoDataUrl,
-          stampDataUrl: readTemplateAssetsFromStorage().stampDataUrl,
-          signatureDataUrl: readTemplateAssetsFromStorage().signatureDataUrl,
-          signatoryName: readTemplateAssetsFromStorage().signatoryName,
-        },
+      const templateParam = template?.id != null ? `&template_id=${template.id}` : "";
+      const url = `/api/workspace/documents/${encodeURIComponent(document.id)}/export-pdf?mode=preview${templateParam}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "X-Workspace-Mode": "preview" },
       });
-      downloadBytes(result.bytes, result.filename, "application/pdf");
+      if (!response.ok) {
+        throw new Error(`PDF download failed (${response.status})`);
+      }
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      downloadBytes(bytes, `${document.number}.pdf`, "application/pdf");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not generate PDF");
     } finally {

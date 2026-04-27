@@ -30,3 +30,11 @@ YOU EXECUTE EXACT INSTRUCTIONS WITH VERIFICATION.
 
 IF UNCERTAIN:
 → STOP AND ASK
+
+---
+
+# ================================
+# 🧹 NODE / JS HELPER FILE RULE
+# ================================
+
+Do not create temporary Node.js/JavaScript helper files in source folders. Temporary proof scripts must live only under the current artifact folder and must be deleted or archived there after use. Permanent tools require explicit reusable purpose, documentation, and package.json/doc reference.
