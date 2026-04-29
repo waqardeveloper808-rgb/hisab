@@ -1,26 +1,42 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
 import { DocumentLinkPreviewModal } from "@/components/workspace/DocumentLinkPreviewModal";
 import { JournalDetailPanel, type JournalDetailLink } from "@/components/workspace/JournalDetailPanel";
 import { JournalEntryModal } from "@/components/workspace/JournalEntryModal";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
 import { StandardActionBar } from "@/components/workspace/StandardActionBar";
 import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
 import { WorkspaceModeNotice } from "@/components/workspace/WorkspaceModeNotice";
 import { listJournals, type JournalEntryRecord } from "@/lib/workspace-api";
 import { exportRowsToCsv } from "@/lib/spreadsheet";
+import {
+  registerTableWidthsStorageKey,
+  useRegisterTableLayout,
+  type RegisterColumnWidthDef,
+} from "@/lib/workspace/register-table-layout";
 import { currency } from "@/components/workflow/utils";
 
-const REMARKS_MAX = 42;
+const JOURNAL_WIDTHS_LS = "journal:columnWidths";
+const JOURNAL_SPLIT_LS = "journal:splitRatio";
 
-function truncateRemarks(s: string, max: number) {
-  const t = s.trim();
-  if (t.length <= max) return t;
-  return `${t.slice(0, max - 1)}…`;
+function clampJournalSplit(n: number): number {
+  return Math.min(70, Math.max(30, n));
 }
+
+const JOURNAL_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "date", defaultWidth: 96 },
+  { id: "accounts", defaultWidth: 200 },
+  { id: "description", defaultWidth: 220 },
+  { id: "dr", defaultWidth: 88 },
+  { id: "cr", defaultWidth: 88 },
+  { id: "remarks", defaultWidth: 180 },
+];
+
+const JOURNAL_COL_ORDER = JOURNAL_WIDTH_DEFS.map((d) => d.id);
 
 function registerDescription(entry: JournalEntryRecord) {
   const d = entry.description?.trim();
@@ -32,7 +48,7 @@ function registerDescription(entry: JournalEntryRecord) {
   return "—";
 }
 
-function keyAccounts(entry: JournalEntryRecord, max: number) {
+function uniqueAccountCodes(entry: JournalEntryRecord): string[] {
   const seen = new Set<string>();
   const codes: string[] = [];
   for (const line of entry.lines) {
@@ -42,8 +58,7 @@ function keyAccounts(entry: JournalEntryRecord, max: number) {
       codes.push(c);
     }
   }
-  if (codes.length <= max) return { show: codes, more: 0 };
-  return { show: codes.slice(0, max), more: codes.length - max };
+  return codes;
 }
 
 function buildJournalLinkedDocuments(entry: JournalEntryRecord): JournalDetailLink[] {
@@ -143,6 +158,85 @@ export function JournalRegister() {
 
   const selectedLinked = selectedEntry ? buildJournalLinkedDocuments(selectedEntry) : [];
 
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout(
+    "v2.register.journal-entries",
+    JOURNAL_WIDTH_DEFS,
+    JOURNAL_COL_ORDER,
+    { columnWidthsStorageKey: JOURNAL_WIDTHS_LS },
+  );
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
+
+  const splitContainerRef = useRef<HTMLDivElement>(null);
+  const splitDragRef = useRef<{ startX: number; startRatio: number; width: number } | null>(null);
+  const [splitLeftFr, setSplitLeftFr] = useState(60);
+
+  useLayoutEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const legacy = localStorage.getItem(registerTableWidthsStorageKey("v2.register.journal-entries"));
+      if (legacy && !localStorage.getItem(JOURNAL_WIDTHS_LS)) {
+        localStorage.setItem(JOURNAL_WIDTHS_LS, legacy);
+      }
+    } catch {
+      /* quota */
+    }
+    try {
+      const v = Number(localStorage.getItem(JOURNAL_SPLIT_LS));
+      if (Number.isFinite(v)) {
+        setSplitLeftFr(clampJournalSplit(v));
+      }
+    } catch {
+      /* */
+    }
+  }, []);
+
+  useEffect(() => {
+    const move = (e: PointerEvent) => {
+      const d = splitDragRef.current;
+      if (!d) return;
+      const deltaPct = ((e.clientX - d.startX) / d.width) * 100;
+      setSplitLeftFr(clampJournalSplit(d.startRatio + deltaPct));
+    };
+    const up = (e: PointerEvent) => {
+      const d = splitDragRef.current;
+      if (!d) return;
+      splitDragRef.current = null;
+      const deltaPct = ((e.clientX - d.startX) / d.width) * 100;
+      const next = clampJournalSplit(d.startRatio + deltaPct);
+      setSplitLeftFr(next);
+      try {
+        localStorage.setItem(JOURNAL_SPLIT_LS, String(next));
+      } catch {
+        /* quota */
+      }
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    return () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+  }, []);
+
+  const onSplitDividerPointerDown = useCallback(
+    (e: ReactPointerEvent<HTMLButtonElement>) => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      const root = splitContainerRef.current;
+      if (!root) return;
+      const rect = root.getBoundingClientRect();
+      splitDragRef.current = {
+        startX: e.clientX,
+        startRatio: splitLeftFr,
+        width: Math.max(1, rect.width),
+      };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    [splitLeftFr],
+  );
+
   return (
     <div
       className="journal-register-page space-y-1.5 sm:space-y-2"
@@ -153,7 +247,7 @@ export function JournalRegister() {
         <div className="min-w-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary sm:text-[11px]">Accounting</p>
           <h1 className="text-base font-semibold leading-tight tracking-tight text-ink sm:text-lg">Journal entries</h1>
-          <p className="mt-0.5 line-clamp-2 text-xs text-muted sm:line-clamp-none sm:text-sm">
+          <p className="mt-0.5 text-xs text-muted sm:text-sm [overflow-wrap:anywhere]">
             {hasInvoiceFilter
               ? `Linked to invoice ${invoiceFilterNumber || `#${invoiceFilterId}`}`
               : "Split view: select a row; preview updates on the right (desktop) or below (mobile)."}
@@ -181,7 +275,7 @@ export function JournalRegister() {
                   exportRowsToCsv(
                     filteredEntries.map((row) => ({
                       date: row.entryDate,
-                      accounts: keyAccounts(row, 5).show.join(" "),
+                      accounts: uniqueAccountCodes(row).join(" "),
                       description: registerDescription(row),
                       debit: row.lines.reduce((s, l) => s + l.debit, 0),
                       credit: row.lines.reduce((s, l) => s + l.credit, 0),
@@ -220,10 +314,14 @@ export function JournalRegister() {
       ) : null}
 
       <div
-        className="grid min-h-0 w-full min-w-0 flex-1 grid-cols-1 items-stretch gap-2 sm:gap-2.5 lg:min-h-[min(80vh,880px)] lg:grid-cols-[minmax(0,1fr)_minmax(50%,1.15fr)] lg:gap-3"
+        ref={splitContainerRef}
+        className="journal-split-root flex min-h-0 w-full min-w-0 flex-1 flex-col items-stretch gap-2 sm:gap-2.5 lg:grid lg:min-h-[min(80vh,880px)] lg:gap-0 lg:items-stretch"
         data-journal-split-container="true"
+        style={{
+          gridTemplateColumns: `minmax(0, ${splitLeftFr}fr) 6px minmax(0, ${100 - splitLeftFr}fr)`,
+        }}
       >
-        <div className="flex min-h-0 min-w-0 max-w-full flex-col" data-journal-register-pane="left">
+        <div className="flex min-h-0 min-w-0 max-w-full flex-col lg:min-w-0" data-journal-register-pane="left">
           <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-white/95 p-0 sm:rounded-xl">
             <div className="shrink-0 border-b border-line px-2 py-1 text-[10px] text-muted sm:px-2.5 sm:py-1.5 sm:text-xs">
               <div className="flex justify-between gap-2">
@@ -231,28 +329,45 @@ export function JournalRegister() {
                 <span className="hidden sm:inline">Row → preview</span>
               </div>
             </div>
-            <div className="min-h-0 flex-1 overflow-auto">
-              <table className="w-full min-w-0 table-fixed border-collapse text-[12px] leading-tight tabular-nums sm:text-[13px]">
-                <thead className="sticky top-0 z-[1] border-b border-line bg-surface-soft/90 text-left text-[10px] text-muted sm:text-[11px]">
+            <div ref={wrapRef} className="min-h-0 flex-1 overflow-auto" data-register-table="true">
+              <table className="journal-register-table w-full min-w-0 table-fixed border-collapse text-[12px] leading-tight tabular-nums sm:text-[13px]">
+                <colgroup>
+                  {JOURNAL_COL_ORDER.map((id) => (
+                    <col key={id} style={{ width: `${pctById[id] ?? 100 / JOURNAL_COL_ORDER.length}%` }} />
+                  ))}
+                </colgroup>
+                <thead>
                   <tr>
-                    <th className="w-[4.5rem] px-2 py-1 font-semibold sm:px-2.5 sm:py-1.5">Date</th>
-                    <th className="px-2 py-1 font-semibold sm:px-2.5 sm:py-1.5">Accounts</th>
-                    <th className="w-[28%] px-2 py-1 font-semibold sm:px-2.5 sm:py-1.5">Description</th>
-                    <th className="w-[4.2rem] px-1 py-1 text-right font-semibold sm:w-[4.5rem] sm:px-2.5 sm:py-1.5">Dr.</th>
-                    <th className="w-[4.2rem] px-1 py-1 text-right font-semibold sm:w-[4.5rem] sm:px-2.5 sm:py-1.5">Cr.</th>
-                    <th className="w-[25%] px-2 py-1 font-semibold sm:px-2.5 sm:py-1.5">Remarks</th>
+                    {JOURNAL_COL_ORDER.map((colId, idx) => (
+                      <RegisterTableHeaderCell
+                        key={colId}
+                        align={colId === "dr" || colId === "cr" ? "right" : "left"}
+                        className={colId === "dr" || colId === "cr" ? "num" : ""}
+                        resizeHandleClassName="resize-handle"
+                        onResizePointerDown={idx < JOURNAL_COL_ORDER.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+                      >
+                        {{
+                          date: "Date",
+                          accounts: "Accounts",
+                          description: "Description",
+                          dr: "Dr.",
+                          cr: "Cr.",
+                          remarks: "Remarks",
+                        }[colId]}
+                      </RegisterTableHeaderCell>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr>
-                      <td colSpan={6} className="px-2 py-3 text-xs text-muted sm:px-2.5">
+                    <tr data-journal-placeholder="true">
+                      <td colSpan={6} className="text-xs text-muted">
                         Loading…
                       </td>
                     </tr>
                   ) : filteredEntries.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-2 py-4 sm:px-2.5">
+                    <tr data-journal-placeholder="true">
+                      <td colSpan={6} className="py-4">
                         <div className="rounded-md border border-dashed border-line bg-surface-soft px-2 py-2.5 text-xs text-muted sm:px-3 sm:py-3 sm:text-sm">
                           <p className="font-semibold text-ink">No entries</p>
                           <p className="mt-0.5">Create a journal or post transactions to see rows here.</p>
@@ -261,7 +376,7 @@ export function JournalRegister() {
                     </tr>
                   ) : (
                     filteredEntries.map((entry) => {
-                      const { show, more } = keyAccounts(entry, 3);
+                      const codes = uniqueAccountCodes(entry);
                       const totalDr = entry.lines.reduce((s, l) => s + l.debit, 0);
                       const totalCr = entry.lines.reduce((s, l) => s + l.credit, 0);
                       const isSelected = entry.id === selectedId;
@@ -269,38 +384,19 @@ export function JournalRegister() {
                       return (
                         <tr
                           key={entry.id}
-                          className={[
-                            "cursor-pointer border-t border-line/50 align-top transition-colors",
-                            isSelected ? "bg-primary-soft/50 ring-1 ring-inset ring-primary/25" : "hover:bg-surface-soft/50",
-                          ].join(" ")}
+                          data-selected={isSelected ? "true" : undefined}
+                          className="cursor-pointer border-t border-line/50 align-top transition-[background-color,box-shadow] duration-150"
                           onClick={() => setSelectedId(entry.id)}
                           title={entry.entryNumber}
                         >
-                          <td className="px-2 py-1.5 font-mono text-[11px] text-ink tabular-nums sm:px-2.5 sm:py-2 sm:text-[12px]">{entry.entryDate}</td>
-                          <td className="min-w-0 px-2 py-1.5 text-[11px] text-ink sm:px-2.5 sm:py-2 sm:text-[12px]">
-                            {show.length === 0 ? (
-                              "—"
-                            ) : (
-                              <>
-                                <span className="line-clamp-2 [overflow-wrap:anywhere]">{show.join(" · ")}</span>
-                                {more > 0 ? <span className="ml-0.5 font-medium text-primary">+{more}</span> : null}
-                              </>
-                            )}
+                          <td className="register-table-cell font-mono text-[11px] text-ink tabular-nums sm:text-[12px]">{entry.entryDate}</td>
+                          <td className="register-table-cell min-w-0 text-[11px] text-ink sm:text-[12px]">
+                            {codes.length === 0 ? "—" : codes.join(" · ")}
                           </td>
-                          <td
-                            className="min-w-0 px-2 py-1.5 text-[11px] text-ink sm:px-2.5 sm:py-2 sm:text-[12px]"
-                            title={desc}
-                          >
-                            <span className="line-clamp-2 [overflow-wrap:anywhere]">{desc}</span>
-                          </td>
-                          <td className="px-1 py-1.5 text-right font-mono text-[11px] tabular-nums text-ink sm:px-2 sm:py-2 sm:text-[12px]">{currency(totalDr)}</td>
-                          <td className="px-1 py-1.5 text-right font-mono text-[11px] tabular-nums text-ink sm:px-2 sm:py-2 sm:text-[12px]">{currency(totalCr)}</td>
-                          <td
-                            className="min-w-0 px-2 py-1.5 text-[11px] text-muted sm:px-2.5 sm:py-2 sm:text-[12px]"
-                            title={entry.memo || ""}
-                          >
-                            <span className="line-clamp-2 [overflow-wrap:anywhere]">{truncateRemarks(entry.memo || "", REMARKS_MAX)}</span>
-                          </td>
+                          <td className="register-table-cell min-w-0 text-[11px] text-ink sm:text-[12px]">{desc}</td>
+                          <td className="register-table-cell num text-right font-mono text-[11px] tabular-nums text-ink sm:text-[12px]">{currency(totalDr)}</td>
+                          <td className="register-table-cell num text-right font-mono text-[11px] tabular-nums text-ink sm:text-[12px]">{currency(totalCr)}</td>
+                          <td className="register-table-cell min-w-0 text-[11px] text-muted sm:text-[12px]">{entry.memo?.trim() || "—"}</td>
                         </tr>
                       );
                     })
@@ -311,11 +407,18 @@ export function JournalRegister() {
           </Card>
         </div>
 
+        <button
+          type="button"
+          aria-label="Drag to resize register and preview width"
+          className="journal-split-divider hidden lg:block"
+          onPointerDown={onSplitDividerPointerDown}
+        />
+
         <div
-          className="min-h-0 min-w-0 w-full self-stretch"
+          className="min-h-0 min-w-0 w-full self-stretch lg:min-w-0"
           data-journal-preview-pane="right"
         >
-          <div className="max-lg:min-h-[min(55vh,520px)] lg:sticky lg:top-1 lg:max-h-[min(80vh,880px)]">
+          <div className="max-lg:min-h-[min(55vh,520px)] lg:sticky lg:top-1 lg:max-h-[min(80vh,880px)] lg:min-h-0">
             <JournalDetailPanel
               entry={selectedEntry}
               basePath={_basePath}

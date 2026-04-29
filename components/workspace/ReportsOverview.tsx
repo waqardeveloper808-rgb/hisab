@@ -138,136 +138,146 @@ export function ReportsOverview() {
       ) : null}
 
       <WorkspaceDataTable
+        registerTableId="reports-overview-vat-summary"
         title="VAT summary"
         caption="Taxable value and tax by VAT code."
         rows={snapshot.vatSummary}
         emptyMessage="Posted VAT activity will appear here."
         columns={[
-          { header: "Code", render: (row) => row.code },
-          { header: "Name", render: (row) => row.name },
-          { header: "Rate", align: "right", render: (row) => `${row.rate}%` },
-          { header: "Taxable", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
-          { header: "Tax", align: "right", render: (row) => `${currency(row.taxAmount)} SAR` },
+          { id: "code", header: "Code", defaultWidth: 100, render: (row) => row.code },
+          { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.name },
+          { id: "rate", header: "Rate", align: "right", defaultWidth: 80, render: (row) => `${row.rate}%` },
+          { id: "taxable", header: "Taxable", align: "right", defaultWidth: 120, render: (row) => `${currency(row.taxableAmount)} SAR` },
+          { id: "tax", header: "Tax", align: "right", defaultWidth: 120, render: (row) => `${currency(row.taxAmount)} SAR` },
         ]}
       />
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="reports-overview-ar-aging"
           title="Receivables aging"
           caption="Open customer balances grouped by age bucket."
           rows={snapshot.receivablesAging}
           emptyMessage="Open customer balances will appear here."
           columns={[
-            { header: "Document", render: (row) => row.documentNumber },
-            { header: "Bucket", render: (row) => row.bucket.replaceAll("_", "-") },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balanceDue)} SAR` },
+            { id: "document", header: "Document", defaultWidth: 160, render: (row) => row.documentNumber },
+            { id: "bucket", header: "Bucket", defaultWidth: 120, render: (row) => row.bucket.replaceAll("_", "-") },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.balanceDue)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="reports-overview-ap-aging"
           title="Payables aging"
           caption="Open supplier balances grouped by age bucket."
           rows={snapshot.payablesAging}
           emptyMessage="Open supplier balances will appear here."
           columns={[
-            { header: "Document", render: (row) => row.documentNumber },
-            { header: "Bucket", render: (row) => row.bucket.replaceAll("_", "-") },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balanceDue)} SAR` },
+            { id: "document", header: "Document", defaultWidth: 160, render: (row) => row.documentNumber },
+            { id: "bucket", header: "Bucket", defaultWidth: 120, render: (row) => row.bucket.replaceAll("_", "-") },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.balanceDue)} SAR` },
           ]}
         />
       </div>
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="reports-overview-profit-customer"
           title="Profit by customer"
           caption="See which customers are driving the strongest gross profit based on posted revenue and estimated cost."
           rows={snapshot.profitByCustomer}
           emptyMessage="Customer profitability will appear after posted sales activity."
           columns={[
-            { header: "Customer", render: (row) => row.contactName },
-            { header: "Revenue", align: "right", render: (row) => `${currency(row.revenue)} SAR` },
-            { header: "Est. cost", align: "right", render: (row) => `${currency(row.estimatedCost)} SAR` },
-            { header: "Profit", align: "right", render: (row) => `${currency(row.profit)} SAR` },
+            { id: "customer", header: "Customer", defaultWidth: 200, render: (row) => row.contactName },
+            { id: "revenue", header: "Revenue", align: "right", defaultWidth: 120, render: (row) => `${currency(row.revenue)} SAR` },
+            { id: "cost", header: "Est. cost", align: "right", defaultWidth: 120, render: (row) => `${currency(row.estimatedCost)} SAR` },
+            { id: "profit", header: "Profit", align: "right", defaultWidth: 120, render: (row) => `${currency(row.profit)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="reports-overview-profit-product"
           title="Profit by product"
           caption="Compare quantity, revenue, and estimated gross profit by product or service."
           rows={snapshot.profitByProduct}
           emptyMessage="Product profitability will appear after posted sales activity."
           columns={[
-            { header: "Product", render: (row) => row.itemName },
-            { header: "Qty", align: "right", render: (row) => row.quantity },
-            { header: "Revenue", align: "right", render: (row) => `${currency(row.revenue)} SAR` },
-            { header: "Profit", align: "right", render: (row) => `${currency(row.profit)} SAR` },
+            { id: "product", header: "Product", defaultWidth: 200, render: (row) => row.itemName },
+            { id: "qty", header: "Qty", align: "right", defaultWidth: 80, render: (row) => row.quantity },
+            { id: "revenue", header: "Revenue", align: "right", defaultWidth: 120, render: (row) => `${currency(row.revenue)} SAR` },
+            { id: "profit", header: "Profit", align: "right", defaultWidth: 120, render: (row) => `${currency(row.profit)} SAR` },
           ]}
         />
       </div>
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="reports-overview-expense"
           title="Expense breakdown"
           caption="Review operating cost concentration by expense account category."
           rows={snapshot.expenseBreakdown}
           emptyMessage="Expense categories will appear after posted purchase activity."
           columns={[
-            { header: "Code", render: (row) => row.categoryCode },
-            { header: "Category", render: (row) => row.categoryName },
-            { header: "Total", align: "right", render: (row) => `${currency(row.total)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 100, render: (row) => row.categoryCode },
+            { id: "category", header: "Category", defaultWidth: 200, render: (row) => row.categoryName },
+            { id: "total", header: "Total", align: "right", defaultWidth: 120, render: (row) => `${currency(row.total)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="reports-overview-pl"
           title="Profit and loss"
           caption="Revenue and expense lines that build the current result."
           rows={snapshot.profitLoss.lines}
           emptyMessage="Posted revenue and expenses will appear here."
           columns={[
-            { header: "Code", render: (row) => row.code },
-            { header: "Name", render: (row) => row.name },
-            { header: "Type", render: (row) => row.type },
-            { header: "Net", align: "right", render: (row) => `${currency(row.netAmount)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 88, render: (row) => row.code },
+            { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.name },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.type },
+            { id: "net", header: "Net", align: "right", defaultWidth: 120, render: (row) => `${currency(row.netAmount)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="reports-overview-tb"
           title="Trial balance"
           caption="Account balances from posted journal lines."
           rows={snapshot.trialBalance.slice(0, 12)}
           emptyMessage="Posted journal lines will appear here."
           columns={[
-            { header: "Code", render: (row) => row.code },
-            { header: "Account", render: (row) => row.name },
-            { header: "Type", render: (row) => row.type },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balance)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 88, render: (row) => row.code },
+            { id: "account", header: "Account", defaultWidth: 200, render: (row) => row.name },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.type },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.balance)} SAR` },
           ]}
         />
       </div>
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="reports-overview-bs"
           title="Balance sheet"
           caption="Assets, liabilities, and equity as of the current posting state."
           rows={[...snapshot.balanceSheet.assets, ...snapshot.balanceSheet.liabilities, ...snapshot.balanceSheet.equity]}
           emptyMessage="The balance sheet will appear after posting activity."
           columns={[
-            { header: "Code", render: (row) => row.code },
-            { header: "Name", render: (row) => row.name },
-            { header: "Type", render: (row) => row.type },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balance)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 88, render: (row) => row.code },
+            { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.name },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.type },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.balance)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="reports-overview-audit"
           title="Audit trail"
           caption="Recent changes recorded against finance activity."
           rows={snapshot.auditTrail.slice(0, 12)}
           emptyMessage="Recorded activity will appear here."
           columns={[
-            { header: "Event", render: (row) => row.event.replaceAll(".", " ") },
-            { header: "Record", render: (row) => `${row.auditableType.split("\\").pop()} #${row.auditableId}` },
-            { header: "When", render: (row) => row.createdAt },
+            { id: "event", header: "Event", defaultWidth: 160, render: (row) => row.event.replaceAll(".", " ") },
+            { id: "record", header: "Record", defaultWidth: 180, render: (row) => `${row.auditableType.split("\\").pop()} #${row.auditableId}` },
+            { id: "when", header: "When", defaultWidth: 160, render: (row) => row.createdAt },
           ]}
         />
       </div>

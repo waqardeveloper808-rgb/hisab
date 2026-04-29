@@ -263,24 +263,27 @@ function TrialBalanceReport({ snapshot, query, basePath, hasInvoiceFilter, invoi
         <KpiCard title="Total Credits" value={`${currency(totalCredit)} SAR`} />
       </div>
       <WorkspaceDataTable
+        registerTableId="report-trial-balance"
         title="Trial Balance"
         caption={hasInvoiceFilter ? `Delta impact of Invoice ${invoiceLabel}.` : "All accounts with posted activity."}
         rows={rows}
         emptyMessage="Posted journal lines will populate the trial balance."
         columns={[
-          { header: "Code", render: (r) => r.code },
+          { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
           {
+            id: "account",
             header: "Account",
+            defaultWidth: 220,
             render: (r) => (
               <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}${hasInvoiceFilter ? `&invoice_id=${invoiceId}&invoice_number=${encodeURIComponent(invoiceLabel)}` : ""}`, basePath)} className="font-semibold text-primary hover:underline">
                 {r.name}
               </Link>
             ),
           },
-          { header: "Type", render: (r) => r.type },
-          { header: "Debit", align: "right", render: (r) => `${currency(r.debitTotal ?? 0)} SAR` },
-          { header: "Credit", align: "right", render: (r) => `${currency(r.creditTotal ?? 0)} SAR` },
-          { header: "Balance", align: "right", render: (r) => `${currency(r.balance)} SAR` },
+          { id: "type", header: "Type", defaultWidth: 100, render: (r) => r.type },
+          { id: "debit", header: "Debit", align: "right", defaultWidth: 110, render: (r) => `${currency(r.debitTotal ?? 0)} SAR` },
+          { id: "credit", header: "Credit", align: "right", defaultWidth: 110, render: (r) => `${currency(r.creditTotal ?? 0)} SAR` },
+          { id: "balance", header: "Balance", align: "right", defaultWidth: 110, render: (r) => `${currency(r.balance)} SAR` },
         ]}
       />
       <Card className="rounded-xl bg-white/95 p-0 overflow-hidden">
@@ -302,10 +305,10 @@ function TrialBalanceReport({ snapshot, query, basePath, hasInvoiceFilter, invoi
 function ProfitLossReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; basePath: string }) {
   const pl = snapshot.profitLoss;
   const revenueLines = pl.lines.filter((line) => line.type === "income" || line.type === "revenue");
-  const discountLines = pl.lines.filter((line) => line.type === "contra" || line.code === "4500");
+  const discountLines = pl.lines.filter((line) => line.type === "contra" || line.code === "450");
   const expenseLines = pl.lines.filter((line) => line.type === "expense");
-  const cogsLines = expenseLines.filter((line) => line.code === "5000");
-  const operatingExpenseLines = expenseLines.filter((line) => line.code !== "5000");
+  const cogsLines = expenseLines.filter((line) => line.code === "500");
+  const operatingExpenseLines = expenseLines.filter((line) => line.code !== "500");
   const cogsTotal = cogsLines.reduce((sum, line) => sum + line.netAmount, 0);
   const discountTotal = discountLines.reduce((sum, line) => sum + Math.abs(line.netAmount), 0);
   const grossProfit = pl.revenueTotal - cogsTotal;
@@ -320,115 +323,133 @@ function ProfitLossReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
       </div>
       <div className="grid gap-2.5 xl:grid-cols-3">
         <WorkspaceDataTable
+          registerTableId="report-pl-revenue"
           title="Revenue Lines"
           caption="Revenue accounts included in P&L."
           rows={revenueLines}
           emptyMessage="Revenue will appear after tax invoices are posted."
           columns={[
-            { header: "Code", render: (r) => r.code },
+            { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
             {
+              id: "account",
               header: "Account",
+              defaultWidth: 220,
               render: (r) => (
                 <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">
                   {r.name}
                 </Link>
               ),
             },
-            { header: "Net Amount", align: "right", render: (r) => `${currency(r.netAmount)} SAR` },
+            { id: "net", header: "Net Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.netAmount)} SAR` },
           ]}
         />
         <WorkspaceDataTable
+          registerTableId="report-pl-discount"
           title="Discount Lines"
           caption="Contra-revenue and discount allowed lines affecting realized sales."
           rows={discountLines}
           emptyMessage="Discount lines appear when contra-revenue accounts are posted."
           columns={[
-            { header: "Code", render: (r) => r.code },
+            { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
             {
+              id: "account",
               header: "Account",
+              defaultWidth: 220,
               render: (r) => (
                 <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">
                   {r.name}
                 </Link>
               ),
             },
-            { header: "Net Amount", align: "right", render: (r) => `${currency(Math.abs(r.netAmount))} SAR` },
+            { id: "net", header: "Net Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(Math.abs(r.netAmount))} SAR` },
           ]}
         />
         <WorkspaceDataTable
+          registerTableId="report-pl-cogs-expense"
           title="COGS + Expense Lines"
           caption="Cost of goods sold and operating expenses."
           rows={expenseLines}
           emptyMessage="COGS and expenses will appear after delivery and purchase posting."
           columns={[
-            { header: "Code", render: (r) => r.code },
+            { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
             {
+              id: "account",
               header: "Account",
+              defaultWidth: 220,
               render: (r) => (
                 <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">
                   {r.name}
                 </Link>
               ),
             },
-            { header: "Net Amount", align: "right", render: (r) => `${currency(r.netAmount)} SAR` },
+            { id: "net", header: "Net Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.netAmount)} SAR` },
           ]}
         />
       </div>
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="report-pl-cogs"
           title="Cost of Goods Sold"
           caption="Inventory relief and cost postings linked to fulfilled inventory documents."
           rows={cogsLines}
           emptyMessage="COGS lines appear when inventory-linked sales are posted."
           columns={[
-            { header: "Code", render: (r) => r.code },
+            { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
             {
+              id: "account",
               header: "Account",
+              defaultWidth: 220,
               render: (r) => (
                 <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">
                   {r.name}
                 </Link>
               ),
             },
-            { header: "Amount", align: "right", render: (r) => `${currency(r.netAmount)} SAR` },
+            { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.netAmount)} SAR` },
           ]}
         />
         <WorkspaceDataTable
+          registerTableId="report-pl-opex"
           title="Operating Expenses"
           caption="Expense lines excluding inventory cost so accountants can review margin separately from overhead."
           rows={operatingExpenseLines}
           emptyMessage="Operating expense lines appear after expense and purchase activity is posted."
           columns={[
-            { header: "Code", render: (r) => r.code },
+            { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
             {
+              id: "account",
               header: "Account",
+              defaultWidth: 220,
               render: (r) => (
                 <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">
                   {r.name}
                 </Link>
               ),
             },
-            { header: "Amount", align: "right", render: (r) => `${currency(r.netAmount)} SAR` },
+            { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.netAmount)} SAR` },
           ]}
         />
       </div>
       <WorkspaceDataTable
+        registerTableId="report-pl-all"
         title="Profit & Loss Lines"
         caption="Posted P&L lines for the current period."
         rows={pl.lines}
         emptyMessage="Revenue and expense lines will appear after posting activity."
         columns={[
-          { header: "Code", render: (r) => r.code },
+          { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
           {
+            id: "account",
             header: "Account",
+            defaultWidth: 200,
             render: (r) => (
               <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">
                 {r.name}
               </Link>
             ),
           },
-          { header: "Type", render: (r) => r.type },
-          { header: "Net Amount", align: "right", render: (r) => `${currency(r.netAmount)} SAR` },
+          { id: "type", header: "Type", defaultWidth: 100, render: (r) => r.type },
+          { id: "net", header: "Net Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.netAmount)} SAR` },
         ]}
       />
     </>
@@ -446,21 +467,21 @@ function BalanceSheetReport({ snapshot, basePath }: { snapshot: ReportsSnapshot;
         <KpiCard title="Total Equity" value={`${currency(bs.equityTotal)} SAR`} />
       </div>
       <div className="grid gap-2.5 xl:grid-cols-2">
-        <WorkspaceDataTable title="Assets" caption="Asset accounts and balances." rows={bs.assets} emptyMessage="No asset accounts." columns={[
-          { header: "Code", render: (r) => r.code },
-          { header: "Name", render: (r) => <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">{r.name}</Link> },
-          { header: "Balance", align: "right", render: (r) => `${currency(r.balance)} SAR` },
+        <WorkspaceDataTable registerTableId="report-bs-assets" title="Assets" caption="Asset accounts and balances." rows={bs.assets} emptyMessage="No asset accounts." columns={[
+          { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
+          { id: "name", header: "Name", defaultWidth: 220, render: (r) => <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">{r.name}</Link> },
+          { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (r) => `${currency(r.balance)} SAR` },
         ]} />
-        <WorkspaceDataTable title="Liabilities" caption="Liability accounts and balances." rows={bs.liabilities} emptyMessage="No liability accounts." columns={[
-          { header: "Code", render: (r) => r.code },
-          { header: "Name", render: (r) => <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">{r.name}</Link> },
-          { header: "Balance", align: "right", render: (r) => `${currency(r.balance)} SAR` },
+        <WorkspaceDataTable registerTableId="report-bs-liabilities" title="Liabilities" caption="Liability accounts and balances." rows={bs.liabilities} emptyMessage="No liability accounts." columns={[
+          { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
+          { id: "name", header: "Name", defaultWidth: 220, render: (r) => <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">{r.name}</Link> },
+          { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (r) => `${currency(r.balance)} SAR` },
         ]} />
       </div>
-      <WorkspaceDataTable title="Equity" caption="Equity accounts and balances." rows={bs.equity} emptyMessage="No equity accounts." columns={[
-        { header: "Code", render: (r) => r.code },
-        { header: "Name", render: (r) => <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">{r.name}</Link> },
-        { header: "Balance", align: "right", render: (r) => `${currency(r.balance)} SAR` },
+      <WorkspaceDataTable registerTableId="report-bs-equity" title="Equity" caption="Equity accounts and balances." rows={bs.equity} emptyMessage="No equity accounts." columns={[
+        { id: "code", header: "Code", defaultWidth: 88, render: (r) => r.code },
+        { id: "name", header: "Name", defaultWidth: 220, render: (r) => <Link href={mapWorkspaceHref(`/workspace/accounting/books?account=${encodeURIComponent(`${r.code} ${r.name}`)}`, basePath)} className="font-semibold text-primary hover:underline">{r.name}</Link> },
+        { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (r) => `${currency(r.balance)} SAR` },
       ]} />
     </>
   );
@@ -482,14 +503,15 @@ function CashFlowReport({ snapshot }: { snapshot: ReportsSnapshot }) {
         <KpiCard title="Net Change in Cash" value={`${currency(pl.netProfit)} SAR`} />
       </div>
       <WorkspaceDataTable
+        registerTableId="report-cash-flow"
         title="Cash Flow by Activity"
         caption="Simplified cash flow statement. Full indirect method will be available when bank reconciliation is connected."
         rows={sections}
         emptyMessage="Cash flow data will appear after posting activity."
         columns={[
-          { header: "Activity", render: (r) => r.activity },
-          { header: "Amount", align: "right", render: (r) => `${currency(r.amount)} SAR` },
-          { header: "Note", render: (r) => r.note },
+          { id: "activity", header: "Activity", defaultWidth: 140, render: (r) => r.activity },
+          { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.amount)} SAR` },
+          { id: "note", header: "Note", defaultWidth: 280, render: (r) => r.note },
         ]}
       />
     </>
@@ -509,13 +531,16 @@ function AgingReport({ snapshot, kind, basePath }: { snapshot: ReportsSnapshot; 
         <KpiCard title={`Total ${label}`} value={`${currency(total)} SAR`} />
       </div>
       <WorkspaceDataTable
+        registerTableId={`report-aging-${kind}`}
         title={`${label} Aging`}
         caption={`Open ${kind === "receivables" ? "customer" : "supplier"} balances grouped by age.`}
         rows={rows}
         emptyMessage={`Open ${kind} balances will appear after posting activity.`}
         columns={[
           {
+            id: "document",
             header: "Document",
+            defaultWidth: 160,
             render: (r) => (
               <Link
                 href={mapWorkspaceHref(`${kind === "receivables" ? "/workspace/user/invoices" : "/workspace/user/bills"}?q=${encodeURIComponent(r.documentNumber)}`, basePath)}
@@ -525,8 +550,8 @@ function AgingReport({ snapshot, kind, basePath }: { snapshot: ReportsSnapshot; 
               </Link>
             ),
           },
-          { header: "Bucket", render: (r) => r.bucket.replaceAll("_", "-") },
-          { header: "Balance Due", align: "right", render: (r) => `${currency(r.balanceDue)} SAR` },
+          { id: "bucket", header: "Bucket", defaultWidth: 120, render: (r) => r.bucket.replaceAll("_", "-") },
+          { id: "balance", header: "Balance Due", align: "right", defaultWidth: 120, render: (r) => `${currency(r.balanceDue)} SAR` },
         ]}
       />
     </>
@@ -567,57 +592,61 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
         </div>
       </Card>
       <WorkspaceDataTable
+        registerTableId="report-vat-summary"
         title="VAT Summary"
         caption={`Tax amounts by VAT code. Total tax ${currency(totalTax)} SAR.`}
         rows={snapshot.vatSummary}
         emptyMessage="VAT activity will appear after posting invoices and bills."
         columns={[
-          { header: "Code", width: "100px", render: (r) => r.code },
-          { header: "Name", width: "220px", cellVariant: "description", render: (r) => r.name },
-          { header: "Rate", width: "80px", align: "right", render: (r) => `${r.rate}%` },
-          { header: "Taxable", width: "140px", align: "right", render: (r) => `${currency(r.taxableAmount)} SAR` },
-          { header: "Tax", width: "140px", align: "right", render: (r) => `${currency(r.taxAmount)} SAR` },
+          { id: "code", header: "Code", defaultWidth: 100, render: (r) => r.code },
+          { id: "name", header: "Name", defaultWidth: 220, render: (r) => r.name },
+          { id: "rate", header: "Rate", align: "right", defaultWidth: 80, render: (r) => `${r.rate}%` },
+          { id: "taxable", header: "Taxable", align: "right", defaultWidth: 140, render: (r) => `${currency(r.taxableAmount)} SAR` },
+          { id: "tax", header: "Tax", align: "right", defaultWidth: 140, render: (r) => `${currency(r.taxAmount)} SAR` },
         ]}
       />
       <WorkspaceDataTable
+        registerTableId="report-vat-detail"
         title="VAT Detail"
         caption="Output and input VAT by code for accountant review and filing traceability."
         rows={snapshot.vatDetail}
         emptyMessage="VAT detail appears after posted invoice and purchase activity."
         columns={[
-          { header: "Code", width: "90px", render: (r) => r.code },
-          { header: "Name", width: "180px", cellVariant: "description", render: (r) => r.name },
-          { header: "Output Taxable", width: "130px", align: "right", render: (r) => `${currency(r.outputTaxableAmount)} SAR` },
-          { header: "Output VAT", width: "120px", align: "right", render: (r) => `${currency(r.outputTaxAmount)} SAR` },
-          { header: "Input Taxable", width: "130px", align: "right", render: (r) => `${currency(r.inputTaxableAmount)} SAR` },
-          { header: "Input VAT", width: "120px", align: "right", render: (r) => `${currency(r.inputTaxAmount)} SAR` },
+          { id: "code", header: "Code", defaultWidth: 90, render: (r) => r.code },
+          { id: "name", header: "Name", defaultWidth: 180, render: (r) => r.name },
+          { id: "outTaxable", header: "Output Taxable", align: "right", defaultWidth: 130, render: (r) => `${currency(r.outputTaxableAmount)} SAR` },
+          { id: "outVat", header: "Output VAT", align: "right", defaultWidth: 120, render: (r) => `${currency(r.outputTaxAmount)} SAR` },
+          { id: "inTaxable", header: "Input Taxable", align: "right", defaultWidth: 130, render: (r) => `${currency(r.inputTaxableAmount)} SAR` },
+          { id: "inVat", header: "Input VAT", align: "right", defaultWidth: 120, render: (r) => `${currency(r.inputTaxAmount)} SAR` },
         ]}
       />
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="report-vat-received-details"
           title="VAT Received Details"
           caption="Customer-side VAT collected from tax invoices and debit notes."
           rows={snapshot.vatReceivedDetails}
           emptyMessage="VAT received details will appear after sales documents are finalized."
           columns={[
-            { header: "Invoice", width: "128px", render: (r) => r.invoiceNumber },
-            { header: "Date", width: "110px", render: (r) => r.date },
-            { header: "Customer", width: "200px", cellVariant: "description", render: (r) => r.customer || "—" },
-            { header: "Taxable", width: "130px", align: "right", render: (r) => `${currency(r.taxableAmount)} SAR` },
-            { header: "VAT", width: "120px", align: "right", render: (r) => `${currency(r.vatAmount)} SAR` },
+            { id: "invoice", header: "Invoice", defaultWidth: 128, render: (r) => r.invoiceNumber },
+            { id: "date", header: "Date", defaultWidth: 110, render: (r) => r.date },
+            { id: "customer", header: "Customer", defaultWidth: 200, render: (r) => r.customer || "—" },
+            { id: "taxable", header: "Taxable", align: "right", defaultWidth: 130, render: (r) => `${currency(r.taxableAmount)} SAR` },
+            { id: "vat", header: "VAT", align: "right", defaultWidth: 120, render: (r) => `${currency(r.vatAmount)} SAR` },
           ]}
         />
         <WorkspaceDataTable
+          registerTableId="report-vat-paid-details"
           title="VAT Paid Details"
           caption="Supplier-side VAT recoverable from bills and purchase invoices."
           rows={snapshot.vatPaidDetails}
           emptyMessage="VAT paid details will appear after purchase documents are finalized."
           columns={[
-            { header: "Reference", width: "130px", render: (r) => r.reference },
-            { header: "Date", width: "110px", render: (r) => r.date },
-            { header: "Vendor", width: "200px", cellVariant: "description", render: (r) => r.vendor || "—" },
-            { header: "Category", width: "120px", render: (r) => r.category || "—" },
-            { header: "VAT", width: "120px", align: "right", render: (r) => `${currency(r.vatAmount)} SAR` },
+            { id: "reference", header: "Reference", defaultWidth: 130, render: (r) => r.reference },
+            { id: "date", header: "Date", defaultWidth: 110, render: (r) => r.date },
+            { id: "vendor", header: "Vendor", defaultWidth: 200, render: (r) => r.vendor || "—" },
+            { id: "category", header: "Category", defaultWidth: 120, render: (r) => r.category || "—" },
+            { id: "vat", header: "VAT", align: "right", defaultWidth: 120, render: (r) => `${currency(r.vatAmount)} SAR` },
           ]}
         />
       </div>

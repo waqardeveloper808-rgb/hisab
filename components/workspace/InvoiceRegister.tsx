@@ -28,6 +28,13 @@ import {
 } from "@/lib/workspace-api";
 import type { SpreadsheetRow } from "@/lib/spreadsheet";
 import { mapWorkspaceHref } from "@/lib/workspace-path";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
+import {
+  loadRegisterTableVisibility,
+  saveRegisterTableVisibility,
+  useRegisterTableLayout,
+  type RegisterColumnWidthDef,
+} from "@/lib/workspace/register-table-layout";
 
 type InvoiceLifecycle = "draft" | "issued" | "reported" | "paid" | "overdue";
 
@@ -39,6 +46,23 @@ type RegisterNotice = {
 type InvoiceSortField = "issue_date" | "grand_total";
 type InvoiceSortOption = "latest" | "oldest" | "amount-high" | "amount-low";
 type InvoiceColumnKey = "invoice" | "customer" | "date" | "status" | "total" | "balance";
+
+const INVOICE_COL_ORDER: InvoiceColumnKey[] = ["invoice", "customer", "date", "status", "total", "balance"];
+
+const INVOICE_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "__select", defaultWidth: 52 },
+  { id: "invoice", defaultWidth: 220 },
+  { id: "customer", defaultWidth: 180 },
+  { id: "date", defaultWidth: 110 },
+  { id: "status", defaultWidth: 110 },
+  { id: "total", defaultWidth: 110 },
+  { id: "balance", defaultWidth: 110 },
+];
+
+function initInvoiceColumnVisibility(): InvoiceColumnKey[] {
+  if (typeof window === "undefined") return [...INVOICE_COL_ORDER];
+  return loadRegisterTableVisibility<InvoiceColumnKey>("v2.register.invoices", INVOICE_COL_ORDER);
+}
 
 type DocumentLinkSummary = {
   documentId?: number | null;
@@ -244,22 +268,7 @@ export function InvoiceRegister() {
   const [registerNotice, setRegisterNotice] = useState<RegisterNotice | null>(null);
   const [sortOption, setSortOption] = useState<InvoiceSortOption>("latest");
   const [columnMenuOpen, setColumnMenuOpen] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<Record<InvoiceColumnKey, boolean>>({
-    invoice: true,
-    customer: true,
-    date: true,
-    status: true,
-    total: true,
-    balance: true,
-  });
-  const [columnWidths, setColumnWidths] = useState<Record<InvoiceColumnKey, number>>({
-    invoice: 220,
-    customer: 180,
-    date: 110,
-    status: 110,
-    total: 110,
-    balance: 110,
-  });
+  const [visibleInvoiceColumns, setVisibleInvoiceColumns] = useState<InvoiceColumnKey[]>(initInvoiceColumnVisibility);
   const deferredInvoiceNumberQuery = useDeferredValue(invoiceNumberQuery);
 
   useEffect(() => {
@@ -730,33 +739,23 @@ export function InvoiceRegister() {
   }, [queueReload]);
 
   const viewMode: "register" | "split" = selectedInvoice ? "split" : "register";
-  const activeColumns = (Object.entries(visibleColumns) as Array<[InvoiceColumnKey, boolean]>)
-    .filter(([, visible]) => visible)
-    .map(([key]) => key);
+  const activeColumns = useMemo(
+    () => INVOICE_COL_ORDER.filter((key) => visibleInvoiceColumns.includes(key)),
+    [visibleInvoiceColumns],
+  );
+  const invoiceTableOrderedIds = useMemo(() => ["__select", ...activeColumns], [activeColumns]);
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.invoices", INVOICE_WIDTH_DEFS, invoiceTableOrderedIds);
+  const invPctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
 
   function toggleColumn(key: InvoiceColumnKey) {
-    setVisibleColumns((current) => {
-      const nextVisible = !current[key];
-      const visibleCount = Object.values(current).filter(Boolean).length;
-      if (!nextVisible && visibleCount <= 2) {
-        return current;
-      }
-      return { ...current, [key]: nextVisible };
+    setVisibleInvoiceColumns((current) => {
+      const has = current.includes(key);
+      if (has && current.length <= 2) return current;
+      const next = has ? current.filter((k) => k !== key) : [...current, key];
+      const ordered = INVOICE_COL_ORDER.filter((k) => next.includes(k));
+      saveRegisterTableVisibility("v2.register.invoices", ordered);
+      return ordered;
     });
-  }
-
-  function startResize(key: InvoiceColumnKey, startX: number) {
-    const initialWidth = columnWidths[key];
-    const handleMove = (event: MouseEvent) => {
-      const nextWidth = Math.max(84, initialWidth + event.clientX - startX);
-      setColumnWidths((current) => ({ ...current, [key]: nextWidth }));
-    };
-    const handleUp = () => {
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleUp);
-    };
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleUp);
   }
 
   return (
@@ -797,7 +796,7 @@ export function InvoiceRegister() {
                 ] as Array<[InvoiceColumnKey, string]>).map(([key, label]) => (
                   <label key={key} className="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-[11px] text-ink hover:bg-surface-soft">
                     <span>{label}</span>
-                    <input type="checkbox" checked={visibleColumns[key]} onChange={() => toggleColumn(key)} />
+                    <input type="checkbox" checked={visibleInvoiceColumns.includes(key)} onChange={() => toggleColumn(key)} />
                   </label>
                 ))}
               </div>
@@ -956,23 +955,33 @@ export function InvoiceRegister() {
           ].join(" ")} data-inspector-layout="invoice-workspace">
             {/* Register pane */}
             <div className={["overflow-hidden", viewMode === "split" ? "border-r border-line" : "", mobilePane === "preview" ? "hidden lg:block" : "block"].join(" ")}>
-              <div className="h-full overflow-auto">
+              <div ref={wrapRef} className="h-full overflow-auto" data-register-table="true">
                 <table className="min-w-full table-fixed border-separate border-spacing-0 text-xs">
                   <colgroup>
-                    <col style={{ width: 40 }} />
-                    {activeColumns.map((column) => <col key={column} style={{ width: columnWidths[column] }} />)}
+                    {invoiceTableOrderedIds.map((id) => (
+                      <col key={id} style={{ width: `${invPctById[id] ?? 100 / invoiceTableOrderedIds.length}%` }} />
+                    ))}
                   </colgroup>
                   <thead className="sticky top-0 z-10 bg-surface-soft/95 backdrop-blur">
                     <tr className="border-b border-line">
-                      <th className="border-b border-line px-2 py-2 text-left">
+                      <RegisterTableHeaderCell
+                        className="border-b border-line"
+                        onResizePointerDown={(x) => beginResizePair(0, x)}
+                      >
                         <input type="checkbox" checked={filteredInvoices.length > 0 && filteredInvoices.every((inv) => selectedInvoiceIds.includes(inv.id))} onChange={(e) => toggleSelectAllVisible(e.target.checked)} aria-label="Select all" className="mt-0.5" />
-                      </th>
-                      {activeColumns.map((column) => (
-                        <th key={column} className="group relative border-b border-line px-2 py-2 text-left text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
-                          <div className="flex items-center justify-between gap-2">
+                      </RegisterTableHeaderCell>
+                      {activeColumns.map((column, colIdx) => {
+                        const headerIdx = colIdx + 1;
+                        return (
+                          <RegisterTableHeaderCell
+                            key={column}
+                            align={column === "total" || column === "balance" ? "right" : "left"}
+                            className={["border-b border-line text-[10px] font-bold uppercase tracking-[0.1em] text-muted", column === "total" || column === "balance" ? "num" : ""].join(" ")}
+                            onResizePointerDown={headerIdx < invoiceTableOrderedIds.length - 1 ? (x) => beginResizePair(headerIdx, x) : undefined}
+                          >
                             <button
                               type="button"
-                              className="truncate text-left"
+                              className="text-left [overflow-wrap:anywhere]"
                               onClick={() => {
                                 if (column === "date") setSortOption((current) => current === "oldest" ? "latest" : "oldest");
                                 if (column === "total") setSortOption((current) => current === "amount-low" ? "amount-high" : "amount-low");
@@ -987,15 +996,9 @@ export function InvoiceRegister() {
                                 balance: "Balance",
                               }[column]}
                             </button>
-                            <span
-                              role="separator"
-                              aria-orientation="vertical"
-                              onMouseDown={(event) => startResize(column, event.clientX)}
-                              className="absolute right-0 top-1/2 h-5 w-2 -translate-y-1/2 cursor-col-resize rounded bg-transparent transition group-hover:bg-primary/10"
-                            />
-                          </div>
-                        </th>
-                      ))}
+                          </RegisterTableHeaderCell>
+                        );
+                      })}
                     </tr>
                   </thead>
                   <tbody>
@@ -1019,11 +1022,11 @@ export function InvoiceRegister() {
                               onDoubleClick={() => openInvoiceWorkspace(invoice.id)}
                             >
                               {column === "invoice" ? (
-                                <div className="min-w-0">
+                                <div className="min-w-0 [overflow-wrap:anywhere]">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="truncate text-xs font-semibold text-ink">{invoice.number}</span>
+                                    <span className="text-xs font-semibold text-ink">{invoice.number}</span>
                                   </div>
-                                  {documentTrackingSummary(invoice) ? <div className="mt-0.5 truncate text-[10px] text-muted">{documentTrackingSummary(invoice)}</div> : null}
+                                  {documentTrackingSummary(invoice) ? <div className="mt-0.5 text-[10px] text-muted">{documentTrackingSummary(invoice)}</div> : null}
                                   {documentTrackingLinks(invoice).length ? (
                                     <div className="mt-1 flex flex-wrap gap-1">
                                       {documentTrackingLinks(invoice).map((link) => (
@@ -1033,7 +1036,7 @@ export function InvoiceRegister() {
                                   ) : null}
                                 </div>
                               ) : null}
-                              {column === "customer" ? <span className="block truncate text-[11px] text-muted">{invoice.contactName || "—"}</span> : null}
+                              {column === "customer" ? <span className="block text-[11px] text-muted [overflow-wrap:anywhere]">{invoice.contactName || "—"}</span> : null}
                               {column === "date" ? <span className="text-[11px] text-muted">{formatDate(invoice.issueDate)}</span> : null}
                               {column === "status" ? <span className={["inline-flex h-5 items-center rounded border px-1.5 text-[9px] font-bold uppercase tracking-wider", statusClasses(normalizedStatus)].join(" ")}>{statusLabel(normalizedStatus)}</span> : null}
                               {column === "total" ? <span className="block text-right text-xs font-semibold text-ink">{currency(invoice.grandTotal)}</span> : null}

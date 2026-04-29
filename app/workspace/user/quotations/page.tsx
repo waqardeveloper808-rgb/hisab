@@ -13,6 +13,7 @@ export default function WorkspaceQuotationsPage() {
         subtitle: "Outgoing offers, pricing scenarios, and validity tracking.",
         documents: quotations,
         createLabel: "New quotation",
+        createDocumentHref: "/workspace/invoices/new?documentType=quotation",
         suggestionId: "register-quotations",
         suggestionTitle: "Convert accepted quotations into invoices",
         suggestionDescription:

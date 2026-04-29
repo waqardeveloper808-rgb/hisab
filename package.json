@@ -12,7 +12,8 @@
     "inspect:workspace": "tsx tools/inspector/run-inspector.ts",
     "audit:control-points:stable": "tsx tools/run-audit-engine.ts --scope=full_system",
     "audit:control-points:runtime": "tsx tools/run-audit-engine.ts --scope=full_system",
-    "audit:control-points:ui": "tsx tools/run-audit-engine.ts --scope=route --route=/workspace/admin/audit"
+    "audit:control-points:ui": "tsx tools/run-audit-engine.ts --scope=route --route=/workspace/admin/audit",
+    "audit:preview-accounting": "tsx --tsconfig tsconfig.json artifacts/accounting_audit_report/run-audit.ts"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

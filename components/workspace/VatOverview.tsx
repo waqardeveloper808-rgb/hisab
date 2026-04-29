@@ -125,16 +125,17 @@ export function VatOverview() {
       </div>
 
       <WorkspaceDataTable
+        registerTableId="vat-dashboard-summary"
         title="VAT summary"
         caption="Taxable totals and tax totals by VAT code."
         rows={snapshot.vatSummary}
         emptyMessage="VAT summary rows will appear here when posted sales or purchases carry tax."
         columns={[
-          { header: "Code", width: "100px", render: (row) => row.code },
-          { header: "Name", width: "220px", cellVariant: "description", render: (row) => row.name },
-          { header: "Rate", width: "80px", align: "right", render: (row) => `${row.rate}%` },
-          { header: "Taxable", width: "140px", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
-          { header: "Tax", width: "140px", align: "right", render: (row) => `${currency(row.taxAmount)} SAR` },
+          { id: "code", header: "Code", defaultWidth: 100, render: (row) => row.code },
+          { id: "name", header: "Name", defaultWidth: 220, render: (row) => row.name },
+          { id: "rate", header: "Rate", align: "right", defaultWidth: 80, render: (row) => `${row.rate}%` },
+          { id: "taxable", header: "Taxable", align: "right", defaultWidth: 140, render: (row) => `${currency(row.taxableAmount)} SAR` },
+          { id: "tax", header: "Tax", align: "right", defaultWidth: 140, render: (row) => `${currency(row.taxAmount)} SAR` },
         ]}
       />
 
@@ -168,30 +169,32 @@ export function VatOverview() {
 
             {openModal === "received" ? (
               <WorkspaceDataTable
+                registerTableId="vat-dashboard-received-modal"
                 title="VAT received details"
                 caption="Full invoice list filtered by the current VAT screen period."
                 rows={received}
                 emptyMessage="No invoices matched the current VAT period."
                 columns={[
-                  { header: "Invoice number", width: "128px", render: (row) => row.invoiceNumber },
-                  { header: "Date", width: "110px", render: (row) => row.date },
-                  { header: "Customer", width: "200px", cellVariant: "description", render: (row) => row.customer },
-                  { header: "Taxable amount", width: "130px", align: "right", render: (row) => `${currency(row.taxableAmount)} SAR` },
-                  { header: "VAT amount", width: "120px", align: "right", render: (row) => `${currency(row.vatAmount)} SAR` },
+                  { id: "invoice", header: "Invoice number", defaultWidth: 128, render: (row) => row.invoiceNumber },
+                  { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.date },
+                  { id: "customer", header: "Customer", defaultWidth: 200, render: (row) => row.customer },
+                  { id: "taxable", header: "Taxable amount", align: "right", defaultWidth: 130, render: (row) => `${currency(row.taxableAmount)} SAR` },
+                  { id: "vat", header: "VAT amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.vatAmount)} SAR` },
                 ]}
               />
             ) : (
               <WorkspaceDataTable
+                registerTableId="vat-dashboard-paid-modal"
                 title="VAT paid details"
                 caption="Expenses, purchases, and rent filtered by the current VAT screen period."
                 rows={paid}
                 emptyMessage="No purchase-side VAT records matched the current VAT period."
                 columns={[
-                  { header: "Reference", width: "130px", render: (row) => row.reference },
-                  { header: "Date", width: "110px", render: (row) => row.date },
-                  { header: "Vendor", width: "200px", cellVariant: "description", render: (row) => row.vendor },
-                  { header: "Category", width: "120px", render: (row) => row.category.replaceAll("_", " ") },
-                  { header: "VAT amount", width: "120px", align: "right", render: (row) => `${currency(row.vatAmount)} SAR` },
+                  { id: "reference", header: "Reference", defaultWidth: 130, render: (row) => row.reference },
+                  { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.date },
+                  { id: "vendor", header: "Vendor", defaultWidth: 200, render: (row) => row.vendor },
+                  { id: "category", header: "Category", defaultWidth: 120, render: (row) => row.category.replaceAll("_", " ") },
+                  { id: "vat", header: "VAT amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.vatAmount)} SAR` },
                 ]}
               />
             )}

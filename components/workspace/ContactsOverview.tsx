@@ -106,45 +106,48 @@ export function ContactsOverview({
 
       {viewMode === "customers" ? (
         <WorkspaceDataTable
+          registerTableId="directory-customers"
           title="Customers"
           caption="People and businesses you invoice."
           rows={filteredCustomers}
           emptyMessage="Customer records will appear here as soon as they are created from the invoice flow."
           columns={[
-            { header: "Name", render: (row) => row.displayName },
-            { header: "Email", render: (row) => row.email || "-" },
-            { header: "Phone", render: (row) => row.phone || "-" },
-            { header: "City", render: (row) => row.city || "-" },
+            { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.displayName },
+            { id: "email", header: "Email", defaultWidth: 180, render: (row) => row.email || "-" },
+            { id: "phone", header: "Phone", defaultWidth: 120, render: (row) => row.phone || "-" },
+            { id: "city", header: "City", defaultWidth: 120, render: (row) => row.city || "-" },
           ]}
         />
       ) : null}
 
       {viewMode === "suppliers" ? (
         <WorkspaceDataTable
+          registerTableId="directory-suppliers"
           title="Suppliers"
           caption="Businesses you buy from and pay through the purchases flow."
           rows={filteredSuppliers}
           emptyMessage="Supplier records will appear here as soon as they are created from the vendor bill flow."
           columns={[
-            { header: "Name", render: (row) => row.displayName },
-            { header: "Email", render: (row) => row.email || "-" },
-            { header: "Phone", render: (row) => row.phone || "-" },
-            { header: "City", render: (row) => row.city || "-" },
+            { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.displayName },
+            { id: "email", header: "Email", defaultWidth: 180, render: (row) => row.email || "-" },
+            { id: "phone", header: "Phone", defaultWidth: 120, render: (row) => row.phone || "-" },
+            { id: "city", header: "City", defaultWidth: 120, render: (row) => row.city || "-" },
           ]}
         />
       ) : null}
 
       {viewMode === "items" ? (
         <WorkspaceDataTable
+          registerTableId="directory-items"
           title="Products and services"
           caption="Saved line-item records used in sales and purchases."
           rows={filteredItems}
           emptyMessage="Saved products and services will appear here as they are created from transaction entry."
           columns={[
-            { header: "Name", render: (row) => row.name },
-            { header: "Code", render: (row) => row.sku || "-" },
-            { header: "Type", render: (row) => row.kind },
-            { header: "Tax", render: (row) => row.taxLabel },
+            { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.name },
+            { id: "code", header: "Code", defaultWidth: 120, render: (row) => row.sku || "-" },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.kind },
+            { id: "tax", header: "Tax", defaultWidth: 120, render: (row) => row.taxLabel },
           ]}
         />
       ) : null}

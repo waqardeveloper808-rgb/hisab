@@ -140,16 +140,17 @@ export function BankingOverview() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_28rem]">
         <WorkspaceDataTable
+          registerTableId="banking-payments"
           title="Recent payment activity"
           caption="Latest incoming and outgoing movement."
           rows={payments}
           emptyMessage="Recorded payments will appear here."
           columns={[
-            { header: "Payment", render: (row) => row.number },
-            { header: "Direction", render: (row) => row.direction === "incoming" ? "Incoming money" : "Outgoing payment" },
-            { header: "Date", render: (row) => row.paymentDate || "-" },
-            { header: "Reference", render: (row) => row.reference || "-" },
-            { header: "Amount", align: "right", render: (row) => `${currency(row.amount)} SAR` },
+            { id: "payment", header: "Payment", defaultWidth: 140, render: (row) => row.number },
+            { id: "direction", header: "Direction", defaultWidth: 160, render: (row) => row.direction === "incoming" ? "Incoming money" : "Outgoing payment" },
+            { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.paymentDate || "-" },
+            { id: "reference", header: "Reference", defaultWidth: 160, render: (row) => row.reference || "-" },
+            { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.amount)} SAR` },
           ]}
         />
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, Plus } from "lucide-react";
@@ -7,18 +8,24 @@ import type { DocumentRecord, DocumentStatus } from "@/lib/workspace/types";
 import { findCustomer } from "@/data/workspace/customers";
 import { formatCurrency, formatDate, statusLabel, statusTone } from "@/lib/workspace/format";
 import { loadColumnVisibility, saveColumnVisibility } from "@/lib/workspace/register-column-storage";
+import { useRegisterTableLayout, type RegisterColumnWidthDef } from "@/lib/workspace/register-table-layout";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
 import { WorkspaceRegisterToolbar, type StatusFilterOption } from "./WorkspaceRegisterToolbar";
 import { WorkspacePreviewPanel } from "./WorkspacePreviewPanel";
 import { WorkspaceEmptyState } from "./WorkspaceEmptyState";
 import { WorkspaceSuggestion } from "./WorkspaceSuggestion";
 import { WorkspaceMoreActions } from "./WorkspaceMoreActions";
 import { WorkspaceColumnPicker, type ColumnDef } from "./WorkspaceColumnPicker";
+import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
+import { mapWorkspaceHref } from "@/lib/workspace-path";
 
 type RegisterConfig = {
   title: string;
   subtitle: string;
   documents: DocumentRecord[];
   createLabel: string;
+  /** If set, header “create” navigates to the document composer (preview registers are read-only listings). */
+  createDocumentHref?: string;
   suggestionId: string;
   suggestionTitle: string;
   suggestionDescription: string;
@@ -45,6 +52,30 @@ const DOC_COLUMNS: ColumnDef[] = [
 ];
 
 const DEFAULT_VISIBLE = DOC_COLUMNS.map((c) => c.id);
+
+const DOC_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "number", defaultWidth: 130 },
+  { id: "customer", defaultWidth: 220 },
+  { id: "issue", defaultWidth: 110 },
+  { id: "due", defaultWidth: 110 },
+  { id: "status", defaultWidth: 120 },
+  { id: "vat", defaultWidth: 100 },
+  { id: "total", defaultWidth: 110 },
+  { id: "balance", defaultWidth: 110 },
+  { id: "actions", defaultWidth: 100 },
+];
+
+const DOC_HEADER: Record<string, string> = {
+  number: "Document No.",
+  customer: "Customer",
+  issue: "Issue date",
+  due: "Due date",
+  status: "Status",
+  vat: "VAT",
+  total: "Total",
+  balance: "Balance",
+  actions: "Actions",
+};
 
 const DEFAULT_STATUS_OPTIONS: ("all" | DocumentStatus)[] = [
   "all",
@@ -78,6 +109,7 @@ function initVisible(): string[] {
 }
 
 export function WorkspaceRegister({ config }: Props) {
+  const { basePath } = useWorkspacePath();
   const router = useRouter();
   const params = useSearchParams();
   const [search, setSearch] = useState("");
@@ -126,8 +158,12 @@ export function WorkspaceRegister({ config }: Props) {
     router.replace(`?${next.toString()}`, { scroll: false });
   };
 
-  const vset = new Set(visibleColIds);
-  const show = (id: string) => vset.has(id);
+  const visibleOrderedIds = useMemo(
+    () => DOC_COLUMNS.map((c) => c.id).filter((id) => visibleColIds.includes(id)),
+    [visibleColIds],
+  );
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.documents", DOC_WIDTH_DEFS, visibleOrderedIds);
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
 
   return (
     <div
@@ -141,15 +177,21 @@ export function WorkspaceRegister({ config }: Props) {
             <p className="wsv2-page-subtitle">{config.subtitle}</p>
           </div>
           <div className="wsv2-page-actions">
-            <button
-              type="button"
-              className="wsv2-btn"
-              disabled
-              title="Preview mode only — new document creation is not connected in this V2 build."
-            >
-              <Plus size={13} />
-              {config.createLabel}
-            </button>
+            {config.createDocumentHref ? (
+              <Link
+                href={mapWorkspaceHref(config.createDocumentHref, basePath)}
+                className="wsv2-btn inline-flex items-center gap-1.5"
+                title={`Open ${config.createLabel.replace(/^New\s+/i, "").trim()} composer`}
+              >
+                <Plus size={13} aria-hidden />
+                {config.createLabel}
+              </Link>
+            ) : (
+              <button type="button" className="wsv2-btn" disabled title="Create URL not configured for this register.">
+                <Plus size={13} />
+                {config.createLabel}
+              </button>
+            )}
           </div>
         </div>
 
@@ -177,7 +219,7 @@ export function WorkspaceRegister({ config }: Props) {
               />
             }
           />
-          <div className="wsv2-table-scroll">
+          <div ref={wrapRef} className="wsv2-table-scroll" data-register-table="true">
             {visibleDocuments.length === 0 ? (
               <WorkspaceEmptyState
                 title={config.emptyTitle}
@@ -185,17 +227,23 @@ export function WorkspaceRegister({ config }: Props) {
               />
             ) : (
               <table className="wsv2-table">
+                <colgroup>
+                  {visibleOrderedIds.map((id) => (
+                    <col key={id} style={{ width: `${pctById[id] ?? 100 / visibleOrderedIds.length}%` }} />
+                  ))}
+                </colgroup>
                 <thead>
                   <tr>
-                    {show("number") ? <th>Document No.</th> : null}
-                    {show("customer") ? <th className="wsv2-cell-desc">Customer</th> : null}
-                    {show("issue") ? <th>Issue date</th> : null}
-                    {show("due") ? <th>Due date</th> : null}
-                    {show("status") ? <th>Status</th> : null}
-                    {show("vat") ? <th className="num">VAT</th> : null}
-                    {show("total") ? <th className="num">Total</th> : null}
-                    {show("balance") ? <th className="num">Balance</th> : null}
-                    {show("actions") ? <th style={{ textAlign: "right" }}>Actions</th> : null}
+                    {visibleOrderedIds.map((colId, idx) => (
+                      <RegisterTableHeaderCell
+                        key={colId}
+                        align={colId === "actions" || /total|balance|vat/i.test(colId) ? "right" : "left"}
+                        className={["vat", "total", "balance"].includes(colId) ? "num" : colId === "customer" ? "wsv2-cell-desc" : ""}
+                        onResizePointerDown={idx < visibleOrderedIds.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+                      >
+                        {DOC_HEADER[colId] ?? colId}
+                      </RegisterTableHeaderCell>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -207,51 +255,62 @@ export function WorkspaceRegister({ config }: Props) {
                         data-selected={doc.id === activeId ? "true" : "false"}
                         onClick={() => openPreview(doc.id)}
                       >
-                        {show("number") ? (
-                          <td style={{ fontWeight: 600 }}>{doc.number}</td>
-                        ) : null}
-                        {show("customer") ? (
-                          <td className="wsv2-cell-desc">
-                            <div style={{ fontWeight: 500 }}>{customer?.legalName ?? "—"}</div>
-                            <div style={{ fontSize: 11.5, color: "var(--wsv2-ink-subtle)" }}>
-                              {customer?.city ?? ""}
-                            </div>
-                          </td>
-                        ) : null}
-                        {show("issue") ? <td>{formatDate(doc.issueDate)}</td> : null}
-                        {show("due") ? <td>{formatDate(doc.dueDate)}</td> : null}
-                        {show("status") ? (
-                          <td>
-                            <span className="wsv2-pill" data-tone={statusTone(doc.status)}>
-                              <span className="wsv2-status-dot" /> {statusLabel(doc.status)}
-                            </span>
-                          </td>
-                        ) : null}
-                        {show("vat") ? <td className="num">{formatCurrency(doc.vat)}</td> : null}
-                        {show("total") ? <td className="num">{formatCurrency(doc.total)}</td> : null}
-                        {show("balance") ? <td className="num">{formatCurrency(doc.balance)}</td> : null}
-                        {show("actions") ? (
-                          <td>
-                            <div className="actions" onClick={(event) => event.stopPropagation()}>
-                              <button
-                                type="button"
-                                className="wsv2-icon-btn"
-                                aria-label={`Preview ${doc.number}`}
-                                onClick={() => openPreview(doc.id)}
-                              >
-                                <Eye size={13} />
-                              </button>
-                              <WorkspaceMoreActions
-                                actions={[
-                                  { id: "duplicate", label: "Duplicate document" },
-                                  { id: "history", label: "View change history" },
-                                  { id: "credit-note", label: "Create credit note" },
-                                  { id: "open-full", label: "Open full preview" },
-                                ]}
-                              />
-                            </div>
-                          </td>
-                        ) : null}
+                        {visibleOrderedIds.map((colId) => {
+                          if (colId === "number") {
+                            return (
+                              <td key={colId} style={{ fontWeight: 600 }}>
+                                {doc.number}
+                              </td>
+                            );
+                          }
+                          if (colId === "customer") {
+                            return (
+                              <td key={colId} className="wsv2-cell-desc">
+                                <div style={{ fontWeight: 500 }}>{customer?.legalName ?? "—"}</div>
+                                <div style={{ fontSize: 11.5, color: "var(--wsv2-ink-subtle)" }}>{customer?.city ?? ""}</div>
+                              </td>
+                            );
+                          }
+                          if (colId === "issue") return <td key={colId}>{formatDate(doc.issueDate)}</td>;
+                          if (colId === "due") return <td key={colId}>{formatDate(doc.dueDate)}</td>;
+                          if (colId === "status") {
+                            return (
+                              <td key={colId}>
+                                <span className="wsv2-pill" data-tone={statusTone(doc.status)}>
+                                  <span className="wsv2-status-dot" /> {statusLabel(doc.status)}
+                                </span>
+                              </td>
+                            );
+                          }
+                          if (colId === "vat") return <td key={colId} className="num">{formatCurrency(doc.vat)}</td>;
+                          if (colId === "total") return <td key={colId} className="num">{formatCurrency(doc.total)}</td>;
+                          if (colId === "balance") return <td key={colId} className="num">{formatCurrency(doc.balance)}</td>;
+                          if (colId === "actions") {
+                            return (
+                              <td key={colId}>
+                                <div className="actions" onClick={(event) => event.stopPropagation()}>
+                                  <button
+                                    type="button"
+                                    className="wsv2-icon-btn"
+                                    aria-label={`Preview ${doc.number}`}
+                                    onClick={() => openPreview(doc.id)}
+                                  >
+                                    <Eye size={13} />
+                                  </button>
+                                  <WorkspaceMoreActions
+                                    actions={[
+                                      { id: "duplicate", label: "Duplicate document" },
+                                      { id: "history", label: "View change history" },
+                                      { id: "credit-note", label: "Create credit note" },
+                                      { id: "open-full", label: "Open full preview" },
+                                    ]}
+                                  />
+                                </div>
+                              </td>
+                            );
+                          }
+                          return <td key={colId}>—</td>;
+                        })}
                       </tr>
                     );
                   })}

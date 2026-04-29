@@ -33,7 +33,7 @@
   --wsv2-topbar-h: 56px;
 
   /* Template / document: same Arabic stack as next/font in `app/workspace/layout.tsx` */
-  --wsv2-template-ar-font-stack: var(--font-noto-sans-arabic), var(--font-ibm-plex-sans-arabic), "Segoe UI", Tahoma, Arial, sans-serif;
+  --wsv2-template-ar-font-stack: var(--font-arabic-stack);
   --wsv2-template-latin-font-stack: var(--font-body), "Segoe UI", Tahoma, system-ui, sans-serif;
 
   /* Sidebar palette — Hisabix light green theme.
@@ -719,7 +719,9 @@
 }
 
 [data-wsv2] .wsv2-table-scroll {
-  overflow-x: auto;
+  overflow-x: hidden;
+  min-width: 0;
+  max-width: 100%;
 }
 
 [data-wsv2] table.wsv2-table {
@@ -728,7 +730,7 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: 12.5px;
-  min-width: 760px;
+  min-width: 0;
 }
 
 [data-wsv2] .wsv2-table thead {
@@ -748,9 +750,10 @@
   top: 0;
   background: var(--wsv2-surface-alt);
   z-index: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   min-width: 0;
 }
 
@@ -764,10 +767,11 @@
   padding: 11px 12px;
   border-bottom: 1px solid var(--wsv2-line);
   color: var(--wsv2-ink);
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  vertical-align: top;
+  overflow: visible;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   min-width: 0;
 }
 
@@ -805,6 +809,105 @@
   display: flex;
   justify-content: flex-end;
   gap: 4px;
+}
+
+/* Register / report tables: fixed layout, wrap all cells, no horizontal scroll */
+[data-register-table="true"] {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-register-table="true"] table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.register-table-th,
+.register-table-cell,
+th.register-table-th {
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.journal-register-table th,
+.journal-register-table td {
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* Journal entries register — zebra, header polish, resize grip, split pane */
+.journal-register-page .journal-register-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.journal-register-page .journal-register-table thead th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px;
+}
+
+.journal-register-page .journal-register-table .resize-handle {
+  width: 6px;
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: auto;
+}
+
+.journal-register-page .journal-register-table tbody td {
+  white-space: normal;
+  word-break: break-word;
+  padding: 8px 10px;
+  vertical-align: top;
+}
+
+.journal-register-page .journal-register-table tbody tr:not([data-journal-placeholder]):nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.journal-register-page .journal-register-table tbody tr:not([data-journal-placeholder]):nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.journal-register-page .journal-register-table tbody tr:not([data-journal-placeholder]):hover {
+  background-color: #eef6ff !important;
+}
+
+.journal-register-page .journal-register-table tbody tr[data-selected="true"] {
+  background-color: #dbeafe !important;
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.45);
+}
+
+.journal-register-page .journal-split-divider {
+  width: 6px;
+  min-height: 120px;
+  align-self: stretch;
+  touch-action: none;
+  background: linear-gradient(to right, transparent 2px, #e5e7eb 2px, #e5e7eb 4px, transparent 4px);
+  transition: background 0.15s ease;
+}
+
+.journal-register-page .journal-split-divider:hover,
+.journal-register-page .journal-split-divider:focus-visible {
+  background: linear-gradient(to right, transparent 1px, #93c5fd 1px, #93c5fd 5px, transparent 5px);
+  outline: none;
+}
+
+.journal-detail-lines-table th,
+.journal-detail-lines-table td {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 [data-wsv2] .wsv2-toolbar {
@@ -2275,7 +2378,7 @@
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-section-card {
   border-color: transparent;
   background: var(--wsv2-studio-paper, #ffffff);
-  padding: 18px 18px;
+  padding: 16px 16px;
   box-shadow: 0 1px 0 rgba(11, 11, 11, 0.04);
 }
 
@@ -2619,14 +2722,14 @@
   padding: 7px 6px;
 }
 
-/* Modern — compact rhythm, title/typography from Template Studio (inline scales body via --wsv2). */
+/* Modern — compact rhythm; font tokens −2px vs pre-change Modern (see lib/template-engine/modern-font-scale.ts). */
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] {
   gap: 8px;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 10px;
+  line-height: 14px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-section:not([data-section="footer"]):not([data-section="header"]):not([data-section="customer"]):not([data-section="docInfo"]) {
-  padding: 8px 10px;
+  padding: 7px 9px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
 }
@@ -2637,25 +2740,76 @@
   border-top-width: 3px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-title-en {
-  font-size: 27px;
+  font-size: 25px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-title-ar {
-  font-size: 22px;
+  font-size: 20px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-section-heading {
-  font-size: 11.5px;
-  margin-bottom: 10px;
+  font-size: 9.5px;
+  margin-bottom: 8px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-items-table {
+  font-size: calc(9.5px - 1pt);
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-items-table thead th {
-  padding: 9px 7px;
-  font-size: calc(11px - 1pt);
+  padding: 8px 6px;
+  font-size: calc(9px - 1pt);
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-items-table tbody td {
-  padding: 9px 7px;
+  padding: 8px 6px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-table th,
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-table td {
-  padding: 8px 7px;
+  padding: 7px 6px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-label {
+  font-size: 9px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-value {
+  font-size: 10px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-info-card-header-title {
+  font-size: 9px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-seller-name {
+  font-size: 12px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-line {
+  font-size: 8.5px;
+  line-height: 12px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-totals-row {
+  font-size: 10px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-totals-row[data-grand="true"] {
+  font-size: 12px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-footer-bar {
+  font-size: 8px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-qr-caption-en {
+  font-size: 8px;
+  line-height: 12px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-qr-caption-ar {
+  font-size: 8px;
+  line-height: 13px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-signatory-name {
+  font-size: 9px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-empty {
+  font-size: 9px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-stamp-caption {
+  font-size: 7.5px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-stamp-signature-label {
+  font-size: 8.5px;
+}
+[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-logo-box {
+  font-size: 7px;
 }
 [data-wsv2] .wsv2-doc-paper-inner[data-style="modern"] .wsv2-wf-split-row {
   gap: 16px;
@@ -3750,7 +3904,7 @@
   border: 1px solid var(--wsv2-line);
   background: var(--wsv2-input-bg);
   color: var(--wsv2-input-ink);
-  font-family: ui-monospace, monospace;
+  font-family: inherit;
 }
 [data-wsv2] .wsv2-template-studio .wsv2-parity-line {
   font-size: 10.5px;

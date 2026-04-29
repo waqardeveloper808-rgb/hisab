@@ -202,6 +202,7 @@ export function PlansOverview() {
           </Card>
 
           <WorkspaceDataTable
+            registerTableId="admin-plans"
             title="Plans"
             caption="Visible pricing offers and internal limits. Select a row to edit it."
             rows={plans}
@@ -209,17 +210,19 @@ export function PlansOverview() {
             badge={isPreview ? "Preview" : loading ? "Loading" : `${plans.length} plans`}
             columns={[
               {
+                id: "plan",
                 header: "Plan",
+                defaultWidth: 200,
                 render: (row) => (
                   <button type="button" className="text-left font-semibold text-primary hover:text-primary-hover disabled:text-muted" disabled={isPreview} onClick={() => setPlanDraft(row)}>
                     {row.name}
                   </button>
                 ),
               },
-              { header: "Code", render: (row) => row.code },
-              { header: "Monthly", align: "right", render: (row) => `${row.monthlyPriceSar} SAR` },
-              { header: "Seats", align: "right", render: (row) => row.accountantSeatLimit ?? "Unlimited" },
-              { header: "Status", render: (row) => row.isActive ? "Active" : "Inactive" },
+              { id: "code", header: "Code", defaultWidth: 100, render: (row) => row.code },
+              { id: "monthly", header: "Monthly", align: "right", defaultWidth: 100, render: (row) => `${row.monthlyPriceSar} SAR` },
+              { id: "seats", header: "Seats", align: "right", defaultWidth: 90, render: (row) => row.accountantSeatLimit ?? "Unlimited" },
+              { id: "status", header: "Status", defaultWidth: 90, render: (row) => row.isActive ? "Active" : "Inactive" },
             ]}
           />
         </div>

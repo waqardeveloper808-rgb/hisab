@@ -1,11 +1,14 @@
 import type { WorkspaceModule, WorkspaceResource } from "@/data/workspace";
+import { canonicalizeWorkspaceHref } from "@/lib/active-workspace";
 
-export function mapWorkspaceHref(href: string, basePath: string) {
-  if (!href.startsWith("/workspace")) {
-    return href;
-  }
-
-  return `${basePath}${href.slice("/workspace".length) || ""}`;
+/**
+ * Resolve a `/workspace/...` href to the canonical default workspace (`/workspace/user`),
+ * except legacy roots (invoices, admin, accounting subtree, …). `basePath` is kept for
+ * backward compatibility and is ignored — all callers must use canonical tenant URLs.
+ */
+export function mapWorkspaceHref(href: string, _basePath?: string) {
+  void _basePath;
+  return canonicalizeWorkspaceHref(href);
 }
 
 export function mapWorkspaceResource<T extends WorkspaceResource>(resource: T, basePath: string): T {

@@ -1713,7 +1713,7 @@ export async function createPreviewInventoryRecord(payload: {
     production_date: payload.production_date ?? null,
     recorded_by: payload.recorded_by ?? "Workspace User",
     journal_entry_number: payload.journal_entry_number ?? `JV-INV-${nextId}`,
-    inventory_account_code: payload.inventory_account_code ?? (payload.source === "production" ? "1400" : "1200"),
+    inventory_account_code: payload.inventory_account_code ?? (payload.source === "production" ? "124" : "120"),
     inventory_account_name: payload.inventory_account_name ?? (payload.source === "production" ? "Inventory - Finished Goods" : "Inventory - Raw Materials"),
     attachments: payload.attachments ?? [],
     document_links: payload.document_links ?? [],
@@ -2462,7 +2462,7 @@ async function applyPreviewDeliveryInventory(document: PreviewDocument) {
       source: inventoryRecord.source,
       recorded_by: textValue(document.custom_fields?.recorded_by, "Workspace User"),
       journal_entry_number: `JE-DLV-${document.id}`,
-      inventory_account_code: inventoryRecord.inventory_account_code ?? "1150",
+      inventory_account_code: inventoryRecord.inventory_account_code ?? "113",
       inventory_account_name: inventoryRecord.inventory_account_name ?? "Inventory",
       attachments: inventoryRecord.attachments ?? [],
       document_links: documentLinks,
@@ -2531,8 +2531,8 @@ function buildPreviewJournalEntries(documents: PreviewDocument[], payments: Prev
         created_by_name: createdBy,
         metadata: { payment_status: paymentStatus },
         lines: [
-          { id: ++lineId, line_no: 1, account_code: "5000", account_name: "Cost of Goods Sold", debit: document.taxable_total, credit: 0, description: "COGS recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 2, account_code: "1150", account_name: "Inventory", debit: 0, credit: document.taxable_total, description: "Inventory released", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 1, account_code: "500", account_name: "Cost of Goods Sold", debit: document.taxable_total, credit: 0, description: "COGS recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 2, account_code: "113", account_name: "Inventory", debit: 0, credit: document.taxable_total, description: "Inventory released", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
         ],
       });
       return;
@@ -2551,9 +2551,9 @@ function buildPreviewJournalEntries(documents: PreviewDocument[], payments: Prev
         created_by_name: createdBy,
         metadata: { payment_status: paymentStatus },
         lines: [
-          { id: ++lineId, line_no: 1, account_code: "1100", account_name: "Accounts Receivable", debit: document.grand_total, credit: 0, description: "Receivable recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 2, account_code: "4000", account_name: "Sales Revenue", debit: 0, credit: document.taxable_total, description: "Revenue recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 3, account_code: "2200", account_name: "VAT Payable", debit: 0, credit: document.tax_total, description: "Output VAT recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 1, account_code: "110", account_name: "Accounts Receivable", debit: document.grand_total, credit: 0, description: "Receivable recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 2, account_code: "400", account_name: "Sales Revenue", debit: 0, credit: document.taxable_total, description: "Revenue recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 3, account_code: "220", account_name: "VAT Payable", debit: 0, credit: document.tax_total, description: "Output VAT recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
         ],
       });
       return;
@@ -2572,9 +2572,9 @@ function buildPreviewJournalEntries(documents: PreviewDocument[], payments: Prev
         created_by_name: createdBy,
         metadata: { payment_status: paymentStatus },
         lines: [
-          { id: ++lineId, line_no: 1, account_code: "4000", account_name: "Sales Revenue", debit: document.taxable_total, credit: 0, description: "Revenue reversed", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 2, account_code: "2200", account_name: "VAT Payable", debit: document.tax_total, credit: 0, description: "VAT reversed", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 3, account_code: "1100", account_name: "Accounts Receivable", debit: 0, credit: document.grand_total, description: "Receivable reduced", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 1, account_code: "400", account_name: "Sales Revenue", debit: document.taxable_total, credit: 0, description: "Revenue reversed", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 2, account_code: "220", account_name: "VAT Payable", debit: document.tax_total, credit: 0, description: "VAT reversed", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 3, account_code: "110", account_name: "Accounts Receivable", debit: 0, credit: document.grand_total, description: "Receivable reduced", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
         ],
       });
       return;
@@ -2594,8 +2594,8 @@ function buildPreviewJournalEntries(documents: PreviewDocument[], payments: Prev
         metadata: null,
         lines: [
           { id: ++lineId, line_no: 1, account_code: "6000", account_name: "Operating Expense", debit: document.taxable_total, credit: 0, description: "Expense recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 2, account_code: "1300", account_name: "VAT Receivable", debit: document.tax_total, credit: 0, description: "Input VAT recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
-          { id: ++lineId, line_no: 3, account_code: "2000", account_name: "Accounts Payable", debit: 0, credit: document.grand_total, description: "Payable recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 2, account_code: "130", account_name: "VAT Receivable", debit: document.tax_total, credit: 0, description: "Input VAT recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
+          { id: ++lineId, line_no: 3, account_code: "200", account_name: "Accounts Payable", debit: 0, credit: document.grand_total, description: "Payable recognized", document_id: document.id, document_number: document.document_number, document_type: document.type, document_status: document.status },
         ],
       });
     }
@@ -2615,8 +2615,8 @@ function buildPreviewJournalEntries(documents: PreviewDocument[], payments: Prev
       created_by_name: "Workspace User",
       metadata: null,
       lines: [
-        { id: ++lineId, line_no: 1, account_code: "1200", account_name: "Main Bank Account", debit: payment.amount, credit: 0, description: isIncoming ? "Cash received" : "Payment posted", document_id: payment.document_id ?? null, document_number: payment.document_number ?? payment.payment_number, document_type: isIncoming ? "tax_invoice" : "vendor_bill", document_status: "paid" },
-        { id: ++lineId, line_no: 2, account_code: isIncoming ? "1100" : "2000", account_name: isIncoming ? "Accounts Receivable" : "Accounts Payable", debit: 0, credit: payment.amount, description: isIncoming ? "Receivable settled" : "Payable settled", document_id: payment.document_id ?? null, document_number: payment.document_number ?? payment.payment_number, document_type: isIncoming ? "tax_invoice" : "vendor_bill", document_status: "paid" },
+        { id: ++lineId, line_no: 1, account_code: "120", account_name: "Main Bank Account", debit: payment.amount, credit: 0, description: isIncoming ? "Cash received" : "Payment posted", document_id: payment.document_id ?? null, document_number: payment.document_number ?? payment.payment_number, document_type: isIncoming ? "tax_invoice" : "vendor_bill", document_status: "paid" },
+        { id: ++lineId, line_no: 2, account_code: isIncoming ? "110" : "200", account_name: isIncoming ? "Accounts Receivable" : "Accounts Payable", debit: 0, credit: payment.amount, description: isIncoming ? "Receivable settled" : "Payable settled", document_id: payment.document_id ?? null, document_number: payment.document_number ?? payment.payment_number, document_type: isIncoming ? "tax_invoice" : "vendor_bill", document_status: "paid" },
       ],
     });
   });
@@ -2637,8 +2637,8 @@ function buildPreviewJournalEntries(documents: PreviewDocument[], payments: Prev
       created_by_name: entry.recorded_by ?? "Workspace User",
       metadata: null,
       lines: [
-        { id: ++lineId, line_no: 1, account_code: "5000", account_name: "Cost of Goods Sold", debit: entry.quantity, credit: 0, description: "COGS recognized", document_id: entry.document_links?.[0]?.documentId ?? null, document_number: entry.reference, document_type: "delivery_note", document_status: entry.status },
-        { id: ++lineId, line_no: 2, account_code: "1150", account_name: "Inventory", debit: 0, credit: entry.quantity, description: "Inventory released", document_id: entry.document_links?.[0]?.documentId ?? null, document_number: entry.reference, document_type: "delivery_note", document_status: entry.status },
+        { id: ++lineId, line_no: 1, account_code: "500", account_name: "Cost of Goods Sold", debit: entry.quantity, credit: 0, description: "COGS recognized", document_id: entry.document_links?.[0]?.documentId ?? null, document_number: entry.reference, document_type: "delivery_note", document_status: entry.status },
+        { id: ++lineId, line_no: 2, account_code: "113", account_name: "Inventory", debit: 0, credit: entry.quantity, description: "Inventory released", document_id: entry.document_links?.[0]?.documentId ?? null, document_number: entry.reference, document_type: "delivery_note", document_status: entry.status },
       ],
     });
   });
@@ -3128,8 +3128,8 @@ export async function listPreviewGeneralLedger() {
         account_name: line.account_name ?? "",
         contact_name: documents.find((document) => document.id === line.document_id)?.contact.display_name ?? payments.find((payment) => payment.document_id === line.document_id)?.contact_name ?? "",
         document_number: line.document_number ?? entry.reference,
-        cost_center_code: line.account_code === "2200" || line.account_code === "1300" ? "VAT" : line.account_code === "5000" ? "COGS" : "OPS",
-        cost_center_name: line.account_code === "2200" || line.account_code === "1300" ? "VAT" : line.account_code === "5000" ? "Cost of Sales" : "Operations",
+        cost_center_code: line.account_code === "220" || line.account_code === "130" ? "VAT" : line.account_code === "500" ? "COGS" : "OPS",
+        cost_center_name: line.account_code === "220" || line.account_code === "130" ? "VAT" : line.account_code === "500" ? "Cost of Sales" : "Operations",
         description: line.description ?? entry.memo,
         debit: numericValue(line.debit),
         credit: numericValue(line.credit),
@@ -3392,7 +3392,7 @@ export async function createPreviewInventoryAdjustment(payload: {
     source: record.source,
     recorded_by: "Workspace User",
     journal_entry_number: `JE-ADJ-${record.id}`,
-    inventory_account_code: record.inventory_account_code ?? "1150",
+    inventory_account_code: record.inventory_account_code ?? "113",
     inventory_account_name: record.inventory_account_name ?? "Inventory",
     attachments: payload.attachments ?? [],
     document_links: payload.document_links ?? [],
@@ -3455,7 +3455,7 @@ export async function createPreviewInventorySale(payload: {
     source: record.source,
     recorded_by: "Workspace User",
     journal_entry_number: `JE-SALE-${record.id}`,
-    inventory_account_code: record.inventory_account_code ?? "1150",
+    inventory_account_code: record.inventory_account_code ?? "113",
     inventory_account_name: record.inventory_account_name ?? "Inventory",
     attachments: payload.attachments ?? [],
     document_links: links,

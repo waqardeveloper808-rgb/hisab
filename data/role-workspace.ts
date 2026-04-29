@@ -117,7 +117,7 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Accounting",
         items: [
-          { label: "Chart of Accounts", href: "/workspace/user/chart-of-accounts", matchPrefixes: ["/workspace/user/chart-of-accounts"] },
+          { label: "Chart of Accounts", href: "/workspace/accounting/chart-of-accounts", matchPrefixes: ["/workspace/accounting/chart-of-accounts", "/workspace/user/chart-of-accounts"] },
           { label: "Journal Entries", href: "/workspace/user/journal-entries", matchPrefixes: ["/workspace/user/journal-entries"] },
           { label: "Ledger", href: "/workspace/user/ledger", matchPrefixes: ["/workspace/user/ledger", "/workspace/accounting/books"] },
           { label: "Opening Balances", href: "/workspace/user/opening-balances", matchPrefixes: ["/workspace/user/opening-balances"] },
@@ -458,7 +458,7 @@ function defaultModuleDefinition(role: WorkspaceRoleKey, item: WorkspaceNavItem)
     ];
   } else if (href.includes("ledger") || href.includes("opening-balance") || href.includes("chart-of-accounts") || href.includes("journal")) {
     contextualActions = [
-      { label: "Chart of Accounts", href: "/workspace/user/chart-of-accounts", variant: "primary" },
+      { label: "Chart of Accounts", href: "/workspace/accounting/chart-of-accounts", variant: "primary" },
       { label: "Journal Entries", href: "/workspace/user/journal-entries", variant: "secondary" },
     ];
   } else if (href.includes("report") || href.includes("trial-balance") || href.includes("profit-loss") || href.includes("balance-sheet") || href.includes("cash-flow") || href.includes("aging") || href.includes("vat-summary")) {

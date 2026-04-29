@@ -72,6 +72,9 @@
   --color-info: #1a6fb5;
   --color-info-soft: #e6f1fa;
 
+  /* ─── Arabic (single stack; variables from next/font on `<html>` in app/layout.tsx) ─── */
+  --font-arabic-stack: var(--font-noto-sans-arabic), var(--font-tajawal), var(--font-ibm-plex-sans-arabic), sans-serif;
+
   /* ─── Typography tokens ─── */
   --font-size-display: clamp(1.58rem, 1.34rem + 0.8vw, 1.82rem);
   --font-size-h1: clamp(1.18rem, 1.04rem + 0.35vw, 1.34rem);
@@ -116,6 +119,37 @@ body {
 html[dir="rtl"] body,
 [dir="rtl"] {
   line-height: var(--line-height-ar);
+}
+
+/* Unified Arabic typography — single stack everywhere for RTL / Arabic script */
+html[lang="ar"],
+[dir="rtl"],
+.arabic,
+[lang="ar"] {
+  font-family: var(--font-arabic-stack) !important;
+}
+
+/* Tables never impose a separate font; inherit from contextual Arabic/Latin parent */
+table,
+td,
+th {
+  font-family: inherit;
+}
+
+/* Latin heading tokens must not override Arabic inside RTL subtrees */
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6,
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6 {
+  font-family: inherit !important;
 }
 
 body::before {

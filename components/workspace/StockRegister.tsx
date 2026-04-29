@@ -55,10 +55,10 @@ function slugify(value: string) {
 
 function getInventoryAccount(inventoryType: string) {
 	if (inventoryType === "consumables") {
-		return { code: "5100", name: "Operating Expenses" };
+		return { code: "690", name: "Miscellaneous Expense" };
 	}
 
-	return { code: "1300", name: "Inventory" };
+	return { code: "113", name: "Inventory — Trading" };
 }
 
 export function StockRegister({ inventoryFilter = "", title = "Stock Register", detail = "Inventory intake records persist only through backend inventory APIs. If no stock exists yet, this register stays empty instead of showing sample rows." }: StockRegisterProps) {

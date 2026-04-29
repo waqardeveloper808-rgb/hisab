@@ -1,5 +1,875 @@
 [
   {
+    "id": 2156,
+    "type": "tax_invoice",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0001",
+    "issue_date": "2026-01-01",
+    "supply_date": "2026-01-01",
+    "due_date": "2026-01-01",
+    "grand_total": 1150,
+    "balance_due": 1150,
+    "paid_total": 0,
+    "tax_total": 150,
+    "taxable_total": 1000,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0001",
+      "linked_journal_id": 89002,
+      "reference": "COV-LNK-0001"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0001",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 215601,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0001",
+        "quantity": 1,
+        "unit_price": 1000,
+        "gross_amount": 1000,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2157,
+    "type": "credit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0002",
+    "issue_date": "2026-02-02",
+    "supply_date": "2026-02-02",
+    "due_date": "2026-02-02",
+    "grand_total": 1207.5,
+    "balance_due": 1207.5,
+    "paid_total": 0,
+    "tax_total": 157.5,
+    "taxable_total": 1050,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0002",
+      "linked_journal_id": 89003,
+      "reference": "COV-LNK-0002"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0002",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 215701,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0002",
+        "quantity": 1,
+        "unit_price": 1050,
+        "gross_amount": 1050,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2158,
+    "type": "debit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0003",
+    "issue_date": "2026-03-03",
+    "supply_date": "2026-03-03",
+    "due_date": "2026-03-03",
+    "grand_total": 1265,
+    "balance_due": 1265,
+    "paid_total": 0,
+    "tax_total": 165,
+    "taxable_total": 1100,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0003",
+      "linked_journal_id": 89004,
+      "reference": "COV-LNK-0003"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0003",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 215801,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0003",
+        "quantity": 1,
+        "unit_price": 1100,
+        "gross_amount": 1100,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2159,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0004",
+    "issue_date": "2026-04-04",
+    "supply_date": "2026-04-04",
+    "due_date": "2026-04-04",
+    "grand_total": 1322.5,
+    "balance_due": 1322.5,
+    "paid_total": 0,
+    "tax_total": 172.5,
+    "taxable_total": 1150,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0004",
+      "linked_journal_id": 89005,
+      "reference": "COV-LNK-0004"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0004",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 215901,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0004",
+        "quantity": 1,
+        "unit_price": 1150,
+        "gross_amount": 1150,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2160,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0005",
+    "issue_date": "2026-05-05",
+    "supply_date": "2026-05-05",
+    "due_date": "2026-05-05",
+    "grand_total": 1380,
+    "balance_due": 1380,
+    "paid_total": 0,
+    "tax_total": 180,
+    "taxable_total": 1200,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0005",
+      "linked_journal_id": 89006,
+      "reference": "COV-LNK-0005"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0005",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216001,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0005",
+        "quantity": 1,
+        "unit_price": 1200,
+        "gross_amount": 1200,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2161,
+    "type": "tax_invoice",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0006",
+    "issue_date": "2026-06-06",
+    "supply_date": "2026-06-06",
+    "due_date": "2026-06-06",
+    "grand_total": 1437.5,
+    "balance_due": 1437.5,
+    "paid_total": 0,
+    "tax_total": 187.5,
+    "taxable_total": 1250,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0006",
+      "linked_journal_id": 89007,
+      "reference": "COV-LNK-0006"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0006",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216101,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0006",
+        "quantity": 1,
+        "unit_price": 1250,
+        "gross_amount": 1250,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2162,
+    "type": "credit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0007",
+    "issue_date": "2026-01-07",
+    "supply_date": "2026-01-07",
+    "due_date": "2026-01-07",
+    "grand_total": 1495,
+    "balance_due": 1495,
+    "paid_total": 0,
+    "tax_total": 195,
+    "taxable_total": 1300,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0007",
+      "linked_journal_id": 89008,
+      "reference": "COV-LNK-0007"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0007",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216201,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0007",
+        "quantity": 1,
+        "unit_price": 1300,
+        "gross_amount": 1300,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2163,
+    "type": "debit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0008",
+    "issue_date": "2026-02-08",
+    "supply_date": "2026-02-08",
+    "due_date": "2026-02-08",
+    "grand_total": 1552.5,
+    "balance_due": 1552.5,
+    "paid_total": 0,
+    "tax_total": 202.5,
+    "taxable_total": 1350,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0008",
+      "linked_journal_id": 89009,
+      "reference": "COV-LNK-0008"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0008",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216301,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0008",
+        "quantity": 1,
+        "unit_price": 1350,
+        "gross_amount": 1350,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2164,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0009",
+    "issue_date": "2026-03-09",
+    "supply_date": "2026-03-09",
+    "due_date": "2026-03-09",
+    "grand_total": 1610,
+    "balance_due": 1610,
+    "paid_total": 0,
+    "tax_total": 210,
+    "taxable_total": 1400,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0009",
+      "linked_journal_id": 89010,
+      "reference": "COV-LNK-0009"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0009",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216401,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0009",
+        "quantity": 1,
+        "unit_price": 1400,
+        "gross_amount": 1400,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2165,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0010",
+    "issue_date": "2026-04-10",
+    "supply_date": "2026-04-10",
+    "due_date": "2026-04-10",
+    "grand_total": 1667.5,
+    "balance_due": 1667.5,
+    "paid_total": 0,
+    "tax_total": 217.5,
+    "taxable_total": 1450,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0010",
+      "linked_journal_id": 89011,
+      "reference": "COV-LNK-0010"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0010",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216501,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0010",
+        "quantity": 1,
+        "unit_price": 1450,
+        "gross_amount": 1450,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2166,
+    "type": "tax_invoice",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0011",
+    "issue_date": "2026-05-11",
+    "supply_date": "2026-05-11",
+    "due_date": "2026-05-11",
+    "grand_total": 1725,
+    "balance_due": 1725,
+    "paid_total": 0,
+    "tax_total": 225,
+    "taxable_total": 1500,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0011",
+      "linked_journal_id": 89012,
+      "reference": "COV-LNK-0011"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0011",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216601,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0011",
+        "quantity": 1,
+        "unit_price": 1500,
+        "gross_amount": 1500,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2167,
+    "type": "credit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0012",
+    "issue_date": "2026-06-12",
+    "supply_date": "2026-06-12",
+    "due_date": "2026-06-12",
+    "grand_total": 1782.5,
+    "balance_due": 1782.5,
+    "paid_total": 0,
+    "tax_total": 232.5,
+    "taxable_total": 1550,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0012",
+      "linked_journal_id": 89013,
+      "reference": "COV-LNK-0012"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0012",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216701,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0012",
+        "quantity": 1,
+        "unit_price": 1550,
+        "gross_amount": 1550,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2168,
+    "type": "debit_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0013",
+    "issue_date": "2026-01-13",
+    "supply_date": "2026-01-13",
+    "due_date": "2026-01-13",
+    "grand_total": 1840,
+    "balance_due": 1840,
+    "paid_total": 0,
+    "tax_total": 240,
+    "taxable_total": 1600,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0013",
+      "linked_journal_id": 89014,
+      "reference": "COV-LNK-0013"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0013",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216801,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0013",
+        "quantity": 1,
+        "unit_price": 1600,
+        "gross_amount": 1600,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2169,
+    "type": "delivery_note",
+    "status": "posted",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0014",
+    "issue_date": "2026-02-14",
+    "supply_date": "2026-02-14",
+    "due_date": "2026-02-14",
+    "grand_total": 1897.5,
+    "balance_due": 1897.5,
+    "paid_total": 0,
+    "tax_total": 247.5,
+    "taxable_total": 1650,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0014",
+      "linked_journal_id": 89015,
+      "reference": "COV-LNK-0014"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0014",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 216901,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0014",
+        "quantity": 1,
+        "unit_price": 1650,
+        "gross_amount": 1650,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": 2170,
+    "type": "proforma_invoice",
+    "status": "finalized",
+    "contact_id": 101,
+    "document_number": "COV-LNK-0015",
+    "issue_date": "2026-03-15",
+    "supply_date": "2026-03-15",
+    "due_date": "2026-03-15",
+    "grand_total": 1955,
+    "balance_due": 1955,
+    "paid_total": 0,
+    "tax_total": 255,
+    "taxable_total": 1700,
+    "contact": {
+      "display_name": "Coverage Linked Customer Ltd."
+    },
+    "title": "Coverage batch coa_full_account_coverage_2026_04_27",
+    "language_code": "en",
+    "sent_at": null,
+    "sent_to_email": "finance@coverage.local",
+    "custom_fields": {
+      "batch_tag": "coa_full_account_coverage_2026_04_27",
+      "linked_journal_entry_number": "GJ-COV-0015",
+      "linked_journal_id": 89016,
+      "reference": "COV-LNK-0015"
+    },
+    "template": null,
+    "notes": "Linked narrative for GJ-COV-0015",
+    "compliance_metadata": {
+      "zatca": {
+        "seller_name": "Hisabix Preview LLC",
+        "vat_number": "300123456700003"
+      }
+    },
+    "source_document_id": null,
+    "reversal_of_document_id": null,
+    "version": 1,
+    "status_reason": null,
+    "lines": [
+      {
+        "id": 217001,
+        "item_id": 303,
+        "ledger_account_id": 46,
+        "cost_center_id": null,
+        "description": "Coverage line GJ-COV-0015",
+        "quantity": 1,
+        "unit_price": 1700,
+        "gross_amount": 1700,
+        "metadata": {
+          "custom_fields": {
+            "vat_rate": 15,
+            "batch_tag": "coa_full_account_coverage_2026_04_27"
+          }
+        }
+      }
+    ]
+  },
+  {
     "id": 2155,
     "type": "debit_note",
     "status": "posted",

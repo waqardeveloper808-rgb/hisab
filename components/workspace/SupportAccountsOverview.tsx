@@ -107,6 +107,7 @@ export function SupportAccountsOverview() {
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <WorkspaceDataTable
+          registerTableId="admin-support-accounts"
           title="Support and admin accounts"
           caption="Select a row to edit it or create a new operating account."
           rows={accounts}
@@ -114,16 +115,18 @@ export function SupportAccountsOverview() {
           badge={isPreview ? "Preview" : loading ? "Loading" : `${accounts.length} accounts`}
           columns={[
             {
+              id: "name",
               header: "Name",
+              defaultWidth: 180,
               render: (row) => (
                 <button type="button" className="text-left font-semibold text-primary hover:text-primary-hover disabled:text-muted" disabled={isPreview} onClick={() => setDraft({ ...row, password: "" })}>
                   {row.name}
                 </button>
               ),
             },
-            { header: "Email", render: (row) => row.email },
-            { header: "Role", render: (row) => row.platformRole.replaceAll("_", " ") },
-            { header: "Status", render: (row) => row.isPlatformActive ? "Active" : "Disabled" },
+            { id: "email", header: "Email", defaultWidth: 200, render: (row) => row.email },
+            { id: "role", header: "Role", defaultWidth: 120, render: (row) => row.platformRole.replaceAll("_", " ") },
+            { id: "status", header: "Status", defaultWidth: 100, render: (row) => row.isPlatformActive ? "Active" : "Disabled" },
           ]}
         />
 

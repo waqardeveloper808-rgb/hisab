@@ -1,9 +1,10 @@
 import type { TaxInvoiceSaudiStandardContract } from "@/lib/document-engine/contracts/taxInvoiceSaudiStandardContract";
 import { TaxInvoiceSaudiStandard } from "@/lib/document-engine/templates/TaxInvoiceSaudiStandard";
+import { ARABIC_FONT_STACK_LITERAL } from "@/lib/workspace/arabic-font-stack";
 
 export function getTaxInvoiceSaudiStandardCss() {
   return `
-    .saudi-tax-invoice { font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Arial, sans-serif; color: #172226; background: #ffffff; padding: 10mm; display: grid; gap: 10px; }
+    .saudi-tax-invoice { font-family: ${ARABIC_FONT_STACK_LITERAL}; color: #172226; background: #ffffff; padding: 10mm; display: grid; gap: 10px; }
     .saudi-header { display: grid; gap: 8px; border-bottom: 1px solid #d5dce2; padding-bottom: 8px; }
     .saudi-top-seller { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: start; }
     .saudi-logo-wrap { width: 100px; height: 74px; border: 1px solid #d5dce2; border-radius: 4px; background: #f7f9fb; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -18,8 +19,8 @@ export function getTaxInvoiceSaudiStandardCss() {
     .saudi-meta-cell { display: grid; gap: 2px; }
     .saudi-meta-label { font-size: 10px; color: #61717f; text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
     .saudi-meta-value { font-size: 12px; font-weight: 600; }
-    .saudi-lines { width: 100%; border-collapse: collapse; border: 1px solid #d5dce2; font-size: 11px; }
-    .saudi-lines th, .saudi-lines td { border: 1px solid #d5dce2; padding: 5px 6px; vertical-align: top; }
+    .saudi-lines { width: 100%; border-collapse: collapse; border: 1px solid #d5dce2; font-size: 11px; font-family: inherit; }
+    .saudi-lines th, .saudi-lines td { border: 1px solid #d5dce2; padding: 5px 6px; vertical-align: top; font-family: inherit; }
     .saudi-lines thead th { background: #edf2f7; font-size: 10px; text-transform: uppercase; letter-spacing: .03em; }
     .saudi-right { text-align: right; white-space: nowrap; }
     .saudi-qr-block { border: 1px dashed #b7c1cb; background: #f8fafb; border-radius: 4px; padding: 8px; display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; }

@@ -144,17 +144,18 @@ export function AgentOverview() {
       </Card>
 
       <WorkspaceDataTable
+        registerTableId="agent-referrals"
         title="Referral activity"
         caption="Every signup and subscription tied to your referral code."
         rows={snapshot.referrals}
         emptyMessage="Referral activity will appear here as soon as a business signs up with your code."
         columns={[
-          { header: "Name", render: (row) => row.name || "-" },
-          { header: "Email", render: (row) => row.email || "-" },
-          { header: "Signed up", render: (row) => row.signedUpAt ? row.signedUpAt.slice(0, 10) : "-" },
-          { header: "Subscription", render: (row) => row.subscription ? `${row.subscription.planName} (${row.subscription.status})` : "Pending" },
-          { header: "Commission", align: "right", render: (row) => `${currency(row.commissionAmount)} SAR` },
-          { header: "Status", render: (row) => row.commissionStatus.replaceAll("_", " ") },
+          { id: "name", header: "Name", defaultWidth: 160, render: (row) => row.name || "-" },
+          { id: "email", header: "Email", defaultWidth: 200, render: (row) => row.email || "-" },
+          { id: "signedUp", header: "Signed up", defaultWidth: 110, render: (row) => row.signedUpAt ? row.signedUpAt.slice(0, 10) : "-" },
+          { id: "subscription", header: "Subscription", defaultWidth: 200, render: (row) => row.subscription ? `${row.subscription.planName} (${row.subscription.status})` : "Pending" },
+          { id: "commission", header: "Commission", align: "right", defaultWidth: 120, render: (row) => `${currency(row.commissionAmount)} SAR` },
+          { id: "status", header: "Status", defaultWidth: 120, render: (row) => row.commissionStatus.replaceAll("_", " ") },
         ]}
       />
 

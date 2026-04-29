@@ -442,7 +442,7 @@ export const DEFAULT_TITLE: TemplateTitleSettings = {
 export const DEFAULT_TYPOGRAPHY: TemplateTypography = {
   enFontStack: 'var(--font-body), "Segoe UI", Tahoma, system-ui, sans-serif',
   arFontStack:
-    'var(--font-noto-sans-arabic), var(--font-ibm-plex-sans-arabic), "Segoe UI", Tahoma, Arial, sans-serif',
+    'var(--font-noto-sans-arabic), var(--font-tajawal), var(--font-ibm-plex-sans-arabic), sans-serif',
   enSizeScale: 1,
   arSizeScale: 1,
   enColor: "#111827",

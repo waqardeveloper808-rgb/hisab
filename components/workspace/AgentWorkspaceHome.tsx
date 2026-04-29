@@ -117,15 +117,16 @@ export function AgentWorkspaceHome() {
 
       <div className="grid gap-5 xl:grid-cols-[1fr_0.95fr]">
         <WorkspaceDataTable
+          registerTableId="agent-home-pipeline"
           title="Referral and pipeline activity"
           caption="Recent referred businesses and their subscription state."
           rows={snapshot.referrals}
           emptyMessage="Referral activity will appear here when new businesses sign up under this agent code."
           columns={[
-            { header: "Lead", render: (row) => row.name || "-" },
-            { header: "Email", render: (row) => row.email || "-" },
-            { header: "Signed up", render: (row) => row.signedUpAt ? row.signedUpAt.slice(0, 10) : "-" },
-            { header: "Subscription", render: (row) => row.subscription ? `${row.subscription.planName} (${row.subscription.status})` : "Pending" },
+            { id: "lead", header: "Lead", defaultWidth: 160, render: (row) => row.name || "-" },
+            { id: "email", header: "Email", defaultWidth: 200, render: (row) => row.email || "-" },
+            { id: "signedUp", header: "Signed up", defaultWidth: 110, render: (row) => row.signedUpAt ? row.signedUpAt.slice(0, 10) : "-" },
+            { id: "subscription", header: "Subscription", defaultWidth: 220, render: (row) => row.subscription ? `${row.subscription.planName} (${row.subscription.status})` : "Pending" },
           ]}
         />
 

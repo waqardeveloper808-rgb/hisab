@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Inter, Noto_Sans_Arabic, Poppins, Tajawal } from "next/font/google";
 import { AppFrame } from "@/components/AppFrame";
 import { appName, iconLogoPath } from "@/lib/brand";
 import { buildWhatsAppHref, getProductConfig } from "@/lib/product-config";
@@ -15,6 +15,27 @@ const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+  subsets: ["arabic"],
+  variable: "--font-noto-sans-arabic",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const tajawal = Tajawal({
+  subsets: ["arabic"],
+  variable: "--font-tajawal",
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
+
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic", "latin"],
+  variable: "--font-ibm-plex-sans-arabic",
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -40,7 +61,11 @@ export default async function RootLayout({
   const productConfig = await getProductConfig();
 
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${poppins.variable} ${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${poppins.variable} ${inter.variable} ${notoSansArabic.variable} ${tajawal.variable} ${ibmPlexSansArabic.variable} h-full antialiased`}
+    >
       <head>
         <meta charSet="utf-8" />
       </head>

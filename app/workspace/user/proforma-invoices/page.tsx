@@ -12,6 +12,7 @@ export default function WorkspaceProformaPage() {
         title: "Proforma invoices",
         subtitle: "Pre-billing documents used to confirm scope and pricing.",
         documents: proformaInvoices,
+        createDocumentHref: "/workspace/invoices/new?documentType=proforma_invoice",
         createLabel: "New proforma",
         suggestionId: "register-proforma",
         suggestionTitle: "Proforma invoices are not VAT documents",

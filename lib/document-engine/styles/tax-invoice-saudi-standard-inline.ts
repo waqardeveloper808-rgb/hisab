@@ -1,6 +1,8 @@
+import { ARABIC_FONT_STACK_LITERAL } from "@/lib/workspace/arabic-font-stack";
+
 export const taxInvoiceSaudiStandardCss = `
 .saudi-tax-invoice {
-  font-family: "Noto Sans Arabic", "Segoe UI", Tahoma, Arial, sans-serif;
+  font-family: ${ARABIC_FONT_STACK_LITERAL};
   color: #172226;
   background: #ffffff;
   padding: 8mm 10mm;
@@ -37,8 +39,8 @@ export const taxInvoiceSaudiStandardCss = `
 .saudi-meta-cell { display: grid; gap: 2px; }
 .saudi-meta-label { font-size: 10px; font-weight: 700; color: #64727f; text-transform: uppercase; letter-spacing: 0.03em; }
 .saudi-meta-value { font-size: 12px; font-weight: 600; color: #172226; }
-.saudi-lines { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #d6dde3; font-size: 11px; }
-.saudi-lines th, .saudi-lines td { border: 1px solid #d6dde3; padding: 6px 6px; vertical-align: top; }
+.saudi-lines { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #d6dde3; font-size: 11px; font-family: inherit; }
+.saudi-lines th, .saudi-lines td { border: 1px solid #d6dde3; padding: 6px 6px; vertical-align: top; font-family: inherit; }
 .saudi-lines thead th { background: #edf2f7; font-size: 10px; font-weight: 700; letter-spacing: 0.02em; }
 .saudi-lines tbody tr:nth-child(even) { background: #fafcfd; }
 .saudi-line-en { font-weight: 600; line-height: 1.35; }

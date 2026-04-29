@@ -126,7 +126,7 @@ export const terminologyRouteProfiles: TerminologyRouteProfile[] = [
     ],
   },
   {
-    route: "/workspace/accounting/books",
+    route: "/workspace/user/ledger",
     label: "Books",
     requirements: [
       { contextKey: "report.general_ledger", requiredText: "General ledger" },

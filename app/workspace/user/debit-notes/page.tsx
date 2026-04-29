@@ -13,6 +13,7 @@ export default function WorkspaceDebitNotesPage() {
         subtitle: "Additional charges added to a previously issued invoice.",
         documents: debitNotes,
         createLabel: "New debit note",
+        createDocumentHref: "/workspace/invoices/new?documentType=debit_note",
         suggestionId: "register-debit-notes",
         suggestionTitle: "Use debit notes for adjustments, not for new sales",
         suggestionDescription:

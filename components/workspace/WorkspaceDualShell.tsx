@@ -21,13 +21,22 @@ type WorkspaceDualShellProps = {
   children: React.ReactNode;
 };
 
+/** Matches WorkspaceThemeBoundary + WorkspaceAppSidebar/top bar chrome (`data-wsv2`). */
+function pathnameUsesWorkspaceAppChrome(pathname: string): boolean {
+  if (pathname === "/workspace/user" || pathname.startsWith("/workspace/user/")) return true;
+  /** Ledger/Books/COA/account overview historically mounted outside `/user`; share NEW chrome anyway until routed exclusively via canonical URLs. */
+  if (pathname === "/workspace/accounting" || pathname.startsWith("/workspace/accounting/")) return true;
+  return false;
+}
+
 /**
  * Canonical /workspace/user/* uses the Workspace app chrome + theme.
- * Admin, assistant, agent, and other segments keep the legacy WorkspaceShell.
+ * Legacy `/workspace/accounting/*` uses the same app chrome (Books, COA, overview).
+ * Admin, assistant, agent, invoices/bills shells, etc. keep the legacy WorkspaceShell until migrated.
  */
 export function WorkspaceDualShell({ session, access, children }: WorkspaceDualShellProps) {
   const pathname = usePathname() ?? "";
-  const userApp = pathname === "/workspace/user" || pathname.startsWith("/workspace/user/");
+  const userApp = pathnameUsesWorkspaceAppChrome(pathname);
 
   if (userApp) {
     return (

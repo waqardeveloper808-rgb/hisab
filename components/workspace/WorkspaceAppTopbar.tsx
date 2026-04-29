@@ -79,7 +79,11 @@ export function WorkspaceAppTopbar({ onOpenMobileSidebar }: Props) {
         >
           <ShieldCheck size={12} /> Preview mode
         </span>
-        <Link href={`${USER_WORKSPACE_BASE}/invoices`} className="wsv2-btn" aria-label="Quick create invoice">
+        <Link
+          href="/workspace/invoices/new?documentType=tax_invoice"
+          className="wsv2-btn"
+          aria-label="Create new tax invoice"
+        >
           <Plus size={14} /> New invoice
         </Link>
         <WorkspaceAppThemeSwitcher />

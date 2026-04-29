@@ -95,15 +95,16 @@ export function AssistantWorkspaceHome() {
 
       <div className="grid gap-5 xl:grid-cols-[1fr_0.95fr]">
         <WorkspaceDataTable
+          registerTableId="assistant-followup-queue"
           title="Customer follow-up queue"
           caption="Operational follow-up list for onboarding, billing help, and account recovery."
           rows={followUpQueue}
           emptyMessage="Support queue items will appear here once customer records need operational follow-up."
           columns={[
-            { header: "Company", render: (row) => row.legalName },
-            { header: "Owner", render: (row) => row.owner.name || row.owner.email || "-" },
-            { header: "Plan", render: (row) => row.subscription?.planName ?? "No plan" },
-            { header: "Reason", render: (row) => row.subscription?.status ?? (row.isActive ? "follow-up" : "suspended") },
+            { id: "company", header: "Company", defaultWidth: 200, render: (row) => row.legalName },
+            { id: "owner", header: "Owner", defaultWidth: 180, render: (row) => row.owner.name || row.owner.email || "-" },
+            { id: "plan", header: "Plan", defaultWidth: 140, render: (row) => row.subscription?.planName ?? "No plan" },
+            { id: "reason", header: "Reason", defaultWidth: 140, render: (row) => row.subscription?.status ?? (row.isActive ? "follow-up" : "suspended") },
           ]}
         />
 

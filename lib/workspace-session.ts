@@ -159,3 +159,13 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
     accessStatus: backendConfigured ? "ready" : "backend_unconfigured",
   };
 }
+
+export {
+  ACTIVE_WORKSPACE_SLUG,
+  getActiveWorkspace,
+  getActiveWorkspaceSlug,
+  CANONICAL_USER_WORKSPACE_BASE,
+  canonicalizeWorkspaceHref,
+  canonicalizeWorkspacePathname,
+  WORKSPACE_PATH_NO_PREFIX_ROOTS,
+} from "./active-workspace";

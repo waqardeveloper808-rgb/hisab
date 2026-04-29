@@ -111,12 +111,12 @@ export const workspaceModules: WorkspaceModule[] = [
     requiredCompanyAbilities: ["workspace.accounting.view"],
     title: "Accounting",
     summary: "Review books, balances, journal impact, and period discipline from one accounting home.",
-    primaryAction: { label: "Open books", href: "/workspace/accounting/books" },
+    primaryAction: { label: "Open books", href: "/workspace/user/ledger" },
     secondaryAction: { label: "Open reports", href: "/workspace/reports" },
     highlights: ["Books stay aligned to transaction flow", "Period review is separate from data entry", "Audit-ready records stay traceable"],
     sections: {
       books: [
-        { title: "General ledger", description: "Book-level drilldown for account movement.", href: "/workspace/accounting/books", badge: "Books" },
+        { title: "General ledger", description: "Book-level drilldown for account movement.", href: "/workspace/user/ledger", badge: "Books" },
         { title: "Trial balance", description: "Review the current balance of each account." },
       ],
       reports: [

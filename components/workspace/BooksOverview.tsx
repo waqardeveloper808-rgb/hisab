@@ -132,48 +132,51 @@ export function BooksOverview() {
       ) : null}
 
       <WorkspaceDataTable
+        registerTableId="books-general-ledger"
         title="General ledger"
         caption="Posted journal lines in date order with running balance."
         rows={filteredLedger}
         emptyMessage="Posted journal lines will appear here as soon as invoices, vendor bills, or payments are finalized."
         columns={[
-          { header: "Entry", render: (row) => row.entryNumber },
-          { header: "Date", render: (row) => row.entryDate },
-          { header: "Account", render: (row) => `${row.accountCode} ${row.accountName}` },
-          { header: "Document", render: (row) => row.documentNumber || "-" },
-          { header: "Cost center", render: (row) => row.costCenterCode ? `${row.costCenterCode} ${row.costCenterName}` : "-" },
-          { header: "Description", render: (row) => row.description || row.documentNumber || "-" },
-          { header: "Debit", align: "right", render: (row) => `${currency(row.debit)} SAR` },
-          { header: "Credit", align: "right", render: (row) => `${currency(row.credit)} SAR` },
-          { header: "Running", align: "right", render: (row) => `${currency(row.runningBalance)} SAR` },
+          { id: "entry", header: "Entry", defaultWidth: 100, render: (row) => row.entryNumber },
+          { id: "date", header: "Date", defaultWidth: 96, render: (row) => row.entryDate },
+          { id: "account", header: "Account", defaultWidth: 200, render: (row) => `${row.accountCode} ${row.accountName}` },
+          { id: "document", header: "Document", defaultWidth: 120, render: (row) => row.documentNumber || "-" },
+          { id: "costCenter", header: "Cost center", defaultWidth: 140, render: (row) => row.costCenterCode ? `${row.costCenterCode} ${row.costCenterName}` : "-" },
+          { id: "description", header: "Description", defaultWidth: 200, render: (row) => row.description || row.documentNumber || "-" },
+          { id: "debit", header: "Debit", align: "right", defaultWidth: 100, render: (row) => `${currency(row.debit)} SAR` },
+          { id: "credit", header: "Credit", align: "right", defaultWidth: 100, render: (row) => `${currency(row.credit)} SAR` },
+          { id: "running", header: "Running", align: "right", defaultWidth: 110, render: (row) => `${currency(row.runningBalance)} SAR` },
         ]}
       />
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="books-trial-balance"
           title="Trial balance"
           caption="Account balances behind the current books."
           rows={filteredTrialBalance}
           emptyMessage="Trial balance rows will appear here after the first posted transaction."
           columns={[
-            { header: "Code", render: (row) => row.code },
-            { header: "Account", render: (row) => row.name },
-            { header: "Type", render: (row) => row.type },
-            { header: "Debit", align: "right", render: (row) => `${currency(row.debitTotal)} SAR` },
-            { header: "Credit", align: "right", render: (row) => `${currency(row.creditTotal)} SAR` },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balance)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 88, render: (row) => row.code },
+            { id: "account", header: "Account", defaultWidth: 200, render: (row) => row.name },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.type },
+            { id: "debit", header: "Debit", align: "right", defaultWidth: 110, render: (row) => `${currency(row.debitTotal)} SAR` },
+            { id: "credit", header: "Credit", align: "right", defaultWidth: 110, render: (row) => `${currency(row.creditTotal)} SAR` },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 110, render: (row) => `${currency(row.balance)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="books-audit-trail"
           title="Audit trail"
           caption="Recent finance events captured against company activity."
           rows={snapshot.auditTrail.slice(0, 20)}
           emptyMessage="Audit events will appear here once company activity is posted or changed."
           columns={[
-            { header: "Event", render: (row) => row.event.replaceAll(".", " ") },
-            { header: "Record", render: (row) => `${row.auditableType.split("\\").pop()} #${row.auditableId}` },
-            { header: "When", render: (row) => row.createdAt },
+            { id: "event", header: "Event", defaultWidth: 160, render: (row) => row.event.replaceAll(".", " ") },
+            { id: "record", header: "Record", defaultWidth: 180, render: (row) => `${row.auditableType.split("\\").pop()} #${row.auditableId}` },
+            { id: "when", header: "When", defaultWidth: 160, render: (row) => row.createdAt },
           ]}
         />
       </div>

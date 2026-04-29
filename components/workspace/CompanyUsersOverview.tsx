@@ -126,6 +126,7 @@ export function CompanyUsersOverview() {
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
         <WorkspaceDataTable
+          registerTableId="company-internal-users"
           title="Internal users"
           caption="Select a row to edit its role, permissions, and active status."
           rows={snapshot.users}
@@ -133,16 +134,18 @@ export function CompanyUsersOverview() {
           badge={isPreview ? "Preview" : loading ? "Loading" : `${snapshot.users.length} users`}
           columns={[
             {
+              id: "name",
               header: "Name",
+              defaultWidth: 180,
               render: (row) => (
                 <button type="button" className="text-left font-semibold text-primary hover:text-primary-hover disabled:text-muted" disabled={isPreview} onClick={() => setDraft({ ...row, password: "" })}>
                   {row.name}
                 </button>
               ),
             },
-            { header: "Email", render: (row) => row.email },
-            { header: "Role", render: (row) => row.role },
-            { header: "Status", render: (row) => row.isActive ? "Active" : "Inactive" },
+            { id: "email", header: "Email", defaultWidth: 200, render: (row) => row.email },
+            { id: "role", header: "Role", defaultWidth: 120, render: (row) => row.role },
+            { id: "status", header: "Status", defaultWidth: 100, render: (row) => row.isActive ? "Active" : "Inactive" },
           ]}
         />
 

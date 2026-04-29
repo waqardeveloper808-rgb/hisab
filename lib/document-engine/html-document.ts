@@ -1,4 +1,5 @@
 import { InvoiceTemplate } from "@/lib/document-engine/InvoiceTemplate";
+import { ARABIC_FONT_STACK_LITERAL } from "@/lib/workspace/arabic-font-stack";
 import { mapInvoiceToSaudiStandard } from "@/lib/document-engine/mappers/mapInvoiceToSaudiStandard";
 import { renderTaxInvoiceSaudiStandard } from "@/lib/document-engine/renderers/renderTaxInvoiceSaudiStandard";
 import { taxInvoiceSaudiStandardCss } from "@/lib/document-engine/styles/tax-invoice-saudi-standard-inline";
@@ -250,7 +251,7 @@ export function buildPrintableDocumentShell(bodyHtml: string) {
       body {
         background: #f5f5f5;
         color: #172226;
-        font-family: "Noto Sans Arabic", "IBM Plex Sans Arabic", "Segoe UI", Tahoma, "Helvetica Neue", sans-serif;
+        font-family: ${ARABIC_FONT_STACK_LITERAL};
         line-height: 1.45;
         font-size: 12px;
       }

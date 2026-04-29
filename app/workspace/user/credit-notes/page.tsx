@@ -13,6 +13,7 @@ export default function WorkspaceCreditNotesPage() {
         subtitle: "Issued credits applied against existing customer invoices.",
         documents: creditNotes,
         createLabel: "New credit note",
+        createDocumentHref: "/workspace/invoices/new?documentType=credit_note",
         suggestionId: "register-credit-notes",
         suggestionTitle: "Always reference the source invoice",
         suggestionDescription:

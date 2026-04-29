@@ -85,7 +85,7 @@ export function JournalDetailPanel({
       <div className="shrink-0 border-b border-line px-2.5 py-1.5 sm:px-3 sm:py-2">
         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-primary sm:text-[11px]">Journal entry</p>
         <h2
-          className="mt-0.5 truncate text-sm font-semibold text-ink sm:text-base"
+          className="mt-0.5 min-w-0 break-words text-sm font-semibold text-ink sm:text-base"
           id="journal-detail-title"
         >
           {entry?.entryNumber ?? "—"}
@@ -145,8 +145,8 @@ export function JournalDetailPanel({
 
             <section className="min-w-0">
               <h3 className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">Account impact</h3>
-              <div className="mt-1 w-full min-w-0 overflow-x-auto rounded-lg border border-line">
-                <table className="w-full min-w-0 table-fixed border-collapse text-xs sm:text-sm">
+              <div className="mt-1 w-full min-w-0 overflow-x-hidden rounded-lg border border-line">
+                <table className="journal-detail-lines-table w-full min-w-0 table-fixed border-collapse text-xs sm:text-sm">
                   <thead className="border-b border-line bg-surface-soft/80 text-left text-[10px] font-semibold uppercase tracking-[0.05em] text-muted sm:text-[11px]">
                     <tr>
                       <th className="w-[58%] px-1.5 py-1.5 sm:px-2 sm:py-1.5">Account</th>

@@ -1,9 +1,9 @@
 /**
- * Single source for template preview + editor + PDF Arabic/Latin stacks.
- * Must match `app/workspace/layout.tsx` (next/font variables) and `workspace.css` `--wsv2-template-*`.
+ * Template preview + editor stacks — Arabic uses unified stack only.
  */
-export const WSV2_TEMPLATE_AR_FONT_STACK =
-  'var(--font-noto-sans-arabic), var(--font-ibm-plex-sans-arabic), "Segoe UI", Tahoma, Arial, sans-serif';
+import { ARABIC_FONT_STACK_CSS_VARS } from "@/lib/workspace/arabic-font-stack";
+
+export const WSV2_TEMPLATE_AR_FONT_STACK = ARABIC_FONT_STACK_CSS_VARS;
 
 export const WSV2_TEMPLATE_LATIN_FONT_STACK =
   'var(--font-body), "Segoe UI", Tahoma, system-ui, sans-serif';

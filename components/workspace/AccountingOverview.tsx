@@ -107,56 +107,60 @@ export function AccountingOverview() {
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="accounting-overview-ledger"
           title="Latest ledger activity"
           caption="Recent posted journal lines across the company books."
           rows={books.generalLedger.slice(0, 12)}
           emptyMessage="Posted journal lines will appear here after the first finalized transaction."
           columns={[
-            { header: "Entry", render: (row) => row.entryNumber },
-            { header: "Date", render: (row) => row.entryDate },
-            { header: "Account", render: (row) => `${row.accountCode} ${row.accountName}` },
-            { header: "Cost center", render: (row) => row.costCenterCode ? `${row.costCenterCode} ${row.costCenterName}` : "-" },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.runningBalance)} SAR` },
+            { id: "entry", header: "Entry", defaultWidth: 100, render: (row) => row.entryNumber },
+            { id: "date", header: "Date", defaultWidth: 96, render: (row) => row.entryDate },
+            { id: "account", header: "Account", defaultWidth: 220, render: (row) => `${row.accountCode} ${row.accountName}` },
+            { id: "cc", header: "Cost center", defaultWidth: 160, render: (row) => row.costCenterCode ? `${row.costCenterCode} ${row.costCenterName}` : "-" },
+            { id: "bal", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.runningBalance)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="accounting-overview-pl"
           title="Profit and loss"
           caption="Current revenue and expense lines behind the net result."
           rows={reports.profitLoss.lines.slice(0, 12)}
           emptyMessage="Profit and loss lines will appear here once revenue and expense activity is posted."
           columns={[
-            { header: "Code", render: (row) => row.code },
-            { header: "Account", render: (row) => row.name },
-            { header: "Type", render: (row) => row.type },
-            { header: "Net", align: "right", render: (row) => `${currency(row.netAmount)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 88, render: (row) => row.code },
+            { id: "name", header: "Account", defaultWidth: 200, render: (row) => row.name },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.type },
+            { id: "net", header: "Net", align: "right", defaultWidth: 120, render: (row) => `${currency(row.netAmount)} SAR` },
           ]}
         />
       </div>
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="accounting-overview-bs"
           title="Balance sheet"
           caption="Assets, liabilities, and equity from the current posting state."
           rows={[...reports.balanceSheet.assets, ...reports.balanceSheet.liabilities, ...reports.balanceSheet.equity].slice(0, 18)}
           emptyMessage="Balance sheet lines will appear here after the first posted finance activity."
           columns={[
-            { header: "Code", render: (row) => row.code },
-            { header: "Name", render: (row) => row.name },
-            { header: "Type", render: (row) => row.type },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balance)} SAR` },
+            { id: "code", header: "Code", defaultWidth: 88, render: (row) => row.code },
+            { id: "name", header: "Name", defaultWidth: 200, render: (row) => row.name },
+            { id: "type", header: "Type", defaultWidth: 100, render: (row) => row.type },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.balance)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="accounting-overview-audit"
           title="Audit trail"
           caption="Recent recorded events across company finance activity."
           rows={books.auditTrail.slice(0, 12)}
           emptyMessage="Audit events will appear here once company activity is posted or changed."
           columns={[
-            { header: "Event", render: (row) => row.event.replaceAll(".", " ") },
-            { header: "Record", render: (row) => `${row.auditableType.split("\\").pop()} #${row.auditableId}` },
-            { header: "When", render: (row) => row.createdAt },
+            { id: "event", header: "Event", defaultWidth: 160, render: (row) => row.event.replaceAll(".", " ") },
+            { id: "record", header: "Record", defaultWidth: 180, render: (row) => `${row.auditableType.split("\\").pop()} #${row.auditableId}` },
+            { id: "when", header: "When", defaultWidth: 160, render: (row) => row.createdAt },
           ]}
         />
       </div>

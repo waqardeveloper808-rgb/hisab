@@ -118,15 +118,16 @@ export function AdminWorkspaceHome() {
 
       <div className="grid gap-3 xl:grid-cols-[1.1fr_0.9fr]">
         <WorkspaceDataTable
+          registerTableId="admin-customer-queue"
           title="Customer review queue"
           caption="Customers that should be checked for subscription state, ownership, or activation."
           rows={customers.slice(0, 6)}
           emptyMessage="Customer records will appear here once the admin APIs respond."
           columns={[
-            { header: "Company", render: (row) => row.legalName },
-            { header: "Owner", render: (row) => row.owner.name || row.owner.email || "-" },
-            { header: "Plan", render: (row) => row.subscription?.planName ?? "No plan" },
-            { header: "Status", render: (row) => row.subscription?.status ?? (row.isActive ? "active" : "suspended") },
+            { id: "company", header: "Company", defaultWidth: 200, render: (row) => row.legalName },
+            { id: "owner", header: "Owner", defaultWidth: 180, render: (row) => row.owner.name || row.owner.email || "-" },
+            { id: "plan", header: "Plan", defaultWidth: 140, render: (row) => row.subscription?.planName ?? "No plan" },
+            { id: "status", header: "Status", defaultWidth: 120, render: (row) => row.subscription?.status ?? (row.isActive ? "active" : "suspended") },
           ]}
         />
 

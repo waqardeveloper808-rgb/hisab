@@ -93,7 +93,7 @@ export function WorkspaceDashboard() {
           <Link href={`${USER_WORKSPACE_BASE}/invoices`} className="wsv2-btn-secondary wsv2-icon-btn">
             <FileText size={14} /> Open invoice register
           </Link>
-          <Link href={`${USER_WORKSPACE_BASE}/invoices`} className="wsv2-btn">
+          <Link href="/workspace/invoices/new?documentType=tax_invoice" className="wsv2-btn">
             <Receipt size={14} /> Create invoice
           </Link>
         </div>

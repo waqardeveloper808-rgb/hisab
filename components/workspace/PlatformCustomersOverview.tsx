@@ -153,6 +153,7 @@ export function PlatformCustomersOverview() {
           </Card>
 
           <WorkspaceDataTable
+            registerTableId="platform-customers"
             title="Customer companies"
             caption="Select a company to review subscription, owner, and user details."
             rows={customers}
@@ -160,17 +161,19 @@ export function PlatformCustomersOverview() {
             badge={isPreview ? "Preview" : loading ? "Loading" : `${customers.length} companies`}
             columns={[
               {
+                id: "company",
                 header: "Company",
+                defaultWidth: 200,
                 render: (row) => (
                   <button type="button" className="text-left font-semibold text-primary hover:text-primary-hover disabled:text-muted" disabled={isPreview} onClick={() => void handleSelect(row.id)}>
                     {row.legalName}
                   </button>
                 ),
               },
-              { header: "Owner", render: (row) => row.owner.name || row.owner.email || "-" },
-              { header: "Plan", render: (row) => row.subscription?.planName ?? "No plan" },
-              { header: "Users", align: "right", render: (row) => row.users.length },
-              { header: "Status", render: (row) => row.isActive ? "Active" : "Suspended" },
+              { id: "owner", header: "Owner", defaultWidth: 180, render: (row) => row.owner.name || row.owner.email || "-" },
+              { id: "plan", header: "Plan", defaultWidth: 140, render: (row) => row.subscription?.planName ?? "No plan" },
+              { id: "users", header: "Users", align: "right", defaultWidth: 80, render: (row) => row.users.length },
+              { id: "status", header: "Status", defaultWidth: 100, render: (row) => row.isActive ? "Active" : "Suspended" },
             ]}
           />
         </div>

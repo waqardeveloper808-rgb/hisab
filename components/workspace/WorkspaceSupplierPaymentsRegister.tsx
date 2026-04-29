@@ -6,6 +6,8 @@ import { findVendor } from "@/data/workspace/vendors";
 import { supplierPayments } from "@/data/workspace/supplier-payments";
 import { formatCurrency, formatDate, statusLabel, statusTone } from "@/lib/workspace/format";
 import { loadColumnVisibility, saveColumnVisibility } from "@/lib/workspace/register-column-storage";
+import { useRegisterTableLayout, type RegisterColumnWidthDef } from "@/lib/workspace/register-table-layout";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
 import { WorkspaceEmptyState } from "./WorkspaceEmptyState";
 import { WorkspaceSuggestion } from "./WorkspaceSuggestion";
 import { WorkspaceMoreActions } from "./WorkspaceMoreActions";
@@ -25,12 +27,114 @@ const COLUMNS: ColumnDef[] = [
 ];
 const DEFAULT_VIS = COLUMNS.map((c) => c.id);
 
+const PAY_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "receipt", defaultWidth: 120 },
+  { id: "date", defaultWidth: 100 },
+  { id: "vendor", defaultWidth: 180 },
+  { id: "bill", defaultWidth: 120 },
+  { id: "method", defaultWidth: 120 },
+  { id: "ref", defaultWidth: 120 },
+  { id: "status", defaultWidth: 100 },
+  { id: "amount", defaultWidth: 100 },
+  { id: "actions", defaultWidth: 100 },
+];
+
+const HEADER: Record<string, string> = {
+  receipt: "Receipt",
+  date: "Date",
+  vendor: "Vendor",
+  bill: "Bill",
+  method: "Method",
+  ref: "Reference",
+  status: "Status",
+  amount: "Amount",
+  actions: "Actions",
+};
+
 const METHOD_LABELS: Record<string, string> = {
   bank_transfer: "Bank transfer",
   card: "Card / Mada",
   cash: "Cash",
   wallet: "Mobile wallet",
 };
+
+function SupplierPaymentsTable({ visibleIds, rows }: { visibleIds: string[]; rows: typeof supplierPayments }) {
+  const ordered = useMemo(() => COLUMNS.map((c) => c.id).filter((id) => visibleIds.includes(id)), [visibleIds]);
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.supplier-payments", PAY_WIDTH_DEFS, ordered);
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
+
+  return (
+    <div ref={wrapRef} className="wsv2-table-scroll" data-register-table="true">
+      <table className="wsv2-table">
+        <colgroup>
+          {ordered.map((id) => (
+            <col key={id} style={{ width: `${pctById[id] ?? 100 / ordered.length}%` }} />
+          ))}
+        </colgroup>
+        <thead>
+          <tr>
+            {ordered.map((colId, idx) => (
+              <RegisterTableHeaderCell
+                key={colId}
+                align={colId === "amount" || colId === "actions" ? "right" : "left"}
+                className={colId === "amount" ? "num" : ""}
+                onResizePointerDown={idx < ordered.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+              >
+                {HEADER[colId] ?? colId}
+              </RegisterTableHeaderCell>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((p) => {
+            const v = findVendor(p.vendorId);
+            return (
+              <tr key={p.id}>
+                {ordered.map((colId) => {
+                  if (colId === "receipt") return <td key={colId} style={{ fontWeight: 600 }}>{p.number}</td>;
+                  if (colId === "date") return <td key={colId}>{formatDate(p.date)}</td>;
+                  if (colId === "vendor") return <td key={colId}>{v?.legalName ?? "—"}</td>;
+                  if (colId === "bill") return <td key={colId}>{p.billNumber}</td>;
+                  if (colId === "method") return <td key={colId}>{METHOD_LABELS[p.method] ?? p.method}</td>;
+                  if (colId === "ref") {
+                    return (
+                      <td key={colId}>
+                        <span className="font-mono text-[11.5px]">{p.reference}</span>
+                      </td>
+                    );
+                  }
+                  if (colId === "status") {
+                    return (
+                      <td key={colId}>
+                        <span className="wsv2-pill" data-tone={statusTone(p.status)}>
+                          <span className="wsv2-status-dot" /> {statusLabel(p.status)}
+                        </span>
+                      </td>
+                    );
+                  }
+                  if (colId === "amount") return <td key={colId} className="num">{formatCurrency(p.amount)}</td>;
+                  if (colId === "actions") {
+                    return (
+                      <td key={colId}>
+                        <WorkspaceMoreActions
+                          actions={[
+                            { id: "open", label: "Open payment" },
+                            { id: "void", label: "Void" },
+                          ]}
+                        />
+                      </td>
+                    );
+                  }
+                  return <td key={colId}>—</td>;
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export function WorkspaceSupplierPaymentsRegister() {
   const [search, setSearch] = useState("");
@@ -42,8 +146,6 @@ export function WorkspaceSupplierPaymentsRegister() {
     setVisibleColIds(n);
     saveColumnVisibility(REG_ID, n);
   };
-  const vs = new Set(visibleColIds);
-  const show = (id: string) => vs.has(id);
 
   const rows = useMemo(() => {
     const lower = search.trim().toLowerCase();
@@ -116,62 +218,11 @@ export function WorkspaceSupplierPaymentsRegister() {
             <WorkspaceColumnPicker columns={COLUMNS} visibleIds={visibleColIds} onChange={setV} />
           </div>
         </div>
-        <div className="wsv2-table-scroll">
-          {rows.length === 0 ? (
-            <WorkspaceEmptyState title="No payments match" />
-          ) : (
-            <table className="wsv2-table">
-              <thead>
-                <tr>
-                  {show("receipt") ? <th>Receipt</th> : null}
-                  {show("date") ? <th>Date</th> : null}
-                  {show("vendor") ? <th>Vendor</th> : null}
-                  {show("bill") ? <th>Bill</th> : null}
-                  {show("method") ? <th>Method</th> : null}
-                  {show("ref") ? <th>Reference</th> : null}
-                  {show("status") ? <th>Status</th> : null}
-                  {show("amount") ? <th className="num">Amount</th> : null}
-                  {show("actions") ? <th style={{ textAlign: "right" }}>Actions</th> : null}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((p) => {
-                  const v = findVendor(p.vendorId);
-                  return (
-                    <tr key={p.id}>
-                      {show("receipt") ? <td style={{ fontWeight: 600 }}>{p.number}</td> : null}
-                      {show("date") ? <td>{formatDate(p.date)}</td> : null}
-                      {show("vendor") ? <td>{v?.legalName ?? "—"}</td> : null}
-                      {show("bill") ? <td>{p.billNumber}</td> : null}
-                      {show("method") ? <td>{METHOD_LABELS[p.method] ?? p.method}</td> : null}
-                      {show("ref") ? (
-                        <td style={{ fontFamily: "ui-monospace,monospace", fontSize: 11.5 }}>{p.reference}</td>
-                      ) : null}
-                      {show("status") ? (
-                        <td>
-                          <span className="wsv2-pill" data-tone={statusTone(p.status)}>
-                            <span className="wsv2-status-dot" /> {statusLabel(p.status)}
-                          </span>
-                        </td>
-                      ) : null}
-                      {show("amount") ? <td className="num">{formatCurrency(p.amount)}</td> : null}
-                      {show("actions") ? (
-                        <td>
-                          <WorkspaceMoreActions
-                            actions={[
-                              { id: "open", label: "Open payment" },
-                              { id: "void", label: "Void" },
-                            ]}
-                          />
-                        </td>
-                      ) : null}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
+        {rows.length === 0 ? (
+          <WorkspaceEmptyState title="No payments match" />
+        ) : (
+          <SupplierPaymentsTable visibleIds={visibleColIds} rows={rows} />
+        )}
       </div>
     </div>
   );

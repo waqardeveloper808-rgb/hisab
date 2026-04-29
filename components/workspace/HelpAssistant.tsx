@@ -33,7 +33,7 @@ const knowledgeBase = [
     title: "Books and statements",
     keywords: ["ledger", "trial balance", "balance sheet", "profit", "audit"],
     guidance: "Use Books for ledger review and Reports for trial balance, profit and loss, balance sheet, and audit trail review.",
-    nextStep: "/workspace/accounting/books",
+    nextStep: "/workspace/user/ledger",
     nextLabel: "Open books",
   },
 ];

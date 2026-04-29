@@ -1,13 +1,14 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import { CANONICAL_USER_WORKSPACE_BASE } from "@/lib/active-workspace";
 
 type WorkspacePathContextValue = {
   basePath: string;
 };
 
 const WorkspacePathContext = createContext<WorkspacePathContextValue>({
-  basePath: "/workspace",
+  basePath: CANONICAL_USER_WORKSPACE_BASE,
 });
 
 export function WorkspacePathProvider({
@@ -28,10 +29,4 @@ export function useWorkspacePath() {
   return useContext(WorkspacePathContext);
 }
 
-export function mapWorkspaceHref(href: string, basePath: string) {
-  if (!href.startsWith("/workspace")) {
-    return href;
-  }
-
-  return `${basePath}${href.slice("/workspace".length) || ""}`;
-}
+export { mapWorkspaceHref } from "@/lib/workspace-path";

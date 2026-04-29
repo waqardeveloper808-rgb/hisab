@@ -69,31 +69,33 @@ export function AuditTrailReportPage() {
       ) : null}
 
       <WorkspaceDataTable
+        registerTableId="audit-trail-gl-lines"
         title="Posted lines (GL)"
         caption="Data source: getBooksSnapshot().generalLedger"
         rows={rows}
         emptyMessage="No lines match the filter."
         columns={[
-          { header: "Entry", render: (r) => r.entryNumber },
-          { header: "Date", render: (r) => r.entryDate },
-          { header: "Account", render: (r) => `${r.accountCode} ${r.accountName}` },
-          { header: "Document", render: (r) => r.documentNumber || "—" },
-          { header: "Description", render: (r) => r.description || "—" },
-          { header: "Dr", align: "right", render: (r) => currency(r.debit) },
-          { header: "Cr", align: "right", render: (r) => currency(r.credit) },
+          { id: "entry", header: "Entry", defaultWidth: 100, render: (r) => r.entryNumber },
+          { id: "date", header: "Date", defaultWidth: 96, render: (r) => r.entryDate },
+          { id: "account", header: "Account", defaultWidth: 200, render: (r) => `${r.accountCode} ${r.accountName}` },
+          { id: "document", header: "Document", defaultWidth: 120, render: (r) => r.documentNumber || "—" },
+          { id: "description", header: "Description", defaultWidth: 200, render: (r) => r.description || "—" },
+          { id: "dr", header: "Dr", align: "right", defaultWidth: 100, render: (r) => currency(r.debit) },
+          { id: "cr", header: "Cr", align: "right", defaultWidth: 100, render: (r) => currency(r.credit) },
         ]}
       />
 
       {snap.auditTrail.length > 0 ? (
         <WorkspaceDataTable
+          registerTableId="audit-trail-events"
           title="System events (excerpt)"
           caption="getBooksSnapshot().auditTrail — not line-level; PARTIAL for full composite audit"
           rows={snap.auditTrail.slice(0, 25)}
           emptyMessage="—"
           columns={[
-            { header: "Event", render: (r) => r.event },
-            { header: "Record", render: (r) => `${r.auditableType.split("\\").pop()} #${r.auditableId}` },
-            { header: "When", render: (r) => r.createdAt },
+            { id: "event", header: "Event", defaultWidth: 160, render: (r) => r.event },
+            { id: "record", header: "Record", defaultWidth: 180, render: (r) => `${r.auditableType.split("\\").pop()} #${r.auditableId}` },
+            { id: "when", header: "When", defaultWidth: 160, render: (r) => r.createdAt },
           ]}
         />
       ) : null}

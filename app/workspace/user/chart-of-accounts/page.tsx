@@ -1,9 +1,5 @@
-import { ChartOfAccountsRegister } from "@/components/workspace/ChartOfAccountsRegister";
+import { redirect } from "next/navigation";
 
-export default function UserChartOfAccountsPage() {
-  return (
-    <div data-inspector-route-owner="dedicated" data-inspector-register="chart-of-accounts">
-      <ChartOfAccountsRegister />
-    </div>
-  );
+export default function UserChartOfAccountsRedirectPage() {
+  redirect("/workspace/accounting/chart-of-accounts");
 }

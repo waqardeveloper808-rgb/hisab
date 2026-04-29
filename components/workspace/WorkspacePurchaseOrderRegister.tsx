@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { loadColumnVisibility, saveColumnVisibility } from "@/lib/workspace/register-column-storage";
+import { useRegisterTableLayout, type RegisterColumnWidthDef } from "@/lib/workspace/register-table-layout";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
 import { WorkspaceColumnPicker, type ColumnDef } from "./WorkspaceColumnPicker";
 import { WorkspaceMoreActions } from "./WorkspaceMoreActions";
 import { WorkspaceSuggestion } from "./WorkspaceSuggestion";
@@ -23,6 +25,82 @@ const COLUMNS: ColumnDef[] = [
 const DEFAULT = COLUMNS.map((c) => c.id);
 const REG = "v2.register.purchase-orders";
 
+const PO_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "num", defaultWidth: 140 },
+  { id: "vendor", defaultWidth: 220 },
+  { id: "date", defaultWidth: 110 },
+  { id: "status", defaultWidth: 100 },
+  { id: "amt", defaultWidth: 120 },
+  { id: "act", defaultWidth: 100 },
+];
+
+const PO_HEADER: Record<string, string> = {
+  num: "PO no.",
+  vendor: "Vendor",
+  date: "Date",
+  status: "Status",
+  amt: "Total (SAR)",
+  act: "Actions",
+};
+
+function POTable({ visibleIds, list }: { visibleIds: string[]; list: typeof ROWS }) {
+  const ordered = useMemo(() => COLUMNS.map((c) => c.id).filter((id) => visibleIds.includes(id)), [visibleIds]);
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.purchase-orders", PO_WIDTH_DEFS, ordered);
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
+
+  return (
+    <div ref={wrapRef} className="wsv2-table-scroll" data-register-table="true">
+      <table className="wsv2-table">
+        <colgroup>
+          {ordered.map((id) => (
+            <col key={id} style={{ width: `${pctById[id] ?? 100 / ordered.length}%` }} />
+          ))}
+        </colgroup>
+        <thead>
+          <tr>
+            {ordered.map((colId, idx) => (
+              <RegisterTableHeaderCell
+                key={colId}
+                align={colId === "amt" || colId === "act" ? "right" : "left"}
+                className={colId === "amt" ? "num" : ""}
+                onResizePointerDown={idx < ordered.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+              >
+                {PO_HEADER[colId] ?? colId}
+              </RegisterTableHeaderCell>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((r) => (
+            <tr key={r.id}>
+              {ordered.map((colId) => {
+                if (colId === "num") return <td key={colId} style={{ fontWeight: 600 }}>{r.number}</td>;
+                if (colId === "vendor") return <td key={colId}>{r.vendor}</td>;
+                if (colId === "date") return <td key={colId}>{r.date}</td>;
+                if (colId === "status") return <td key={colId} style={{ textTransform: "capitalize" }}>{r.status}</td>;
+                if (colId === "amt") return <td key={colId} className="num">{r.amount.toLocaleString("en-SA")}</td>;
+                if (colId === "act") {
+                  return (
+                    <td key={colId}>
+                      <WorkspaceMoreActions
+                        actions={[
+                          { id: "o", label: "Open" },
+                          { id: "c", label: "Close" },
+                        ]}
+                      />
+                    </td>
+                  );
+                }
+                return <td key={colId}>—</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export function WorkspacePurchaseOrderRegister() {
   const [q, setQ] = useState("");
   const [vis, setVis] = useState(() =>
@@ -32,8 +110,6 @@ export function WorkspacePurchaseOrderRegister() {
     setVis(n);
     saveColumnVisibility(REG, n);
   };
-  const s = new Set(vis);
-  const show = (id: string) => s.has(id);
   const list = ROWS.filter((r) => !q.trim() || r.number.toLowerCase().includes(q.toLowerCase()) || r.vendor.toLowerCase().includes(q.toLowerCase()));
 
   return (
@@ -71,41 +147,7 @@ export function WorkspacePurchaseOrderRegister() {
             <WorkspaceColumnPicker columns={COLUMNS} visibleIds={vis} onChange={setC} />
           </div>
         </div>
-        <div className="wsv2-table-scroll">
-          <table className="wsv2-table">
-            <thead>
-              <tr>
-                {show("num") ? <th>PO no.</th> : null}
-                {show("vendor") ? <th>Vendor</th> : null}
-                {show("date") ? <th>Date</th> : null}
-                {show("status") ? <th>Status</th> : null}
-                {show("amt") ? <th className="num">Total (SAR)</th> : null}
-                {show("act") ? <th>Actions</th> : null}
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((r) => (
-                <tr key={r.id}>
-                  {show("num") ? <td style={{ fontWeight: 600 }}>{r.number}</td> : null}
-                  {show("vendor") ? <td>{r.vendor}</td> : null}
-                  {show("date") ? <td>{r.date}</td> : null}
-                  {show("status") ? <td style={{ textTransform: "capitalize" }}>{r.status}</td> : null}
-                  {show("amt") ? <td className="num">{r.amount.toLocaleString("en-SA")}</td> : null}
-                  {show("act") ? (
-                    <td>
-                      <WorkspaceMoreActions
-                        actions={[
-                          { id: "o", label: "Open" },
-                          { id: "c", label: "Close" },
-                        ]}
-                      />
-                    </td>
-                  ) : null}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <POTable visibleIds={vis} list={list} />
       </div>
     </div>
   );

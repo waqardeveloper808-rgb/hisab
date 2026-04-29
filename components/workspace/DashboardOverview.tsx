@@ -172,15 +172,16 @@ export function DashboardOverview() {
         </Card>
 
         <WorkspaceDataTable
+          registerTableId="dashboard-recent-activity"
           title="Recent activity"
           caption="Latest commercial and finance events across the workspace."
           rows={recentActivity}
           emptyMessage="Recent activity will appear here once the workspace posts documents and payments."
           columns={[
-            { header: "Type", render: (row) => row.type },
-            { header: "Reference", render: (row) => row.label },
-            { header: "Date", render: (row) => row.date || "-" },
-            { header: "Amount", align: "right", render: (row) => `${currency(row.amount)} SAR` },
+            { id: "type", header: "Type", defaultWidth: 120, render: (row) => row.type },
+            { id: "reference", header: "Reference", defaultWidth: 200, render: (row) => row.label },
+            { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.date || "-" },
+            { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.amount)} SAR` },
           ]}
         />
       </div>
@@ -215,28 +216,30 @@ export function DashboardOverview() {
 
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
+          registerTableId="dashboard-recent-invoices"
           title="Recent invoices"
           caption="Latest sales documents and their remaining balances."
           rows={snapshot.recentInvoices}
           emptyMessage="Posted invoices will appear here."
           columns={[
-            { header: "Invoice", render: (row) => row.number },
-            { header: "Status", render: (row) => row.status.replaceAll("_", " ") },
-            { header: "Issue date", render: (row) => row.issueDate || "-" },
-            { header: "Balance", align: "right", render: (row) => `${currency(row.balanceDue)} SAR` },
+            { id: "invoice", header: "Invoice", defaultWidth: 140, render: (row) => row.number },
+            { id: "status", header: "Status", defaultWidth: 110, render: (row) => row.status.replaceAll("_", " ") },
+            { id: "issue", header: "Issue date", defaultWidth: 110, render: (row) => row.issueDate || "-" },
+            { id: "balance", header: "Balance", align: "right", defaultWidth: 120, render: (row) => `${currency(row.balanceDue)} SAR` },
           ]}
         />
 
         <WorkspaceDataTable
+          registerTableId="dashboard-recent-payments"
           title="Recent payments"
           caption="Latest incoming and outgoing money movement."
           rows={snapshot.recentPayments}
           emptyMessage="Recorded payments will appear here."
           columns={[
-            { header: "Payment", render: (row) => row.number },
-            { header: "Direction", render: (row) => row.direction === "incoming" ? "Incoming money" : "Outgoing payment" },
-            { header: "Date", render: (row) => row.paymentDate || "-" },
-            { header: "Amount", align: "right", render: (row) => `${currency(row.amount)} SAR` },
+            { id: "payment", header: "Payment", defaultWidth: 140, render: (row) => row.number },
+            { id: "direction", header: "Direction", defaultWidth: 160, render: (row) => row.direction === "incoming" ? "Incoming money" : "Outgoing payment" },
+            { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.paymentDate || "-" },
+            { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.amount)} SAR` },
           ]}
         />
       </div>

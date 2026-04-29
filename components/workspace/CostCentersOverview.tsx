@@ -134,15 +134,16 @@ export function CostCentersOverview() {
       </div>
 
       <WorkspaceDataTable
+        registerTableId="cost-centers"
         title="Cost center register"
         caption="Operational cost-center rows available for purchase and reporting allocation."
         rows={costCenters}
         emptyMessage="Create the first cost center to start tagging purchase documents."
         columns={[
-          { header: "Code", render: (row) => row.code },
-          { header: "Name", render: (row) => row.name },
-          { header: "Description", render: (row) => row.description || "-" },
-          { header: "Status", render: (row) => row.isActive ? "Active" : "Inactive" },
+          { id: "code", header: "Code", defaultWidth: 100, render: (row) => row.code },
+          { id: "name", header: "Name", defaultWidth: 180, render: (row) => row.name },
+          { id: "description", header: "Description", defaultWidth: 240, render: (row) => row.description || "-" },
+          { id: "status", header: "Status", defaultWidth: 100, render: (row) => row.isActive ? "Active" : "Inactive" },
         ]}
         badge={loading ? "Loading" : `${costCenters.length} rows`}
       />

@@ -8,12 +8,13 @@ import { AttachmentUploader } from "@/components/workspace/AttachmentUploader";
 import { createJournal, listDocuments, type DocumentCenterRecord, type JournalEntryRecord } from "@/lib/workspace-api";
 import { currency } from "@/components/workflow/utils";
 import {
-  defaultChartOfAccounts,
   searchAccounts,
   validateJournalEntry,
   type JournalEntry,
   type JournalLine,
 } from "@/lib/accounting-engine";
+import { useRegisterTableLayout, type RegisterColumnWidthDef } from "@/lib/workspace/register-table-layout";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
 import type { Attachment } from "@/lib/accounting-engine";
 
 type JournalSourceContext = "manual" | "inventory_purchase" | "inventory_production" | "inventory_adjustment" | "sales" | "vat";
@@ -50,8 +51,10 @@ function emptyDraft(): JournalEntry {
 
 function detectsSalePattern(draft: JournalEntry, sourceContext: JournalSourceContext) {
   const memo = `${draft.reference} ${draft.memo}`.toLowerCase();
-  const usesRevenue = draft.lines.some((line) => line.accountCode.startsWith("4") || line.accountCode === "4000");
-  const usesInventory = draft.lines.some((line) => line.accountCode === "1150" || line.accountCode === "5000" || line.accountCode.startsWith("14"));
+  const usesRevenue = draft.lines.some((line) => line.accountCode.startsWith("4") || line.accountCode === "400");
+  const usesInventory = draft.lines.some((line) =>
+    ["113", "115", "116", "117"].includes(line.accountCode) || line.accountCode === "500",
+  );
   const hasKeywords = memo.includes("sale") || memo.includes("invoice") || memo.includes("delivery");
   return sourceContext === "sales" || (usesRevenue && (usesInventory || hasKeywords));
 }
@@ -218,7 +221,7 @@ export function JournalEntryModal({ open, onClose, onSaved }: JournalEntryModalP
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-ink/50 px-3 py-8" role="dialog" aria-modal="true" aria-labelledby="journal-modal-title" data-inspector-real-register="journal-entry-modal">
-      <Card className="relative z-10 w-full max-w-5xl rounded-2xl border border-line bg-white p-5 shadow-2xl">
+      <Card className="relative z-10 w-full max-w-5xl overflow-visible rounded-2xl border border-line bg-white p-5 shadow-2xl">
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">Manual journal</p>
@@ -322,9 +325,22 @@ export function JournalEntryModal({ open, onClose, onSaved }: JournalEntryModalP
           />
         </div>
 
-        <div className="mt-3">
-          <p className="mb-1 text-sm font-semibold text-ink">Attachments</p>
-          <AttachmentUploader attachments={attachments} onChange={setAttachments} maxFiles={10} maxSizeMB={5} />
+        <div className="relative z-[1] mt-4 overflow-x-auto overflow-y-visible rounded-xl border border-line">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface-soft/60 px-3 py-2 text-xs">
+            <span className="font-semibold text-ink">Lines</span>
+            <span className={["font-semibold", isBalanced ? "text-emerald-600" : "text-red-600"].join(" ")}>
+              Dr {currency(totalDebit)} · Cr {currency(totalCredit)} {isBalanced ? "· Balanced" : "· Unbalanced"}
+            </span>
+            <Button size="sm" variant="secondary" type="button" onClick={addLine}>
+              Add line
+            </Button>
+          </div>
+          <JournalModalLinesTable
+            lines={draft.lines}
+            updateLine={updateLine}
+            onRemove={removeLine}
+            canRemoveRow={draft.lines.length > 2}
+          />
         </div>
 
         {sourceContext === "sales" || draft.memo.toLowerCase().includes("outgoing goods") ? (
@@ -335,35 +351,9 @@ export function JournalEntryModal({ open, onClose, onSaved }: JournalEntryModalP
           </div>
         ) : null}
 
-        <div className="mt-4 overflow-hidden rounded-xl border border-line">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-surface-soft/60 px-3 py-2 text-xs">
-            <span className="font-semibold text-ink">Lines</span>
-            <span className={["font-semibold", isBalanced ? "text-emerald-600" : "text-red-600"].join(" ")}>
-              Dr {currency(totalDebit)} · Cr {currency(totalCredit)} {isBalanced ? "· Balanced" : "· Unbalanced"}
-            </span>
-            <Button size="sm" variant="secondary" type="button" onClick={addLine}>
-              Add line
-            </Button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="border-b border-line bg-surface-soft/70 text-left text-xs text-muted">
-                <tr>
-                  <th className="px-2 py-2 font-semibold">Account no.</th>
-                  <th className="px-2 py-2 font-semibold">Account name</th>
-                  <th className="px-2 py-2 font-semibold">Description</th>
-                  <th className="w-24 px-2 py-2 text-right font-semibold">Dr.</th>
-                  <th className="w-24 px-2 py-2 text-right font-semibold">Cr.</th>
-                  <th className="w-8 px-1 py-2" />
-                </tr>
-              </thead>
-              <tbody>
-                {draft.lines.map((line, idx) => (
-                  <ModalLineRow key={idx} line={line} idx={idx} onUpdate={updateLine} onRemove={removeLine} canRemove={draft.lines.length > 2} />
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="mt-4">
+          <p className="mb-1 text-sm font-semibold text-ink">Attachments</p>
+          <AttachmentUploader attachments={attachments} onChange={setAttachments} maxFiles={10} maxSizeMB={5} />
         </div>
 
         <div className="mt-4 flex flex-wrap justify-end gap-2">
@@ -440,6 +430,69 @@ export function JournalEntryModal({ open, onClose, onSaved }: JournalEntryModalP
   );
 }
 
+const JOURNAL_LINE_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "account", defaultWidth: 280 },
+  { id: "memo", defaultWidth: 200 },
+  { id: "dr", defaultWidth: 88 },
+  { id: "cr", defaultWidth: 88 },
+  { id: "rm", defaultWidth: 44 },
+];
+
+const JOURNAL_LINE_COLS = JOURNAL_LINE_WIDTH_DEFS.map((d) => d.id);
+
+function JournalModalLinesTable({
+  lines,
+  updateLine,
+  onRemove,
+  canRemoveRow,
+}: {
+  lines: JournalLine[];
+  updateLine: (idx: number, patch: Partial<JournalLine>) => void;
+  onRemove: (idx: number) => void;
+  canRemoveRow: boolean;
+}) {
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.journal-entry-lines", JOURNAL_LINE_WIDTH_DEFS, JOURNAL_LINE_COLS);
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
+
+  return (
+    <div ref={wrapRef} className="relative overflow-x-auto overflow-y-visible" data-register-table="true">
+      <table className="w-full min-w-0 table-fixed text-sm">
+        <colgroup>
+          {JOURNAL_LINE_COLS.map((id) => (
+            <col key={id} style={{ width: `${pctById[id] ?? 100 / JOURNAL_LINE_COLS.length}%` }} />
+          ))}
+        </colgroup>
+        <thead className="border-b border-line bg-surface-soft/70 text-left text-xs text-muted">
+          <tr>
+            {JOURNAL_LINE_COLS.map((colId, idx) => (
+              <RegisterTableHeaderCell
+                key={colId}
+                align={colId === "dr" || colId === "cr" ? "right" : colId === "rm" ? "center" : "left"}
+                className={colId === "dr" || colId === "cr" ? "num" : ""}
+                onResizePointerDown={idx < JOURNAL_LINE_COLS.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+              >
+                {colId === "account" ? "Account (code + name)" : colId === "memo" ? "Description" : colId === "dr" ? "Dr." : colId === "cr" ? "Cr." : ""}
+              </RegisterTableHeaderCell>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {lines.map((line, idx) => (
+            <ModalLineRow
+              key={idx}
+              line={line}
+              idx={idx}
+              onUpdate={updateLine}
+              onRemove={onRemove}
+              canRemove={canRemoveRow}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function ModalLineRow({
   line,
   idx,
@@ -453,19 +506,20 @@ function ModalLineRow({
   onRemove: (idx: number) => void;
   canRemove: boolean;
 }) {
-  const [accountQuery, setAccountQuery] = useState(line.accountCode ? `${line.accountCode} ${line.accountName}` : "");
+  const [accountQuery, setAccountQuery] = useState(
+    line.accountCode ? `${line.accountCode} — ${line.accountName}`.trim() : "",
+  );
   const [showDropdown, setShowDropdown] = useState(false);
 
   const suggestions = useMemo(() => {
-    if (!showDropdown || !accountQuery.trim()) return defaultChartOfAccounts.filter((a) => a.isActive && a.isPostingAllowed).slice(0, 12);
-    return searchAccounts(accountQuery).filter((a) => a.isPostingAllowed).slice(0, 12);
-  }, [accountQuery, showDropdown]);
+    const base = !accountQuery.trim() ? searchAccounts("") : searchAccounts(accountQuery);
+    return base.filter((a) => !a.isFolder && a.isPostingAllowed).slice(0, 14);
+  }, [accountQuery]);
 
   return (
     <tr className="border-t border-line/50">
-      <td className="align-top px-2 py-2 font-mono text-xs text-ink">{line.accountCode || "—"}</td>
-      <td className="align-top px-2 py-2">
-        <div className="relative min-w-[12rem]">
+      <td className="register-table-cell align-top px-2 py-2">
+        <div className="relative min-w-0">
           <input
             type="text"
             value={accountQuery}
@@ -475,23 +529,23 @@ function ModalLineRow({
             }}
             onFocus={() => setShowDropdown(true)}
             onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-            placeholder="Search code or name…"
+            placeholder="Search COA code or name…"
             className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-xs text-ink outline-none focus:border-primary/40"
           />
           {showDropdown && suggestions.length > 0 ? (
-            <div className="absolute left-0 top-full z-30 mt-0.5 max-h-40 w-full overflow-auto rounded-lg border border-line bg-white shadow-lg">
+            <div className="absolute left-0 top-full z-[200] mt-0.5 max-h-52 w-[min(100%,24rem)] overflow-auto rounded-lg border border-line bg-white shadow-xl">
               {suggestions.map((acc) => (
                 <button
                   key={acc.code}
                   type="button"
                   onMouseDown={() => {
                     onUpdate(idx, { accountCode: acc.code, accountName: acc.name, accountId: acc.id });
-                    setAccountQuery(`${acc.code} ${acc.name}`);
+                    setAccountQuery(`${acc.code} — ${acc.name}`);
                     setShowDropdown(false);
                   }}
-                  className="flex w-full items-start gap-2 px-2 py-1.5 text-left text-xs hover:bg-primary-soft"
+                  className="flex w-full flex-col gap-0.5 px-2 py-1.5 text-left text-xs hover:bg-primary-soft [overflow-wrap:anywhere]"
                 >
-                  <span className="font-mono font-bold">{acc.code}</span>
+                  <span className="font-mono font-bold text-ink">{acc.code}</span>
                   <span className="text-muted">{acc.name}</span>
                 </button>
               ))}
@@ -499,16 +553,16 @@ function ModalLineRow({
           ) : null}
         </div>
       </td>
-      <td className="px-2 py-2">
+      <td className="register-table-cell px-2 py-2">
         <input
           type="text"
           value={line.memo ?? ""}
           onChange={(e) => onUpdate(idx, { memo: e.target.value })}
-          className="w-full min-w-[8rem] rounded-lg border border-line bg-white px-2 py-1.5 text-xs"
+          className="w-full min-w-0 rounded-lg border border-line bg-white px-2 py-1.5 text-xs"
           placeholder="Line note"
         />
       </td>
-      <td className="px-2 py-2">
+      <td className="register-table-cell num px-2 py-2">
         <input
           type="number"
           min={0}
@@ -518,7 +572,7 @@ function ModalLineRow({
           className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-right text-xs"
         />
       </td>
-      <td className="px-2 py-2">
+      <td className="register-table-cell num px-2 py-2">
         <input
           type="number"
           min={0}
@@ -528,7 +582,7 @@ function ModalLineRow({
           className="w-full rounded-lg border border-line bg-white px-2 py-1.5 text-right text-xs"
         />
       </td>
-      <td className="px-1 py-2 text-center">
+      <td className="register-table-cell px-1 py-2 text-center">
         {canRemove ? (
           <button type="button" onClick={() => onRemove(idx)} className="text-red-500 hover:text-red-700">
             ×

@@ -13,6 +13,7 @@ export default function WorkspaceInvoicesPage() {
         subtitle: "ZATCA-ready invoices issued from this workspace.",
         documents: invoices,
         createLabel: "New invoice",
+        createDocumentHref: "/workspace/invoices/new?documentType=tax_invoice",
         suggestionId: "register-invoices",
         suggestionTitle: "Single source of truth for billing",
         suggestionDescription:

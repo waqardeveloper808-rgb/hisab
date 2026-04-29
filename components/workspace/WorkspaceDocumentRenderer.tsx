@@ -30,6 +30,7 @@ import {
   ITEMS_TABLE_MAX_WIDTH_PX,
   widthsArrayToRecord,
 } from "@/lib/workspace/item-column-resize";
+import { modernAdjustedFontPx } from "@/lib/template-engine/modern-font-scale";
 import {
   buildDocumentLayout,
   bilingualLabel,
@@ -94,7 +95,10 @@ function biLabel(en: string, ar: string, language: LangMode): ReactNode {
   return (
     <>
       <span className="wsv2-bi-en">{en}</span>
-      <span className="wsv2-bi-ar"> {ar}</span>
+      <span className="wsv2-bi-ar" lang="ar" dir="rtl">
+        {" "}
+        {ar}
+      </span>
     </>
   );
 }
@@ -153,7 +157,6 @@ function HeaderSection({
   }
 
   const enFont = layout.bodyFonts.english;
-  const arFont = layout.bodyFonts.arabic;
 
   const cardShell = (): CSSProperties => ({
     boxSizing: "border-box",
@@ -219,11 +222,10 @@ function HeaderSection({
           <>
             <div
               className="wsv2-wf-seller-name"
+              {...(nameEnIsArabic ? { dir: "rtl" as const, lang: "ar" as const } : {})}
               style={{
                 color: textColors.english,
-                ...(nameEnIsArabic
-                  ? { ...rtlPlaintextBlockStyle("right"), fontFamily: arFont }
-                  : {}),
+                ...(nameEnIsArabic ? rtlPlaintextBlockStyle("right") : {}),
               }}
             >
               {layout.seller.nameEn}
@@ -231,11 +233,10 @@ function HeaderSection({
             {layout.seller.addressEn ? (
               <div
                 className="wsv2-wf-line"
+                {...(addrEnIsArabic ? { dir: "rtl" as const, lang: "ar" as const } : {})}
                 style={{
                   color: textColors.english,
-                  ...(addrEnIsArabic
-                    ? { ...rtlPlaintextBlockStyle("right"), fontFamily: arFont }
-                    : {}),
+                  ...(addrEnIsArabic ? rtlPlaintextBlockStyle("right") : {}),
                 }}
               >
                 {layout.seller.addressEn}
@@ -313,7 +314,6 @@ function HeaderSection({
           gap: 3,
           alignItems: arAlignItems,
           textAlign: hb.arabicAlign,
-          fontFamily: arFont,
           color: textColors.arabic,
         }}
       >
@@ -419,19 +419,22 @@ function TitleSection({
   language,
   logoDataUrl,
   titleUi,
+  style,
 }: {
   layout: LayoutPlan;
   language: LangMode;
   logoDataUrl: string | null;
   titleUi: TemplateUiSettings["title"];
+  style: TemplateStyle;
 }) {
   const en = layout.textColors.english;
   const ar = layout.textColors.arabic;
-  const arFont = layout.bodyFonts.arabic;
   const hb = layout.headerBlock;
   const logoInTitle = hb.structure === "two_column_logo_in_title";
-  const enPx = titleUi.enFontPx > 0 ? titleUi.enFontPx : 25;
-  const arPx = titleUi.arFontPx > 0 ? titleUi.arFontPx : 21;
+  const enPxRaw = titleUi.enFontPx > 0 ? titleUi.enFontPx : 25;
+  const arPxRaw = titleUi.arFontPx > 0 ? titleUi.arFontPx : 21;
+  const enPx = style === "modern" ? modernAdjustedFontPx(enPxRaw, 8) : enPxRaw;
+  const arPx = style === "modern" ? modernAdjustedFontPx(arPxRaw, 8) : arPxRaw;
   return (
     <div className="wsv2-wf-title">
       {logoInTitle ? (
@@ -484,7 +487,6 @@ function TitleSection({
           lang="ar"
           style={{
             color: ar,
-            fontFamily: arFont,
             fontSize: arPx,
             unicodeBidi: "plaintext",
             textAlign: "center",
@@ -565,6 +567,7 @@ function InfoTable({
           <div
             className="wsv2-info-cell-en wsv2-wf-info-label-en"
             dir="ltr"
+            lang="en"
             style={{
               textAlign: infoLayout.englishAlign,
               color: textColors.english,
@@ -579,10 +582,11 @@ function InfoTable({
           <div
             className="wsv2-info-cell-value wsv2-wf-info-value"
             dir={containsArabic(row.value || "") ? "rtl" : "ltr"}
+            lang={containsArabic(row.value || "") ? "ar" : "en"}
             style={{
               textAlign: infoLayout.valueAlign,
               color: textColors.english,
-              fontFamily: containsArabic(row.value || "") ? bodyFonts.arabic : bodyFonts.english,
+              fontFamily: containsArabic(row.value || "") ? undefined : bodyFonts.english,
               lineHeight: 1.3,
               justifySelf: "stretch",
               width: "100%",
@@ -598,7 +602,6 @@ function InfoTable({
             style={{
               textAlign: infoLayout.arabicAlign,
               color: textColors.arabic,
-              fontFamily: bodyFonts.arabic,
               lineHeight: 1.3,
               justifySelf: "stretch",
               width: "100%",
@@ -920,7 +923,6 @@ function ItemsSection({
                       textAlign: col.align,
                       color: textColors.english,
                       unicodeBidi: "plaintext",
-                      fontFamily: arCell ? bodyFonts.arabic : undefined,
                       wordBreak: "break-word",
                       overflowWrap: "anywhere",
                       verticalAlign: "top",
@@ -1537,7 +1539,7 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
       const body = (() => {
         switch (section.id) {
           case "header":         return <HeaderSection layout={layout} language={language} showHeaderAccent={ui.showHeaderGreenAccent} logoDataUrl={templateAssets.logoDataUrl} textColors={layout.textColors} cardBorder={ui.cardBorder} />;
-          case "title":          return <TitleSection layout={layout} language={language} logoDataUrl={templateAssets.logoDataUrl} titleUi={ui.title} />;
+          case "title":          return <TitleSection layout={layout} language={language} logoDataUrl={templateAssets.logoDataUrl} titleUi={ui.title} style={style} />;
           case "customer":       return <CustomerSection layout={layout} language={language} />;
           case "docInfo":        return <DocInfoSection layout={layout} language={language} />;
           case "items":          return (
@@ -1645,8 +1647,10 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
     const padB = (m.bottomMm * 96) / 25.4;
     const innerMinH = PAGE_GEOMETRY.heightPx - padT - padB;
     const typoScale = Math.min(2, Math.max(0.5, ui.typography.enSizeScale));
-    const basePx = 12 * typoScale;
-    const linePx = Math.round(16 * typoScale);
+    const basePxRaw = 12 * typoScale;
+    const linePxRaw = Math.round(16 * typoScale);
+    const basePx = style === "modern" ? modernAdjustedFontPx(basePxRaw, 6) : basePxRaw;
+    const linePx = style === "modern" ? modernAdjustedFontPx(linePxRaw, 8) : linePxRaw;
 
     return (
       <div

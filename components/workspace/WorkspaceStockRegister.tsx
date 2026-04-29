@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { products } from "@/data/workspace/products";
 import { stockItems } from "@/data/workspace/stock";
 import { formatCurrency, formatDate, formatNumber, statusLabel, statusTone } from "@/lib/workspace/format";
 import { loadColumnVisibility, saveColumnVisibility } from "@/lib/workspace/register-column-storage";
+import { useRegisterTableLayout, type RegisterColumnWidthDef } from "@/lib/workspace/register-table-layout";
+import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHeaderCell";
 import { WorkspaceEmptyState } from "./WorkspaceEmptyState";
 import { WorkspaceSuggestion } from "./WorkspaceSuggestion";
 import { WorkspaceMoreActions } from "./WorkspaceMoreActions";
@@ -50,39 +52,288 @@ const STOCK_COLS: ColumnDef[] = [
 const DEFAULT_STOCK = STOCK_COLS.map((c) => c.id);
 const REG_STOCK = "v2.register.stock";
 
-/** Fixed widths for products register — pairs with table-layout: fixed in workspace.css */
-const PRODUCT_COL_STYLE: Record<string, CSSProperties> = {
-  code: { width: 120, minWidth: 120, maxWidth: 120 },
-  status: { width: 100, minWidth: 100, maxWidth: 100 },
-  name: { width: 200, minWidth: 200, maxWidth: 200 },
-  description: { width: 300, minWidth: 300, maxWidth: 300 },
-  type: { width: 88, minWidth: 88, maxWidth: 88 },
-  category: { width: 128, minWidth: 128, maxWidth: 128 },
-  salePrice: { width: 120, minWidth: 120, maxWidth: 120 },
-  tracking: { width: 130, minWidth: 130, maxWidth: 130 },
-  qty: { width: 100, minWidth: 100, maxWidth: 100 },
-  avg: { width: 120, minWidth: 120, maxWidth: 120 },
-  value: { width: 140, minWidth: 140, maxWidth: 140 },
-  actions: { width: 100, minWidth: 100, maxWidth: 100 },
+const PRODUCT_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "code", defaultWidth: 120 },
+  { id: "status", defaultWidth: 100 },
+  { id: "name", defaultWidth: 200 },
+  { id: "description", defaultWidth: 300 },
+  { id: "type", defaultWidth: 88 },
+  { id: "category", defaultWidth: 128 },
+  { id: "salePrice", defaultWidth: 120 },
+  { id: "tracking", defaultWidth: 130 },
+  { id: "qty", defaultWidth: 100 },
+  { id: "avg", defaultWidth: 120 },
+  { id: "value", defaultWidth: 140 },
+  { id: "actions", defaultWidth: 100 },
+];
+
+const STOCK_WIDTH_DEFS: RegisterColumnWidthDef[] = [
+  { id: "code", defaultWidth: 120 },
+  { id: "status", defaultWidth: 100 },
+  { id: "name", defaultWidth: 180 },
+  { id: "description", defaultWidth: 260 },
+  { id: "tracking", defaultWidth: 120 },
+  { id: "qty", defaultWidth: 100 },
+  { id: "avg", defaultWidth: 110 },
+  { id: "value", defaultWidth: 130 },
+  { id: "last", defaultWidth: 120 },
+  { id: "warehouse", defaultWidth: 140 },
+  { id: "actions", defaultWidth: 100 },
+];
+
+const STOCK_HEADER: Record<string, string> = {
+  code: "Item code",
+  status: "Status",
+  name: "Item name",
+  description: "Description",
+  tracking: "Inventory tracking",
+  qty: "Qty on hand",
+  avg: "Avg unit cost",
+  value: "Inventory value +/–",
+  last: "Last movement",
+  warehouse: "Warehouse / location",
+  actions: "Actions",
 };
 
-const STOCK_COL_STYLE: Record<string, CSSProperties> = {
-  code: { width: 120, minWidth: 120, maxWidth: 120 },
-  status: { width: 100, minWidth: 100, maxWidth: 100 },
-  name: { width: 180, minWidth: 180, maxWidth: 180 },
-  description: { width: 260, minWidth: 260, maxWidth: 260 },
-  tracking: { width: 120, minWidth: 120, maxWidth: 120 },
-  qty: { width: 100, minWidth: 100, maxWidth: 100 },
-  avg: { width: 110, minWidth: 110, maxWidth: 110 },
-  value: { width: 130, minWidth: 130, maxWidth: 130 },
-  last: { width: 120, minWidth: 120, maxWidth: 120 },
-  warehouse: { width: 140, minWidth: 140, maxWidth: 140 },
-  actions: { width: 100, minWidth: 100, maxWidth: 100 },
+const PRODUCT_HEADER: Record<string, string> = {
+  code: "Code",
+  status: "Status",
+  name: "Name",
+  description: "Description",
+  type: "Type",
+  category: "Category",
+  salePrice: "Sale / base price",
+  tracking: "Inventory tracking",
+  qty: "Qty on hand",
+  avg: "Avg unit cost",
+  value: "Inventory value +/–",
+  actions: "Actions",
 };
 
 function initVis(reg: string, defaults: string[]) {
   if (typeof window === "undefined") return defaults;
   return loadColumnVisibility(reg, defaults);
+}
+
+function StockItemsTable({ visibleIds, filtered }: { visibleIds: string[]; filtered: typeof stockItems }) {
+  const ordered = useMemo(() => STOCK_COLS.map((c) => c.id).filter((id) => visibleIds.includes(id)), [visibleIds]);
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.stock", STOCK_WIDTH_DEFS, ordered);
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
+
+  return (
+    <div ref={wrapRef} className="wsv2-table-scroll" data-register-table="true">
+      <table className="wsv2-table">
+        <colgroup>
+          {ordered.map((id) => (
+            <col key={id} style={{ width: `${pctById[id] ?? 100 / ordered.length}%` }} />
+          ))}
+        </colgroup>
+        <thead>
+          <tr>
+            {ordered.map((colId, idx) => (
+              <RegisterTableHeaderCell
+                key={colId}
+                align={["qty", "avg", "value", "actions"].includes(colId) ? "right" : "left"}
+                className={["qty", "avg", "value"].includes(colId) ? "num" : colId === "description" ? "wsv2-cell-desc" : ""}
+                onResizePointerDown={idx < ordered.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+              >
+                {STOCK_HEADER[colId] ?? colId}
+              </RegisterTableHeaderCell>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((item) => (
+            <tr key={item.id}>
+              {ordered.map((colId) => {
+                if (colId === "code") {
+                  return (
+                    <td key={colId}>
+                      <span className="font-mono font-semibold">{item.sku}</span>
+                    </td>
+                  );
+                }
+                if (colId === "status") {
+                  return (
+                    <td key={colId}>
+                      <span className="wsv2-pill" data-tone={statusTone(item.status)}>
+                        <span className="wsv2-status-dot" /> {statusLabel(item.status)}
+                      </span>
+                    </td>
+                  );
+                }
+                if (colId === "name") return <td key={colId}>{item.name}</td>;
+                if (colId === "description") {
+                  return (
+                    <td key={colId} className="wsv2-cell-desc" style={{ color: "var(--wsv2-ink-subtle)" }}>
+                      {item.description ?? "—"}
+                    </td>
+                  );
+                }
+                if (colId === "tracking") return <td key={colId}>{item.inventoryTracking ? "Tracked" : "—"}</td>;
+                if (colId === "qty") {
+                  return (
+                    <td key={colId} className="num">
+                      {formatNumber(item.onHand)} {item.unit}
+                    </td>
+                  );
+                }
+                if (colId === "avg") return <td key={colId} className="num">{formatCurrency(item.avgUnitCost)}</td>;
+                if (colId === "value") {
+                  return (
+                    <td key={colId} className="num">
+                      {formatCurrency(item.onHand * item.avgUnitCost)}
+                      <div style={{ fontSize: 11, color: "var(--wsv2-ink-subtle)" }}>
+                        {item.inventoryValueDelta >= 0 ? "+" : ""}
+                        {formatCurrency(item.inventoryValueDelta)}
+                      </div>
+                    </td>
+                  );
+                }
+                if (colId === "last") return <td key={colId}>{formatDate(item.lastMovement)}</td>;
+                if (colId === "warehouse") return <td key={colId}>{item.warehouse ?? "—"}</td>;
+                if (colId === "actions") {
+                  return (
+                    <td key={colId}>
+                      <div className="actions">
+                        <WorkspaceMoreActions
+                          actions={[
+                            { id: "adjust", label: "Adjust stock" },
+                            { id: "history", label: "View movement history" },
+                            { id: "archive", label: "Archive item" },
+                          ]}
+                        />
+                      </div>
+                    </td>
+                  );
+                }
+                return <td key={colId}>—</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ProductsTable({ visibleIds, filtered }: { visibleIds: string[]; filtered: typeof products }) {
+  const ordered = useMemo(() => PRODUCT_COLS.map((c) => c.id).filter((id) => visibleIds.includes(id)), [visibleIds]);
+  const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.products", PRODUCT_WIDTH_DEFS, ordered);
+  const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
+
+  const invVal = (qty: number | null, avg: number | null) => {
+    if (qty == null || avg == null) return "—";
+    return formatCurrency(qty * avg);
+  };
+
+  return (
+    <div ref={wrapRef} className="wsv2-table-scroll" data-register-table="true">
+      <table className="wsv2-table">
+        <colgroup>
+          {ordered.map((id) => (
+            <col key={id} style={{ width: `${pctById[id] ?? 100 / ordered.length}%` }} />
+          ))}
+        </colgroup>
+        <thead>
+          <tr>
+            {ordered.map((colId, idx) => (
+              <RegisterTableHeaderCell
+                key={colId}
+                align={["salePrice", "qty", "avg", "value", "actions"].includes(colId) ? "right" : "left"}
+                className={["salePrice", "qty", "avg", "value"].includes(colId) ? "num" : colId === "description" ? "wsv2-cell-desc" : ""}
+                onResizePointerDown={idx < ordered.length - 1 ? (x) => beginResizePair(idx, x) : undefined}
+              >
+                {PRODUCT_HEADER[colId] ?? colId}
+              </RegisterTableHeaderCell>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((product) => (
+            <tr key={product.id}>
+              {ordered.map((colId) => {
+                if (colId === "code") {
+                  return (
+                    <td key={colId}>
+                      <span className="font-mono font-semibold">{product.sku}</span>
+                    </td>
+                  );
+                }
+                if (colId === "status") {
+                  return (
+                    <td key={colId}>
+                      <span className="wsv2-pill" data-tone={product.status === "active" ? "success" : "neutral"}>
+                        <span className="wsv2-status-dot" />
+                        {product.status === "active" ? "Active" : "Archived"}
+                      </span>
+                    </td>
+                  );
+                }
+                if (colId === "name") {
+                  return (
+                    <td key={colId}>
+                      <div style={{ fontWeight: 500 }}>{product.name}</div>
+                    </td>
+                  );
+                }
+                if (colId === "description") {
+                  return (
+                    <td key={colId} className="wsv2-cell-desc" style={{ color: "var(--wsv2-ink-subtle)" }}>
+                      {product.description ?? "—"}
+                    </td>
+                  );
+                }
+                if (colId === "type") return <td key={colId}>{product.type === "product" ? "Product" : "Service"}</td>;
+                if (colId === "category") return <td key={colId}>{product.category}</td>;
+                if (colId === "salePrice") return <td key={colId} className="num">{formatCurrency(product.salePrice)}</td>;
+                if (colId === "tracking") return <td key={colId}>{product.inventoryTracking ? "Yes" : "No"}</td>;
+                if (colId === "qty") {
+                  return <td key={colId} className="num">{product.qtyOnHand == null ? "—" : formatNumber(product.qtyOnHand)}</td>;
+                }
+                if (colId === "avg") {
+                  return <td key={colId} className="num">{product.avgUnitCost == null ? "—" : formatCurrency(product.avgUnitCost)}</td>;
+                }
+                if (colId === "value") {
+                  return (
+                    <td key={colId} className="num">
+                      {product.inventoryValueDelta == null ? (
+                        "—"
+                      ) : (
+                        <>
+                          {invVal(product.qtyOnHand, product.avgUnitCost)}
+                          <div style={{ fontSize: 11, color: "var(--wsv2-ink-subtle)" }}>
+                            {product.inventoryValueDelta >= 0 ? "+" : ""}
+                            {formatCurrency(product.inventoryValueDelta)}
+                          </div>
+                        </>
+                      )}
+                    </td>
+                  );
+                }
+                if (colId === "actions") {
+                  return (
+                    <td key={colId}>
+                      <div className="actions">
+                        <WorkspaceMoreActions
+                          actions={[
+                            { id: "edit", label: "Edit details" },
+                            { id: "duplicate", label: "Duplicate item" },
+                            { id: "archive", label: "Archive item" },
+                          ]}
+                        />
+                      </div>
+                    </td>
+                  );
+                }
+                return <td key={colId}>—</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
 
 export function WorkspaceStockRegister({ mode = "stock" }: Props) {
@@ -101,13 +352,9 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
     saveColumnVisibility(REG_STOCK, next);
   };
 
-  const visibleStock = isStock
-    ? visibleS
-    : visibleP;
+  const visibleStock = isStock ? visibleS : visibleP;
   const setVis = isStock ? setColsS : setColsP;
   const colDefs = isStock ? STOCK_COLS : PRODUCT_COLS;
-  const vp = new Set(visibleStock);
-  const show = (id: string) => vp.has(id);
 
   const filteredStock = useMemo(() => {
     const lower = search.trim().toLowerCase();
@@ -141,11 +388,6 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
       return matchesSearch && matchesStatus;
     });
   }, [search, statusFilter]);
-
-  const invVal = (qty: number | null, avg: number | null) => {
-    if (qty == null || avg == null) return "—";
-    return formatCurrency(qty * avg);
-  };
 
   return (
     <div>
@@ -224,171 +466,17 @@ export function WorkspaceStockRegister({ mode = "stock" }: Props) {
             <WorkspaceColumnPicker columns={colDefs} visibleIds={visibleStock} onChange={setVis} />
           </div>
         </div>
-        <div className="wsv2-table-scroll">
-          {isStock ? (
-            filteredStock.length === 0 ? (
-              <WorkspaceEmptyState title="No stock items match the filters" />
-            ) : (
-              <table className="wsv2-table">
-                <thead>
-                  <tr>
-                    {show("code") ? <th style={STOCK_COL_STYLE.code}>Item code</th> : null}
-                    {show("status") ? <th style={STOCK_COL_STYLE.status}>Status</th> : null}
-                    {show("name") ? <th style={STOCK_COL_STYLE.name}>Item name</th> : null}
-                    {show("description") ? <th className="wsv2-cell-desc" style={STOCK_COL_STYLE.description}>Description</th> : null}
-                    {show("tracking") ? <th style={STOCK_COL_STYLE.tracking}>Inventory tracking</th> : null}
-                    {show("qty") ? <th className="num" style={STOCK_COL_STYLE.qty}>Qty on hand</th> : null}
-                    {show("avg") ? <th className="num" style={STOCK_COL_STYLE.avg}>Avg unit cost</th> : null}
-                    {show("value") ? <th className="num" style={STOCK_COL_STYLE.value}>Inventory value +/–</th> : null}
-                    {show("last") ? <th style={STOCK_COL_STYLE.last}>Last movement</th> : null}
-                    {show("warehouse") ? <th style={STOCK_COL_STYLE.warehouse}>Warehouse / location</th> : null}
-                    {show("actions") ? <th style={{ ...STOCK_COL_STYLE.actions, textAlign: "right" }}>Actions</th> : null}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStock.map((item) => (
-                    <tr key={item.id}>
-                      {show("code") ? (
-                        <td style={{ ...STOCK_COL_STYLE.code, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 600 }}>
-                          {item.sku}
-                        </td>
-                      ) : null}
-                      {show("status") ? (
-                        <td style={STOCK_COL_STYLE.status}>
-                          <span className="wsv2-pill" data-tone={statusTone(item.status)}>
-                            <span className="wsv2-status-dot" /> {statusLabel(item.status)}
-                          </span>
-                        </td>
-                      ) : null}
-                      {show("name") ? <td style={STOCK_COL_STYLE.name}>{item.name}</td> : null}
-                      {show("description") ? <td className="wsv2-cell-desc" style={{ ...STOCK_COL_STYLE.description, color: "var(--wsv2-ink-subtle)" }}>{item.description ?? "—"}</td> : null}
-                      {show("tracking") ? <td style={STOCK_COL_STYLE.tracking}>{item.inventoryTracking ? "Tracked" : "—"}</td> : null}
-                      {show("qty") ? (
-                        <td className="num" style={STOCK_COL_STYLE.qty}>
-                          {formatNumber(item.onHand)} {item.unit}
-                        </td>
-                      ) : null}
-                      {show("avg") ? <td className="num" style={STOCK_COL_STYLE.avg}>{formatCurrency(item.avgUnitCost)}</td> : null}
-                      {show("value") ? (
-                        <td className="num" style={STOCK_COL_STYLE.value}>
-                          {formatCurrency(item.onHand * item.avgUnitCost)}
-                          <div style={{ fontSize: 11, color: "var(--wsv2-ink-subtle)" }}>
-                            {item.inventoryValueDelta >= 0 ? "+" : ""}
-                            {formatCurrency(item.inventoryValueDelta)}
-                          </div>
-                        </td>
-                      ) : null}
-                      {show("last") ? <td style={STOCK_COL_STYLE.last}>{formatDate(item.lastMovement)}</td> : null}
-                      {show("warehouse") ? <td style={STOCK_COL_STYLE.warehouse}>{item.warehouse ?? "—"}</td> : null}
-                      {show("actions") ? (
-                        <td style={STOCK_COL_STYLE.actions}>
-                          <div className="actions">
-                            <WorkspaceMoreActions
-                              actions={[
-                                { id: "adjust", label: "Adjust stock" },
-                                { id: "history", label: "View movement history" },
-                                { id: "archive", label: "Archive item" },
-                              ]}
-                            />
-                          </div>
-                        </td>
-                      ) : null}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )
-          ) : filteredProducts.length === 0 ? (
-            <WorkspaceEmptyState title="No products match the filters" />
+        {isStock ? (
+          filteredStock.length === 0 ? (
+            <WorkspaceEmptyState title="No stock items match the filters" />
           ) : (
-            <table className="wsv2-table">
-              <thead>
-                <tr>
-                  {show("code") ? <th style={PRODUCT_COL_STYLE.code}>Code</th> : null}
-                  {show("status") ? <th style={PRODUCT_COL_STYLE.status}>Status</th> : null}
-                  {show("name") ? <th style={PRODUCT_COL_STYLE.name}>Name</th> : null}
-                  {show("description") ? <th className="wsv2-cell-desc" style={PRODUCT_COL_STYLE.description}>Description</th> : null}
-                  {show("type") ? <th style={PRODUCT_COL_STYLE.type}>Type</th> : null}
-                  {show("category") ? <th style={PRODUCT_COL_STYLE.category}>Category</th> : null}
-                  {show("salePrice") ? <th className="num" style={PRODUCT_COL_STYLE.salePrice}>Sale / base price</th> : null}
-                  {show("tracking") ? <th style={PRODUCT_COL_STYLE.tracking}>Inventory tracking</th> : null}
-                  {show("qty") ? <th className="num" style={PRODUCT_COL_STYLE.qty}>Qty on hand</th> : null}
-                  {show("avg") ? <th className="num" style={PRODUCT_COL_STYLE.avg}>Avg unit cost</th> : null}
-                  {show("value") ? <th className="num" style={PRODUCT_COL_STYLE.value}>Inventory value +/–</th> : null}
-                  {show("actions") ? <th style={{ ...PRODUCT_COL_STYLE.actions, textAlign: "right" }}>Actions</th> : null}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product.id}>
-                    {show("code") ? (
-                      <td style={{ ...PRODUCT_COL_STYLE.code, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontWeight: 600 }}>
-                        {product.sku}
-                      </td>
-                    ) : null}
-                    {show("status") ? (
-                      <td style={PRODUCT_COL_STYLE.status}>
-                        <span
-                          className="wsv2-pill"
-                          data-tone={product.status === "active" ? "success" : "neutral"}
-                        >
-                          <span className="wsv2-status-dot" />
-                          {product.status === "active" ? "Active" : "Archived"}
-                        </span>
-                      </td>
-                    ) : null}
-                    {show("name") ? (
-                      <td style={PRODUCT_COL_STYLE.name}>
-                        <div style={{ fontWeight: 500 }}>{product.name}</div>
-                      </td>
-                    ) : null}
-                    {show("description") ? (
-                      <td className="wsv2-cell-desc" style={{ ...PRODUCT_COL_STYLE.description, color: "var(--wsv2-ink-subtle)" }}>{product.description ?? "—"}</td>
-                    ) : null}
-                    {show("type") ? <td style={PRODUCT_COL_STYLE.type}>{product.type === "product" ? "Product" : "Service"}</td> : null}
-                    {show("category") ? <td style={PRODUCT_COL_STYLE.category}>{product.category}</td> : null}
-                    {show("salePrice") ? <td className="num" style={PRODUCT_COL_STYLE.salePrice}>{formatCurrency(product.salePrice)}</td> : null}
-                    {show("tracking") ? <td style={PRODUCT_COL_STYLE.tracking}>{product.inventoryTracking ? "Yes" : "No"}</td> : null}
-                    {show("qty") ? (
-                      <td className="num" style={PRODUCT_COL_STYLE.qty}>{product.qtyOnHand == null ? "—" : formatNumber(product.qtyOnHand)}</td>
-                    ) : null}
-                    {show("avg") ? (
-                      <td className="num" style={PRODUCT_COL_STYLE.avg}>{product.avgUnitCost == null ? "—" : formatCurrency(product.avgUnitCost)}</td>
-                    ) : null}
-                    {show("value") ? (
-                      <td className="num" style={PRODUCT_COL_STYLE.value}>
-                        {product.inventoryValueDelta == null ? (
-                          "—"
-                        ) : (
-                          <>
-                            {invVal(product.qtyOnHand, product.avgUnitCost)}
-                            <div style={{ fontSize: 11, color: "var(--wsv2-ink-subtle)" }}>
-                              {product.inventoryValueDelta >= 0 ? "+" : ""}
-                              {formatCurrency(product.inventoryValueDelta)}
-                            </div>
-                          </>
-                        )}
-                      </td>
-                    ) : null}
-                    {show("actions") ? (
-                      <td style={PRODUCT_COL_STYLE.actions}>
-                        <div className="actions">
-                          <WorkspaceMoreActions
-                            actions={[
-                              { id: "edit", label: "Edit details" },
-                              { id: "duplicate", label: "Duplicate item" },
-                              { id: "archive", label: "Archive item" },
-                            ]}
-                          />
-                        </div>
-                      </td>
-                    ) : null}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+            <StockItemsTable visibleIds={visibleS} filtered={filteredStock} />
+          )
+        ) : filteredProducts.length === 0 ? (
+          <WorkspaceEmptyState title="No products match the filters" />
+        ) : (
+          <ProductsTable visibleIds={visibleP} filtered={filteredProducts} />
+        )}
       </div>
     </div>
   );

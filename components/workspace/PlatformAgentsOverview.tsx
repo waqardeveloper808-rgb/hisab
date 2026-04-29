@@ -114,6 +114,7 @@ export function PlatformAgentsOverview() {
           </Card>
 
           <WorkspaceDataTable
+            registerTableId="platform-agents"
             title="Agents"
             caption="Select an agent row to edit commission and activation status."
             rows={agents}
@@ -121,17 +122,19 @@ export function PlatformAgentsOverview() {
             badge={isPreview ? "Preview" : loading ? "Loading" : `${agents.length} agents`}
             columns={[
               {
+                id: "name",
                 header: "Name",
+                defaultWidth: 180,
                 render: (row) => (
                   <button type="button" className="text-left font-semibold text-primary hover:text-primary-hover disabled:text-muted" disabled={isPreview} onClick={() => setSelectedAgent(row)}>
                     {row.name || row.email}
                   </button>
                 ),
               },
-              { header: "Referral code", render: (row) => row.referralCode },
-              { header: "Commission", align: "right", render: (row) => `${row.commissionRate}%` },
-              { header: "Pending", align: "right", render: (row) => `${row.pendingCommission} SAR` },
-              { header: "Status", render: (row) => row.isActive ? "Active" : "Inactive" },
+              { id: "code", header: "Referral code", defaultWidth: 120, render: (row) => row.referralCode },
+              { id: "commission", header: "Commission", align: "right", defaultWidth: 100, render: (row) => `${row.commissionRate}%` },
+              { id: "pending", header: "Pending", align: "right", defaultWidth: 110, render: (row) => `${row.pendingCommission} SAR` },
+              { id: "status", header: "Status", defaultWidth: 100, render: (row) => row.isActive ? "Active" : "Inactive" },
             ]}
           />
         </div>

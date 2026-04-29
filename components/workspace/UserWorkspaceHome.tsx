@@ -152,15 +152,16 @@ export function UserWorkspaceHome() {
 
       {/* Recent activity */}
       <WorkspaceDataTable
+        registerTableId="user-home-activity"
         title="Recent Activity"
         caption=""
         rows={activity}
         emptyMessage="Activity will appear once documents and payments are posted."
         columns={[
-          { header: "Type", render: (row) => row.type },
-          { header: "Ref", render: (row) => row.ref },
-          { header: "Date", render: (row) => row.date || "—" },
-          { header: "Amount", align: "right", render: (row) => `${currency(row.amount)} SAR` },
+          { id: "type", header: "Type", defaultWidth: 120, render: (row) => row.type },
+          { id: "ref", header: "Ref", defaultWidth: 160, render: (row) => row.ref },
+          { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.date || "—" },
+          { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.amount)} SAR` },
         ]}
       />
     </div>
