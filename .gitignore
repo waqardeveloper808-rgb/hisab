@@ -225,6 +225,8 @@ qa/
 logs/
 test-results/
 playwright-report/
+tools/inspector/screenshots/
+tools/inspector/reports/
 storage/app/agent-output/
 storage/app/debug/
 storage/app/temp/
@@ -251,6 +253,7 @@ backend/storage/framework/sessions/
 *.har
 
 # Generated proof/debug outputs
+.tmp_*.html
 *proof*.txt
 *proof*.json
 *debug*.txt
