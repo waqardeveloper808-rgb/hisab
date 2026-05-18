@@ -1,5 +1,53 @@
 [
   {
+    "id": 316,
+    "type": "product",
+    "name": "Phase1 LED Panel",
+    "sku": "P1-LED-01",
+    "default_sale_price": 250,
+    "default_purchase_price": 180,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 315,
+    "type": "product",
+    "name": "Phase1 LED Panel",
+    "sku": "P1-LED-01",
+    "default_sale_price": 250,
+    "default_purchase_price": 180,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 314,
+    "type": "product",
+    "name": "Phase1 LED Panel",
+    "sku": "P1-LED-01",
+    "default_sale_price": 250,
+    "default_purchase_price": 180,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
+    "id": 313,
+    "type": "product",
+    "name": "Phase1 LED Panel",
+    "sku": "P1-LED-01",
+    "default_sale_price": 250,
+    "default_purchase_price": 180,
+    "tax_category": {
+      "name": "VAT 15%",
+      "rate": 15
+    }
+  },
+  {
     "id": 305,
     "type": "product",
     "name": "papers",

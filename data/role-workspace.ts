@@ -152,9 +152,13 @@ export const workspaceRoles: Record<WorkspaceRoleKey, WorkspaceRoleDefinition> =
       {
         label: "Templates",
         items: [
-          { label: "Template studio (V2)", href: "/workspace/user/templates/studio", matchPrefixes: ["/workspace/user/templates/studio", "/workspace/settings/templates"] },
-          { label: "Document templates (V2)", href: "/workspace/user/templates", matchPrefixes: ["/workspace/user/templates"] },
-          { label: "Invoice Templates", href: "/workspace/user/invoice-templates", matchPrefixes: ["/workspace/user/invoice-templates", "/workspace/user/document-templates"] },
+          { label: "Document templates", href: "/workspace/user/templates" },
+      {
+        label: "Template studio",
+        href: "/workspace/user/templates/studio",
+        matchPrefixes: ["/workspace/user/templates/studio", "/workspace/settings/templates"],
+      },
+      { label: "Invoice Templates", href: "/workspace/user/invoice-templates", matchPrefixes: ["/workspace/user/invoice-templates", "/workspace/user/document-templates"] },
           { label: "Quotation Templates", href: "/workspace/user/quotation-templates", matchPrefixes: ["/workspace/user/quotation-templates"] },
           { label: "Proforma Templates", href: "/workspace/user/proforma-templates", matchPrefixes: ["/workspace/user/proforma-templates"] },
           { label: "Credit Note Templates", href: "/workspace/user/credit-note-templates", matchPrefixes: ["/workspace/user/credit-note-templates"] },
@@ -515,10 +519,15 @@ export function getWorkspaceRoleFromPath(pathname: string): WorkspaceRoleKey {
 export function findActiveWorkspaceNavItem(pathname: string, role: WorkspaceRoleKey) {
   const items = workspaceRoles[role].sidebarGroups.flatMap((group) => group.items);
 
-  return items.find((item) => {
-    const prefixes = [item.href, ...(item.matchPrefixes ?? [])];
-    return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-  }) ?? null;
+  return (
+    items.find((item) => {
+      if (item.href === "/workspace/user/templates" && !item.matchPrefixes?.length) {
+        return pathname === item.href || pathname === `${item.href}/`;
+      }
+      const prefixes = [item.href, ...(item.matchPrefixes ?? [])];
+      return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+    }) ?? null
+  );
 }
 
 export function getWorkspaceModulePageByHref(href: string): WorkspaceModulePageDefinition | null {

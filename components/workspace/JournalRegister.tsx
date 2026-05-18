@@ -139,15 +139,17 @@ export function JournalRegister() {
     if (loading) {
       return;
     }
-    if (filteredEntries.length === 0) {
-      setSelectedId(null);
-      return;
-    }
-    setSelectedId((current) => {
-      if (current != null && filteredEntries.some((e) => e.id === current)) {
-        return current;
+    queueMicrotask(() => {
+      if (filteredEntries.length === 0) {
+        setSelectedId(null);
+        return;
       }
-      return filteredEntries[0].id;
+      setSelectedId((current) => {
+        if (current != null && filteredEntries.some((e) => e.id === current)) {
+          return current;
+        }
+        return filteredEntries[0].id;
+      });
     });
   }, [loading, filteredEntries]);
 
@@ -183,7 +185,9 @@ export function JournalRegister() {
     try {
       const v = Number(localStorage.getItem(JOURNAL_SPLIT_LS));
       if (Number.isFinite(v)) {
-        setSplitLeftFr(clampJournalSplit(v));
+        queueMicrotask(() => {
+          setSplitLeftFr(clampJournalSplit(v));
+        });
       }
     } catch {
       /* */

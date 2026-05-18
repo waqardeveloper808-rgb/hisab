@@ -8,6 +8,7 @@ import {
   healthPercentFromSummary,
   topCriticalFails,
 } from "@/lib/audit-engine/summary";
+import { phase1CountryArchitecture } from "@/data/master-design/country-architecture";
 import { getActualSystemMap, getPriorityModulesFromActualMap } from "@/lib/mapping-engine";
 import { MONITOR_GROUP_DEFS } from "@/lib/audit-engine/monitor-groups";
 import type { SystemMonitorControlPoint } from "@/lib/audit-engine/monitor-types";
@@ -183,6 +184,8 @@ type SystemState = {
   blockers: SystemBlocker[];
   /** Ownership tree: summary = Core + Finance + Platform; each count maps to cpIdsByStatus. */
   traceability: SystemMonitorTraceabilityPayload;
+  /** KSA Phase 1 vs Phase 2 metadata (France / future) — future locales do not gate KSA Phase 1. */
+  countryArchitecture: typeof phase1CountryArchitecture;
 };
 
 function riskFromSummary(fail: number, partial: number, blocked: number): { level: "low" | "medium" | "high" | "critical"; score: number } {
@@ -329,6 +332,7 @@ function buildLegacySystemState(): SystemState {
     })),
     moduleMap: actual.modules,
     blockers: actual.modules.flatMap((module) => module.blockers),
+    countryArchitecture: phase1CountryArchitecture,
   };
 }
 

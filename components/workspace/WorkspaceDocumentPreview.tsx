@@ -3,7 +3,7 @@
 // Schema-driven document preview body. Used inside the preview drawer.
 // Layout is delegated entirely to <WorkspaceDocumentRenderer>.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { DocumentRecord } from "@/lib/workspace/types";
 import { findCustomer } from "@/data/workspace/customers";
 import { getSchemaForKind, type LangMode } from "@/lib/workspace/document-template-schemas";
@@ -12,6 +12,7 @@ import { templates } from "@/data/workspace/templates";
 import { buildPhase1Qr } from "@/lib/workspace/exports/qr";
 import {
   defaultTemplateUi,
+  compactTemplatePresetUi,
   modernTemplatePresetUi,
   readTemplateUiFromStorage,
   readTemplateAssetsFromStorage,
@@ -25,29 +26,28 @@ import {
 type Props = {
   document: DocumentRecord;
   language?: LangMode;
+  forcedStyle?: "standard" | "modern" | "compact";
 };
 
 function templateUiForPreview(templateId: string | undefined) {
   const stored = readTemplateUiFromStorage();
   if (stored) return stored;
-  return templateId === "tmpl-modern" ? modernTemplatePresetUi() : defaultTemplateUi();
+  if (templateId === "tmpl-modern") return modernTemplatePresetUi();
+  if (templateId === "tmpl-compact") return compactTemplatePresetUi();
+  return defaultTemplateUi();
 }
 
-export function WorkspaceDocumentPreview({ document, language = "bilingual" }: Props) {
+export function WorkspaceDocumentPreview({ document, language = "bilingual", forcedStyle }: Props) {
   const customer = findCustomer(document.customerId);
   const schema = getSchemaForKind(document.kind);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-  const [studioUi, setStudioUi] = useState(() => templateUiForPreview(document.templateId));
-  const [studioAssets, setStudioAssets] = useState(() => readTemplateAssetsFromStorage());
-  const templateStyle = templates.find((t) => t.id === document.templateId)?.style ?? "standard";
-  useEffect(() => {
-    setStudioUi(templateUiForPreview(document.templateId));
-    setStudioAssets(readTemplateAssetsFromStorage());
-  }, [document.id, document.templateId]);
+  const [qrImage, setQrImage] = useState<string | null>(null);
+  const studioUi = useMemo(() => templateUiForPreview(document.templateId), [document.id, document.templateId]);
+  const studioAssets = useMemo(() => readTemplateAssetsFromStorage(), [document.id, document.templateId]);
+  const templateStyle = forcedStyle ?? templates.find((t) => t.id === document.templateId)?.style ?? "standard";
+  const qrDataUrl = schema.qr.applicable ? qrImage : null;
 
   useEffect(() => {
     if (!schema.qr.applicable) {
-      setQrDataUrl(null);
       return;
     }
     let cancelled = false;
@@ -60,11 +60,11 @@ export function WorkspaceDocumentPreview({ document, language = "bilingual" }: P
     })
       .then((qr) => {
         if (cancelled) return;
-        setQrDataUrl(qr.imageDataUrl);
+        setQrImage(qr.imageDataUrl);
       })
       .catch(() => {
         if (cancelled) return;
-        setQrDataUrl(null);
+        setQrImage(null);
       });
     return () => {
       cancelled = true;
@@ -72,7 +72,7 @@ export function WorkspaceDocumentPreview({ document, language = "bilingual" }: P
   }, [document.total, document.vat, document.issueDate, schema.qr.applicable]);
 
   return (
-    <div className="wsv2-doc-paper" data-lang={language}>
+    <div className="wsv2-doc-paper" data-lang={language} data-hisabix-document-engine="v3" data-document-type={document.kind} data-template-style={templateStyle} data-template-id={`${document.kind}.${templateStyle}`}>
       <WorkspaceDocumentRenderer
         schema={schema}
         doc={document}

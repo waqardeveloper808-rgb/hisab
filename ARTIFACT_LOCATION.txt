@@ -1,0 +1,7 @@
+Artifact root: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424
+Final ZIP inside artifact root: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\prompt-global-pdf-generation-fix-20260502-173424.zip
+Convenience ZIP: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424.zip
+Screenshots: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\screenshots
+Validation logs: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\logs
+Source diff: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\patches\source-diff-global-pdf-generation-fix.patch
+Final acceptance report: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\reports\final-acceptance-pdf-generation.md

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   authSessionCookieName,
+  authSessionCookieSecure,
   authSessionMaxAge,
   createAuthSessionValue,
 } from "@/lib/auth-session";
@@ -93,7 +94,7 @@ async function createDummyLoginResponse() {
   nextResponse.cookies.set(authSessionCookieName, sessionValue, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: authSessionCookieSecure(),
     maxAge: authSessionMaxAge,
     path: "/",
   });
@@ -263,7 +264,7 @@ export async function POST(request: NextRequest) {
   nextResponse.cookies.set(authSessionCookieName, sessionValue, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: authSessionCookieSecure(),
     maxAge: authSessionMaxAge,
     path: "/",
   });

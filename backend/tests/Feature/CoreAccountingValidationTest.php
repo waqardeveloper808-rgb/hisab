@@ -456,11 +456,11 @@ class CoreAccountingValidationTest extends TestCase
     {
         [$user, $companyId] = $this->createCompanyContext($legalName);
         $company = Company::findOrFail($companyId);
-        $contactId = $this->actingAs($user)->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->actingAs($user)->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => $legalName.' Customer',
-            'tax_number' => '300000000000999',
-        ])->json('data.id');
+            'tax_number' => $this->uniqueKsaVatNumber($legalName.'-contact'),
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()->where('company_id', $companyId)->where('code', 'VAT15')->value('id');
         $incomeAccountId = $company->accounts()->where('code', '4000')->value('id');

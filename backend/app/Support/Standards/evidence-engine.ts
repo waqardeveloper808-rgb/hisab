@@ -529,15 +529,15 @@ function getClauseText(controlPoint: StandardsControlPoint) {
 
 function getLinkedModuleHealth(controlPoint: StandardsControlPoint, actualModules: Map<string, ActualModuleRecord>): LinkedModuleHealth[] {
   return controlPoint.linked_project_modules.map((moduleId) => {
-    const module = actualModules.get(moduleId);
-    const proofStatus: LinkedModuleHealth["proofStatus"] = (module?.proof.status as ProofStatus | undefined) ?? "MISSING";
+    const moduleRecord = actualModules.get(moduleId);
+    const proofStatus: LinkedModuleHealth["proofStatus"] = (moduleRecord?.proof.status as ProofStatus | undefined) ?? "MISSING";
     return {
       moduleId,
-      status: module?.status ?? "MISSING",
-      completionPercentage: module?.completionPercentage ?? 0,
+      status: moduleRecord?.status ?? "MISSING",
+      completionPercentage: moduleRecord?.completionPercentage ?? 0,
       proofStatus,
-      blockerCount: module?.blockers.length ?? 0,
-      blockers: (module?.blockers ?? []).map((blocker) => buildViolation(blocker.id, blocker.severity, blocker.title, blocker.moduleId)),
+      blockerCount: moduleRecord?.blockers.length ?? 0,
+      blockers: (moduleRecord?.blockers ?? []).map((blocker) => buildViolation(blocker.id, blocker.severity, blocker.title, blocker.moduleId)),
     };
   });
 }
@@ -833,14 +833,14 @@ function buildControlPointChecks(controlPoint: StandardsControlPoint, linkedModu
 function buildViolations(controlPoint: StandardsControlPoint, linkedModuleHealth: LinkedModuleHealth[], runtimeMatch: RuntimeAuditRecord | null, requiredChecks: EvidenceRuleCheck[]) {
   const violations: ControlPointViolation[] = [];
   if (controlPoint.module_code !== "CPE") {
-    for (const module of linkedModuleHealth) {
-      if (module.status === "BLOCKED") {
-        violations.push(buildViolation(`linked-module-blocked:${module.moduleId}`, "critical", `Linked module ${module.moduleId} is blocked.`, module.moduleId));
+    for (const moduleRecord of linkedModuleHealth) {
+      if (moduleRecord.status === "BLOCKED") {
+        violations.push(buildViolation(`linked-module-blocked:${moduleRecord.moduleId}`, "critical", `Linked module ${moduleRecord.moduleId} is blocked.`, moduleRecord.moduleId));
       }
-      if (module.completionPercentage < 60) {
-        violations.push(buildViolation(`linked-module-low-completion:${module.moduleId}`, "high", `Linked module ${module.moduleId} is below 60% completion.`, module.moduleId));
+      if (moduleRecord.completionPercentage < 60) {
+        violations.push(buildViolation(`linked-module-low-completion:${moduleRecord.moduleId}`, "high", `Linked module ${moduleRecord.moduleId} is below 60% completion.`, moduleRecord.moduleId));
       }
-      violations.push(...module.blockers.filter((blocker) => isBlockerRelevantToControlPoint(controlPoint, blocker.code)));
+      violations.push(...moduleRecord.blockers.filter((blocker) => isBlockerRelevantToControlPoint(controlPoint, blocker.code)));
     }
   }
 

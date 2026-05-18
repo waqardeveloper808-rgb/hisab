@@ -5,8 +5,24 @@ $app = require __DIR__ . '/bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 use Illuminate\Support\Facades\DB;
+use App\Models\CompanySetting;
 
 $companyId = (int) (getenv('COMPANY_ID') ?: 2);
+
+$settings = CompanySetting::query()->where('company_id', $companyId)->first();
+$receivableCode = $settings->default_receivable_account_code ?? '1100';
+$revenueCode = $settings->default_revenue_account_code ?? '4000';
+$vatPayableCode = $settings->default_vat_payable_account_code ?? '2200';
+
+$journalLinked = static function ($query): void {
+    $query->where(function ($q): void {
+        $q->whereColumn('journals.reference', 'documents.document_number')
+            ->orWhere(function ($nested): void {
+                $nested->where('journals.source_type', '=', 'document')
+                    ->whereColumn('journals.source_id', 'documents.id');
+            });
+    });
+};
 
 $imbalancedJournals = DB::table('journal_entry_lines as lines')
     ->join('journal_entries as journals', 'journals.id', '=', 'lines.journal_entry_id')
@@ -19,18 +35,21 @@ $imbalancedJournals = DB::table('journal_entry_lines as lines')
 
 $invoiceDocuments = DB::table('documents')
     ->where('company_id', $companyId)
-    ->where('type', 'tax_invoice');
+    ->where('type', 'tax_invoice')
+    ->where('status', 'finalized');
 
 $invoiceCount = (clone $invoiceDocuments)->count();
 
-$invoicesWithoutJournal = DB::table('documents as documents')
-    ->leftJoin('journal_entries as journals', function ($join) {
-        $join->on('journals.company_id', '=', 'documents.company_id')
-            ->on('journals.reference', '=', 'documents.document_number');
+$invoicesWithoutJournal = DB::table('documents')
+    ->where('company_id', $companyId)
+    ->where('type', 'tax_invoice')
+    ->where('status', 'finalized')
+    ->whereNotExists(function ($query) use ($journalLinked): void {
+        $query->select(DB::raw(1))
+            ->from('journal_entries as journals')
+            ->whereColumn('journals.company_id', 'documents.company_id');
+        $journalLinked($query);
     })
-    ->where('documents.company_id', $companyId)
-    ->where('documents.type', 'tax_invoice')
-    ->whereNull('journals.id')
     ->select('documents.id', 'documents.document_number')
     ->limit(25)
     ->get();
@@ -38,14 +57,15 @@ $invoicesWithoutJournal = DB::table('documents as documents')
 $invoiceMissingReceivable = DB::table('documents as documents')
     ->where('documents.company_id', $companyId)
     ->where('documents.type', 'tax_invoice')
-    ->whereNotExists(function ($query) {
+    ->where('documents.status', 'finalized')
+    ->whereNotExists(function ($query) use ($journalLinked, $receivableCode): void {
         $query->select(DB::raw(1))
             ->from('journal_entries as journals')
             ->join('journal_entry_lines as lines', 'lines.journal_entry_id', '=', 'journals.id')
             ->join('accounts', 'accounts.id', '=', 'lines.account_id')
-            ->whereColumn('journals.company_id', 'documents.company_id')
-            ->whereColumn('journals.reference', 'documents.document_number')
-            ->where('accounts.code', '1100');
+            ->whereColumn('journals.company_id', 'documents.company_id');
+        $journalLinked($query);
+        $query->where('accounts.code', $receivableCode);
     })
     ->select('documents.id', 'documents.document_number')
     ->limit(25)
@@ -54,14 +74,15 @@ $invoiceMissingReceivable = DB::table('documents as documents')
 $invoiceMissingRevenue = DB::table('documents as documents')
     ->where('documents.company_id', $companyId)
     ->where('documents.type', 'tax_invoice')
-    ->whereNotExists(function ($query) {
+    ->where('documents.status', 'finalized')
+    ->whereNotExists(function ($query) use ($journalLinked, $revenueCode): void {
         $query->select(DB::raw(1))
             ->from('journal_entries as journals')
             ->join('journal_entry_lines as lines', 'lines.journal_entry_id', '=', 'journals.id')
             ->join('accounts', 'accounts.id', '=', 'lines.account_id')
-            ->whereColumn('journals.company_id', 'documents.company_id')
-            ->whereColumn('journals.reference', 'documents.document_number')
-            ->where('accounts.code', '4000');
+            ->whereColumn('journals.company_id', 'documents.company_id');
+        $journalLinked($query);
+        $query->where('accounts.code', $revenueCode);
     })
     ->select('documents.id', 'documents.document_number')
     ->limit(25)
@@ -70,15 +91,16 @@ $invoiceMissingRevenue = DB::table('documents as documents')
 $invoiceMissingVat = DB::table('documents as documents')
     ->where('documents.company_id', $companyId)
     ->where('documents.type', 'tax_invoice')
+    ->where('documents.status', 'finalized')
     ->where('documents.tax_total', '>', 0)
-    ->whereNotExists(function ($query) {
+    ->whereNotExists(function ($query) use ($journalLinked, $vatPayableCode): void {
         $query->select(DB::raw(1))
             ->from('journal_entries as journals')
             ->join('journal_entry_lines as lines', 'lines.journal_entry_id', '=', 'journals.id')
             ->join('accounts', 'accounts.id', '=', 'lines.account_id')
-            ->whereColumn('journals.company_id', 'documents.company_id')
-            ->whereColumn('journals.reference', 'documents.document_number')
-            ->where('accounts.code', '2200');
+            ->whereColumn('journals.company_id', 'documents.company_id');
+        $journalLinked($query);
+        $query->where('accounts.code', $vatPayableCode);
     })
     ->select('documents.id', 'documents.document_number', 'documents.tax_total')
     ->limit(25)
@@ -108,6 +130,7 @@ $negativeInventory = DB::table('inventory_transactions')
 
 $vatDocuments = DB::table('documents')
     ->where('company_id', $companyId)
+    ->where('status', 'finalized')
     ->where('tax_total', '>', 0)
     ->count();
 

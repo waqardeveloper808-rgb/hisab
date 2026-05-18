@@ -49,6 +49,7 @@ import {
   type FieldKey,
   type LangMode,
   type SectionKey,
+  type TemplateStyle,
 } from "@/lib/workspace/document-template-schemas";
 import {
   buildDocumentLayout,
@@ -60,9 +61,18 @@ import {
   type RenderCustomer,
   type RenderSeller,
 } from "@/lib/workspace/document-template-renderer";
-import { getItemsTableInnerTargetPx, getPrintableContentWidthPx } from "@/lib/workspace/item-column-resize";
+import {
+  fitItemColumnWidthsToTarget,
+  getItemsTableInnerTargetPx,
+  getPrintableContentWidthPx,
+  isNoWrapItemColumn,
+  isWrappingItemColumn,
+  itemColumnMinPx,
+  sanitizeItemColumnWidthRecord,
+} from "@/lib/workspace/item-column-resize";
 import { buildPhase1Qr } from "./qr";
 import { buildInvoiceUbl } from "./xml";
+import { LAYOUT_STYLE_CONTRACT } from "@/lib/template-engine/layout-style-contract";
 
 export type PdfSeller = RenderSeller;
 export type PdfCustomer = RenderCustomer;
@@ -97,6 +107,8 @@ export type BuildPdfInput = {
    * Default: attach for foundation_only tax documents (ZATCA-ready document layer).
    */
   attachFoundationUblXml?: boolean;
+  /** Preview / Studio style key — drives section gaps and header accent strip to match `data-style`. */
+  templateStyle?: TemplateStyle;
 };
 
 async function loadNotoSansArabicPdfBytes(): Promise<Uint8Array> {
@@ -273,6 +285,9 @@ type DrawCtx = {
   dlx: number;
   dty: number;
   ui?: TemplateUiSettings;
+  /** Mirrors `LAYOUT_STYLE_CONTRACT` / preview `data-style` vertical rhythm. */
+  sectionGapPx: number;
+  headerTopAccentPx: number;
 };
 
 function rgbFromLayoutEn(layout: LayoutPlan): ReturnType<typeof rgb> {
@@ -307,6 +322,31 @@ function fontForString(ctx: DrawCtx, s: string, fallBack: PDFFont): PDFFont {
   return containsArabic(s) ? ctx.arFont : fallBack;
 }
 
+/** Single-line monetary / qty / percent cells — shrink font minimally if needed (≥7px). */
+function drawNoWrapTextFit(
+  ctx: DrawCtx,
+  text: string,
+  align: "left" | "right" | "center",
+  cellLeftPx: number,
+  cellWidthPx: number,
+  yPx: number,
+  fontSize: number,
+  font: PDFFont,
+  color = inkColor,
+  padPx = Number(SPACING.tableCellPaddingXPx),
+): void {
+  let size = Math.max(7, Math.round(fontSize));
+  const innerWPt = Math.max(1, px(cellWidthPx - 2 * padPx));
+  const f = fontForString(ctx, text, font);
+  const payload = f === ctx.arFont ? shapeArabicForPdf(text) : safeAscii(text, ctx.warnings);
+  for (let guard = 0; guard < 8 && size >= 7; guard++) {
+    const wPt = f.widthOfTextAtSize(payload, size);
+    if (wPt <= innerWPt) break;
+    size -= 0.75;
+  }
+  drawTextAlign(ctx, text, align, cellLeftPx, cellWidthPx, yPx, size, f, color, padPx);
+}
+
 function wrapItemCellLines(
   ctx: DrawCtx,
   text: string,
@@ -314,7 +354,16 @@ function wrapItemCellLines(
   size: number,
   cellWidthPx: number,
   padPx: number,
+  columnKey: ColumnKey,
 ): { lines: string[]; font: PDFFont } {
+  if (isNoWrapItemColumn(columnKey)) {
+    const f =
+      containsArabic(text) || text.includes(CURRENCY_DISPLAY_SYMBOL) || text.includes(TOTALS_RIYAL_GLYPH)
+        ? ctx.arFont
+        : preferredFont;
+    const line = (text ?? "").trim() ? String(text).replace(/\r?\n/g, " ") : "—";
+    return { lines: [line], font: f };
+  }
   const font =
     containsArabic(text) || text.includes(CURRENCY_DISPLAY_SYMBOL) || text.includes(TOTALS_RIYAL_GLYPH)
       ? ctx.arFont
@@ -497,9 +546,10 @@ function drawHeader(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: L
   const x0 = advX(sec.xPx, ctx);
   const hb = layout.headerBlock;
   const showAccent = ctx.ui?.showHeaderGreenAccent === true;
-  const topH = showAccent ? SPACING.topAccentPx : 0;
+  const topH =
+    ctx.headerTopAccentPx > 0 ? ctx.headerTopAccentPx : showAccent ? SPACING.topAccentPx : 0;
   const enStrip = rgbFromLayoutEn(layout);
-  if (showAccent) {
+  if (topH > 0) {
     ctx.page.drawRectangle({
       x: px(x0),
       y: topY(y0 + topH),
@@ -888,7 +938,7 @@ function drawInfoTable(
   const enRgb = rgbFromLayoutEn(layout);
   const arRgb = rgbFromLayoutAr(layout);
   let cursorY = yPx + barH + topPad;
-  let xEn = tableX;
+  const xEn = tableX;
   const xVal = xEn + enW + gap;
   const xAr = xVal + valW + gap;
   for (let i = 0; i < rows.length; i++) {
@@ -916,14 +966,17 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
   const padPx = Number(SPACING.tableCellPaddingXPx);
   const hdrPadPx = 4;
   const cols = layout.itemColumns;
-  const totalDeclaredWidth = cols.reduce((sum, c) => sum + c.widthPx, 0);
-  // Same cap as `buildDocumentLayout` / preview (`getItemsTableInnerTargetPx`), not `sec.widthPx - 28` only — when Template Studio margins differ from 10+10mm, `CONTENT_W` and printable width diverge and column fit vs PDF scale get out of sync.
+  const keys = cols.map((c) => c.key);
   const printableW = getPrintableContentWidthPx(ctx.ui?.margins ?? null);
-  const tableW = getItemsTableInnerTargetPx(ctx.ui?.margins ?? null);
+  const tableW = getItemsTableInnerTargetPx(ctx.ui?.margins ?? null, { sectionPaddingPx: 8, borderPx: 1 });
+  const mergedW: Partial<Record<ColumnKey, number>> = {};
+  for (const c of cols) mergedW[c.key] = c.widthPx;
+  const sanitized = sanitizeItemColumnWidthRecord(keys, mergedW, tableW);
+  const rawFit = keys.map((k) => sanitized[k] ?? itemColumnMinPx(k));
+  const fittedArr = fitItemColumnWidthsToTarget(keys, rawFit, tableW, itemColumnMinPx);
+  const fittedCols = cols.map((c, i) => ({ ...c, widthPx: fittedArr[i] ?? c.widthPx }));
+  const usedTableW = fittedCols.reduce((a, c) => a + c.widthPx, 0);
   const tableX = sec.xPx + 14;
-  const scale = totalDeclaredWidth > tableW ? tableW / totalDeclaredWidth : 1;
-  const usedTableW = totalDeclaredWidth * scale;
-  const scaledCols = cols.map((c) => ({ ...c, widthPx: c.widthPx * scale }));
 
   const enHdrSize = TYPOGRAPHY.itemsHeaderEnPx;
   const arHdrSize = TYPOGRAPHY.itemsHeaderArPx;
@@ -934,7 +987,11 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
 
   let maxEnHdrLines = 1;
   if (language !== "arabic") {
-    for (const col of scaledCols) {
+    for (const col of fittedCols) {
+      if (!isWrappingItemColumn(col.key)) {
+        maxEnHdrLines = Math.max(maxEnHdrLines, 1);
+        continue;
+      }
       const innerWPt = Math.max(1, px(col.widthPx - 2 * padPx));
       const lines = wrapByWidth(col.labelEn, ctx.helvBold, enHdrSize, innerWPt, ctx.warnings, false);
       maxEnHdrLines = Math.max(maxEnHdrLines, lines.length);
@@ -942,7 +999,11 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
   }
   let maxArHdrLines = 1;
   if (language !== "english") {
-    for (const col of scaledCols) {
+    for (const col of fittedCols) {
+      if (!isWrappingItemColumn(col.key)) {
+        maxArHdrLines = Math.max(maxArHdrLines, 1);
+        continue;
+      }
       const innerWPt = Math.max(1, px(col.widthPx - 2 * hdrPadPx));
       const lines = wrapArabicLineBreaks(ctx.arFont, shapeArabicForPdf(col.labelAr), arHdrSize, innerWPt);
       maxArHdrLines = Math.max(maxArHdrLines, lines.length);
@@ -956,11 +1017,15 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
   const rowHeights: number[] = [];
   for (const row of layout.itemRows) {
     let maxLines = 1;
-    for (const col of scaledCols) {
+    for (const col of fittedCols) {
       const text = row.cells[col.key] ?? "";
       const preferred = col.key === "lineTotal" ? ctx.helvBold : ctx.helv;
-      const { lines } = wrapItemCellLines(ctx, text, preferred, cellSize, col.widthPx, padPx);
-      maxLines = Math.max(maxLines, lines.length);
+      if (!isWrappingItemColumn(col.key)) {
+        maxLines = Math.max(maxLines, 1);
+      } else {
+        const { lines } = wrapItemCellLines(ctx, text, preferred, cellSize, col.widthPx, padPx, col.key);
+        maxLines = Math.max(maxLines, lines.length);
+      }
     }
     rowHeights.push(Math.max(28, 6 + maxLines * cellStep + 4));
   }
@@ -985,7 +1050,12 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
 
   if (language !== "arabic") {
     let cl = tableX;
-    for (const col of scaledCols) {
+    for (const col of fittedCols) {
+      if (!isWrappingItemColumn(col.key)) {
+        drawNoWrapTextFit(ctx, col.labelEn, col.align, cl, col.widthPx, headerY + 2, enHdrSize, ctx.helvBold, enRgb, padPx);
+        cl += col.widthPx;
+        continue;
+      }
       const innerWPt = Math.max(1, px(col.widthPx - 2 * padPx));
       const lines = wrapByWidth(col.labelEn, ctx.helvBold, enHdrSize, innerWPt, ctx.warnings, false);
       let y = headerY + 2;
@@ -999,7 +1069,12 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
   if (language !== "english") {
     const arY = language === "bilingual" ? headerY + enHeaderH : headerY;
     let cl = tableX;
-    for (const col of scaledCols) {
+    for (const col of fittedCols) {
+      if (!isWrappingItemColumn(col.key)) {
+        drawNoWrapTextFit(ctx, col.labelAr, col.align, cl, col.widthPx, arY + 2, arHdrSize, ctx.arFont, arRgb, hdrPadPx);
+        cl += col.widthPx;
+        continue;
+      }
       const innerWPt = Math.max(1, px(col.widthPx - 2 * hdrPadPx));
       const lines = wrapArabicLineBreaks(ctx.arFont, shapeArabicForPdf(col.labelAr), arHdrSize, innerWPt);
       let y = arY + 2;
@@ -1033,16 +1108,31 @@ function drawItems(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, sec: La
     const row = layout.itemRows[ri]!;
     const rh = rowHeights[ri] ?? 28;
     let cellLeftCursor = tableX;
-    for (const col of scaledCols) {
+    for (const col of fittedCols) {
       const text = row.cells[col.key] ?? "";
       const preferred = col.key === "lineTotal" ? ctx.helvBold : ctx.helv;
-      const { lines, font } = wrapItemCellLines(ctx, text, preferred, cellSize, col.widthPx, padPx);
-      let y = rowY + 6;
-      for (const ln of lines) {
-        if (ln) {
-          drawTextAlign(ctx, ln, col.align, cellLeftCursor, col.widthPx, y, cellSize, font, inkColor, padPx);
+      if (!isWrappingItemColumn(col.key)) {
+        drawNoWrapTextFit(
+          ctx,
+          text,
+          col.align,
+          cellLeftCursor,
+          col.widthPx,
+          rowY + 6,
+          cellSize,
+          preferred,
+          inkColor,
+          padPx,
+        );
+      } else {
+        const { lines, font } = wrapItemCellLines(ctx, text, preferred, cellSize, col.widthPx, padPx, col.key);
+        let y = rowY + 6;
+        for (const ln of lines) {
+          if (ln) {
+            drawTextAlign(ctx, ln, col.align, cellLeftCursor, col.widthPx, y, cellSize, font, inkColor, padPx);
+          }
+          y += cellStep;
         }
-        y += cellStep;
       }
       cellLeftCursor += col.widthPx;
     }
@@ -1074,7 +1164,7 @@ function drawTotalsBlock(ctx: DrawCtx, layout: LayoutPlan, language: LangMode, s
     aW *= scale;
   }
   void tb.totals_desc_align;
-  const dAlign: "center" = "center";
+  const dAlign = "center" as const;
   const cAlign = tb.totals_currency_align ?? "center";
   const aAlign = tb.totals_amount_align ?? "right";
   const enRgb = rgbFromLayoutEn(layout);
@@ -1527,6 +1617,9 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
   const dlx = ml - PAGE_GEOMETRY.contentXPx;
   const dty = mt - PAGE_GEOMETRY.contentYStartPx;
 
+  const templateStyle: TemplateStyle = input.templateStyle ?? "standard";
+  const tc = LAYOUT_STYLE_CONTRACT[templateStyle];
+
   const layout = buildDocumentLayout({
     schema,
     doc,
@@ -1557,6 +1650,9 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
     dlx,
     dty,
     ui,
+    /** Same vertical rhythm as `WorkspaceDocumentRenderer` root (`gap: SPACING.sectionGapPx`). */
+    sectionGapPx: SPACING.sectionGapPx,
+    headerTopAccentPx: tc.headerTopAccentPx,
   };
 
   const startNewPdfPage = (): number => {
@@ -1582,7 +1678,7 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
       const totSec = sec.id === "totals" ? sec : next!;
       const qrH = drawQrBlock(ctx, layout, language, qrSec, cursorY);
       const totH = drawTotalsBlock(ctx, layout, language, totSec, cursorY);
-      cursorY += Math.max(qrH, totH) + SPACING.sectionGapPx;
+      cursorY += Math.max(qrH, totH) + ctx.sectionGapPx;
       i += 2;
       continue;
     }
@@ -1614,7 +1710,7 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
         drewHeight = drawQrBlock(ctx, layout, language, sec, cursorY);
         break;
       case "stampSignature": {
-        const need = sec.minHeightPx + SPACING.sectionGapPx + 32;
+        const need = sec.minHeightPx + ctx.sectionGapPx + 32;
         if (cursorY + need > PAGE_GEOMETRY.bottomLimitPx) {
           cursorY = startNewPdfPage();
         }
@@ -1622,7 +1718,7 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
         break;
       }
       case "footer": {
-        const need = sec.minHeightPx + SPACING.sectionGapPx + 24;
+        const need = sec.minHeightPx + ctx.sectionGapPx + 24;
         if (cursorY + need > PAGE_GEOMETRY.bottomLimitPx) {
           cursorY = startNewPdfPage();
         }
@@ -1630,7 +1726,7 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
         break;
       }
     }
-    cursorY += drewHeight + SPACING.sectionGapPx;
+    cursorY += drewHeight + ctx.sectionGapPx;
     i += 1;
   }
 
@@ -1669,7 +1765,9 @@ export async function buildInvoicePdf(input: BuildPdfInput): Promise<BuildPdfRes
   }
 
   const dedup = Array.from(new Set(warnings));
-  const bytes = await pdf.save();
+  // Keep the output compatible with viewers and parser libraries that struggle
+  // with compressed object streams.
+  const bytes = await pdf.save({ useObjectStreams: false });
   return {
     bytes,
     filename: `${doc.number}.pdf`,

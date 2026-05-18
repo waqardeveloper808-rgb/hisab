@@ -15,6 +15,10 @@ class AuthenticateWorkspaceRequest
         $allowsCompanylessRequest = $this->allowsCompanylessRequest($request);
         $company = $this->resolveActiveCompany($request);
 
+        if (! $company && ! $allowsCompanylessRequest && $request->user() && $request->is('api/platform/*')) {
+            return $next($request);
+        }
+
         if (! $company && ! $allowsCompanylessRequest) {
             abort(401, 'Workspace company is not configured.');
         }

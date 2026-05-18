@@ -1,0 +1,125 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "route": "/workspace/user/templates/studio-v2",
+  "page": {
+    "isTrueA4": true,
+    "actualWidthPx": 794,
+    "actualHeightPx": 1123,
+    "scrollHeightPx": 1123
+  },
+  "header": {
+    "cardsEqualHeight": true,
+    "textClipped": false,
+    "textOverflow": false
+  },
+  "title": {
+    "textOverflow": false,
+    "compact": true
+  },
+  "parties": {
+    "boxed": true,
+    "textTouchesBorder": false,
+    "textOverflow": false
+  },
+  "docInfo": {
+    "boxed": true,
+    "textTouchesBorder": false,
+    "textOverflow": false
+  },
+  "table": {
+    "targetWidthPx": 714,
+    "usedWidthPx": 704,
+    "descriptionWidthPx": 289,
+    "totalWidthPx": 93,
+    "descriptionIsWidest": true,
+    "totalIsNotWidest": true,
+    "numericColumnsNoWrap": true,
+    "currencySymbolSameLine": true,
+    "overflow": false
+  },
+  "qrTotals": {
+    "balanced": true,
+    "overflow": false
+  },
+  "signature": {
+    "balanced": true,
+    "overflow": false
+  },
+  "overall": {
+    "closerToTargetLayout": true,
+    "visualRejectedStateRemaining": false
+  },
+  "domProof": {
+    "route": "/workspace/user/templates/studio-v2",
+    "page": {
+      "expectedWidthPx": 794,
+      "expectedHeightPx": 1123,
+      "actualWidthPx": 794,
+      "actualHeightPx": 1123,
+      "scrollHeightPx": 1123,
+      "isTrueA4": true
+    },
+    "sections": {
+      "header": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "title": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "parties": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "docInfo": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "items": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "notes": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "qrTotals": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "stampSignature": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      },
+      "footer": {
+        "insidePage": true,
+        "overlap": false,
+        "textOverflow": false
+      }
+    },
+    "table": {
+      "targetWidthPx": 714,
+      "usedWidthPx": 704,
+      "descriptionWidthPx": 289,
+      "totalWidthPx": 93,
+      "descriptionIsWidest": true,
+      "totalIsNotWidest": true,
+      "numericColumnsNoWrap": true,
+      "currencySymbolSameLine": true,
+      "overflow": false
+    },
+    "controls": {
+      "sideControlsInsideContent": false,
+      "sideControlsAffectLayout": false
+    }
+  }
+}

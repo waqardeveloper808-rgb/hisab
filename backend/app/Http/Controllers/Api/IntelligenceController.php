@@ -53,10 +53,11 @@ class IntelligenceController extends Controller
         $this->ensureCompanyAbility($request->user(), $company, 'workspace.reports.view');
 
         $profitLoss = $this->profitLossService->statement($company);
-        $vatSummary = collect($this->vatReportService->summary($company));
+        $vatPayload = $this->vatReportService->summary($company);
+        $vatRows = collect($vatPayload['rows'] ?? []);
         $receivablesTotal = (float) $company->documents()->whereIn('type', ['tax_invoice', 'debit_note'])->sum('balance_due');
         $payablesTotal = (float) $company->documents()->whereIn('type', ['vendor_bill', 'purchase_invoice'])->sum('balance_due');
-        $vatBalance = $vatSummary->sum(fn ($row) => (float) $row->tax_amount);
+        $vatBalance = $vatRows->sum(fn (array $row) => (float) ($row['tax_amount'] ?? 0));
 
         return response()->json(['data' => $this->intelligenceEngine->forReports($company, [
             'net_profit' => (float) $profitLoss['net_profit'],

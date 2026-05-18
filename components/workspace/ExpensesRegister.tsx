@@ -11,6 +11,14 @@ const emptyRegisters: RegistersSnapshot = {
   invoiceRegister: [],
   billsRegister: [],
   paymentsRegister: [],
+  quotationRegister: [],
+  proformaInvoiceRegister: [],
+  salesCreditNoteRegister: [],
+  salesDebitNoteRegister: [],
+  purchaseOrderRegister: [],
+  purchaseCreditNoteRegister: [],
+  journalRegister: [],
+  inventoryRegister: [],
   backendReady: false,
 };
 

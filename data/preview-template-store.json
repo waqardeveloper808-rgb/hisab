@@ -1,6 +1,6 @@
 [
   {
-    "name": "Standard QA",
+    "name": "Standard",
     "document_types": [
       "tax_invoice",
       "quotation",
@@ -103,24 +103,24 @@
       "purchase_credit_note"
     ],
     "locale_mode": "bilingual",
-    "accent_color": "#1f4f63",
+    "accent_color": "#0f766e",
     "watermark_text": null,
     "header_html": null,
     "footer_html": null,
     "settings": {
-      "layout": "industrial_supply",
-      "card_style": "none",
-      "section_order": "header,title,document-info,delivery,customer,items,notes,totals,footer",
+      "layout": "compact_carded",
+      "card_style": "rounded",
+      "section_order": "header,title,document-info,customer,items,totals,notes,delivery,footer",
       "section_grid_columns": 3,
-      "section_gap": 10,
-      "spacing_scale": 0.9,
+      "section_gap": 8,
+      "spacing_scale": 0.86,
       "canvas_padding": 16,
-      "top_bar_height": 4,
+      "top_bar_height": 3,
       "watermark_enabled": true,
-      "watermark_logo_mode": "full-width",
-      "font_family": "Tahoma",
-      "font_size": 12,
-      "title_font_size": 25,
+      "watermark_logo_mode": "centered",
+      "font_family": "Segoe UI",
+      "font_size": 11,
+      "title_font_size": 23,
       "show_qr": true,
       "show_footer": true
     },

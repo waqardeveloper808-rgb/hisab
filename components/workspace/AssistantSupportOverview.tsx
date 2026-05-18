@@ -34,19 +34,20 @@ export function AssistantSupportOverview() {
 
   useEffect(() => {
     if (isPreview) {
-      setCustomers(previewCustomers);
       return;
     }
 
     listPlatformCustomers({}).then(setCustomers).catch((err: unknown) => { console.error('[AssistantSupportOverview] listPlatformCustomers failed:', err); setCustomers([]); });
   }, [isPreview]);
 
+  const displayCustomers = isPreview ? previewCustomers : customers;
+
   const summary = useMemo(() => ({
-    total: customers.length,
-    active: customers.filter((customer) => customer.isActive).length,
-    trialing: customers.filter((customer) => customer.subscription?.status === "trialing").length,
-    referred: customers.filter((customer) => customer.referralSource !== null).length,
-  }), [customers]);
+    total: displayCustomers.length,
+    active: displayCustomers.filter((customer) => customer.isActive).length,
+    trialing: displayCustomers.filter((customer) => customer.subscription?.status === "trialing").length,
+    referred: displayCustomers.filter((customer) => customer.referralSource !== null).length,
+  }), [displayCustomers]);
 
   return (
     <div className="space-y-6">
@@ -84,7 +85,7 @@ export function AssistantSupportOverview() {
           registerTableId="assistant-recovery-queue"
           title="Customer recovery queue"
           caption="Start with customers that need subscription or onboarding attention."
-          rows={customers.slice(0, 6)}
+          rows={displayCustomers.slice(0, 6)}
           emptyMessage="Customer records will appear here once the workspace backend is available."
           columns={[
             { id: "company", header: "Company", defaultWidth: 200, render: (row) => row.legalName },

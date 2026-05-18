@@ -117,7 +117,7 @@ export async function runPreviewAccountingAudit(): Promise<AuditReport> {
   const tb = await listPreviewTrialBalance();
   const documents = await listPreviewDocuments({});
   const payments = await listPreviewPayments();
-  let trail;
+  let trail: Awaited<ReturnType<typeof listPreviewAuditTrail>>;
   try {
     trail = await listPreviewAuditTrail();
   } catch {

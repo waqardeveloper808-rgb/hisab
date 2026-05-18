@@ -30,14 +30,31 @@ class PurchaseDocumentController extends Controller
         $payload = $request->validate([
             'status' => ['nullable', 'string', 'max:40'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'type' => ['nullable', 'string', 'max:240'],
         ]);
+
+        $purchaseTypesAllowed = ['vendor_bill', 'purchase_invoice', 'purchase_credit_note', 'purchase_order'];
 
         $query = Document::query()
             ->where('company_id', $company->id)
-            ->whereIn('type', ['vendor_bill', 'purchase_invoice', 'purchase_credit_note', 'purchase_order'])
+            ->whereIn('type', $purchaseTypesAllowed)
             ->with('contact:id,display_name')
             ->orderByDesc('issue_date')
             ->orderByDesc('id');
+
+        $typeCsv = isset($payload['type']) ? trim((string) $payload['type']) : '';
+        if ($typeCsv !== '') {
+            $wanted = collect(explode(',', $typeCsv))
+                ->map(fn (string $s) => trim($s))
+                ->filter(fn (string $s) => $s !== '')
+                ->values()
+                ->all();
+
+            $filtered = array_values(array_intersect($purchaseTypesAllowed, $wanted));
+            if ($filtered !== []) {
+                $query->whereIn('type', $filtered);
+            }
+        }
 
         if (! empty($payload['status'])) {
             $query->where('status', $payload['status']);

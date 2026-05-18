@@ -10,7 +10,13 @@ export type DocumentRenderModel = {
     partyLabelAr: string;
     showVatColumn: boolean;
     showVatTotals: boolean;
+    /** Phase 1 QR eligibility from document compliance (simplified tax invoice or flagged credit/debit note). */
     showQr: boolean;
+    /** Table column toggles (defaults per compact template spec). */
+    showVatPercentColumn: boolean;
+    showUnitColumn: boolean;
+    subtitleBadgeEn: string;
+    subtitleBadgeAr: string;
     referenceLabelEn?: string;
     referenceLabelAr?: string;
     referenceValue?: string;
@@ -27,16 +33,21 @@ export type DocumentRenderModel = {
     addressEn: string;
     addressAr: string;
     logoUrl: string | null;
+    /** Fallback brand asset when no workspace logo (Gulf Hisab mark). */
+    defaultBrandLogoPath: string;
   };
   customer: {
     name: string;
+    nameAr: string;
     address: string;
+    addressAr: string;
     vatNumber: string;
     contact: string;
   };
   invoice: {
     number: string;
     issueDate: string;
+    issueTime: string;
     supplyDate: string;
     dueDate: string;
     currency: string;
@@ -55,7 +66,26 @@ export type DocumentRenderModel = {
       vatAmount?: number;
       vatLabel?: string;
       total: number;
+      discountAmount: number;
+      unitLabel: string;
     }>;
+  };
+  /** Footer notes — omitted when empty. */
+  notes?: string | null;
+  /** Amount in words — only rendered when provided via custom fields (no auto-generation). */
+  amountInWords?: { en: string; ar: string } | null;
+  /** Optional bilingual footer line (terms / disclaimer). Hidden when both empty. */
+  footerNote?: { en: string; ar: string } | null;
+  /** ZATCA overlay — populated only for tax_invoice when enabled. */
+  zatca: null | {
+    enabled: boolean;
+    /** TLV-encoded Phase 1 simplified-invoice QR content (base64). */
+    qrPayload: string;
+    /** Raster QR from local `qrcode` — server-rendered for PDF/export. */
+    qrImageDataUrl?: string;
+    uuid: string;
+    invoiceHash: string;
+    previousInvoiceHash: string;
   };
 };
 
@@ -107,6 +137,8 @@ export type DocumentLike = {
   taxableTotal: number;
   taxTotal: number;
   grandTotal: number;
+  notes?: string | null;
+  compliance_metadata?: Record<string, unknown> | null;
   customFields?: Record<string, string | number | boolean | null> | null;
   lines: DocumentLineLike[];
 };

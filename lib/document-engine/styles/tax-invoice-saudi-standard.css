@@ -197,6 +197,10 @@
   align-items: start;
 }
 
+.saudi-qr-and-totals--no-qr {
+  grid-template-columns: 1fr;
+}
+
 .saudi-qr-block {
   border: 1px dashed #bcc6cf;
   background: #fafcfd;

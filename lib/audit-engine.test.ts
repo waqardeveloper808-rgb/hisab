@@ -30,7 +30,7 @@ describe("audit engine registry", () => {
   it("loads the hardened control-point registry", async () => {
     const registry = await loadControlPointRegistry();
     expect(registry.schema).toBe("gulf-hisab.control-point-registry.v2");
-    expect(registry.controls).toHaveLength(37);
+    expect(registry.controls).toHaveLength(52);
     expect(registry.controls.every((control) => control.expected_state.predicates.length > 0)).toBe(true);
     expect(registry.controls.every((control) => control.failure_condition.predicates.length > 0)).toBe(true);
   });

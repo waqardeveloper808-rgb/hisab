@@ -14,19 +14,21 @@ import {
   duplicateDocument,
   finalizeTransactionDraft,
   getDocument,
-  getDocumentPdfUrl,
   getDocumentPreview,
   getWorkspaceDirectory,
   listDocuments,
+  listDocumentTemplates,
   recordDocumentPayment,
   saveTransactionDraft,
   type DocumentCenterRecord,
   type DocumentDetailRecord,
+  type DocumentTemplateRecord,
   type ContactRecord,
   type ItemRecord,
 } from "@/lib/workspace-api";
 import { mapWorkspaceHref } from "@/lib/workspace-path";
 import type { SpreadsheetRow } from "@/lib/spreadsheet";
+import { buildDocumentPdfUrl } from "@/lib/workspace/document-actions";
 
 type DocumentCenterOverviewProps = {
   group: "sales" | "purchase";
@@ -219,6 +221,43 @@ function isIsoDate(value: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value);
 }
 
+function normalizeTemplateStyle(value: string | null | undefined) {
+  const normalized = String(value ?? "").trim().toLowerCase();
+  if (normalized === "modern") return "modern" as const;
+  if (normalized === "compact") return "compact" as const;
+  return "standard" as const;
+}
+
+function templateStyleFromRecord(template: DocumentTemplateRecord | null | undefined) {
+  if (!template) return "standard" as const;
+  const layout = String(template.settings.layout ?? "").trim().toLowerCase();
+  if (layout === "modern_carded") return "modern" as const;
+  if (layout === "industrial_supply" || layout === "compact_carded" || layout === "compact_dense") return "compact" as const;
+  return "standard" as const;
+}
+
+function resolvePreviewTemplateForStyle(
+  documentType: string,
+  style: "standard" | "modern" | "compact",
+  templates: DocumentTemplateRecord[],
+  preferredTemplateId?: number | null,
+) {
+  const documentTemplates = templates.filter((template) => template.documentTypes.length === 0 || template.documentTypes.includes(documentType));
+  if (typeof preferredTemplateId === "number") {
+    const preferred = documentTemplates.find((template) => template.id === preferredTemplateId);
+    if (preferred) {
+      return preferred;
+    }
+  }
+
+  const byStyle = documentTemplates.find((template) => templateStyleFromRecord(template) === style);
+  if (byStyle) {
+    return byStyle;
+  }
+
+  return documentTemplates.find((template) => template.isDefault) ?? documentTemplates[0] ?? null;
+}
+
 export function DocumentCenterOverview({
   group,
   titleOverride,
@@ -234,6 +273,9 @@ export function DocumentCenterOverview({
   const [documents, setDocuments] = useState<DocumentCenterRecord[]>([]);
   const [selectedDocumentId, setSelectedDocumentId] = useState<number | null>(null);
   const [selectedDocument, setSelectedDocument] = useState<DocumentDetailRecord | null>(null);
+  const [documentTemplates, setDocumentTemplates] = useState<DocumentTemplateRecord[]>([]);
+  const [selectedPreviewStyle, setSelectedPreviewStyle] = useState<"standard" | "modern" | "compact">("standard");
+  const [selectedPreviewTemplateId, setSelectedPreviewTemplateId] = useState<number | null>(null);
   const [previewHtml, setPreviewHtml] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingPreview, setLoadingPreview] = useState(false);
@@ -293,9 +335,31 @@ export function DocumentCenterOverview({
   useEffect(() => {
     let active = true;
 
+    listDocumentTemplates({ mode: "backend" })
+      .then((records) => {
+        if (active) {
+          setDocumentTemplates(records);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setDocumentTemplates([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
     if (!selectedDocumentId) {
       setSelectedDocument(null);
       setPreviewHtml("");
+      setSelectedPreviewTemplateId(null);
+      setSelectedPreviewStyle("standard");
       return () => {
         active = false;
       };
@@ -303,11 +367,24 @@ export function DocumentCenterOverview({
 
     setLoadingPreview(true);
 
-    Promise.all([getDocument(selectedDocumentId), getDocumentPreview(selectedDocumentId)])
-      .then(([detail, preview]) => {
+    getDocument(selectedDocumentId)
+      .then(async (detail) => {
+        const resolvedTemplate = resolvePreviewTemplateForStyle(
+          detail.type,
+          selectedPreviewStyle,
+          documentTemplates,
+          selectedPreviewTemplateId ?? detail.templateId,
+        );
+        const preview = await getDocumentPreview(
+          selectedDocumentId,
+          resolvedTemplate ? { templateId: resolvedTemplate.id, mode: "backend" } : { mode: "backend" },
+        );
+
         if (active) {
           setSelectedDocument(detail);
           setPreviewHtml(preview.html);
+          setSelectedPreviewStyle(templateStyleFromRecord(resolvedTemplate));
+          setSelectedPreviewTemplateId(resolvedTemplate?.id ?? detail.templateId ?? null);
         }
       })
       .catch((nextError) => {
@@ -326,7 +403,7 @@ export function DocumentCenterOverview({
     return () => {
       active = false;
     };
-  }, [selectedDocumentId]);
+  }, [documentTemplates, selectedDocumentId, selectedPreviewStyle, selectedPreviewTemplateId]);
 
   async function handleDuplicate() {
     if (!selectedDocumentId) {
@@ -673,8 +750,28 @@ export function DocumentCenterOverview({
           <span className="text-[11px] text-muted">{selectedDocument.contactName}</span>
           <span className="text-xs font-bold text-ink ml-auto">{currency(selectedDocument.grandTotal)}</span>
           <span className="mx-1 h-4 w-px bg-line" />
+          <select
+            value={selectedPreviewStyle}
+            onChange={(event) => {
+              const nextStyle = normalizeTemplateStyle(event.target.value);
+              const resolvedTemplate = resolvePreviewTemplateForStyle(
+                selectedDocument.type,
+                nextStyle,
+                documentTemplates,
+                selectedDocument.templateId,
+              );
+              setSelectedPreviewStyle(nextStyle);
+              setSelectedPreviewTemplateId(resolvedTemplate?.id ?? selectedDocument.templateId ?? null);
+            }}
+            className="h-7 rounded-md border border-line bg-white px-2 text-[11px] font-semibold text-ink outline-none focus:border-primary/60"
+            data-testid="document-register-template-style-select"
+          >
+            <option value="standard">Standard</option>
+            <option value="modern">Modern</option>
+            <option value="compact">Compact</option>
+          </select>
           {selectedDocument.status === "draft" ? <Button size="xs" variant="secondary" href={editHrefForDocument(group, selectedDocument.id, basePath)}>Edit</Button> : null}
-          <Button size="xs" variant="secondary" href={getDocumentPdfUrl(selectedDocument.id)}>Download</Button>
+          <Button size="xs" variant="secondary" href={buildDocumentPdfUrl(selectedDocument.type, selectedDocument.id, selectedPreviewTemplateId, "backend", selectedPreviewStyle)} data-testid="document-register-download-pdf">Download</Button>
           <Button size="xs" variant="secondary" onClick={handleDuplicate} disabled={runningAction === "duplicate"}>Duplicate</Button>
           {canIssue(selectedDocument as unknown as DocumentCenterRecord) ? <Button size="xs" onClick={() => void handleIssue(selectedDocument.id)} disabled={!!runningAction}>Issue</Button> : null}
           {canRecordPayment(selectedDocument as unknown as DocumentCenterRecord) ? <Button size="xs" variant="secondary" onClick={() => void handleQuickPayment(selectedDocument.id, selectedDocument.balanceDue)} disabled={!!runningAction}>Payment</Button> : null}
@@ -733,7 +830,7 @@ export function DocumentCenterOverview({
 
         {/* Document render pane */}
         {viewMode === "split" ? (
-          <div className="overflow-auto bg-[#eef3ee] p-2" data-inspector-document-render-surface="true">
+          <div className="overflow-auto bg-[#eef3ee] p-2" data-inspector-document-render-surface="true" data-testid="document-register-preview-surface">
             {loadingPreview ? <div className="py-4 text-center text-xs text-muted">Loading document…</div> : null}
             {!loadingPreview && previewHtml ? (
               <div className="mx-auto max-w-[980px] rounded-lg border border-[#dfe6df] bg-white p-2 shadow-[0_24px_54px_-44px_rgba(17,32,24,0.28)]">

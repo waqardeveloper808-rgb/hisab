@@ -1083,19 +1083,22 @@ class LedgerService
             if ($payment->direction === 'incoming') {
                 $hasCashDebit = $this->hasPostingSide($lines, $accounts, [$cashCode], 'debit');
                 $hasReceivableCredit = $this->hasPostingSide($lines, $accounts, [$settings->default_receivable_account_code], 'credit');
-                if (! $hasCashDebit || ! $hasReceivableCredit) {
+                $hasSupplierAdvanceCredit = $this->hasPostingSide($lines, $accounts, [$settings->default_supplier_advance_account_code], 'credit');
+                $hasCustomerAdvanceCredit = $this->hasPostingSide($lines, $accounts, [$settings->default_customer_advance_account_code], 'credit');
+                if (! $hasCashDebit || (! $hasReceivableCredit && ! $hasSupplierAdvanceCredit && ! $hasCustomerAdvanceCredit)) {
                     throw ValidationException::withMessages([
-                        'journal' => 'Incoming payment posting rule violated: expected Dr Cash/Bank and Cr Accounts Receivable.',
+                        'journal' => 'Incoming payment posting rule violated: expected Dr Cash/Bank and Cr Accounts Receivable, Cr Customer advance (unallocated receipts), or Cr Supplier advance (advance refunds).',
                     ]);
                 }
             }
 
             if ($payment->direction === 'outgoing') {
                 $hasPayableDebit = $this->hasPostingSide($lines, $accounts, [$settings->default_payable_account_code], 'debit');
+                $hasCustomerAdvanceDebit = $this->hasPostingSide($lines, $accounts, [$settings->default_customer_advance_account_code], 'debit');
                 $hasCashCredit = $this->hasPostingSide($lines, $accounts, [$cashCode], 'credit');
-                if (! $hasPayableDebit || ! $hasCashCredit) {
+                if (! $hasCashCredit || (! $hasPayableDebit && ! $hasCustomerAdvanceDebit)) {
                     throw ValidationException::withMessages([
-                        'journal' => 'Outgoing payment posting rule violated: expected Dr Accounts Payable and Cr Cash/Bank.',
+                        'journal' => 'Outgoing payment posting rule violated: expected Dr Accounts Payable and Cr Cash/Bank, or Dr Customer advance and Cr Cash/Bank for advance refunds.',
                     ]);
                 }
             }

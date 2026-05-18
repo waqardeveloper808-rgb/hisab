@@ -1,5 +1,6 @@
 import type { DocumentRenderModel } from "@/lib/document-engine/types";
 import type { TaxInvoiceSaudiStandardContract } from "@/lib/document-engine/contracts/taxInvoiceSaudiStandardContract";
+import { buildZatcaQrPayload } from "@/lib/document-engine/zatca-qr-payload";
 
 function text(value: unknown, fallback = "-"): string {
   if (typeof value === "string") {
@@ -31,20 +32,7 @@ function businessDate(value: string | null | undefined): string {
   return d.toLocaleDateString("en-CA");
 }
 
-function buildQrPayload(model: DocumentRenderModel): string {
-  const seller = text(model.company.englishName || model.company.tradeName || model.company.legalName, "");
-  const vat = text(model.company.vatNumber, "");
-  const issueIso = model.invoice.issueDate ? new Date(model.invoice.issueDate).toISOString() : "";
-  const total = model.invoice.grandTotal.toFixed(2);
-  const vatTotal = model.invoice.vatTotal.toFixed(2);
-
-  // Layout/render hook only. Full Phase 2 TLV/XAdES signing stays in backend compliance service.
-  return [seller, vat, issueIso, total, vatTotal].join("|");
-}
-
-export function mapInvoiceToSaudiStandard(
-  model: DocumentRenderModel,
-): TaxInvoiceSaudiStandardContract {
+export function mapInvoiceToSaudiStandard(model: DocumentRenderModel): TaxInvoiceSaudiStandardContract {
   const custom = model.customFields ?? {};
 
   return {
@@ -83,7 +71,9 @@ export function mapInvoiceToSaudiStandard(
       reference: text(model.document.referenceValue, "-"),
       orderNumber: text(custom.order_number, "-"),
       currency: text(model.invoice.currency, "SAR"),
-      qrCodeData: buildQrPayload(model),
+      showPhase1Qr: model.document.showQr,
+      qrCodeData: model.document.showQr ? buildZatcaQrPayload(model) : "",
+      qrImageDataUrl: model.zatca?.enabled ? model.zatca.qrImageDataUrl : undefined,
       pageNumber: 1,
       totalPages: 1,
     },

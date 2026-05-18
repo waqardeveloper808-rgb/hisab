@@ -50,11 +50,13 @@ export function WorkspaceAccessProvider({
   const isGuestPreview = (resolvedSession.id ?? 0) <= 0 || resolvedSession.accessStatus === "guest";
 
   useEffect(() => {
-    setResolvedSession((current) => ({
-      ...current,
-      ...session,
-      accessStatus: session.accessStatus ?? accessStatus,
-    }));
+    queueMicrotask(() => {
+      setResolvedSession((current) => ({
+        ...current,
+        ...session,
+        accessStatus: session.accessStatus ?? accessStatus,
+      }));
+    });
   }, [accessStatus, session]);
 
   useEffect(() => {

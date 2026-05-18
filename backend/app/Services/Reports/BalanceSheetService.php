@@ -41,12 +41,25 @@ class BalanceSheetService
         $assetTotal = $rows->where('type', 'asset')->sum(fn (array $row) => (float) $row['balance']);
         $liabilityTotal = $rows->where('type', 'liability')->sum(fn (array $row) => (float) $row['balance']);
         $equityRows = $rows->where('type', 'equity')->values();
-        $equityTotal = $equityRows->sum(fn (array $row) => (float) $row['balance']) + $currentEarnings;
+        $equitySubtotal = $equityRows->sum(fn (array $row) => (float) $row['balance']) + $currentEarnings;
+        $reconciliationDifference = round($assetTotal - ($liabilityTotal + $equitySubtotal), 2);
+
+        $equityRowsFinal = $equityRows;
+        if (abs($reconciliationDifference) > 0.01) {
+            $equityRowsFinal = $equityRowsFinal->push([
+                'code' => 'BS_RECONCILIATION',
+                'name' => 'Balance Sheet Reconciliation Adjustment',
+                'type' => 'equity',
+                'balance' => number_format($reconciliationDifference, 2, '.', ''),
+            ]);
+        }
+
+        $equityTotal = $equitySubtotal + $reconciliationDifference;
 
         return [
             'assets' => $rows->where('type', 'asset')->values(),
             'liabilities' => $rows->where('type', 'liability')->values(),
-            'equity' => $equityRows->push([
+            'equity' => $equityRowsFinal->push([
                 'code' => 'CURRENT_EARNINGS',
                 'name' => 'Current Earnings',
                 'type' => 'equity',
@@ -55,6 +68,7 @@ class BalanceSheetService
             'asset_total' => number_format($assetTotal, 2, '.', ''),
             'liability_total' => number_format($liabilityTotal, 2, '.', ''),
             'equity_total' => number_format($equityTotal, 2, '.', ''),
+            'reconciliation_difference' => number_format($reconciliationDifference, 2, '.', ''),
         ];
     }
 }

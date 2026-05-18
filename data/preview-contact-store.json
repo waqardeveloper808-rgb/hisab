@@ -205,5 +205,45 @@
       "additional_number": "4208",
       "country": "Saudi Arabia"
     }
+  },
+  {
+    "id": 209,
+    "type": "customer",
+    "display_name": "Phase1 Import Customer",
+    "email": "phase1.customer@example.test",
+    "phone": "+966512345678",
+    "billing_address": {
+      "city": "Riyadh"
+    }
+  },
+  {
+    "id": 210,
+    "type": "customer",
+    "display_name": "Phase1 Import Customer",
+    "email": "phase1.customer@example.test",
+    "phone": "+966512345678",
+    "billing_address": {
+      "city": "Riyadh"
+    }
+  },
+  {
+    "id": 211,
+    "type": "customer",
+    "display_name": "Phase1 Import Customer",
+    "email": "phase1.customer@example.test",
+    "phone": "+966512345678",
+    "billing_address": {
+      "city": "Riyadh"
+    }
+  },
+  {
+    "id": 212,
+    "type": "customer",
+    "display_name": "Phase1 Import Customer",
+    "email": "phase1.customer@example.test",
+    "phone": "+966512345678",
+    "billing_address": {
+      "city": "Riyadh"
+    }
   }
 ]

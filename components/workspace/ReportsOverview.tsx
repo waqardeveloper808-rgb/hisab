@@ -13,8 +13,11 @@ import { currency } from "@/components/workflow/utils";
 
 const fallbackState: ReportsSnapshot = {
   vatSummary: [],
+  vatReconciliationMeta: null,
   vatDetail: [],
   vatReceivedDetails: [],
+  vatReceivedLineDetails: [],
+  cashFlow: null,
   vatPaidDetails: [],
   receivablesAging: [],
   payablesAging: [],

@@ -8,6 +8,13 @@ function na(v: string | null | undefined) {
   return v;
 }
 
+function evidenceStatusLabel(point: SystemMonitorControlPoint): string {
+  if (point.status === "pass") return "verified (pass)";
+  if (point.link_missing) return "link_missing — traceability gap";
+  if (point.evidence_references.length) return "references captured";
+  return "not verified / incomplete evidence";
+}
+
 export function FaultInspectorDialog({
   point,
   open,
@@ -49,9 +56,12 @@ export function FaultInspectorDialog({
           {[
             ["Status", point.status],
             ["Severity", point.severity],
+            ["Title module (primary)", point.primaryModuleName],
             ["Module (domain)", point.module],
             ["Sub-module", point.sub_module],
             ["Module code", point.module_code],
+            ["Audit result / reason", point.auditResult || point.actual_behavior],
+            ["Evidence status", evidenceStatusLabel(point)],
             ["Expected result", point.expected_behavior],
             ["Actual result", point.actual_behavior],
             ["Root cause", na(point.root_cause_hint)],

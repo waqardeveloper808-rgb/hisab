@@ -62,4 +62,5 @@ export type GuestPreviewDocument = {
   notes?: string;
   lines?: GuestPreviewLine[];
   supply_date?: string | null;
+  compliance_metadata?: Record<string, unknown> | null;
 };

@@ -169,13 +169,22 @@ export const ksaPhase1Modules: MasterDesignModuleSpec[] = [
   {
     id: "country-service-architecture",
     name: "Country Service Architecture",
-    description: "Owns separation between shared technical infrastructure and country-owned business products.",
+    description:
+      "Owns separation between shared technical infrastructure and country-owned business products. France and future locales are Phase 2 readiness (metadata/planning) and must not gate KSA Phase 1.",
     countryScope: "future-country-slot",
-    requiredFeatures: ["active KSA product", "France readiness boundary", "future country slots"],
+    requiredFeatures: [
+      "active KSA product boundary (Phase 1)",
+      "France / future country readiness tracked as Phase 2 metadata only",
+      "no false completion claim for non-KSA products",
+    ],
     requiredLinkages: ["document-engine", "tax-vat-engine", "compliance-layer", "company-profile"],
-    requiredUiExpectations: ["country readiness shown in control center"],
-    requiredProofExpectations: ["country-specific logic is attributable"],
-    definitionOfDone: ["country products are separate business products", "shared business logic is explicit and limited", "France is tracked independently"],
+    requiredUiExpectations: ["control center shows KSA Phase 1 vs future-country readiness separately"],
+    requiredProofExpectations: ["country-specific logic is attributable to KSA vs planned locales"],
+    definitionOfDone: [
+      "KSA Phase 1 service boundary is explicit",
+      "France remains Phase 2 metadata until executed — not required for KSA Phase 1 sign-off",
+      "shared business logic is explicit and limited",
+    ],
   },
   {
     id: "end-to-end-workflow-proof",

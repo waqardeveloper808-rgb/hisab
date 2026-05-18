@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { loadColumnVisibility, saveColumnVisibility } from "@/lib/workspace/register-column-storage";
 import { useRegisterTableLayout, type RegisterColumnWidthDef } from "@/lib/workspace/register-table-layout";
@@ -8,11 +9,17 @@ import { RegisterTableHeaderCell } from "@/components/workspace/RegisterTableHea
 import { WorkspaceColumnPicker, type ColumnDef } from "./WorkspaceColumnPicker";
 import { WorkspaceMoreActions } from "./WorkspaceMoreActions";
 import { WorkspaceSuggestion } from "./WorkspaceSuggestion";
+import { fetchPurchaseDocumentsRegister } from "@/lib/workspace-api";
+import { currency } from "@/components/workflow/utils";
 
-const ROWS = [
-  { id: "po-1", number: "PO-2026-101", vendor: "Najim Electrical Supply", date: "2026-04-18", status: "open", amount: 42000 },
-  { id: "po-2", number: "PO-2026-102", vendor: "Red Sea Packaging", date: "2026-04-15", status: "received", amount: 11800.5 },
-];
+type PORow = {
+  id: number;
+  number: string;
+  vendor: string;
+  date: string;
+  status: string;
+  amount: number;
+};
 
 const COLUMNS: ColumnDef[] = [
   { id: "num", label: "PO no.", required: true },
@@ -43,7 +50,7 @@ const PO_HEADER: Record<string, string> = {
   act: "Actions",
 };
 
-function POTable({ visibleIds, list }: { visibleIds: string[]; list: typeof ROWS }) {
+function POTable({ visibleIds, list }: { visibleIds: string[]; list: PORow[] }) {
   const ordered = useMemo(() => COLUMNS.map((c) => c.id).filter((id) => visibleIds.includes(id)), [visibleIds]);
   const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.purchase-orders", PO_WIDTH_DEFS, ordered);
   const pctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
@@ -74,18 +81,31 @@ function POTable({ visibleIds, list }: { visibleIds: string[]; list: typeof ROWS
           {list.map((r) => (
             <tr key={r.id}>
               {ordered.map((colId) => {
-                if (colId === "num") return <td key={colId} style={{ fontWeight: 600 }}>{r.number}</td>;
+                if (colId === "num") {
+                  return (
+                    <td key={colId} style={{ fontWeight: 600 }}>
+                      <Link href={`/workspace/bills/${r.id}`} className="text-primary hover:underline">
+                        {r.number}
+                      </Link>
+                    </td>
+                  );
+                }
                 if (colId === "vendor") return <td key={colId}>{r.vendor}</td>;
                 if (colId === "date") return <td key={colId}>{r.date}</td>;
-                if (colId === "status") return <td key={colId} style={{ textTransform: "capitalize" }}>{r.status}</td>;
-                if (colId === "amt") return <td key={colId} className="num">{r.amount.toLocaleString("en-SA")}</td>;
+                if (colId === "status") {
+                  return (
+                    <td key={colId} style={{ textTransform: "capitalize" }}>
+                      {r.status.replaceAll("_", " ")}
+                    </td>
+                  );
+                }
+                if (colId === "amt") return <td key={colId} className="num">{currency(r.amount)}</td>;
                 if (colId === "act") {
                   return (
                     <td key={colId}>
                       <WorkspaceMoreActions
                         actions={[
-                          { id: "o", label: "Open" },
-                          { id: "c", label: "Close" },
+                          { id: "open", label: "Open linked purchase document" },
                         ]}
                       />
                     </td>
@@ -102,6 +122,7 @@ function POTable({ visibleIds, list }: { visibleIds: string[]; list: typeof ROWS
 }
 
 export function WorkspacePurchaseOrderRegister() {
+  const [rows, setRows] = useState<PORow[]>([]);
   const [q, setQ] = useState("");
   const [vis, setVis] = useState(() =>
     typeof window === "undefined" ? DEFAULT : loadColumnVisibility(REG, DEFAULT),
@@ -110,27 +131,59 @@ export function WorkspacePurchaseOrderRegister() {
     setVis(n);
     saveColumnVisibility(REG, n);
   };
-  const list = ROWS.filter((r) => !q.trim() || r.number.toLowerCase().includes(q.toLowerCase()) || r.vendor.toLowerCase().includes(q.toLowerCase()));
+
+  useEffect(() => {
+    let active = true;
+    fetchPurchaseDocumentsRegister({ type: "purchase_order" })
+      .then((documents) => {
+        if (!active) return;
+        setRows(
+          documents.map((d) => ({
+            id: d.id,
+            number: d.number || `Draft-${d.id}`,
+            vendor: (d.contactName ?? "").trim() || "—",
+            date: d.issueDate ?? "",
+            status: d.status,
+            amount: d.grandTotal ?? 0,
+          })),
+        );
+      })
+      .catch((err: unknown) => {
+        console.error("[WorkspacePurchaseOrderRegister] failed", err);
+        if (active) {
+          setRows([]);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const lower = q.trim().toLowerCase();
+  const list =
+    lower.length === 0
+      ? rows
+      : rows.filter((r) => r.number.toLowerCase().includes(lower) || r.vendor.toLowerCase().includes(lower));
 
   return (
     <div>
       <div className="wsv2-page-header">
         <div>
           <h1 className="wsv2-page-title">Purchase orders</h1>
-          <p className="wsv2-page-subtitle">Open orders to suppliers. Demo rows only in this V2 build.</p>
+          <p className="wsv2-page-subtitle">Purchase orders queried from Laravel purchase-document index.</p>
         </div>
         <div className="wsv2-page-actions">
-          <button type="button" className="wsv2-btn" disabled title="Not connected to purchasing workflow">
-            <Plus size={13} />
+          <Link href="/workspace/bills/new" className="wsv2-btn inline-flex items-center gap-1.5">
+            <Plus size={13} aria-hidden />
             New purchase order
-          </button>
+          </Link>
         </div>
       </div>
       <WorkspaceSuggestion
-        id="po-preview"
-        tone="warning"
-        title="Preview module — workflow not connected yet"
-        description="Real PO lifecycle (approval, receiving, 3-way match) is not active here."
+        id="po-linked"
+        tone="primary"
+        title="Receiving and invoicing remain in purchase workflow"
+        description="Finalize a purchase order, then capture vendor bills and payments from the Bills surface so inventory and VAT stay linked."
       />
       <div className="wsv2-card" style={{ marginTop: 14 }}>
         <div className="wsv2-toolbar">
@@ -147,7 +200,11 @@ export function WorkspacePurchaseOrderRegister() {
             <WorkspaceColumnPicker columns={COLUMNS} visibleIds={vis} onChange={setC} />
           </div>
         </div>
-        <POTable visibleIds={vis} list={list} />
+        {list.length === 0 ? (
+          <div className="py-10 text-center text-sm text-muted">No purchase orders returned for this company.</div>
+        ) : (
+          <POTable visibleIds={vis} list={list} />
+        )}
       </div>
     </div>
   );

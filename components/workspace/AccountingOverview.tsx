@@ -18,8 +18,11 @@ const emptyBooks: BooksSnapshot = {
 
 const emptyReports: ReportsSnapshot = {
   vatSummary: [],
+  vatReconciliationMeta: null,
   vatDetail: [],
   vatReceivedDetails: [],
+  vatReceivedLineDetails: [],
+  cashFlow: null,
   vatPaidDetails: [],
   receivablesAging: [],
   payablesAging: [],

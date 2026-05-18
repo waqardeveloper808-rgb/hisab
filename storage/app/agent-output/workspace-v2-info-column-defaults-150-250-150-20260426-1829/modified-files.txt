@@ -1,2 +1,0 @@
-lib/workspace-v2/template-ui-settings.ts
-tools/capture-template-studio-screens.mjs

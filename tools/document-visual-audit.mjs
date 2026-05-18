@@ -3,6 +3,7 @@
 import { chromium } from "playwright";
 import { mkdir, writeFile } from "fs/promises";
 import { join } from "path";
+/** @typedef {import("playwright").Page} Page */
 
 const BASE_URL = process.env.BASE_URL || "http://127.0.0.1:3006";
 const OUTPUT_DIR = process.env.OUTPUT_DIR || "./artifacts/document_visual_rebuild";
@@ -34,7 +35,7 @@ interface DocumentAudit {
   visualMatchScore: number;
 }
 
-async function login(page: any) {
+async function login(page) {
   console.log("[AUTH] Logging in...");
   await page.goto(`${BASE_URL}/login`, { waitUntil: "networkidle" });
   
@@ -54,7 +55,7 @@ async function login(page: any) {
   console.log("[AUTH] Logged in successfully");
 }
 
-async function captureDocumentPreview(page: any, documentId: number): Promise<{ html: string; screenshot: string }> {
+async function captureDocumentPreview(page, documentId) {
   console.log(`[PREVIEW] Capturing preview for document ${documentId}...`);
   
   const response = await page.request.get(`${BASE_URL}/api/workspace/documents/${documentId}/preview`);
@@ -72,7 +73,7 @@ async function captureDocumentPreview(page: any, documentId: number): Promise<{ 
   return { html, screenshot: `preview-${documentId}.png` };
 }
 
-async function downloadPdf(page: any, documentId: number): Promise<string> {
+async function downloadPdf(page, documentId) {
   console.log(`[PDF] Downloading PDF for document ${documentId}...`);
   
   const downloadPromise = page.context().waitForEvent("download");
@@ -90,7 +91,7 @@ async function downloadPdf(page: any, documentId: number): Promise<string> {
   return filename;
 }
 
-async function evaluateControlPoints(page: any, documentId: number, type: "preview" | "pdf"): Promise<ControlPoint[]> {
+async function evaluateControlPoints(page, documentId, type) {
   const controlPoints: ControlPoint[] = [];
 
   if (type === "preview") {

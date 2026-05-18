@@ -67,6 +67,19 @@ type LegacyActiveCompany = {
 
 export const authSessionCookieName = "gulf_hisab_session";
 export const authSessionMaxAge = 60 * 60 * 24 * 7;
+
+/** When `AUTH_SESSION_COOKIE_SECURE=0`, allow `http://` cookies under `next start` (local proof only). */
+export function authSessionCookieSecure(): boolean {
+  const v = process.env.AUTH_SESSION_COOKIE_SECURE?.trim();
+  if (v === "0" || v?.toLowerCase() === "false") {
+    return false;
+  }
+  if (v === "1" || v?.toLowerCase() === "true") {
+    return true;
+  }
+  return process.env.NODE_ENV === "production";
+}
+
 export const guestAuthSession: AuthSession = {
   id: 0,
   userId: 0,

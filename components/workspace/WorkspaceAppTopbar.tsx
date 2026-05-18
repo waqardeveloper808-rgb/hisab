@@ -16,7 +16,8 @@ function resolveTitle(pathname: string): { label: string; sub: string } {
     return { label: "Workspace overview", sub: "Operational summary" };
   }
   for (const group of navGroups) {
-    const match = group.links.find((link) => {
+    const sorted = [...group.links].sort((a, b) => b.href.length - a.href.length);
+    const match = sorted.find((link) => {
       const target = link.href.split("?")[0];
       return flat === target || flat.startsWith(`${target}/`);
     });

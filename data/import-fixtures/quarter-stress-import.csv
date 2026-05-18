@@ -1,0 +1,7 @@
+Date,Document Number,Contact Name,Contact VAT Number,Document Type,Item Code,Description,Quantity,Unit Price,VAT Rate,Amount Ex VAT,VAT Amount,Total Amount,Payment Status,Account Code
+2026-01-04,Q1-INV-001,Desert Retail Co.,301112223330003,Tax Invoice,SKU-1001,Premium Workstation,2,5400,15,10800,1620,12420,Partial,1100
+2026-01-10,Q1-INV-002,Madinah Boutique,,Simplified Invoice,SKU-1002,Network Cable Kit,12,420,15,5040,756,5796,Paid,1000
+2026-02-09,Q1-BILL-003,Palm Gulf Imports,303998877660003,Vendor Bill,SKU-3001,Warehouse Scanner,5,5050,15,25250,3787.5,29037.5,Open,2000
+2026-04-06,Q2-INV-007,Riyadh Hypermarket,300998877660003,Tax Invoice,SRV-2002,Annual Support,1,39500,15,39500,5925,45425,Paid,1100
+2026-05-14,Q2-BILL-007,Palm Gulf Imports,303998877660003,Vendor Bill,SKU-1003,Server Rack,1,8600,15,8600,1290,9890,Open,2000
+2026-06-24,Q2-CN-001,Eastern Region Traders,300776655440003,Credit Note,SKU-1002,Cable kit return,10,450,15,4500,675,5175,Credited,1100

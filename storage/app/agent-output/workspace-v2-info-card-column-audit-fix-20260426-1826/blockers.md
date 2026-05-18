@@ -1,2 +1,0 @@
-- Customer grid should use minmax(..,1fr) for value column; got: 125px 276.438px 125px
-- Document grid should use minmax(..,1fr) for value column; got: 125px 276.438px 125px

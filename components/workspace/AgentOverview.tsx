@@ -68,24 +68,25 @@ export function AgentOverview() {
 
   useEffect(() => {
     if (isPreview) {
-      setSnapshot(previewState);
       return;
     }
 
     getAgentDashboard().then(setSnapshot).catch((err: unknown) => { console.error('[AgentOverview] getAgentDashboard failed:', err); });
   }, [isPreview]);
 
+  const displaySnapshot = isPreview ? previewState : snapshot;
+
   const referralLink = useMemo(() => {
-    if (!snapshot.agent.referralCode) {
+    if (!displaySnapshot.agent.referralCode) {
       return "";
     }
 
     if (typeof window === "undefined") {
-      return `/register?plan=zatca-monthly&ref=${snapshot.agent.referralCode}`;
+      return `/register?plan=zatca-monthly&ref=${displaySnapshot.agent.referralCode}`;
     }
 
-    return `${window.location.origin}/register?plan=zatca-monthly&ref=${snapshot.agent.referralCode}`;
-  }, [snapshot.agent.referralCode]);
+    return `${window.location.origin}/register?plan=zatca-monthly&ref=${displaySnapshot.agent.referralCode}`;
+  }, [displaySnapshot.agent.referralCode]);
 
   async function handleCopy() {
     if (!referralLink) {
@@ -115,10 +116,10 @@ export function AgentOverview() {
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {[
-          ["Total referrals", String(snapshot.summary.totalReferrals), "People who signed up with your code"],
-          ["Subscriptions", String(snapshot.summary.totalSubscriptions), "Trial or active subscriptions linked to your code"],
-          ["Pending commission", `${currency(snapshot.summary.pendingCommission)} SAR`, "Commission waiting for trial conversion"],
-          ["Earned commission", `${currency(snapshot.summary.earnedCommission)} SAR`, "Commission already marked as earned"],
+          ["Total referrals", String(displaySnapshot.summary.totalReferrals), "People who signed up with your code"],
+          ["Subscriptions", String(displaySnapshot.summary.totalSubscriptions), "Trial or active subscriptions linked to your code"],
+          ["Pending commission", `${currency(displaySnapshot.summary.pendingCommission)} SAR`, "Commission waiting for trial conversion"],
+          ["Earned commission", `${currency(displaySnapshot.summary.earnedCommission)} SAR`, "Commission already marked as earned"],
         ].map(([title, value, caption]) => (
           <Card key={title} className="rounded-xl bg-white/95 p-3">
             <p className="text-sm font-semibold text-muted">{title}</p>
@@ -135,7 +136,7 @@ export function AgentOverview() {
             <p className="mt-1 text-sm text-muted">Share this link with businesses that should start the Hisabix trial under your referral code.</p>
           </div>
           <span className="rounded-full bg-surface-soft px-3 py-1 text-xs font-semibold text-muted">
-            {snapshot.backendReady ? `${snapshot.agent.commissionRate}% commission rate` : "Waiting for backend data"}
+            {displaySnapshot.backendReady ? `${displaySnapshot.agent.commissionRate}% commission rate` : "Waiting for backend data"}
           </span>
         </div>
         <div className="mt-3 rounded-lg border border-line bg-surface-soft px-3 py-3 text-sm text-ink">
@@ -147,7 +148,7 @@ export function AgentOverview() {
         registerTableId="agent-referrals"
         title="Referral activity"
         caption="Every signup and subscription tied to your referral code."
-        rows={snapshot.referrals}
+        rows={displaySnapshot.referrals}
         emptyMessage="Referral activity will appear here as soon as a business signs up with your code."
         columns={[
           { id: "name", header: "Name", defaultWidth: 160, render: (row) => row.name || "-" },

@@ -4,6 +4,7 @@ import {
   createContext,
   useEffect,
   startTransition,
+  useCallback,
   useContext,
   useMemo,
   useOptimistic,
@@ -44,8 +45,10 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     if (!workspaceReady) {
-      setContacts([]);
-      setItems([]);
+      queueMicrotask(() => {
+        setContacts([]);
+        setItems([]);
+      });
       return;
     }
 
@@ -82,7 +85,7 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
     [optimisticContacts],
   );
 
-  async function searchContacts(kind: ContactKind, query: string) {
+  const searchContacts = useCallback(async (kind: ContactKind, query: string) => {
     await sleep(180);
 
     const list = (kind === "customer" ? customers : suppliers).filter((contact) => {
@@ -91,9 +94,9 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
     });
 
     return list;
-  }
+  }, [customers, suppliers]);
 
-  async function searchItems(query: string) {
+  const searchItems = useCallback(async (query: string) => {
     await sleep(180);
 
     const normalizedQuery = query.trim().toLowerCase();
@@ -118,13 +121,13 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
 
         return left.name.localeCompare(right.name);
       });
-  }
+  }, [optimisticItems, recentItemIds]);
 
-  function recordItemSelection(itemId: string) {
+  const recordItemSelection = useCallback((itemId: string) => {
     setRecentItemIds((current) => [itemId, ...current.filter((id) => id !== itemId)].slice(0, 5));
-  }
+  }, []);
 
-  async function createContact(payload: ContactPayload) {
+  const createContact = useCallback(async (payload: ContactPayload) => {
     const nextContact = await createContactInBackend(payload);
 
     if (!nextContact) {
@@ -135,9 +138,9 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
     await sleep(220);
     setContacts((current) => [nextContact, ...current]);
     return nextContact;
-  }
+  }, [addOptimisticContact]);
 
-  async function createItem(payload: ItemPayload) {
+  const createItem = useCallback(async (payload: ItemPayload) => {
     const nextItem = await createItemInBackend(payload);
 
     if (!nextItem) {
@@ -149,7 +152,7 @@ export function WorkspaceDataProvider({ children }: { children: React.ReactNode 
     setItems((current) => [nextItem, ...current]);
     recordItemSelection(nextItem.id);
     return nextItem;
-  }
+  }, [addOptimisticItem, recordItemSelection]);
 
   const value: WorkspaceDataContextValue = {
     customers,

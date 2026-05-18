@@ -13,7 +13,7 @@ import { getSchemaForKind } from "../lib/workspace/document-template-schemas";
 import { defaultTemplateUi } from "../lib/workspace/template-ui-settings";
 import type { Customer, DocumentRecord } from "../lib/workspace/types";
 import { getPreviewDocumentPdf, getPreviewDocumentPreview } from "../lib/workspace-preview";
-import { renderDocumentPdf } from "../lib/document-engine/index";
+import { renderDocumentPdf } from "../lib/document-engine/render-document-pdf";
 import * as Wdr from "../components/workspace/WorkspaceDocumentRenderer";
 
 const { WorkspaceDocumentRenderer, makeRendererCustomer, makeRendererSeller } = Wdr;

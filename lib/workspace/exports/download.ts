@@ -11,8 +11,8 @@ export function downloadBlob(blob: Blob, filename: string): void {
   window.document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  // Revoke after the click has been handled.
-  window.setTimeout(() => URL.revokeObjectURL(url), 200);
+  // Revoke later so the browser has enough time to finish the save/download path.
+  window.setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 
 export function downloadText(

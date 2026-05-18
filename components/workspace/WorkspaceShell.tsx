@@ -103,6 +103,19 @@ function resolveItemIcon(label: string, href: string) {
   return itemIconRules.find((entry) => entry.test.test(source))?.icon ?? Files;
 }
 
+function isWorkspaceShellSidebarItemActive(
+  pathname: string,
+  item: { href: string; matchPrefixes?: string[] },
+  basePath: string,
+): boolean {
+  const templatesHub = mapWorkspaceHref("/workspace/user/templates", basePath);
+  if (item.href === "/workspace/user/templates" && !item.matchPrefixes?.length) {
+    return pathname === templatesHub || pathname === `${templatesHub}/`;
+  }
+  const prefixes = [item.href, ...(item.matchPrefixes ?? [])].map((href) => mapWorkspaceHref(href, basePath));
+  return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+}
+
 function SidebarNavigation({
   navGroups,
   pathname,
@@ -154,10 +167,7 @@ function SidebarNavigation({
 
   return navGroups.map((group) => {
     const GroupIcon = resolveGroupIcon(group.label);
-    const groupHasActiveItem = group.items.some((item) => {
-      const prefixes = [item.href, ...(item.matchPrefixes ?? [])].map((href) => mapWorkspaceHref(href, basePath));
-      return prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
-    });
+    const groupHasActiveItem = group.items.some((item) => isWorkspaceShellSidebarItemActive(pathname, item, basePath));
     const isOpen = openGroupLabels.includes(group.label);
 
     return (
@@ -187,8 +197,7 @@ function SidebarNavigation({
             {group.items.map((item) => {
               const ItemIcon = resolveItemIcon(item.label, item.href);
               const href = mapWorkspaceHref(item.href, basePath);
-              const prefixes = [item.href, ...(item.matchPrefixes ?? [])].map((value) => mapWorkspaceHref(value, basePath));
-              const active = prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+              const active = isWorkspaceShellSidebarItemActive(pathname, item, basePath);
 
               return (
                 <Link

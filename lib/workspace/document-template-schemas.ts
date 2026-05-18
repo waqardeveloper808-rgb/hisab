@@ -139,6 +139,11 @@ export type ZatcaClassification =
 
 // ─── Page geometry (A4 portrait, Wafeq Format 2) ────────────────────────────
 
+/** Millimetres → CSS px at 96dpi (margins / printable width). */
+export function mmToPx(mm: number): number {
+  return (mm * 96) / 25.4;
+}
+
 export const PAGE_GEOMETRY = {
   /** PDF page in points. */
   widthPt: 595.92,
@@ -162,28 +167,24 @@ export const PAGE_GEOMETRY = {
 } as const;
 
 export const TYPOGRAPHY = {
-  /** Base document body (+1pt vs 2026-04 baseline). */
-  bodyPx: 12,
-  labelPx: 10,
-  smallPx: 9,
-  titleEnPx: 25,
-  titleArPx: 21,
-  sectionHeadingPx: 11,
-  lineHeightBodyPx: 16,
-  lineHeightArPx: 18,
-  /** Seller / company name in header row (preview + PDF). */
-  sellerNamePx: 14,
-  /** Info-row / table body (px; PDF pt = px * PAGE_GEOMETRY.pxToPt). */
-  infoValuePx: 12,
-  infoLabelPx: 11,
-  /** Items table body — 1 pt smaller than prior baseline; header row stays 1 pt above body. */
-  itemsCellPx: 10,
+  bodyPx: 9,
+  labelPx: 9,
+  smallPx: 7,
+  titleEnPx: 12,
+  titleArPx: 12,
+  sectionHeadingPx: 8,
+  lineHeightBodyPx: 12,
+  lineHeightArPx: 13,
+  sellerNamePx: 12,
+  infoValuePx: 9,
+  infoLabelPx: 9,
+  itemsCellPx: 9,
   itemsHeaderEnPx: 9,
-  itemsHeaderArPx: 8,
-  qrCaptionPx: 10,
-  stampCaptionPx: 10,
-  stampMetaPx: 9,
-  stampDesignationPx: 9,
+  itemsHeaderArPx: 9,
+  qrCaptionPx: 8,
+  stampCaptionPx: 8,
+  stampMetaPx: 8,
+  stampDesignationPx: 8,
 } as const;
 
 export const COLORS = {
@@ -197,13 +198,14 @@ export const COLORS = {
 } as const;
 
 export const SPACING = {
-  sectionGapPx: 12,
-  cardPaddingXPx: 14,
-  cardPaddingYPx: 12,
-  tableCellPaddingXPx: 6,
-  tableCellPaddingYPx: 7,
-  cardBorderRadiusPx: 6,
-  topAccentPx: 3,
+  /** Shared by WorkspaceDocumentRenderer + PDF export — keep in sync. */
+  sectionGapPx: 4,
+  cardPaddingXPx: 8,
+  cardPaddingYPx: 6,
+  tableCellPaddingXPx: 4,
+  tableCellPaddingYPx: 4,
+  cardBorderRadiusPx: 4,
+  topAccentPx: 2,
 } as const;
 
 // ─── Section + field labels (single source of truth) ────────────────────────
@@ -424,15 +426,15 @@ export type DocumentTemplateSchema = {
 const CONTENT_W = 794 - MM10 * 2;
 
 const DEFAULT_SECTION_GEOMETRY: Partial<Record<SectionKey, SectionGeometry>> = {
-  header:         { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 122, maxHeightPx: 150 },
-  title:          { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 58,  maxHeightPx: 70 },
-  customer:       { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 122, maxHeightPx: 170 },
-  docInfo:        { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 128, maxHeightPx: 190 },
-  items:          { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 190, maxHeightPx: "auto" },
-  totals:         { xPx: 794 - MM10 - 276, widthPx: 276, minHeightPx: 104, maxHeightPx: 150, splitRow: "totals_right" },
-  qr:             { xPx: MM10, widthPx: 390, minHeightPx: 118, maxHeightPx: 140, splitRow: "totals_left_qr" },
-  stampSignature: { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 120, maxHeightPx: 145 },
-  footer:         { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 34,  maxHeightPx: 34 },
+  header:         { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 98,  maxHeightPx: 118 },
+  title:          { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 40,  maxHeightPx: 54 },
+  customer:       { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 96,  maxHeightPx: 132 },
+  docInfo:        { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 106, maxHeightPx: 150 },
+  items:          { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 145, maxHeightPx: "auto" },
+  totals:         { xPx: 794 - MM10 - 284, widthPx: 284, minHeightPx: 92, maxHeightPx: 130, splitRow: "totals_right" },
+  qr:             { xPx: MM10, widthPx: 360, minHeightPx: 100, maxHeightPx: 124, splitRow: "totals_left_qr" },
+  stampSignature: { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 100, maxHeightPx: 130 },
+  footer:         { xPx: MM10, widthPx: CONTENT_W, minHeightPx: 30,  maxHeightPx: 34 },
 };
 
 const DEFAULT_CUSTOMER_ROWS: InfoRow[] = [
@@ -460,15 +462,15 @@ const DEFAULT_DOCUMENT_INFO_ROWS: InfoRow[] = [
 
 // Wafeq Format 2 invoice item table — exact widthPx values match the schema spec.
 const DEFAULT_ITEM_COLUMNS: ItemColumnSpec[] = [
-  { key: "index",           widthPx: 30,  align: "center", required: true },
-  { key: "description",     widthPx: 225, align: "left",   required: true },
-  { key: "quantity",        widthPx: 44,  align: "right",  required: true,  format: "qty" },
-  { key: "unit",            widthPx: 40,  align: "center", required: false, format: "text" },
-  { key: "price",           widthPx: 68,  align: "right",  required: true,  format: "money" },
-  { key: "taxableAmount",   widthPx: 72,  align: "right",  required: true,  format: "money" },
-  { key: "vatRate",         widthPx: 44,  align: "right",  required: false, format: "percent" },
-  { key: "vatAmount",       widthPx: 64,  align: "right",  required: true,  format: "money" },
-  { key: "lineTotal",       widthPx: 225, align: "right",  required: true,  format: "money" },
+  { key: "index",           widthPx: 24,  align: "center", required: true },
+  { key: "description",     widthPx: 230, align: "left",   required: true },
+  { key: "quantity",        widthPx: 36,  align: "right",  required: true,  format: "qty" },
+  { key: "unit",            widthPx: 38,  align: "center", required: false, format: "text" },
+  { key: "price",           widthPx: 78,  align: "right",  required: true,  format: "money" },
+  { key: "taxableAmount",   widthPx: 88,  align: "right",  required: true,  format: "money" },
+  { key: "vatRate",         widthPx: 36,  align: "right",  required: false, format: "percent" },
+  { key: "vatAmount",       widthPx: 88,  align: "right",  required: true,  format: "money" },
+  { key: "lineTotal",       widthPx: 96,  align: "right",  required: true,  format: "money" },
 ];
 
 const REQUIRED_ITEM_COLUMNS_FROM = (cols: ItemColumnSpec[]): ColumnKey[] =>
@@ -528,12 +530,12 @@ const SIMPLIFIED_TAX_INVOICE: DocumentTemplateSchema = {
     { field: "customerEmail",    hideIfEmpty: true },
   ],
   itemColumns: [
-    { key: "index",        widthPx: 30,  align: "center", required: true },
-    { key: "description",  widthPx: 225, align: "left",   required: true },
-    { key: "quantity",     widthPx: 44,  align: "right",  required: true,  format: "qty" },
+    { key: "index",        widthPx: 24,  align: "center", required: true },
+    { key: "description",  widthPx: 190, align: "left",   required: true },
+    { key: "quantity",     widthPx: 34,  align: "right",  required: true,  format: "qty" },
     { key: "price",        widthPx: 72,  align: "right",  required: true,  format: "money" },
-    { key: "vatAmount",    widthPx: 68,  align: "right",  required: true,  format: "money" },
-    { key: "lineTotal",    widthPx: 225, align: "right",  required: true,  format: "money" },
+    { key: "vatAmount",    widthPx: 82,  align: "right",  required: true,  format: "money" },
+    { key: "lineTotal",    widthPx: 92,  align: "right",  required: true,  format: "money" },
   ],
   requiredItemColumns: ["description", "quantity", "price", "vatAmount", "lineTotal"],
   totalsFields: ["subtotal", "totalVat", "grandTotal"],

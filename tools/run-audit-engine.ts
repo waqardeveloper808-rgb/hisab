@@ -1,6 +1,37 @@
+import { existsSync, readFileSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+
+/** tsx does not auto-load `.env.local`; Next.js-only vars must exist for audit collector + workspace API. */
+function loadDotenvLocal(): void {
+  const filePath = path.join(process.cwd(), ".env.local");
+  if (!existsSync(filePath)) return;
+  const text = readFileSync(filePath, "utf8");
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let val = trimmed.slice(eq + 1).trim();
+    if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    if (process.env[key] === undefined) process.env[key] = val;
+  }
+}
+
+loadDotenvLocal();
+
+/**
+ * Audit engine CLI — used by npm scripts:
+ * - audit:control-points:stable → --scope=full_system
+ * - audit:control-points:runtime → --scope=full_system (same registry; uses live collector when BASE_URL reachable)
+ * - audit:control-points:ui → --scope=route --route=/workspace/admin/audit
+ *
+ * Env: BASE_URL or GULF_HISAB_BASE_URL (default http://127.0.0.1:3000). For local proof runs, start `next start` and set BASE_URL to the same origin (e.g. http://127.0.0.1:3010).
+ */
 import { loadControlPointRegistry } from "@/lib/audit-engine/registry";
 import { collectLiveAuditRuntimeContext } from "@/lib/audit-engine/live-collector";
 import { runAuditExecution } from "@/lib/audit-engine/orchestrator";
@@ -35,7 +66,7 @@ async function writeReport(outputDir: string, fileName: string, value: unknown) 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
   const registry = await loadControlPointRegistry();
-  const origin = process.env.BASE_URL ?? process.env.GULF_HISAB_BASE_URL ?? "http://127.0.0.1:3006";
+  const origin = process.env.BASE_URL ?? process.env.GULF_HISAB_BASE_URL ?? "http://127.0.0.1:3000";
   const cookie = process.env.AUDIT_COOKIE ?? null;
   const liveContext = await collectLiveAuditRuntimeContext(origin, cookie, {
     scope: options.scope,
@@ -69,6 +100,14 @@ async function main() {
 }
 
 main().catch((error) => {
-  process.stderr.write(`${error instanceof Error ? error.stack ?? error.message : String(error)}\n`);
+  const fallbackOptions = parseArgs(process.argv.slice(2));
+  const message = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? error.stack ?? "" : "";
+  process.stderr.write(`${JSON.stringify({
+    status: "fail",
+    scope: fallbackOptions.scope,
+    message,
+    stack,
+  }, null, 2)}\n`);
   process.exitCode = 1;
 });

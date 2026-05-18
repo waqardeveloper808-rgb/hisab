@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { phase1CountryArchitecture } from "@/data/master-design/country-architecture";
 import { franceReadinessRequirements } from "@/data/master-design/france-readiness";
 import { ksaPhase1Modules } from "@/data/master-design/ksa-phase1";
 import { sharedPlatformRules } from "@/data/master-design/shared-platform";
@@ -75,6 +76,7 @@ export function getMasterDesignTargetMap(): MasterDesignTargetMap {
     sharedPlatformRules,
     franceReadinessRequirements,
     updatedAt: "2026-04-19T12:00:00.000Z",
+    countryArchitecture: phase1CountryArchitecture,
   };
 }
 

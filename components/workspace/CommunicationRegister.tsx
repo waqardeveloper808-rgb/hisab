@@ -13,8 +13,11 @@ export function CommunicationRegister() {
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError(null);
+    queueMicrotask(() => {
+      if (!active) return;
+      setLoading(true);
+      setError(null);
+    });
 
     listCommunications({ status: status === "all" ? undefined : status, limit: 100 })
       .then((result) => {

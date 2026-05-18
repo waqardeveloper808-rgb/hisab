@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Document;
 use App\Models\DocumentLine;
+use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Models\Payment;
 use App\Services\Reports\BalanceSheetService;
@@ -103,9 +104,66 @@ class ReportController extends Controller
 
         $rows = Document::query()
             ->where('company_id', $company->id)
-            ->whereIn('type', ['tax_invoice', 'debit_note'])
+            ->whereIn('type', ['tax_invoice', 'cash_invoice', 'api_invoice'])
+            ->with('contact:id,display_name')
             ->orderByDesc('issue_date')
             ->get(['id', 'contact_id', 'document_number', 'type', 'status', 'issue_date', 'due_date', 'taxable_total', 'tax_total', 'grand_total', 'balance_due']);
+
+        return response()->json(['data' => $rows]);
+    }
+
+    public function quotationRegister(Request $request, Company $company): JsonResponse
+    {
+        return $this->salesDocumentsRegisterForTypes($request, $company, ['quotation']);
+    }
+
+    public function proformaInvoiceRegister(Request $request, Company $company): JsonResponse
+    {
+        return $this->salesDocumentsRegisterForTypes($request, $company, ['proforma_invoice']);
+    }
+
+    public function salesCreditNoteRegister(Request $request, Company $company): JsonResponse
+    {
+        return $this->salesDocumentsRegisterForTypes($request, $company, ['credit_note']);
+    }
+
+    public function debitNoteSalesRegister(Request $request, Company $company): JsonResponse
+    {
+        return $this->salesDocumentsRegisterForTypes($request, $company, ['debit_note']);
+    }
+
+    public function purchaseOrderRegister(Request $request, Company $company): JsonResponse
+    {
+        return $this->purchaseDocumentsRegisterForTypes($request, $company, ['purchase_order']);
+    }
+
+    public function purchaseCreditNoteRegister(Request $request, Company $company): JsonResponse
+    {
+        return $this->purchaseDocumentsRegisterForTypes($request, $company, ['purchase_credit_note']);
+    }
+
+    public function journalRegister(Request $request, Company $company): JsonResponse
+    {
+        $this->ensureCompanyAbility($request->user(), $company, 'workspace.accounting.view');
+
+        $rows = JournalEntry::query()
+            ->where('company_id', $company->id)
+            ->with('creator:id,name')
+            ->orderByDesc('entry_date')
+            ->orderByDesc('id')
+            ->limit(120)
+            ->get(['id', 'entry_number', 'entry_date', 'status', 'source_type', 'source_id', 'reference', 'description', 'created_by'])
+            ->map(fn (JournalEntry $entry): array => [
+                'id' => $entry->id,
+                'entry_number' => $entry->entry_number,
+                'entry_date' => optional($entry->entry_date)?->toDateString(),
+                'status' => $entry->status,
+                'source_type' => $entry->source_type,
+                'source_id' => $entry->source_id,
+                'reference' => $entry->reference,
+                'description' => $entry->description,
+                'creator_name' => $entry->creator?->name,
+            ]);
 
         return response()->json(['data' => $rows]);
     }
@@ -117,6 +175,7 @@ class ReportController extends Controller
         $rows = Document::query()
             ->where('company_id', $company->id)
             ->whereIn('type', ['vendor_bill', 'purchase_invoice'])
+            ->with('contact:id,display_name')
             ->orderByDesc('issue_date')
             ->get(['id', 'contact_id', 'document_number', 'type', 'status', 'issue_date', 'due_date', 'taxable_total', 'tax_total', 'grand_total', 'balance_due']);
 
@@ -139,14 +198,19 @@ class ReportController extends Controller
     {
         $this->ensureCompanyAbility($request->user(), $company, 'workspace.vat.view');
 
-        return response()->json(['data' => $this->vatReportService->summary($company)]);
+        $payload = $this->vatReportService->summary($company, $request);
+
+        return response()->json([
+            'data' => $payload['rows'],
+            'meta' => $payload['meta'],
+        ]);
     }
 
     public function vatDetail(Request $request, Company $company): JsonResponse
     {
         $this->ensureCompanyAbility($request->user(), $company, 'workspace.vat.view');
 
-        return response()->json(['data' => $this->vatReportService->detail($company)]);
+        return response()->json(['data' => $this->vatReportService->detail($company, $request)]);
     }
 
     public function vatReceivedDetails(Request $request, Company $company): JsonResponse
@@ -154,6 +218,13 @@ class ReportController extends Controller
         $this->ensureCompanyAbility($request->user(), $company, 'workspace.vat.view');
 
         return response()->json(['data' => $this->vatReportService->receivedDetails($company, $request)]);
+    }
+
+    public function vatReceivedLineDetails(Request $request, Company $company): JsonResponse
+    {
+        $this->ensureCompanyAbility($request->user(), $company, 'workspace.vat.view');
+
+        return response()->json(['data' => $this->vatReportService->receivedLineDetails($company, $request)]);
     }
 
     public function vatPaidDetails(Request $request, Company $company): JsonResponse
@@ -536,5 +607,35 @@ class ReportController extends Controller
         ]);
 
         return response()->json(['data' => $this->cashFlowService->statement($company, $payload)]);
+    }
+
+    /** @param  list<string>  $types */
+    private function salesDocumentsRegisterForTypes(Request $request, Company $company, array $types): JsonResponse
+    {
+        $this->ensureCompanyAbility($request->user(), $company, 'workspace.reports.view');
+
+        $rows = Document::query()
+            ->where('company_id', $company->id)
+            ->whereIn('type', $types)
+            ->with('contact:id,display_name')
+            ->orderByDesc('issue_date')
+            ->get(['id', 'contact_id', 'document_number', 'type', 'status', 'issue_date', 'due_date', 'taxable_total', 'tax_total', 'grand_total', 'balance_due']);
+
+        return response()->json(['data' => $rows]);
+    }
+
+    /** @param  list<string>  $types */
+    private function purchaseDocumentsRegisterForTypes(Request $request, Company $company, array $types): JsonResponse
+    {
+        $this->ensureCompanyAbility($request->user(), $company, 'workspace.reports.view');
+
+        $rows = Document::query()
+            ->where('company_id', $company->id)
+            ->whereIn('type', $types)
+            ->with('contact:id,display_name')
+            ->orderByDesc('issue_date')
+            ->get(['id', 'contact_id', 'document_number', 'type', 'status', 'issue_date', 'due_date', 'taxable_total', 'tax_total', 'grand_total', 'balance_due']);
+
+        return response()->json(['data' => $rows]);
     }
 }

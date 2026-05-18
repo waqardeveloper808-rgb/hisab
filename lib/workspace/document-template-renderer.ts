@@ -14,7 +14,7 @@
 //     debug / generated-by text leaks through.
 
 import type { DocumentRecord } from "./types";
-import { normalizeWidthsToTableMax } from "./item-column-resize";
+import { fitItemColumnWidthsToTarget, getItemsTableInnerTargetPx, itemColumnMinPx, sanitizeItemColumnWidthRecord } from "./item-column-resize";
 import {
   COLORS,
   FIELD_LABELS,
@@ -201,6 +201,10 @@ export type LayoutPlan = {
   headerRowColor: string;
   /** Stamp / signature card layout defaults + overrides. */
   stampSignatureBlock: StampSignatureBlockSettings;
+  /** Items table width budgeting (preview / PDF diagnostics). */
+  itemTableTargetWidthPx?: number;
+  itemTableUsedWidthPx?: number;
+  itemTableOverflowRisk?: boolean;
 };
 
 // ─── Formatting helpers ─────────────────────────────────────────────────────
@@ -355,12 +359,14 @@ function totalsRowContent(
   }
 }
 
-function sarAmountSuffix(n: number, currency: string): string {
+/** Money cell: amount and symbol stay on one logical line (NBSP, no newline). */
+function formatMoneyAtomic(n: number, currency: string): string {
   const num = fmtNumber(n);
+  const nb = "\u00A0";
   if (currency === "SAR") {
-    return `${num} ${CURRENCY_DISPLAY_SYMBOL}`.trim();
+    return `${num}${nb}${CURRENCY_DISPLAY_SYMBOL}`;
   }
-  return `${num} ${currency}`.trim();
+  return `${num}${nb}${currency}`;
 }
 
 function formatItemCell(col: ItemColumnSpec, line: DocumentRecord["lines"][number], idx: number, currency: string): string {
@@ -374,12 +380,12 @@ function formatItemCell(col: ItemColumnSpec, line: DocumentRecord["lines"][numbe
     case "deliveredQuantity": return fmtQty(line.quantity);
     case "pendingQuantity":   return fmtQty(0);
     case "remarks":           return "";
-    case "price":             return col.format === "money" ? sarAmountSuffix(line.unitPrice, currency) : fmtNumber(line.unitPrice);
-    case "discount":          return sarAmountSuffix(0, currency);
-    case "taxableAmount":     return sarAmountSuffix(taxable, currency);
+    case "price":             return col.format === "money" ? formatMoneyAtomic(line.unitPrice, currency) : fmtNumber(line.unitPrice);
+    case "discount":          return formatMoneyAtomic(0, currency);
+    case "taxableAmount":     return formatMoneyAtomic(taxable, currency);
     case "vatRate":           return fmtPercent(line.vatRate ?? 0);
-    case "vatAmount":         return sarAmountSuffix(vat, currency);
-    case "lineTotal":         return sarAmountSuffix(taxable + vat, currency);
+    case "vatAmount":         return formatMoneyAtomic(vat, currency);
+    case "lineTotal":         return formatMoneyAtomic(taxable + vat, currency);
     default:                  return "";
   }
 }
@@ -448,12 +454,29 @@ function resolveTextColors(ui: TemplateUiSettings | undefined): {
   };
 }
 
-function normalizeItemColumnWidths(cols: LayoutItemColumn[]): LayoutItemColumn[] {
+function normalizeItemColumnWidths(
+  cols: LayoutItemColumn[],
+  ui?: TemplateUiSettings,
+  templateId?: string,
+): LayoutItemColumn[] {
   if (cols.length === 0) return cols;
   const keys = cols.map((c) => c.key);
-  const raw = cols.map((c) => c.widthPx);
-  const fitted = normalizeWidthsToTableMax(keys, raw);
-  return cols.map((c, i) => ({ ...c, widthPx: fitted[i]! }));
+  const targetWidthPx = getItemsTableInnerTargetPx(ui?.margins ?? undefined, { sectionPaddingPx: 8, borderPx: 1 });
+  const byTemplate =
+    templateId && ui?.itemColumnWidthsByTemplateId?.[templateId]
+      ? ui.itemColumnWidthsByTemplateId[templateId]
+      : undefined;
+  const merged: Partial<Record<ColumnKey, number>> = {};
+  for (const c of cols) {
+    const wT = byTemplate?.[c.key];
+    const wG = ui?.itemColumnWidths?.[c.key];
+    merged[c.key] =
+      wT != null && wT > 0 ? wT : wG != null && wG > 0 ? wG : c.widthPx;
+  }
+  const sanitizedRecord = sanitizeItemColumnWidthRecord(keys, merged, targetWidthPx);
+  const rawForFit = keys.map((k) => sanitizedRecord[k] ?? itemColumnMinPx(k));
+  const fitted = fitItemColumnWidthsToTarget(keys, rawForFit, targetWidthPx, itemColumnMinPx);
+  return cols.map((c, i) => ({ ...c, widthPx: Math.round(fitted[i] ?? c.widthPx) }));
 }
 
 export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
@@ -493,7 +516,7 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
         labelEn: SECTION_LABELS[id].en,
         labelAr: SECTION_LABELS[id].ar,
         xPx: geom?.xPx ?? PAGE_GEOMETRY.contentXPx,
-        widthPx: geom?.widthPx ?? PAGE_GEOMETRY.safeWidthPx,
+        widthPx: Math.min(geom?.widthPx ?? PAGE_GEOMETRY.safeWidthPx, PAGE_GEOMETRY.safeWidthPx),
         minHeightPx: geom?.minHeightPx ?? 80,
         maxHeightPx: geom?.maxHeightPx ?? "auto",
         splitRow: geom?.splitRow,
@@ -529,9 +552,10 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
     const base = sections[headerIdx]!;
     const topA = ui?.showHeaderGreenAccent ? SPACING.topAccentPx : 0;
     const twoCol = headerBlock.structure === "two_column_logo_in_title";
+    const logoBox = Math.min(Math.max(headerBlock.logoHeightPx, 48), 88);
     const bodyMin = twoCol
-      ? headerBlock.cardPaddingPx * 2 + 48
-      : headerBlock.cardPaddingPx * 2 + headerBlock.logoHeightPx + 12;
+      ? headerBlock.cardPaddingPx * 2 + 36
+      : headerBlock.cardPaddingPx * 2 + logoBox + 8;
     sections = sections.slice();
     sections[headerIdx] = {
       ...base,
@@ -542,13 +566,20 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
   const titleIdx = sections.findIndex((s) => s.id === "title");
   if (titleIdx >= 0 && headerBlock.structure === "two_column_logo_in_title") {
     const base = sections[titleIdx]!;
-    const tEn = ui?.title?.enFontPx && ui.title.enFontPx > 0 ? ui.title.enFontPx : TYPOGRAPHY.titleEnPx;
-    const tAr = ui?.title?.arFontPx && ui.title.arFontPx > 0 ? ui.title.arFontPx : TYPOGRAPHY.titleArPx;
-    const padV = 12;
-    const belowLogo = 10;
-    const enH = language === "arabic" ? 0 : Math.ceil(tEn * 1.25);
-    const arH = language === "english" ? 0 : Math.ceil(tAr * 1.25);
-    const titleMin = padV + headerBlock.logoHeightPx + belowLogo + enH + arH + padV;
+    const titleBlock = ui?.title;
+    const tEnFallback = TYPOGRAPHY.titleEnPx;
+    const tArFallback = TYPOGRAPHY.titleArPx;
+    const tEn =
+      titleBlock?.enFontPx && titleBlock.enFontPx > 0 ? titleBlock.enFontPx : tEnFallback;
+    const tAr =
+      titleBlock?.arFontPx && titleBlock.arFontPx > 0 ? titleBlock.arFontPx : tArFallback;
+    const padV = 8;
+    const belowLogo = 6;
+    const logoBox = Math.min(Math.max(headerBlock.logoHeightPx, 40), 88);
+    const enH = language === "arabic" ? 0 : Math.ceil(tEn * 1.2);
+    const arH = language === "english" ? 0 : Math.ceil(tAr * 1.22);
+    const titleMin =
+      padV + (headerBlock.structure === "two_column_logo_in_title" ? logoBox + belowLogo + enH + arH : enH + arH) + padV;
     sections = sections.slice();
     sections[titleIdx] = {
       ...base,
@@ -567,9 +598,9 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
     const showSignature =
       stampSigEnabled && schema.stampSignature.showSignature && !hiddenFields.signature;
     const pad = stampSignatureBlock.cardPaddingPx * 2;
-    const footerBand = stampSignatureBlock.footerLineEnabled ? 44 : 28;
+    const footerBand = stampSignatureBlock.footerLineEnabled ? 30 : 22;
     const stampH = showStamp ? stampSignatureBlock.stampImageHeightPx + pad + footerBand : 0;
-    const sigMeta = 44;
+    const sigMeta = 32;
     const sigH = showSignature
       ? stampSignatureBlock.signatureImageHeightPx + pad + footerBand + sigMeta
       : 0;
@@ -602,7 +633,7 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
   // Items columns — order overrides + visibility filter (required wins).
   const orderedKeys = options.columnOrder ?? schema.itemColumns.map((c) => c.key);
   const colMap = new Map(schema.itemColumns.map((c) => [c.key, c]));
-  const itemColumns: LayoutItemColumn[] = normalizeItemColumnWidths(
+  let itemColumns: LayoutItemColumn[] = normalizeItemColumnWidths(
     orderedKeys
       .map((key) => colMap.get(key))
       .filter((col): col is ItemColumnSpec => Boolean(col))
@@ -625,6 +656,8 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
           labelAr: labels?.ar?.trim() || def.ar,
         };
       }),
+    ui,
+    templateId,
   );
 
   const currency = doc.currency || "SAR";
@@ -741,6 +774,13 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
     return s;
   });
 
+  const itemTableTargetWidthPx = getItemsTableInnerTargetPx(ui?.margins ?? undefined, {
+    sectionPaddingPx: 8,
+    borderPx: 1,
+  });
+  const itemTableUsedWidthPx = itemColumns.reduce((s, c) => s + c.widthPx, 0);
+  const itemTableOverflowRisk = itemTableUsedWidthPx > itemTableTargetWidthPx + 1;
+
   return {
     language,
     title: titleResolved,
@@ -775,6 +815,9 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
     headerBlock,
     headerRowColor: ui?.headerRowColor?.trim() || COLORS.tableHeaderBg,
     stampSignatureBlock,
+    itemTableTargetWidthPx,
+    itemTableUsedWidthPx,
+    itemTableOverflowRisk,
   };
 }
 

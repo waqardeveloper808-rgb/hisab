@@ -13,6 +13,7 @@ import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
 import { currency } from "@/components/workflow/utils";
 import { getEditabilityVerdict, type ZatcaDocumentState } from "@/lib/zatca-engine";
 import {
+  detectWorkspacePreviewModeForPdf,
   duplicateDocument,
   finalizeTransactionDraft,
   getDocument,
@@ -147,18 +148,35 @@ export function InvoiceDetailWorkspace({ documentId, mode = "panel", reloadKey =
     }
 
     try {
-      const [nextDocument, preview] = await Promise.all([
-        getDocument(documentId),
-        getDocumentPreview(documentId, { templateId: typeof selectedTemplateId === "number" ? selectedTemplateId : undefined }),
-      ]);
+      const nextDocument = await getDocument(documentId);
+
+      let nextPreviewHtml = "";
+      let previewErrorMessage = "";
+
+      try {
+        const preview = await getDocumentPreview(documentId, {
+          templateId: typeof selectedTemplateId === "number" ? selectedTemplateId : undefined,
+        });
+        nextPreviewHtml = preview.html;
+      } catch (previewErr) {
+        previewErrorMessage = previewErr instanceof Error
+          ? previewErr.message
+          : "Document preview could not be loaded.";
+      }
 
       if (requestSequenceRef.current !== requestId) {
         return null;
       }
 
       setDocument(nextDocument);
-      setPreviewHtml(preview.html);
-      invoiceDetailCache.set(documentId, { document: nextDocument, previewHtml: preview.html });
+      setPreviewHtml(nextPreviewHtml);
+      invoiceDetailCache.set(documentId, { document: nextDocument, previewHtml: nextPreviewHtml });
+
+      if (previewErrorMessage) {
+        setError(`Preview could not be loaded: ${previewErrorMessage}`);
+      } else {
+        setError(null);
+      }
 
       if (options?.resetPaymentDraft) {
         setPaymentAmount(String(nextDocument.balanceDue || 0));
@@ -401,7 +419,10 @@ export function InvoiceDetailWorkspace({ documentId, mode = "panel", reloadKey =
   const canEdit = editabilityVerdict.canEdit;
   const editHref = mapWorkspaceHref(`/workspace/invoices/${document.id}?mode=edit`, basePath);
   const openHref = mapWorkspaceHref(`/workspace/invoices/${document.id}`, basePath);
-  const pdfHref = getDocumentPdfUrl(document.id, { templateId: selectedTemplateId });
+  const pdfHref = getDocumentPdfUrl(document.id, {
+    templateId: selectedTemplateId ?? undefined,
+    mode: detectWorkspacePreviewModeForPdf() ? "preview" : "backend",
+  });
   const registerHref = mapWorkspaceHref("/workspace/user/invoices", basePath);
   const impactQuery = `invoice_id=${document.id}&invoice_number=${encodeURIComponent(document.number)}`;
   const journalHref = mapWorkspaceHref(`/workspace/user/journal-entries?${impactQuery}`, basePath);

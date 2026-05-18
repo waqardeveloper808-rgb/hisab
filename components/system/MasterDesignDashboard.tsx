@@ -2,6 +2,7 @@
 
 import { SystemMonitor } from "@/components/system-monitor/SystemMonitor";
 import type { MasterDesignCountSummary } from "@/backend/app/Support/Standards/control-point-engine";
+import type { Phase1CountryArchitecture } from "@/data/master-design/country-architecture";
 import type { SystemMonitorTraceabilityPayload } from "@/lib/audit-engine/system-monitor-traceability";
 import type { SystemMonitorControlPoint } from "@/lib/audit-engine/monitor-types";
 import type { ActualModuleRecord, ModuleExecutionStatus, SystemBlocker } from "@/types/system-map";
@@ -64,6 +65,7 @@ export type SystemMonitorState = {
   }>;
   moduleMap: ActualModuleRecord[];
   blockers: SystemBlocker[];
+  countryArchitecture: Phase1CountryArchitecture;
 };
 
 export function ArchitectDashboard({ initialState }: { initialState: SystemMonitorState }) {

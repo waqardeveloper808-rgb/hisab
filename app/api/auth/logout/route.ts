@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authSessionCookieName } from "@/lib/auth-session";
+import { authSessionCookieName, authSessionCookieSecure } from "@/lib/auth-session";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,7 @@ export async function POST() {
   response.cookies.set(authSessionCookieName, "", {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: authSessionCookieSecure(),
     maxAge: 0,
     path: "/",
   });

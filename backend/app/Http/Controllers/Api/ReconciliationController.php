@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class ReconciliationController
 {
+    private const NEGATIVE_BANK_EXPLANATION = 'Bank asset is negative because credits exceed debits. Add funding/opening balance or classify as overdraft liability.';
+
     public function bankAccounts(Company $company): JsonResponse
     {
         $accounts = Account::query()
@@ -19,22 +21,58 @@ class ReconciliationController
             ->where('account_class', 'asset')
             ->where(function ($q) {
                 $q->where('group', 'bank')
+                  ->orWhere('group', 'cash')
                   ->orWhere('subtype', 'bank')
-                ->orWhere(DB::raw('lower(name)'), 'like', '%bank%');
+                  ->orWhere('subtype', 'cash')
+                  ->orWhere(DB::raw('lower(name)'), 'like', '%bank%')
+                  ->orWhere(DB::raw('lower(name)'), 'like', '%cash%');
             })
             ->where('is_active', true)
             ->orderBy('code')
-            ->get(['id', 'code', 'name', 'normal_balance'])
-            ->map(fn (Account $account) => [
+            ->get(['id', 'code', 'name', 'normal_balance']);
+
+        $payload = $accounts->map(function (Account $account) use ($company) {
+            $row = DB::table('journal_entry_lines')
+                ->join('journal_entries', 'journal_entries.id', '=', 'journal_entry_lines.journal_entry_id')
+                ->where('journal_entries.company_id', $company->id)
+                ->where('journal_entries.status', 'posted')
+                ->where('journal_entry_lines.account_id', $account->id)
+                ->selectRaw('COALESCE(SUM(journal_entry_lines.debit), 0) as debit_total, COALESCE(SUM(journal_entry_lines.credit), 0) as credit_total')
+                ->first();
+
+            $debitTotal = (float) ($row->debit_total ?? 0);
+            $creditTotal = (float) ($row->credit_total ?? 0);
+            $normal = (string) ($account->normal_balance ?? 'debit');
+            $balance = $normal === 'credit'
+                ? round($creditTotal - $debitTotal, 2)
+                : round($debitTotal - $creditTotal, 2);
+
+            $epsilon = 0.005;
+            if ($balance > $epsilon) {
+                $balanceStatus = 'positive';
+                $explanation = '';
+            } elseif ($balance < -$epsilon) {
+                $balanceStatus = 'negative';
+                $explanation = self::NEGATIVE_BANK_EXPLANATION;
+            } else {
+                $balanceStatus = 'zero';
+                $explanation = '';
+            }
+
+            return [
                 'id' => $account->id,
                 'code' => $account->code,
                 'name' => $account->name,
                 'normal_balance' => $account->normal_balance,
-                'balance' => $account->computeBalance(),
-            ])
-            ->values();
+                'debit_total' => round($debitTotal, 2),
+                'credit_total' => round($creditTotal, 2),
+                'balance' => $balance,
+                'balance_status' => $balanceStatus,
+                'balance_explanation' => $explanation,
+            ];
+        })->values();
 
-        return response()->json(['data' => $accounts]);
+        return response()->json(['data' => $payload]);
     }
 
     public function statementLines(Company $company, Account $account, Request $request): JsonResponse

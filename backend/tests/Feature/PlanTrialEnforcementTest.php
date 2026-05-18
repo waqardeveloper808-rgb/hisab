@@ -114,11 +114,11 @@ class PlanTrialEnforcementTest extends TestCase
 
     private function createCustomer(User $user, int $companyId, string $name): int
     {
-        return $this->actingAs($user)->postJson("/api/companies/{$companyId}/contacts", [
+        return $this->actingAs($user)->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => $name,
-            'tax_number' => '300000000000010',
-        ])->assertCreated()->json('data.id');
+            'tax_number' => '300000000000013',
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
     }
 
     private function createServiceItem(User $user, int $companyId, Company $company): array

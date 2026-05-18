@@ -16,5 +16,5 @@ export function InvoiceDocumentPage({ documentId }: InvoiceDocumentPageProps) {
     return <TransactionForm kind="invoice" documentId={documentId} displayMode="overlay" />;
   }
 
-  return <InvoiceDetailWorkspace documentId={documentId} mode="page" />;
+  return <InvoiceDetailWorkspace documentId={documentId} mode="page" chrome="quick" />;
 }

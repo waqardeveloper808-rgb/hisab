@@ -1018,11 +1018,20 @@ export function MasterDesignDashboard({ initialSnapshot }: { initialSnapshot: Ma
               <p className="mt-1 text-xs text-muted">{snapshot.actual.countryReadiness.ksa.status}</p>
             </div>
             <div className="rounded-lg border border-line bg-white p-3">
-              <p className="text-sm font-semibold text-ink">France Readiness</p>
+              <p className="text-sm font-semibold text-ink">France (Phase 2 — planned)</p>
               <p className="mt-1 text-xl font-bold text-ink">{snapshot.actual.countryReadiness.france.completionPercentage}%</p>
               <p className="mt-1 text-xs text-muted">{snapshot.actual.countryReadiness.france.status}</p>
+              <p className="mt-2 text-[11px] leading-snug text-muted">
+                Metadata and separation tracking only until France is an active product. This does not gate KSA Phase 1 completion.
+              </p>
             </div>
           </div>
+          {snapshot.target.countryArchitecture ? (
+            <p className="mt-2 text-[11px] text-ink">
+              <span className="font-semibold">Architecture contract:</span> Phase 1 active product is {snapshot.target.countryArchitecture.activePhase1Product}. Future locales are{" "}
+              {snapshot.target.countryArchitecture.futureCountryReadiness.map((r) => r.displayName).join(", ")} — {snapshot.target.countryArchitecture.futureCountryReadiness[0]?.evaluationScope ?? "metadata-only"}; they do not block KSA Phase 1.
+            </p>
+          ) : null}
           <div className="mt-3 grid gap-2 md:grid-cols-3">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">Truly KSA-specific</p>

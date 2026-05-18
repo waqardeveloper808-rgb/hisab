@@ -1,4 +1,4 @@
-import type { AuditControlStatus, AntiCheatResult, EvidenceArtifact, RegistryControlPoint, SourceSnapshot } from "./types";
+import type { AntiCheatResult, EvidenceArtifact, RegistryControlPoint, SourceSnapshot } from "./types";
 
 function hasFlag(evidence: EvidenceArtifact[], flag: string) {
   return evidence.some((artifact) => artifact.kind === flag || artifact.label.toLowerCase().includes(flag.replaceAll("_", " ")) || Boolean(artifact.fields[flag]));

@@ -30,11 +30,11 @@ class SalesTaxInvoiceFlowTest extends TestCase
         $companyId = $companyResponse->json('data.id');
         $company = Company::findOrFail($companyId);
 
-        $contactResponse = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactResponse = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => 'Saudi Customer Co',
-            'tax_number' => '300000000000010',
-        ]);
+            'tax_number' => '300000000000013',
+        ], $this->ksaContactExtras()));
 
         $contactResponse->assertCreated();
         $contactId = $contactResponse->json('data.id');
@@ -173,10 +173,11 @@ class SalesTaxInvoiceFlowTest extends TestCase
         ]);
         $companyId = $companyResponse->json('data.id');
 
-        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => 'Locked Customer',
-        ])->json('data.id');
+            'tax_number' => '300000000000023',
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()->where('company_id', $companyId)->where('code', 'VAT15')->value('id');
         $incomeAccountId = Company::findOrFail($companyId)->accounts()->where('code', '4000')->value('id');
@@ -936,10 +937,11 @@ class SalesTaxInvoiceFlowTest extends TestCase
         $companyId = $companyResponse->json('data.id');
         $company = Company::findOrFail($companyId);
 
-        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => $legalName.' Customer',
-        ])->json('data.id');
+            'tax_number' => $this->uniqueKsaVatNumber($legalName.'-cust'),
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()
             ->where('company_id', $companyId)
@@ -977,10 +979,11 @@ class SalesTaxInvoiceFlowTest extends TestCase
 
         $company = Company::findOrFail($companyId);
 
-        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'supplier',
             'display_name' => $legalName.' Supplier',
-        ])->json('data.id');
+            'tax_number' => $this->uniqueKsaVatNumber($legalName.'-supp'),
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()
             ->where('company_id', $companyId)

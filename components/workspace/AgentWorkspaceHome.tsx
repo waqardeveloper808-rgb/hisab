@@ -70,21 +70,22 @@ export function AgentWorkspaceHome() {
 
   useEffect(() => {
     if (isPreview) {
-      setSnapshot(previewState);
       return;
     }
 
     getAgentDashboard().then(setSnapshot).catch((err: unknown) => { console.error('[AgentWorkspaceHome] getAgentDashboard failed:', err); setSnapshot(emptyState); });
   }, [isPreview]);
 
-  const pendingOutreach = snapshot.referrals.filter((row) => row.commissionStatus === "pending" || row.subscription === null).length;
+  const displaySnapshot = isPreview ? previewState : snapshot;
+
+  const pendingOutreach = displaySnapshot.referrals.filter((row) => row.commissionStatus === "pending" || row.subscription === null).length;
   const referralLink = useMemo(() => {
-    if (!snapshot.agent.referralCode) {
+    if (!displaySnapshot.agent.referralCode) {
       return "/register?plan=zatca-monthly";
     }
 
-    return `/register?plan=zatca-monthly&ref=${snapshot.agent.referralCode}`;
-  }, [snapshot.agent.referralCode]);
+    return `/register?plan=zatca-monthly&ref=${displaySnapshot.agent.referralCode}`;
+  }, [displaySnapshot.agent.referralCode]);
 
   return (
     <div className="space-y-6">
@@ -102,10 +103,10 @@ export function AgentWorkspaceHome() {
 
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {[
-          ["Leads and referrals", String(snapshot.summary.totalReferrals), `${snapshot.summary.totalSignups} signups have entered the funnel`],
-          ["Active subscriptions", String(snapshot.summary.activeSubscriptions), `${snapshot.summary.totalSubscriptions} total subscriptions linked to referrals`],
+          ["Leads and referrals", String(displaySnapshot.summary.totalReferrals), `${displaySnapshot.summary.totalSignups} signups have entered the funnel`],
+          ["Active subscriptions", String(displaySnapshot.summary.activeSubscriptions), `${displaySnapshot.summary.totalSubscriptions} total subscriptions linked to referrals`],
           ["Pending outreach", String(pendingOutreach), "Referral records still need a call, message, or conversion push"],
-          ["Pending commission", `${currency(snapshot.summary.pendingCommission)} SAR`, `${currency(snapshot.summary.earnedCommission)} SAR already earned`],
+          ["Pending commission", `${currency(displaySnapshot.summary.pendingCommission)} SAR`, `${currency(displaySnapshot.summary.earnedCommission)} SAR already earned`],
         ].map(([title, value, caption]) => (
           <Card key={title} className="rounded-xl bg-white/95 p-5">
             <p className="text-sm font-semibold text-muted">{title}</p>
@@ -120,7 +121,7 @@ export function AgentWorkspaceHome() {
           registerTableId="agent-home-pipeline"
           title="Referral and pipeline activity"
           caption="Recent referred businesses and their subscription state."
-          rows={snapshot.referrals}
+          rows={displaySnapshot.referrals}
           emptyMessage="Referral activity will appear here when new businesses sign up under this agent code."
           columns={[
             { id: "lead", header: "Lead", defaultWidth: 160, render: (row) => row.name || "-" },

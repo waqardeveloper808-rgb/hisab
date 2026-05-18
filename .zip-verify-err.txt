@@ -1,0 +1,116 @@
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+⨯ Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open 'C:\hisab\.next\server\pages\500.html'
+    at ignore-listed frames
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+⨯ Error: Failed to load static file for page: /500 ENOENT: no such file or directory, open 'C:\hisab\.next\server\pages\500.html'
+    at ignore-listed frames
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#ViewportBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '2165443537'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\framework\boundary-components.js#MetadataBoundary" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '1540892209'
+}
+⨯ Error: Could not find the module "C:\hisab\node_modules\next\dist\lib\metadata\generate\icon-mark.js#IconMark" in the React Client Manifest. This is probably a bug in the React Server Components bundler.
+    at stringify (<anonymous>) {
+  digest: '3594222095'
+}
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+    at async D (C:\hisab\.next\server\app\workspace\user\invoices\page.js:2:3745)
+    at async Module.O (C:\hisab\.next\server\app\workspace\user\invoices\page.js:2:9357)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+    at async D (C:\hisab\.next\server\app\workspace\user\invoices\page.js:2:3745)
+    at async Module.O (C:\hisab\.next\server\app\workspace\user\invoices\page.js:2:9357)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)
+⨯ Error [InvariantError]: Invariant: The client reference manifest for route "/workspace/user/invoices" does not exist. This is a bug in Next.js.
+    at Object.get (C:\hisab\.next\server\chunks\3445.js:11:4608)
+    at async q (C:\hisab\.next\server\app\workspace\user\invoices\page.js:1:17172)

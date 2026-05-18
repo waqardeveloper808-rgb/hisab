@@ -398,6 +398,27 @@ export function SystemMonitor({ initialState }: { initialState: SystemMonitorSta
               </p>
               {refreshError ? <p className="mt-2 text-sm font-medium text-red-700">{refreshError}</p> : null}
               {refreshing ? <p className="mt-1 text-sm text-primary">Refreshing…</p> : null}
+              <div className="mt-3 rounded-xl border border-primary/25 bg-primary/5 p-3 text-xs text-ink" data-inspector-country-architecture="true">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">Country product architecture</p>
+                <p className="mt-1 font-semibold">
+                  Phase 1 active product: <span className="text-primary">{data.countryArchitecture.activePhase1Product}</span> ({data.countryArchitecture.phase1Label})
+                </p>
+                <p className="mt-1 text-muted">KSA service boundary (Phase 1 evidence applies here):</p>
+                <ul className="mt-1 list-inside list-disc space-y-0.5 text-muted">
+                  {data.countryArchitecture.ksaServiceBoundary.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+                <p className="mt-2 font-semibold text-muted">Future-country readiness (does not gate KSA Phase 1)</p>
+                <ul className="mt-1 list-inside list-disc space-y-1 text-muted">
+                  {data.countryArchitecture.futureCountryReadiness.map((row) => (
+                    <li key={row.id}>
+                      <span className="font-medium text-ink">{row.displayName}</span> — {row.phase} · {row.evaluationScope}
+                      {row.gatesKsaPhase1 ? " · gates KSA" : " · does not gate KSA Phase 1"}. {row.notes}
+                    </li>
+                  ))}
+                </ul>
+              </div>
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold" data-inspector-system-monitor-header-metrics="true">
                 <span className="rounded-full border border-line bg-surface-soft/70 px-2.5 py-1 text-ink">Pass rate {progress}% (Pass / Total Control Points)</span>
                 <span className="rounded-full border border-line bg-surface-soft/70 px-2.5 py-1 text-ink">Risk {data.risk.level} ({data.risk.score})</span>

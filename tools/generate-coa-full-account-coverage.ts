@@ -168,7 +168,7 @@ function main() {
   const sim = new Map<number, number>(lineBefore);
   const newEntries: JournalEntry[] = [];
   let entrySeq = 0;
-  let maxEntryId = existing.length ? Math.max(...existing.map((e) => e.id)) : 88000;
+  const maxEntryId = existing.length ? Math.max(...existing.map((e) => e.id)) : 88000;
   const baseId = Math.max(maxEntryId + 1, 89001);
 
   function addLine(accountId: number) {
@@ -196,8 +196,8 @@ function main() {
 
     const idx = entrySeq;
     entrySeq++;
-    let hubDebit = debitNormals[idx % debitNormals.length];
-    let hubCredit = creditNormals[idx % creditNormals.length];
+    const hubDebit = debitNormals[idx % debitNormals.length];
+    const hubCredit = creditNormals[idx % creditNormals.length];
 
     let drId: number;
     let crId: number;

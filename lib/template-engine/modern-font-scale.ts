@@ -1,13 +1,11 @@
 /**
- * Modern template (`data-style="modern"`) uses a uniform −2px delta on font-size
- * tokens versus Standard/Compact so preview, Studio canvas, and PDF stay aligned.
- *
- * Keep `[data-wsv2] .wsv2-doc-paper-inner[data-style="modern"]` rules in
- * `app/workspace/workspace.css` numerically consistent with this constant.
+ * Modern sizing is driven by `LAYOUT_STYLE_CONTRACT`, `workspace.css`, and title UI
+ * tokens — not a global shrink factor. Delta stays **0** so Modern remains
+ * spacious per `data/workspace/template-specs.md`.
  */
-export const MODERN_FONT_SIZE_DELTA_PX = 2;
+export const MODERN_FONT_SIZE_DELTA_PX = 0;
 
-/** Subtract delta; clamp so body text never collapses illegibly. */
+/** Identity when delta is 0; kept for call-site stability / PDF parity hooks. */
 export function modernAdjustedFontPx(px: number, minPx = 6): number {
   const next = px - MODERN_FONT_SIZE_DELTA_PX;
   return next < minPx ? minPx : next;

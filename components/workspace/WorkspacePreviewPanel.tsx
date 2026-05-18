@@ -65,11 +65,17 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
   if (!document) return null;
 
   const customer = findCustomer(document.customerId);
+  const partyLegal = document.partyDisplayName ?? customer?.legalName ?? "—";
+  const partyLegalAr = customer?.legalNameAr;
+  const partyVat = customer?.vatNumber;
+  const partyCity = customer?.city;
+  const disableLocalExport = document.supportsLocalTemplateExport === false;
+
   const template = templates.find((tmpl) => tmpl.id === document.templateId);
   const schema = getSchemaForKind(document.kind);
 
   const handleDownloadPdf = async () => {
-    if (busy) return;
+    if (busy || disableLocalExport) return;
     setBusy("pdf");
     setError(null);
     try {
@@ -92,7 +98,7 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
   };
 
   const handleDownloadXml = () => {
-    if (busy) return;
+    if (busy || disableLocalExport) return;
     setBusy("xml");
     setError(null);
     try {
@@ -106,10 +112,10 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
           addressEn: previewCompany.sellerAddressEn,
         },
         {
-          name: customer?.legalName ?? "Customer",
-          nameAr: customer?.legalNameAr,
-          vatNumber: customer?.vatNumber,
-          city: customer?.city,
+          name: partyLegal,
+          nameAr: partyLegalAr,
+          vatNumber: partyVat,
+          city: partyCity,
           country: "SA",
         },
         schema,
@@ -152,7 +158,7 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
               <span className="wsv2-pill" data-tone={statusTone(document.status)}>
                 <span className="wsv2-status-dot" /> {statusLabel(document.status)}
               </span>
-              <span>{customer?.legalName ?? "—"}</span>
+              <span>{partyLegal}</span>
             </span>
           </div>
           <div className="col" style={{ alignItems: "flex-end" }}>
@@ -199,9 +205,9 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
             type="button"
             className="wsv2-btn-secondary wsv2-icon-btn"
             onClick={handleDownloadPdf}
-            disabled={busy === "pdf"}
+            disabled={busy === "pdf" || disableLocalExport}
             aria-label="Download PDF"
-            title="Download PDF (real, generated client-side via pdf-lib)"
+            title={disableLocalExport ? "Open this document in the workspace composer for export" : "Download PDF (real, generated client-side via pdf-lib)"}
           >
             <Download size={13} /> {busy === "pdf" ? "Building…" : "PDF"}
           </button>
@@ -210,7 +216,7 @@ export function WorkspacePreviewPanel({ document, onClose, layout = "overlay" }:
               type="button"
               className="wsv2-btn-secondary wsv2-icon-btn"
               onClick={handleDownloadXml}
-              disabled={busy === "xml"}
+              disabled={busy === "xml" || disableLocalExport}
               aria-label="Download XML"
               title="Download UBL 2.1 XML (foundation, not ZATCA-validated)"
             >

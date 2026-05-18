@@ -69,7 +69,9 @@ export function FloatingAiAssistant() {
   const help = useMemo(() => resolveHelpTarget(pathname), [pathname]);
 
   useEffect(() => {
-    setPosition(clampPosition(window.innerWidth - LAUNCHER_WIDTH - 28, window.innerHeight - LAUNCHER_HEIGHT - 28));
+    queueMicrotask(() => {
+      setPosition(clampPosition(window.innerWidth - LAUNCHER_WIDTH - 28, window.innerHeight - LAUNCHER_HEIGHT - 28));
+    });
   }, []);
 
   useEffect(() => {

@@ -52,7 +52,15 @@ class ContactController extends Controller
         return response()->json([
             'data' => $query
                 ->limit($payload['limit'] ?? 50)
-                ->get(['id', 'uuid', 'type', 'display_name', 'email', 'phone', 'billing_address', 'tax_number', 'is_active']),
+                ->get([
+                    'id', 'uuid', 'type', 'display_name', 'email', 'phone', 'billing_address',
+                    'tax_number',
+                    'commercial_registration_number',
+                    'opening_balance',
+                    'opening_balance_type',
+                    'opening_balance_as_of',
+                    'is_active',
+                ]),
         ]);
     }
 
@@ -71,6 +79,11 @@ class ContactController extends Controller
             'display_name' => ['required', 'string', 'max:255'],
             'legal_name' => ['nullable', 'string', 'max:255'],
             'tax_number' => ['nullable', 'string', 'max:15', KsaBusinessValidation::vatRule()],
+            'commercial_registration_number' => ['nullable', 'string', 'max:64'],
+            'opening_balance' => ['nullable', 'numeric', 'between:-99999999999999.99,99999999999999.99'],
+            'opening_balance_amount' => ['nullable', 'numeric', 'between:-99999999999999.99,99999999999999.99'],
+            'opening_balance_type' => ['nullable', 'string', 'max:32', 'in:normal_debit,normal_credit,debit,credit'],
+            'opening_balance_as_of' => ['nullable', 'date_format:Y-m-d'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'regex:/^\+966\d{9}$/'],
             'currency_code' => ['nullable', 'string', 'size:3'],
@@ -91,6 +104,20 @@ class ContactController extends Controller
         $payload['tax_number'] = KsaBusinessValidation::normalizeVatNumber($payload['tax_number'] ?? null);
         $payload['legal_name'] = trim((string) ($payload['legal_name'] ?? '')) ?: $payload['display_name'];
 
+        $amountExplicit = array_key_exists('opening_balance_amount', $payload) ? (float) $payload['opening_balance_amount'] : null;
+        $amountLegacy = array_key_exists('opening_balance', $payload) ? (float) $payload['opening_balance'] : null;
+        unset($payload['opening_balance_amount']);
+        if ($amountExplicit !== null) {
+            $payload['opening_balance'] = round($amountExplicit, 2);
+        } elseif ($amountLegacy !== null) {
+            $payload['opening_balance'] = round($amountLegacy, 2);
+        }
+
+        // Normalize synonyms for importer / API clients.
+        if (! empty($payload['opening_balance_type']) && ($payload['opening_balance_type'] === 'debit' || $payload['opening_balance_type'] === 'credit')) {
+            $payload['opening_balance_type'] = $payload['opening_balance_type'] === 'debit' ? 'normal_debit' : 'normal_credit';
+        }
+
         if (! empty($payload['payment_term_id'])) {
             PaymentTerm::query()
                 ->where('company_id', $company->id)
@@ -101,9 +128,13 @@ class ContactController extends Controller
             $this->planLimitService->ensureCustomerLimit($company);
         }
 
+        $openingBalance = isset($payload['opening_balance']) ? round((float) $payload['opening_balance'], 2) : 0.0;
+        unset($payload['opening_balance']);
+
         $contact = Contact::create(array_merge($payload, [
             'company_id' => $company->id,
             'is_active' => true,
+            'opening_balance' => $openingBalance,
         ]));
 
         return response()->json(['data' => $contact], 201);

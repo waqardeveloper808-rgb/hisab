@@ -1,10 +1,22 @@
-import type { AuditControlStatus, AuditResultStatus, EvidenceArtifact, EvidenceValidationResult, RegistryControlPoint } from "./types";
+import type { AuditResultStatus, EvidenceArtifact, EvidenceValidationResult, RegistryControlPoint } from "./types";
 
 function matchesRequirement(requirement: string, artifact: EvidenceArtifact) {
   return artifact.kind === requirement || artifact.label === requirement || artifact.fields[requirement] !== undefined || artifact.traceableTo?.includes(requirement) || artifact.source.includes(requirement);
 }
 
 export function validateEvidence(control: RegistryControlPoint, evidence: EvidenceArtifact[]): EvidenceValidationResult {
+  /** Block PASS when evidence is explicitly flagged as synthetic or placeholder-class. */
+  const syntheticRejected = evidence.some((artifact) => Boolean(artifact.fields?.synthetic_proof) || artifact.fields?.evidence_class === "synthetic");
+  if (syntheticRejected) {
+    return {
+      evidence_items_found: [],
+      evidence_items_missing: [...control.evidence_requirements],
+      evidence_traceable: false,
+      evidence_quality_status: "rejected",
+      evidence_rejection_reason: "Synthetic or placeholder-marked evidence cannot satisfy deterministic controls.",
+    };
+  }
+
   const found = new Set<string>();
   const missing: string[] = [];
   let traceable = true;

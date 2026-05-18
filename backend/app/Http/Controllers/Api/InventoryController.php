@@ -23,28 +23,43 @@ class InventoryController extends Controller
         $this->ensureCompanyAbility($request->user(), $company, 'workspace.items.manage');
 
         return response()->json([
-            'data' => $this->service->listStock($company)->map(fn ($inventory) => [
-                'id' => $inventory->id,
-                'item_id' => $inventory->item_id,
-                'product_name' => $inventory->product_name,
-                'material' => $inventory->material,
-                'inventory_type' => $inventory->inventory_type,
-                'size' => $inventory->size,
-                'source' => $inventory->source,
-                'code' => $inventory->code,
-                'quantity_on_hand' => (float) $inventory->quantity_on_hand,
-                'committed_quantity' => (float) $inventory->committed_quantity,
-                'reorder_level' => (float) $inventory->reorder_level,
-                'batch_number' => $inventory->batch_number,
-                'production_date' => $inventory->production_date?->toDateString(),
-                'recorded_by' => $inventory->recorder?->name,
-                'journal_entry_number' => $inventory->lastJournalEntry?->entry_number,
-                'inventory_account_code' => $inventory->inventoryAccount?->code,
-                'inventory_account_name' => $inventory->inventoryAccount?->name,
-                'attachments' => $inventory->attachments ?? [],
-                'document_links' => $inventory->document_links ?? [],
-                'updated_at' => $inventory->updated_at?->toIso8601String(),
-            ]),
+            'data' => $this->service->listStock($company)->map(function ($inventory) {
+                $qty = (float) $inventory->quantity_on_hand;
+                $avg = (float) $inventory->average_unit_cost;
+                $value = round($qty * $avg, 2);
+                $available = $qty - (float) $inventory->committed_quantity;
+                $status = $available <= (float) $inventory->reorder_level && (float) $inventory->reorder_level > 0
+                    ? 'low_stock'
+                    : 'in_stock';
+
+                return [
+                    'id' => $inventory->id,
+                    'item_id' => $inventory->item_id,
+                    'product_name' => $inventory->product_name,
+                    'material' => $inventory->material,
+                    'description' => trim(implode(' · ', array_filter([$inventory->material, $inventory->size]))),
+                    'inventory_type' => $inventory->inventory_type,
+                    'size' => $inventory->size,
+                    'source' => $inventory->source,
+                    'code' => $inventory->code,
+                    'quantity_on_hand' => $qty,
+                    'committed_quantity' => (float) $inventory->committed_quantity,
+                    'reorder_level' => (float) $inventory->reorder_level,
+                    'average_unit_cost' => $avg,
+                    'inventory_value' => $value,
+                    'status' => $status,
+                    'batch_number' => $inventory->batch_number,
+                    'production_date' => $inventory->production_date?->toDateString(),
+                    'recorded_by' => $inventory->recorder?->name,
+                    'journal_entry_id' => $inventory->last_journal_entry_id,
+                    'journal_entry_number' => $inventory->lastJournalEntry?->entry_number,
+                    'inventory_account_code' => $inventory->inventoryAccount?->code,
+                    'inventory_account_name' => $inventory->inventoryAccount?->name,
+                    'attachments' => $inventory->attachments ?? [],
+                    'document_links' => $inventory->document_links ?? [],
+                    'updated_at' => $inventory->updated_at?->toIso8601String(),
+                ];
+            }),
         ]);
     }
 
@@ -79,21 +94,34 @@ class InventoryController extends Controller
         $actor = User::findOrFail($request->header('X-Gulf-Hisab-Actor-Id', 1));
         $inventory = $this->service->createReceipt($company, $actor, $payload);
 
+        $qty = (float) $inventory->quantity_on_hand;
+        $avg = (float) $inventory->average_unit_cost;
+        $value = round($qty * $avg, 2);
+        $available = $qty - (float) $inventory->committed_quantity;
+        $status = $available <= (float) $inventory->reorder_level && (float) $inventory->reorder_level > 0
+            ? 'low_stock'
+            : 'in_stock';
+
         return response()->json(['data' => [
             'id' => $inventory->id,
             'item_id' => $inventory->item_id,
             'product_name' => $inventory->product_name,
             'material' => $inventory->material,
+            'description' => trim(implode(' · ', array_filter([$inventory->material, $inventory->size]))),
             'inventory_type' => $inventory->inventory_type,
             'size' => $inventory->size,
             'source' => $inventory->source,
             'code' => $inventory->code,
-            'quantity_on_hand' => (float) $inventory->quantity_on_hand,
+            'quantity_on_hand' => $qty,
             'committed_quantity' => (float) $inventory->committed_quantity,
             'reorder_level' => (float) $inventory->reorder_level,
+            'average_unit_cost' => $avg,
+            'inventory_value' => $value,
+            'status' => $status,
             'batch_number' => $inventory->batch_number,
             'production_date' => $inventory->production_date?->toDateString(),
             'recorded_by' => $inventory->recorder?->name,
+            'journal_entry_id' => $inventory->last_journal_entry_id,
             'journal_entry_number' => $inventory->lastJournalEntry?->entry_number,
             'inventory_account_code' => $inventory->inventoryAccount?->code,
             'inventory_account_name' => $inventory->inventoryAccount?->name,
@@ -120,6 +148,7 @@ class InventoryController extends Controller
                 'quantity' => abs((float) $row->quantity_delta),
                 'source' => $row->transaction_type === 'sale' ? 'purchase' : ($row->metadata['source'] ?? 'purchase'),
                 'recorded_by' => $row->recorder?->name,
+                'journal_entry_id' => $row->journal_entry_id,
                 'journal_entry_number' => $row->journalEntry?->entry_number,
                 'inventory_account_code' => $row->inventoryItem?->inventoryAccount?->code,
                 'inventory_account_name' => $row->inventoryItem?->inventoryAccount?->name,
@@ -162,6 +191,7 @@ class InventoryController extends Controller
             'quantity' => abs((float) $adjustment->quantity_delta),
             'source' => 'purchase',
             'recorded_by' => $adjustment->recorder?->name,
+            'journal_entry_id' => $adjustment->journal_entry_id,
             'journal_entry_number' => $adjustment->journalEntry?->entry_number,
             'inventory_account_code' => $adjustment->inventoryItem?->inventoryAccount?->code,
             'inventory_account_name' => $adjustment->inventoryItem?->inventoryAccount?->name,
@@ -206,6 +236,7 @@ class InventoryController extends Controller
             'quantity' => abs((float) $sale->quantity_delta),
             'source' => 'purchase',
             'recorded_by' => $sale->recorder?->name,
+            'journal_entry_id' => $sale->journal_entry_id,
             'journal_entry_number' => $sale->journalEntry?->entry_number,
             'inventory_account_code' => $sale->inventoryItem?->inventoryAccount?->code,
             'inventory_account_name' => $sale->inventoryItem?->inventoryAccount?->name,

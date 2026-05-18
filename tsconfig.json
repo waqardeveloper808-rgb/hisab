@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,7 +23,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": [
+        "./*"
+      ]
     }
   },
   "include": [
@@ -27,16 +33,22 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
+    "artifact",
+    "**/artifact/**",
     "node_modules",
+    "**/*.test.ts",
+    "**/*.test.tsx",
     "archive",
     "**/archive/**",
     "artifacts",
     "qa_reports",
     "tools",
+    "chatgpt-analysis-export",
+    "**/chatgpt-analysis-export/**",
     "backend/app/Support/Standards/legacy",
     "backend/app/Support/Standards/migration"
   ]

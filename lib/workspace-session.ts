@@ -99,6 +99,24 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
     // #region agent log
     fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:93',message:'Workspace backend context resolved guest',data:{backendBaseUrlConfigured:Boolean(backendBaseUrl)},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
+    const token = getWorkspaceApiToken(null);
+    const companyIdStr = getConfiguredWorkspaceCompanyId();
+    const auditActorRaw = process.env.GULF_HISAB_AUDIT_ACTOR_ID ?? process.env.AUDIT_ACTOR_ID;
+    const auditActorId = auditActorRaw !== undefined && String(auditActorRaw).trim() !== ""
+      ? Number.parseInt(String(auditActorRaw), 10)
+      : NaN;
+    if (backendBaseUrl && token && companyIdStr) {
+      const activeCompanyId = Number.parseInt(String(companyIdStr), 10);
+      return {
+        backendBaseUrl,
+        activeCompanyId: Number.isFinite(activeCompanyId) ? activeCompanyId : null,
+        companyId: companyIdStr,
+        actorId: Number.isFinite(auditActorId) && auditActorId > 0 ? auditActorId : 1,
+        workspaceToken: token,
+        backendConfigured: true,
+        accessStatus: "ready",
+      };
+    }
     return {
       backendBaseUrl,
       activeCompanyId: null,
@@ -114,6 +132,24 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
     // #region agent log
     fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:105',message:'Workspace backend context treated session as invalid',data:{sessionStatus:sessionResult.status,hasSession:Boolean(sessionResult.session),sessionId:sessionResult.session?.id??null,userId:sessionResult.session?.userId??null,companyId:sessionResult.session?.companyId??null,activeCompanyId:sessionResult.session?.workspaceContext?.activeCompany?.id??null,hasWorkspaceToken:Boolean(getWorkspaceApiToken(sessionResult.session??null))},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
+    const token = getWorkspaceApiToken(null);
+    const companyIdStr = getConfiguredWorkspaceCompanyId();
+    const auditActorRaw = process.env.GULF_HISAB_AUDIT_ACTOR_ID ?? process.env.AUDIT_ACTOR_ID;
+    const auditActorId = auditActorRaw !== undefined && String(auditActorRaw).trim() !== ""
+      ? Number.parseInt(String(auditActorRaw), 10)
+      : NaN;
+    if (backendBaseUrl && token && companyIdStr) {
+      const activeCompanyId = Number.parseInt(String(companyIdStr), 10);
+      return {
+        backendBaseUrl,
+        activeCompanyId: Number.isFinite(activeCompanyId) ? activeCompanyId : null,
+        companyId: companyIdStr,
+        actorId: Number.isFinite(auditActorId) && auditActorId > 0 ? auditActorId : 1,
+        workspaceToken: token,
+        backendConfigured: true,
+        accessStatus: "ready",
+      };
+    }
     return {
       backendBaseUrl,
       activeCompanyId: null,

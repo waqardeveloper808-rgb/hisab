@@ -25,9 +25,9 @@ import {
 const sectionChoices = ["header", "title", "document-info", "delivery", "customer", "items", "totals", "notes", "footer"];
 const fontChoices = ["Segoe UI", "Noto Sans Arabic", "Georgia", "Tahoma", "Times New Roman"];
 const templatePresets = [
-  { key: "classic_corporate", label: "Standard", detail: "Balanced default layout for everyday invoicing with dense spacing, bilingual hierarchy, and dependable print parity.", settings: { layout: "classic_corporate", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 4, column: 1, span: 1 }, totals: { row: 4, column: 2, span: 1 }, items: { row: 5, column: 1, span: 2 }, notes: { row: 6, column: 1, span: 1 }, footer: { row: 6, column: 2, span: 1 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Segoe UI", font_size: 12, title_font_size: 26, spacing_scale: 0.9, section_gap: 8, canvas_padding: 14, top_bar_height: 3, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
-  { key: "modern_carded", label: "Modern", detail: "Cleaner visual separation with softer panels and a client-facing presentation while remaining PDF-safe.", settings: { layout: "modern_carded", card_style: "outlined", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, customer: { row: 3, column: 1, span: 1 }, "document-info": { row: 3, column: 2, span: 1 }, items: { row: 4, column: 1, span: 2 }, notes: { row: 5, column: 1, span: 1 }, totals: { row: 5, column: 2, span: 1 }, delivery: { row: 6, column: 1, span: 2 }, footer: { row: 7, column: 1, span: 2 } }), watermark_enabled: true, watermark_logo_mode: "centered", font_family: "Segoe UI", font_size: 12, title_font_size: 27, spacing_scale: 1.04, section_gap: 14, canvas_padding: 20, top_bar_height: 5, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
-  { key: "industrial_supply", label: "Compact", detail: "Compact data-first layout for operational documents with tighter spacing and stronger tabular emphasis.", settings: { layout: "industrial_supply", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 3, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 3 }, title: { row: 2, column: 1, span: 3 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 3, column: 3, span: 1 }, items: { row: 4, column: 1, span: 3 }, notes: { row: 5, column: 1, span: 2 }, totals: { row: 5, column: 3, span: 1 }, footer: { row: 6, column: 1, span: 3 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Tahoma", font_size: 12, title_font_size: 25, spacing_scale: 0.9, section_gap: 10, canvas_padding: 16, top_bar_height: 4, title_align: "center", body_align: "left", show_qr: true, show_footer: true } },
+  { key: "classic_corporate", label: "Standard", detail: "Balanced default layout for everyday invoicing with dense spacing, bilingual hierarchy, and dependable print parity.", settings: { layout: "classic_corporate", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 4, column: 1, span: 1 }, totals: { row: 4, column: 2, span: 1 }, items: { row: 5, column: 1, span: 2 }, notes: { row: 6, column: 1, span: 1 }, footer: { row: 6, column: 2, span: 1 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Segoe UI", font_size: 12, title_font_size: 26, spacing_scale: 0.9, section_gap: 8, canvas_padding: 14, top_bar_height: 3, title_align: "center", body_align: "left", show_qr: false, show_footer: true } },
+  { key: "modern_carded", label: "Modern", detail: "Cleaner visual separation with softer panels and a client-facing presentation while remaining PDF-safe.", settings: { layout: "modern_carded", card_style: "outlined", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 2, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 2 }, title: { row: 2, column: 1, span: 2 }, customer: { row: 3, column: 1, span: 1 }, "document-info": { row: 3, column: 2, span: 1 }, items: { row: 4, column: 1, span: 2 }, notes: { row: 5, column: 1, span: 1 }, totals: { row: 5, column: 2, span: 1 }, delivery: { row: 6, column: 1, span: 2 }, footer: { row: 7, column: 1, span: 2 } }), watermark_enabled: true, watermark_logo_mode: "centered", font_family: "Segoe UI", font_size: 12, title_font_size: 27, spacing_scale: 1.04, section_gap: 14, canvas_padding: 20, top_bar_height: 5, title_align: "center", body_align: "left", show_qr: false, show_footer: true } },
+  { key: "industrial_supply", label: "Compact", detail: "Compact data-first layout for operational documents with tighter spacing and stronger tabular emphasis.", settings: { layout: "industrial_supply", card_style: "none", section_order: "header,title,document-info,delivery,customer,items,totals,notes,footer", section_grid_columns: 3, section_layout_map: JSON.stringify({ header: { row: 1, column: 1, span: 3 }, title: { row: 2, column: 1, span: 3 }, "document-info": { row: 3, column: 1, span: 1 }, delivery: { row: 3, column: 2, span: 1 }, customer: { row: 3, column: 3, span: 1 }, items: { row: 4, column: 1, span: 3 }, notes: { row: 5, column: 1, span: 2 }, totals: { row: 5, column: 3, span: 1 }, footer: { row: 6, column: 1, span: 3 } }), watermark_enabled: true, watermark_logo_mode: "full-width", font_family: "Tahoma", font_size: 12, title_font_size: 25, spacing_scale: 0.9, section_gap: 10, canvas_padding: 16, top_bar_height: 4, title_align: "center", body_align: "left", show_qr: false, show_footer: true } },
 ] as const;
 
 type SectionLayoutSetting = {
@@ -123,16 +123,18 @@ function stringifySectionLayout(layout: Record<string, SectionLayoutSetting>) {
   }, {}));
 }
 
-function normalizeTemplateFamily(layout: string) {
-  if (["modern_carded", "compact-grid", "statement", "modern"].includes(layout)) {
-    return "modern_carded";
+function normalizeTemplateFamily(layout: string | null | undefined): "standard" | "modern" | "compact" {
+  const value = String(layout ?? "").trim().toLowerCase();
+
+  if (["modern", "modern_carded", "carded"].includes(value)) {
+    return "modern";
   }
 
-  if (["industrial_supply", "legal", "ledger"].includes(layout)) {
-    return "industrial_supply";
+  if (["compact", "compact_dense", "industrial_supply", "industrial supply", "dense"].includes(value)) {
+    return "compact";
   }
 
-  return "classic_corporate";
+  return "standard";
 }
 
 function getSettingValue(template: DocumentTemplateRecord, key: string, fallback = "") {
@@ -290,6 +292,34 @@ function cloneTemplate(template: DocumentTemplateRecord): DocumentTemplateRecord
   };
 }
 
+/**
+ * Laravel-backed template preview/PDF payloads only understand legacy layout enums.
+ * `compact_dense` is a UI-facing alias persisted in drafts but must collapse to `industrial_supply`
+ * outbound (backend schema unchanged — Prompt A3 constraint).
+ */
+function sanitizeOutboundTemplateSettings(settings: DocumentTemplateRecord["settings"]): DocumentTemplateRecord["settings"] {
+  const layout = settings.layout != null ? String(settings.layout) : "";
+  if (layout === "compact_dense") {
+    return { ...settings, layout: "industrial_supply" };
+  }
+  return settings;
+}
+
+function getPreviewStyleFromTemplate(template: DocumentTemplateRecord): "standard" | "modern" | "compact" {
+  const explicit = template.settings.template_style;
+  if (typeof explicit === "string") {
+    return normalizeTemplateFamily(explicit);
+  }
+
+  return normalizeTemplateFamily(getSettingValue(template, "layout", "standard"));
+}
+
+function presetKeyForAmbientStyle(style: "standard" | "modern" | "compact"): (typeof templatePresets)[number]["key"] {
+  if (style === "modern") return "modern_carded";
+  if (style === "compact") return "industrial_supply";
+  return "classic_corporate";
+}
+
 export function DocumentTemplatesRegister(props?: {
   initialDocumentType?: string;
   eyebrowOverride?: string;
@@ -311,11 +341,10 @@ export function DocumentTemplatesRegister(props?: {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [localeFilter, setLocaleFilter] = useState("all");
-  const [isFullscreen, setIsFullscreen] = useState(true);
-  const [draggedSection, setDraggedSection] = useState<string | null>(null);
   const [signatureUploadIntent, setSignatureUploadIntent] = useState<File | null>(null);
   const [signatoryFormName, setSignatoryFormName] = useState("");
   const [signatoryFormPosition, setSignatoryFormPosition] = useState("");
+  const [ambientPreviewFamily, setAmbientPreviewFamily] = useState<"standard" | "modern" | "compact">("standard");
 
   useEffect(() => {
     let active = true;
@@ -336,6 +365,7 @@ export function DocumentTemplatesRegister(props?: {
         if (initialTemplate) {
           setSelectedTemplateId(initialTemplate.id);
           setDraft(cloneTemplate(initialTemplate));
+          setAmbientPreviewFamily(getPreviewStyleFromTemplate(initialTemplate));
         }
       })
       .catch((err: unknown) => {
@@ -374,7 +404,7 @@ export function DocumentTemplatesRegister(props?: {
         watermarkText: draft.watermarkText,
         headerHtml: draft.headerHtml,
         footerHtml: draft.footerHtml,
-        settings: draft.settings,
+        settings: sanitizeOutboundTemplateSettings(draft.settings),
         logoAssetId: draft.logoAssetId,
         isDefault: draft.isDefault,
         isActive: draft.isActive,
@@ -416,8 +446,42 @@ export function DocumentTemplatesRegister(props?: {
   function selectTemplate(template: DocumentTemplateRecord) {
     setSelectedTemplateId(template.id);
     setDraft(cloneTemplate(template));
+    setAmbientPreviewFamily(getPreviewStyleFromTemplate(template));
     setFeedback(null);
     setError(null);
+  }
+
+  function openTemplateStudioFromTemplate(
+    template: DocumentTemplateRecord,
+    styleOverride?: "standard" | "modern" | "compact",
+  ) {
+    const params = new URLSearchParams();
+    const style = normalizeTemplateFamily(styleOverride ?? getPreviewStyleFromTemplate(template));
+    params.set("templateId", String(template.id));
+    params.set("style", style);
+    params.set("documentType", template.documentTypes[0] ?? initialDocumentType ?? "tax_invoice");
+    router.push(`/workspace/user/templates/studio?${params.toString()}`);
+  }
+
+  function applyPreviewStyle(template: DocumentTemplateRecord, style: "standard" | "modern" | "compact") {
+    const layout =
+      style === "modern"
+        ? "modern_carded"
+        : style === "compact"
+          ? "compact_dense"
+          : "classic_corporate";
+
+    const next = cloneTemplate(template);
+    next.settings = {
+      ...next.settings,
+      layout,
+      template_style: style,
+    };
+
+    setSelectedTemplateId(next.id);
+    setDraft(next);
+    setAmbientPreviewFamily(style);
+    setFeedback(`Previewing ${style} style for ${next.name}.`);
   }
 
   function updateDraft(partial: Partial<DocumentTemplateRecord>) {
@@ -738,12 +802,21 @@ export function DocumentTemplatesRegister(props?: {
   }
 
   async function handleSetDefault(template: DocumentTemplateRecord) {
+    if (typeof window !== "undefined" && (document.cookie.includes("workspace_mode=preview") || window.location.search.includes("mode=preview"))) {
+      setError(null);
+      setFeedback("Set default is unavailable in workspace preview mode — sign in to persist company defaults.");
+      return;
+    }
     setSaving(true);
     setFeedback(null);
     setError(null);
 
     try {
-      const updated = await updateDocumentTemplate({ ...template, isDefault: true });
+      const updated = await updateDocumentTemplate({
+        ...template,
+        isDefault: true,
+        settings: sanitizeOutboundTemplateSettings(template.settings),
+      });
 
       setTemplates((current) => current.map((item) => ({
         ...item,
@@ -769,7 +842,10 @@ export function DocumentTemplatesRegister(props?: {
     setError(null);
 
     try {
-      const updated = await updateDocumentTemplate(draft);
+      const updated = await updateDocumentTemplate({
+        ...draft,
+        settings: sanitizeOutboundTemplateSettings(draft.settings),
+      });
       setTemplates((current) => current.map((item) => item.id === updated.id ? updated : item));
       setDraft(cloneTemplate(updated));
       setFeedback(`${updated.name} updated.`);
@@ -829,7 +905,7 @@ export function DocumentTemplatesRegister(props?: {
         watermarkText: draft.watermarkText,
         headerHtml: draft.headerHtml,
         footerHtml: draft.footerHtml,
-        settings: draft.settings,
+        settings: sanitizeOutboundTemplateSettings(draft.settings),
         logoAssetId: draft.logoAssetId,
         isDefault: draft.isDefault,
         isActive: draft.isActive,
@@ -866,22 +942,6 @@ export function DocumentTemplatesRegister(props?: {
     router.push(getTemplateHubHref());
   }
 
-  const logoAssets = useMemo(() => assets.filter((asset) => asset.usage === "logo" || asset.type === "logo"), [assets]);
-  const stampAssets = useMemo(() => assets.filter((asset) => asset.usage === "stamp"), [assets]);
-  const signatureAssets = useMemo(() => assets.filter((asset) => asset.usage === "signature"), [assets]);
-  const selectedAsset = draft?.logoAssetId ? logoAssets.find((asset) => asset.id === draft.logoAssetId) ?? null : null;
-  const selectedStampAsset = draft ? stampAssets.find((asset) => asset.id === Number(draft.settings.stamp_asset_id ?? 0)) ?? null : null;
-  const selectedSignatureAsset = draft ? signatureAssets.find((asset) => asset.id === Number(draft.settings.signature_asset_id ?? 0)) ?? null : null;
-  const draftSections = draft ? parseSectionOrder(draft) : sectionChoices;
-  const hiddenSections = draft ? parseHiddenSections(draft) : new Set<string>();
-  const visibleSections = draftSections.filter((section) => !hiddenSections.has(section));
-  const hiddenSectionList = sectionChoices.filter((section) => hiddenSections.has(section));
-  const draftGridColumns = draft ? Math.max(1, Number(getSettingValue(draft, "section_grid_columns", "2")) || 2) : 2;
-  const draftSectionLayout = draft ? parseSectionLayout(draft) : buildDefaultSectionLayout(2);
-  const englishLabels = draft ? parseLabelOverrides(draft, "en") : {};
-  const arabicLabels = draft ? parseLabelOverrides(draft, "ar") : {};
-  const itemColumnConfig = draft ? parseItemColumnConfig(draft) : fallbackItemColumnConfig;
-
   return (
     <div className="space-y-2" data-inspector-split-view="true">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -902,14 +962,14 @@ export function DocumentTemplatesRegister(props?: {
               { label: "Active", value: (row) => row.isActive },
             ]}
           />
-          {!draft ? <Button variant="secondary" onClick={() => void handleCreateTemplate()} disabled={saving}>{saving ? "Working" : "Create Template"}</Button> : null}
+          <Button variant="secondary" onClick={() => void handleCreateTemplate()} disabled={saving}>{saving ? "Working" : "Create Template"}</Button>
         </div>
       </div>
 
       {feedback ? <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{feedback}</div> : null}
       {error ? <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div> : null}
 
-      <Card className={["overflow-hidden rounded-2xl bg-white/95 p-0", isFullscreen ? "fixed inset-0 z-50 rounded-none" : "min-h-[78vh]"].join(" ")}>
+      <Card className="min-h-[calc(100vh-7rem)] overflow-hidden rounded-2xl bg-white/95 p-0">
         <div className="border-b border-line bg-white/95 px-3 py-2 backdrop-blur">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
@@ -923,13 +983,10 @@ export function DocumentTemplatesRegister(props?: {
                 Template Register
               </Link>
               <span className="rounded-full border border-line bg-surface-soft px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">
-                Full-screen editor
+                Template register + preview
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Button size="sm" variant="secondary" onClick={() => setIsFullscreen((v) => !v)}>
-                {isFullscreen ? "Windowed" : "Fullscreen"}
-              </Button>
               {draft ? <Button size="sm" variant="secondary" onClick={() => void handleDuplicate(draft)} disabled={saving}>Duplicate</Button> : null}
               {draft ? <Button size="sm" variant="secondary" onClick={() => void handleSetDefault(draft)} disabled={saving || draft.isDefault}>{draft.isDefault ? "Default" : "Set Default"}</Button> : null}
               {draft ? <Button size="sm" variant="secondary" onClick={() => void handleDownloadPdf()} disabled={exportingPdf}>{exportingPdf ? "Downloading PDF" : "Download PDF"}</Button> : null}
@@ -956,560 +1013,8 @@ export function DocumentTemplatesRegister(props?: {
           </div>
         </div>
 
-        {draft ? (
-          <div className="grid gap-0 xl:grid-cols-[16rem_minmax(0,1fr)_23rem]">
-            <aside className="border-r border-line bg-[#f5f5f5] p-3 xl:max-h-[calc(100vh-3rem)] xl:overflow-y-auto">
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <button type="button" onClick={() => { setSelectedTemplateId(null); setDraft(null); setFeedback(null); setError(null); }} className="text-sm font-semibold text-primary hover:underline">← Templates</button>
-                <span className="rounded-full border border-line bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">Studio</span>
-              </div>
-              <div className="rounded-2xl border border-line bg-white p-3 shadow-sm">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary">Active template</p>
-                <p className="mt-2 text-sm font-semibold text-ink">{draft.name}</p>
-                <p className="mt-1 text-xs leading-5 text-muted">{templatePresets.find((preset) => preset.key === normalizeTemplateFamily(getSettingValue(draft, "layout", "classic_corporate")))?.detail}</p>
-              </div>
-              <div className="mt-3 rounded-2xl border border-line bg-white p-3 shadow-sm">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="text-xs font-semibold text-ink">Sections</p>
-                  <span className="text-[10px] uppercase tracking-[0.08em] text-muted">Drag</span>
-                </div>
-                <div className="mt-3 grid gap-1.5">
-                  {visibleSections.map((section, index) => (
-                    <div
-                      key={`rail-${section}`}
-                      draggable
-                      onDragStart={() => setDraggedSection(section)}
-                      onDragOver={(event) => event.preventDefault()}
-                      onDrop={() => {
-                        if (draggedSection) {
-                          reorderSections(draggedSection, section);
-                        }
-                        setDraggedSection(null);
-                      }}
-                      onDragEnd={() => setDraggedSection(null)}
-                      className={["flex items-center justify-between gap-2 rounded-xl border px-2.5 py-2 text-xs", draggedSection === section ? "border-primary bg-primary-soft/20" : "border-line bg-surface-soft"].join(" ")}
-                    >
-                      <span className="font-semibold text-ink">{index + 1}. {section}</span>
-                      <div className="flex items-center gap-1">
-                        <button type="button" onClick={() => toggleSectionVisibility(section)} className="rounded-full border border-line bg-white px-1.5 py-0.5 text-[10px] font-semibold text-muted hover:border-primary/40">Hide</button>
-                        <span className="text-[10px] uppercase tracking-[0.08em] text-muted">Move</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {hiddenSectionList.length ? (
-                  <div className="mt-3 rounded-xl border border-dashed border-line bg-[#fbfdfb] p-2.5">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">Hidden sections</p>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {hiddenSectionList.map((section) => (
-                        <button key={`hidden-${section}`} type="button" onClick={() => toggleSectionVisibility(section)} className="rounded-full border border-line bg-white px-2 py-1 text-[10px] font-semibold text-ink hover:border-primary/40">
-                          Add {section}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </aside>
-
-            <div className="bg-[#edf2ed] p-4" data-inspector-template-surface="true">
-              <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-line bg-white px-3 py-2 shadow-sm">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary">Document canvas</p>
-                  <p className="mt-1 text-sm font-semibold text-ink">{draft.name}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-line bg-surface-soft px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">{formatLocale(draft.localeMode)}</span>
-                  <span className="rounded-full border border-primary/20 bg-primary-soft px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-primary">Preview = PDF</span>
-                </div>
-              </div>
-              <div className="mb-3 flex gap-1.5 overflow-x-auto pb-1">
-                {templatePresets.map((preset) => (
-                  <button key={preset.key} type="button" onClick={() => applyPreset(preset.key)} className={[
-                    "shrink-0 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition",
-                    normalizeTemplateFamily(getSettingValue(draft, "layout", "classic_corporate")) === preset.settings.layout ? "border-primary bg-primary-soft/30 text-ink" : "border-line bg-white text-muted hover:border-primary/40",
-                  ].join(" ")}>{preset.label}</button>
-                ))}
-              </div>
-              <div className="mb-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_16rem]">
-                <div className="grid gap-3">
-                  <div className="rounded-2xl border border-[#d9e2d9] bg-white px-3 py-2 shadow-sm">
-                    <div className="flex flex-wrap items-center gap-2">
-                      {visibleSections.map((section, index) => (
-                        <button
-                          key={`stage-${section}`}
-                          type="button"
-                          draggable
-                          onDragStart={() => setDraggedSection(section)}
-                          onDragOver={(event) => event.preventDefault()}
-                          onDrop={() => {
-                            if (draggedSection) {
-                              reorderSections(draggedSection, section);
-                            }
-                            setDraggedSection(null);
-                          }}
-                          onDragEnd={() => setDraggedSection(null)}
-                          className={["inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold transition", draggedSection === section ? "border-primary bg-primary-soft/25 text-ink" : "border-line bg-surface-soft text-ink hover:border-primary/40"].join(" ")}
-                        >
-                          <span className="text-muted">{index + 1}</span>
-                          <span>{section.replaceAll("-", " ")}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className={["overflow-auto rounded-[28px] border border-[#d9e2d9] bg-[#f7faf7] p-5", isFullscreen ? "max-h-[calc(100vh-12.5rem)]" : "max-h-[68vh]"].join(" ")}>
-                {previewHtml ? <div dangerouslySetInnerHTML={{ __html: previewHtml }} /> : <p className="py-12 text-center text-sm text-muted">Preview loading…</p>}
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-line bg-white p-3 shadow-sm">
-                  <p className="text-xs font-semibold text-ink">Canvas brief</p>
-                  <p className="mt-1 text-[11px] leading-5 text-muted">The stage above mirrors the document section flow. Hide, restore, and reorder sections visually while the PDF preview remains exact.</p>
-                  <div className="mt-3 grid gap-2">
-                    <div className="rounded-xl border border-line bg-surface-soft px-3 py-2 text-xs text-ink">
-                      <span className="font-semibold">Grid:</span> {draftGridColumns} columns
-                    </div>
-                    <div className="rounded-xl border border-line bg-surface-soft px-3 py-2 text-xs text-ink">
-                      <span className="font-semibold">Font:</span> {getSettingValue(draft, "font_family", "Segoe UI")} / {getSettingValue(draft, "font_size", "12")}px
-                    </div>
-                    <div className="rounded-xl border border-line bg-surface-soft px-3 py-2 text-xs text-ink">
-                      <span className="font-semibold">Spacing:</span> gap {getSettingValue(draft, "section_gap", "8")}, scale {getSettingValue(draft, "spacing_scale", "0.9")}
-                    </div>
-                    <div className="rounded-xl border border-line bg-surface-soft px-3 py-2 text-xs text-ink">
-                      <span className="font-semibold">Canvas:</span> {getSettingValue(draft, "canvas_padding", "14")}px padding
-                    </div>
-                    <div className="rounded-xl border border-line bg-surface-soft px-3 py-2 text-xs text-ink">
-                      <span className="font-semibold">Visible:</span> {visibleSections.length} sections
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className={["overflow-y-auto border-l border-line bg-white", isFullscreen ? "max-h-[calc(100vh-3rem)]" : "max-h-[85vh]"].join(" ")}>
-              <div className="sticky top-0 z-10 border-b border-line bg-white px-2 py-2">
-                <h3 className="text-sm font-semibold text-ink">Inspector</h3>
-                <p className="mt-0.5 text-[10px] leading-snug text-muted">Tune layout; preview updates live.</p>
-              </div>
-              <div className="grid gap-2 p-2">
-                <Input label="Template name" value={draft.name} onChange={(event) => updateDraft({ name: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2.5 text-sm" />
-                <div className="rounded-lg border-2 border-emerald-400/50 bg-emerald-50/50 p-2">
-                  <p className="text-[11px] font-bold text-ink">Totals Card Width</p>
-                  <p className="mt-0.5 text-[10px] leading-snug text-muted">Pixel max-width for the totals block in live preview (280–720). Saves with the template.</p>
-                  <div className="mt-1.5 flex items-center gap-1">
-                    <button
-                      type="button"
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line bg-white text-base font-bold text-ink hover:bg-surface-soft"
-                      aria-label="Decrease totals card width"
-                      onClick={() => {
-                        const current = Math.min(720, Math.max(280, Number(getSettingValue(draft, "totals_card_width_px", "540")) || 540));
-                        updateDraftSettings({ totals_card_width_px: Math.max(280, current - 10) });
-                      }}
-                    >
-                      −
-                    </button>
-                    <input
-                      id="template-totals-card-width-px"
-                      type="number"
-                      min={280}
-                      max={720}
-                      step={10}
-                      className="h-9 min-w-0 flex-1 rounded-lg border border-line-strong bg-white px-2 text-center text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
-                      value={getSettingValue(draft, "totals_card_width_px", "540")}
-                      onChange={(event) => {
-                        const n = Number(event.target.value);
-                        updateDraftSettings({ totals_card_width_px: Number.isFinite(n) ? Math.min(720, Math.max(280, n)) : 540 });
-                      }}
-                    />
-                    <button
-                      type="button"
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-line bg-white text-base font-bold text-ink hover:bg-surface-soft"
-                      aria-label="Increase totals card width"
-                      onClick={() => {
-                        const current = Math.min(720, Math.max(280, Number(getSettingValue(draft, "totals_card_width_px", "540")) || 540));
-                        updateDraftSettings({ totals_card_width_px: Math.min(720, current + 10) });
-                      }}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-                <div className="grid gap-3 grid-cols-2">
-                  <div>
-                    <label htmlFor="template-language" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Language</label>
-                    <select id="template-language" value={draft.localeMode} onChange={(event) => updateDraft({ localeMode: event.target.value })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
-                      <option value="bilingual">Bilingual</option>
-                      <option value="en">English</option>
-                      <option value="ar">Arabic</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="template-status" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Status</label>
-                    <select id="template-status" value={draft.isActive ? "active" : "inactive"} onChange={(event) => updateDraft({ isActive: event.target.value === "active" })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid gap-2 grid-cols-2">
-                  <div className="flex items-end gap-1.5">
-                    <Input label="Accent" value={draft.accentColor} onChange={(event) => updateDraft({ accentColor: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 min-w-0 flex-1 rounded-lg px-2 text-sm" />
-                    <input type="color" value={draft.accentColor.length === 7 ? draft.accentColor : "#3FAE2A"} onChange={(event) => updateDraft({ accentColor: event.target.value })} className="h-8 w-9 shrink-0 cursor-pointer rounded border border-line-strong bg-white p-0.5" aria-label="Accent color picker" />
-                  </div>
-                  <div>
-                    <label htmlFor="template-layout" className="mb-0.5 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Template family</label>
-                    <select id="template-layout" value={normalizeTemplateFamily(getSettingValue(draft, "layout", "classic_corporate"))} onChange={(event) => updateDraftSettings({ layout: event.target.value })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
-                      <option value="classic_corporate">Standard</option>
-                      <option value="modern_carded">Modern</option>
-                      <option value="industrial_supply">Compact</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid gap-2 grid-cols-2">
-                  <div className="flex items-end gap-1.5">
-                    <Input label="English text" value={getSettingValue(draft, "text_color_en", "")} onChange={(event) => updateDraftSettings({ text_color_en: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 min-w-0 flex-1 rounded-lg px-2 text-sm" placeholder="(theme default)" />
-                    <input type="color" value={getSettingValue(draft, "text_color_en", "").length === 7 ? getSettingValue(draft, "text_color_en", "") : "#13231b"} onChange={(event) => updateDraftSettings({ text_color_en: event.target.value })} className="h-8 w-9 shrink-0 cursor-pointer rounded border border-line-strong bg-white p-0.5" aria-label="English text color" />
-                  </div>
-                  <div className="flex items-end gap-1.5">
-                    <Input label="Arabic text" value={getSettingValue(draft, "text_color_ar", "")} onChange={(event) => updateDraftSettings({ text_color_ar: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 min-w-0 flex-1 rounded-lg px-2 text-sm" placeholder="(theme default)" />
-                    <input type="color" value={getSettingValue(draft, "text_color_ar", "").length === 7 ? getSettingValue(draft, "text_color_ar", "") : "#13231b"} onChange={(event) => updateDraftSettings({ text_color_ar: event.target.value })} className="h-8 w-9 shrink-0 cursor-pointer rounded border border-line-strong bg-white p-0.5" aria-label="Arabic text color" />
-                  </div>
-                </div>
-                <div className="grid gap-3">
-                  <EditableHtmlBlock
-                    label="Header copy"
-                    value={draft.headerHtml}
-                    placeholder="Add a short bilingual header note or approval message."
-                    onChange={(value) => updateDraft({ headerHtml: value })}
-                  />
-                  <EditableHtmlBlock
-                    label="Footer copy"
-                    value={draft.footerHtml}
-                    placeholder="Add footer guidance, payment terms, or compliance notes."
-                    onChange={(value) => updateDraft({ footerHtml: value })}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="template-card-style" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Card style</label>
-                  <select id="template-card-style" value={getSettingValue(draft, "card_style", "soft")} onChange={(event) => updateDraftSettings({ card_style: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
-                    <option value="soft">Soft</option>
-                    <option value="outlined">Outlined</option>
-                    <option value="solid">Solid</option>
-                  </select>
-                </div>
-                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-semibold text-ink">Grid layout</p>
-                      <p className="mt-0.5 text-[11px] text-muted">These row and column settings are sent to the backend preview and PDF renderer.</p>
-                    </div>
-                    <div className="w-24">
-                      <label htmlFor="template-grid-columns" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Columns</label>
-                      <select id="template-grid-columns" value={String(draftGridColumns)} onChange={(event) => updateGridColumns(Number(event.target.value) || 2)} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid gap-1.5">
-                    {draftSections.map((section) => {
-                      const placement = draftSectionLayout[section] ?? { row: 1, column: 1, span: 1 };
-
-                      return (
-                        <div key={`${section}-placement`} className="rounded-lg border border-line bg-white px-2.5 py-2">
-                          <div className="mb-2 flex items-center justify-between gap-2">
-                            <span className="text-xs font-semibold capitalize text-ink">{section.replaceAll("-", " ")}</span>
-                            <span className="text-[10px] text-muted">Row {placement.row} · Col {placement.column} · Span {placement.span}</span>
-                          </div>
-                          <div className="grid gap-2 sm:grid-cols-3">
-                            <div>
-                              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Row</label>
-                              <input type="number" min="1" value={placement.row} onChange={(event) => updateSectionLayout(section, { row: Number(event.target.value) || 1 })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
-                            </div>
-                            <div>
-                              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Column</label>
-                              <input type="number" min="1" max={draftGridColumns} value={placement.column} onChange={(event) => updateSectionLayout(section, { column: Number(event.target.value) || 1 })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
-                            </div>
-                            <div>
-                              <label className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Span</label>
-                              <input type="number" min="1" max={draftGridColumns} value={placement.span} onChange={(event) => updateSectionLayout(section, { span: Number(event.target.value) || 1 })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="grid gap-3 grid-cols-2">
-                  <label className="flex items-center gap-2 rounded-lg border border-line bg-surface-soft px-2.5 py-2 text-xs font-semibold text-ink">
-                    <input type="checkbox" checked={getBooleanSetting(draft, "watermark_enabled", true)} onChange={(event) => updateDraftSettings({ watermark_enabled: event.target.checked })} />
-                    Watermark
-                  </label>
-                  <div>
-                    <label htmlFor="template-watermark-mode" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Mode</label>
-                    <select id="template-watermark-mode" value={getSettingValue(draft, "watermark_logo_mode", "full-width")} onChange={(event) => updateDraftSettings({ watermark_logo_mode: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
-                      <option value="full-width">Full width</option>
-                      <option value="centered">Centered</option>
-                      <option value="disabled">Disabled</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="grid gap-3 grid-cols-2">
-                  <div>
-                    <label htmlFor="template-font-family" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Font family</label>
-                    <select id="template-font-family" value={getSettingValue(draft, "font_family", "Segoe UI")} onChange={(event) => updateDraftSettings({ font_family: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
-                      {fontChoices.map((font) => <option key={font} value={font}>{font}</option>)}
-                    </select>
-                  </div>
-                  <Input label="Base font size" value={getSettingValue(draft, "font_size", "12")} onChange={(event) => updateDraftSettings({ font_size: Number(event.target.value) || 12 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                </div>
-                <div className="grid gap-3 grid-cols-4">
-                  <Input label="Title size" value={getSettingValue(draft, "title_font_size", "26")} onChange={(event) => updateDraftSettings({ title_font_size: Number(event.target.value) || 26 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                  <Input label="Section gap" value={getSettingValue(draft, "section_gap", "12")} onChange={(event) => updateDraftSettings({ section_gap: Number(event.target.value) || 12 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                  <Input label="Spacing scale" value={getSettingValue(draft, "spacing_scale", "1")} onChange={(event) => updateDraftSettings({ spacing_scale: Number(event.target.value) || 1 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                  <Input label="Canvas padding" value={getSettingValue(draft, "canvas_padding", "14")} onChange={(event) => updateDraftSettings({ canvas_padding: Number(event.target.value) || 14 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                </div>
-                <div className="grid gap-3 grid-cols-2">
-                  <div>
-                    <label htmlFor="template-title-align" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Title alignment</label>
-                    <select id="template-title-align" value={getSettingValue(draft, "title_align", "center")} onChange={(event) => updateDraftSettings({ title_align: event.target.value })} className="block h-9 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10">
-                      <option value="left">Left</option>
-                      <option value="center">Center</option>
-                      <option value="right">Right</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="template-body-align" className="mb-1 block text-[10px] font-semibold uppercase tracking-[0.05em] text-ink">Body alignment</label>
-                    <select id="template-body-align" value={getSettingValue(draft, "body_align", "left")} onChange={(event) => updateDraftSettings({ body_align: event.target.value })} className="block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-sm text-ink outline-none focus:border-primary/40 focus:ring-2 focus:ring-primary/10">
-                      <option value="left">Left</option>
-                      <option value="center">Center</option>
-                      <option value="right">Right</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-line bg-surface-soft p-2">
-                  <p className="text-[11px] font-semibold text-ink">Totals card &amp; QR</p>
-                  <p className="mt-0.5 text-[10px] text-muted">Card size, padding, and three internal columns (description / ﷼ / amount).</p>
-                  <div className="mt-2 grid gap-1.5 grid-cols-2">
-                    <Input label="Totals max px (legacy cap)" value={getSettingValue(draft, "totals_card_max_width_px", "0")} onChange={(event) => updateDraftSettings({ totals_card_max_width_px: Number(event.target.value) || 0 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Min height px" value={getSettingValue(draft, "totals_card_min_height_px", "0")} onChange={(event) => updateDraftSettings({ totals_card_min_height_px: Number(event.target.value) || 0 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Min block width" value={getSettingValue(draft, "totals_block_min_width_px", "300")} onChange={(event) => updateDraftSettings({ totals_block_min_width_px: Number(event.target.value) || 300 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Card padding px" value={getSettingValue(draft, "totals_card_padding_px", "10")} onChange={(event) => updateDraftSettings({ totals_card_padding_px: Number(event.target.value) || 10 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Row gap px" value={getSettingValue(draft, "totals_row_gap_px", "6")} onChange={(event) => updateDraftSettings({ totals_row_gap_px: Number(event.target.value) || 6 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Col: description" value={getSettingValue(draft, "totals_col_desc_fr", "140")} onChange={(event) => updateDraftSettings({ totals_col_desc_fr: Number(event.target.value) || 140 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Col: currency" value={getSettingValue(draft, "totals_col_currency_fr", "40")} onChange={(event) => updateDraftSettings({ totals_col_currency_fr: Number(event.target.value) || 40 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Col: amount" value={getSettingValue(draft, "totals_col_amount_fr", "100")} onChange={(event) => updateDraftSettings({ totals_col_amount_fr: Number(event.target.value) || 100 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="Symbol (﷼)" value={getSettingValue(draft, "totals_currency_symbol", "﷼")} onChange={(event) => updateDraftSettings({ totals_currency_symbol: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="QR card width %" value={getSettingValue(draft, "qr_card_width_pct", "38")} onChange={(event) => updateDraftSettings({ qr_card_width_pct: Number(event.target.value) || 38 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    <Input label="QR image px" value={getSettingValue(draft, "qr_image_max_px", "88")} onChange={(event) => updateDraftSettings({ qr_image_max_px: Number(event.target.value) || 88 })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                  </div>
-                  <label className="mt-2 inline-flex items-center gap-2 rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">
-                    <input type="checkbox" checked={getBooleanSetting(draft, "totals_show_taxable_row", false)} onChange={(event) => updateDraftSettings({ totals_show_taxable_row: event.target.checked })} />
-                    Show taxable row in totals
-                  </label>
-                </div>
-                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                  <p className="text-xs font-semibold text-ink">Bilingual labels</p>
-                  <p className="mt-1 text-[11px] text-muted">Edit EN and AR labels on the schema. Preview and PDF consume the same settings.</p>
-                  <div className="mt-2 grid gap-3 grid-cols-2">
-                    <Input label="EN label color" value={getSettingValue(draft, "label_color_en", "#5f6e68")} onChange={(event) => updateDraftSettings({ label_color_en: event.target.value })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                    <Input label="AR label color" value={getSettingValue(draft, "label_color_ar", "#5f6e68")} onChange={(event) => updateDraftSettings({ label_color_ar: event.target.value })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                  </div>
-                  <div className="mt-2 grid gap-2">
-                    {[
-                      ["invoice_number", "Invoice Number"],
-                      ["issue_date", "Issue Date"],
-                      ["supply_date", "Supply Date"],
-                      ["due_date", "Due Date"],
-                      ["reference", "Reference"],
-                      ["order_number", "Order Number"],
-                      ["project", "Project"],
-                      ["quantity", "Qty"],
-                      ["unit", "Unit"],
-                      ["unit_price", "Unit Price"],
-                      ["taxable", "Taxable"],
-                      ["vat_rate", "VAT %"],
-                      ["vat", "VAT"],
-                      ["total", "Total"],
-                      ["subtotal", "Subtotal"],
-                      ["total_vat", "Total VAT"],
-                      ["grand_total", "Grand Total"],
-                    ].map(([key, label]) => (
-                      <div key={`label-edit-${key}`} className="rounded-lg border border-line bg-white px-2.5 py-2">
-                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted">{label}</p>
-                        <div className="grid gap-2 grid-cols-2">
-                          <input value={englishLabels[key] ?? ""} onChange={(event) => updateLabelOverride("en", key, event.target.value)} placeholder="English override" className="h-8 rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
-                          <input value={arabicLabels[key] ?? ""} onChange={(event) => updateLabelOverride("ar", key, event.target.value)} placeholder="Arabic override" className="h-8 rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none focus:border-primary/40 focus:ring-4 focus:ring-primary/10" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-line bg-surface-soft p-2.5">
-                  <p className="text-xs font-semibold text-ink">Logo constraints</p>
-                  <p className="mt-1 text-[11px] text-muted">Constrain logo box so neighboring seller blocks adapt cleanly without overlap.</p>
-                  <div className="mt-2 grid gap-3 grid-cols-2">
-                    <Input label="Logo max width" value={getSettingValue(draft, "logo_max_width", "160")} onChange={(event) => updateDraftSettings({ logo_max_width: Number(event.target.value) || 160 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                    <Input label="Logo max height" value={getSettingValue(draft, "logo_max_height", "62")} onChange={(event) => updateDraftSettings({ logo_max_height: Number(event.target.value) || 62 })} labelClassName="mb-1 text-[10px]" inputClassName="h-9 rounded-lg px-3 text-sm" />
-                  </div>
-                </div>
-                <div className="rounded-lg border border-line bg-surface-soft p-2">
-                  <p className="text-[11px] font-semibold text-ink">Products / services columns</p>
-                  <p className="mt-0.5 text-[10px] text-muted">Show/hide rebalances widths in preview and export. Width applies only when visible.</p>
-                  <label className="mt-1.5 inline-flex items-center gap-2 rounded-md border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink">
-                    <input type="checkbox" checked={getBooleanSetting(draft, "table_heading_bilingual", true)} onChange={(event) => updateDraftSettings({ table_heading_bilingual: event.target.checked })} />
-                    Bilingual headings
-                  </label>
-                  <div className="mt-1.5 flex flex-col gap-1">
-                    {itemColumnConfig.map((column, colIndex) => (
-                      <div key={`item-col-${column.key}`} className="flex flex-wrap items-center gap-1 rounded-md border border-line bg-white px-1.5 py-1">
-                        <span className="min-w-[5.5rem] shrink-0 text-[11px] font-semibold capitalize text-ink">{ITEM_COLUMN_LABELS[column.key] ?? column.key}</span>
-                        {column.visible ? (
-                          <>
-                            <input type="number" min={3} max={60} value={column.width} onChange={(event) => updateItemColumn(column.key, { width: Number(event.target.value) || column.width })} className="h-8 w-[3.25rem] shrink-0 rounded border border-line-strong bg-white px-1 text-center text-xs text-ink outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/15" aria-label={`Width ${column.key}`} />
-                            <button type="button" className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line bg-surface-soft text-sm font-bold text-ink hover:bg-white" aria-label="Narrow column" onClick={() => updateItemColumn(column.key, { width: Math.max(3, column.width - 1) })}>−</button>
-                            <button type="button" className="flex h-8 w-8 shrink-0 items-center justify-center rounded border border-line bg-surface-soft text-sm font-bold text-ink hover:bg-white" aria-label="Widen column" onClick={() => updateItemColumn(column.key, { width: Math.min(60, column.width + 1) })}>+</button>
-                          </>
-                        ) : (
-                          <span className="text-[10px] text-muted">Hidden</span>
-                        )}
-                        <div className="ml-auto flex shrink-0 items-center gap-0.5">
-                          <button type="button" className="flex h-8 w-8 items-center justify-center rounded border border-line bg-white text-xs text-ink disabled:opacity-40" disabled={colIndex === 0} aria-label="Move column up" onClick={() => moveItemColumn(column.key, -1)}>↑</button>
-                          <button type="button" className="flex h-8 w-8 items-center justify-center rounded border border-line bg-white text-xs text-ink disabled:opacity-40" disabled={colIndex >= itemColumnConfig.length - 1} aria-label="Move column down" onClick={() => moveItemColumn(column.key, 1)}>↓</button>
-                        </div>
-                        <label className="flex shrink-0 items-center gap-1 pl-1 text-[10px] font-semibold text-ink">
-                          <input type="checkbox" checked={column.visible} onChange={(event) => updateItemColumn(column.key, { visible: event.target.checked })} />
-                          Show
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="rounded-lg border border-line bg-surface-soft p-2">
-                  <div className="mb-1.5 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-[11px] font-semibold text-ink">Company logo</p>
-                      <p className="text-[10px] text-muted">PNG, JPG, or WebP. Shown in document header.</p>
-                    </div>
-                    <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border border-primary/35 bg-primary-soft/40 px-3 text-[11px] font-semibold text-ink hover:bg-primary-soft/60">
-                      {uploadingLogo ? "Uploading…" : "Upload logo"}
-                      <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploadingLogo} onChange={(event) => {
-                        const file = event.target.files?.[0];
-                        if (file) {
-                          void handleAssetUpload(file, "logo");
-                        }
-                        event.currentTarget.value = "";
-                      }} />
-                    </label>
-                  </div>
-                  <div className="rounded-lg border border-line bg-white p-2">
-                    {selectedAsset?.publicUrl ? (
-                      <Image src={selectedAsset.publicUrl} alt={selectedAsset.originalName} width={192} height={64} unoptimized className="h-16 w-full object-contain" />
-                    ) : <div className="flex h-16 items-center justify-center text-xs text-muted">No logo selected</div>}
-                  </div>
-                  {logoAssets.length > 0 ? (
-                    <select value={draft.logoAssetId ?? ""} onChange={(event) => {
-                      const nextId = event.target.value ? Number(event.target.value) : null;
-                      const asset = nextId ? logoAssets.find((candidate) => candidate.id === nextId) ?? null : null;
-                      setDraft((current) => current ? {
-                        ...current,
-                        logoAssetId: nextId,
-                        logoAssetUrl: asset?.publicUrl ?? "",
-                        accentColor: asset?.metadata?.generatedTheme.primary ?? current.accentColor,
-                      } : current);
-                    }} className="mt-2 block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
-                      <option value="">No logo</option>
-                      {logoAssets.map((asset) => (
-                        <option key={asset.id} value={asset.id}>{asset.originalName}</option>
-                      ))}
-                    </select>
-                  ) : null}
-                  {selectedAsset?.metadata ? (
-                    <div className="mt-2 text-[11px] text-muted">
-                      <p>{selectedAsset.metadata.transparentBackground ? "Transparent PNG" : "Original asset"} · {selectedAsset.metadata.width}×{selectedAsset.metadata.height}</p>
-                      <div className="mt-1 flex flex-wrap gap-1">
-                        {(selectedAsset.metadata.dominantColors || []).map((color) => (
-                          <span key={color} className="inline-flex items-center gap-1 rounded-full border border-line px-1.5 py-0.5 text-[10px]">
-                            <span className="h-2.5 w-2.5 rounded-full border border-black/10" style={{ backgroundColor: color }} />
-                            {color}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="mt-2 grid gap-1 grid-cols-2">
-                        {Object.entries(selectedAsset.metadata.generatedTheme || {}).map(([token, color]) => (
-                          <button key={token} type="button" onClick={() => updateDraft({ accentColor: token === "primary" ? color : draft.accentColor })} className="flex items-center justify-between rounded-lg border border-line bg-white px-2 py-1.5 text-left text-[10px] font-semibold text-ink">
-                            <span>{token}</span>
-                            <span className="inline-flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full border border-black/10" style={{ backgroundColor: color }} />{color}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-                <div className="grid gap-2 grid-cols-2">
-                  <div className="rounded-lg border border-line bg-surface-soft p-2">
-                    <div className="mb-1.5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="text-[11px] font-semibold text-ink">Company stamp</p>
-                        <p className="text-[10px] text-muted">Appears in footer stamp area.</p>
-                      </div>
-                      <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border border-primary/35 bg-primary-soft/40 px-3 text-[11px] font-semibold text-ink hover:bg-primary-soft/60">
-                        Upload stamp
-                        <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => {
-                          const file = event.target.files?.[0];
-                          if (file) {
-                            void handleAssetUpload(file, "stamp");
-                          }
-                          event.currentTarget.value = "";
-                        }} />
-                      </label>
-                    </div>
-                    <div className="rounded-md border border-line bg-white p-2">
-                      {selectedStampAsset?.publicUrl ? <Image src={selectedStampAsset.publicUrl} alt={selectedStampAsset.originalName} width={128} height={96} unoptimized className="h-16 w-full object-contain" /> : <div className="flex h-16 items-center justify-center text-[11px] text-muted">No stamp</div>}
-                    </div>
-                    <select value={draft.settings.stamp_asset_id ? String(draft.settings.stamp_asset_id) : ""} onChange={(event) => updateDraftSettings({ stamp_asset_id: event.target.value ? Number(event.target.value) : null })} className="mt-1.5 block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
-                      <option value="">No stamp</option>
-                      {stampAssets.map((asset) => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}
-                    </select>
-                  </div>
-                  <div className="rounded-lg border border-line bg-surface-soft p-2">
-                    <div className="mb-1.5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <p className="text-[11px] font-semibold text-ink">Signature</p>
-                        <p className="text-[10px] text-muted">Opens signatory details, then uploads.</p>
-                      </div>
-                      <label className="inline-flex h-8 cursor-pointer items-center justify-center rounded-lg border border-primary/35 bg-primary-soft/40 px-3 text-[11px] font-semibold text-ink hover:bg-primary-soft/60">
-                        Upload signature
-                        <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" disabled={uploadingLogo} onChange={(event) => {
-                          const file = event.target.files?.[0];
-                          if (file && draft) {
-                            setSignatoryFormName(getSettingValue(draft, "signatory_name", ""));
-                            setSignatoryFormPosition(getSettingValue(draft, "signatory_position", ""));
-                            setSignatureUploadIntent(file);
-                          }
-                          event.currentTarget.value = "";
-                        }} />
-                      </label>
-                    </div>
-                    <div className="rounded-md border border-line bg-white p-2">
-                      {selectedSignatureAsset?.publicUrl ? <Image src={selectedSignatureAsset.publicUrl} alt={selectedSignatureAsset.originalName} width={160} height={80} unoptimized className="h-16 w-full object-contain" /> : <div className="flex h-16 items-center justify-center text-[11px] text-muted">No signature</div>}
-                    </div>
-                    <div className="mt-1.5 grid gap-1">
-                      <Input label="Signatory (preview)" value={getSettingValue(draft, "signatory_name", "")} onChange={(event) => updateDraftSettings({ signatory_name: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                      <Input label="Position (preview)" value={getSettingValue(draft, "signatory_position", "")} onChange={(event) => updateDraftSettings({ signatory_position: event.target.value })} labelClassName="mb-0.5 text-[10px]" inputClassName="h-8 rounded-lg px-2 text-xs" />
-                    </div>
-                    <select value={draft.settings.signature_asset_id ? String(draft.settings.signature_asset_id) : ""} onChange={(event) => updateDraftSettings({ signature_asset_id: event.target.value ? Number(event.target.value) : null })} className="mt-1.5 block h-8 w-full rounded-lg border border-line-strong bg-white px-2 text-xs text-ink outline-none">
-                      <option value="">No signature</option>
-                      {signatureAssets.map((asset) => <option key={asset.id} value={asset.id}>{asset.originalName}</option>)}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
+        <div className="grid gap-4 p-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="overflow-x-auto rounded-xl border border-line bg-white">
             <table className="min-w-full text-sm" data-inspector-row-clickable="true">
               <thead className="border-b border-line bg-surface-soft/70">
                 <tr>
@@ -1527,12 +1032,25 @@ export function DocumentTemplatesRegister(props?: {
                     <td className="px-3 py-4 text-sm text-muted" colSpan={6}>Loading templates…</td>
                   </tr>
                 ) : filteredTemplates.length ? filteredTemplates.map(({ group, template }) => (
-                  <tr key={`${group.documentType}-${template.id}`} className="border-t border-line/70 align-top">
+                  <tr
+                    key={`${group.documentType}-${template.id}`}
+                    className="cursor-pointer border-t border-line/70 align-top transition hover:bg-surface-soft/50"
+                    role="button"
+                    tabIndex={0}
+                    data-testid={`template-row-${template.id}`}
+                    onClick={() => selectTemplate(template)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        selectTemplate(template);
+                      }
+                    }}
+                  >
                     <td className="px-3 py-2">
-                      <button type="button" className="text-left" onClick={() => selectTemplate(template)} data-inspector-row-clickable="true">
-                        <span className="block font-semibold text-ink hover:text-primary">{template.name}</span>
-                        <span className="mt-0.5 block text-xs text-muted">{templatePresets.find((preset) => preset.key === normalizeTemplateFamily(getSettingValue(template, "layout", "classic_corporate")))?.label ?? "Standard"}</span>
-                      </button>
+                      <span className="block font-semibold text-ink">{template.name}</span>
+                      <span className="mt-0.5 block text-xs text-muted">
+                        {templatePresets.find((preset) => preset.key === presetKeyForAmbientStyle(getPreviewStyleFromTemplate(template)))?.label ?? "Standard"}
+                      </span>
                     </td>
                     <td className="px-3 py-2 text-sm text-muted">{group.label}</td>
                     <td className="px-3 py-2 text-sm text-muted">{formatLocale(template.localeMode)}</td>
@@ -1540,9 +1058,44 @@ export function DocumentTemplatesRegister(props?: {
                     <td className="px-3 py-2 text-sm text-muted">{formatUpdated(template.id)}</td>
                     <td className="px-3 py-2">
                       <div className="flex flex-wrap gap-2">
-                        <Button size="sm" variant="secondary" onClick={() => selectTemplate(template)}>Edit</Button>
-                        <Button size="sm" variant="secondary" onClick={() => void handleDuplicate(template)} disabled={saving}>Duplicate</Button>
-                        <Button size="sm" variant="secondary" onClick={() => void handleSetDefault(template)} disabled={saving || template.isDefault}>Default</Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          data-testid={`template-preview-action-${template.id}`}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            selectTemplate(template);
+                          }}
+                        >
+                          Preview
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          data-testid={`template-edit-action-${template.id}`}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            openTemplateStudioFromTemplate(template);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          data-testid={`template-set-default-action-${template.id}`}
+                          disabled={saving || template.isDefault}
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            void handleSetDefault(template);
+                          }}
+                        >
+                          Set default
+                        </Button>
+                        <Button size="sm" variant="secondary" disabled={saving} onClick={(event) => { event.preventDefault(); event.stopPropagation(); void handleDuplicate(template); }}>Duplicate</Button>
                       </div>
                     </td>
                   </tr>
@@ -1554,7 +1107,82 @@ export function DocumentTemplatesRegister(props?: {
               </tbody>
             </table>
           </div>
-        )}
+          <div
+            data-testid="template-register-preview-panel"
+            className="min-h-[320px] rounded-xl border border-line bg-surface-soft p-3 lg:max-h-[calc(100vh-14rem)] lg:overflow-auto"
+          >
+            {draft ? (
+              <div className="space-y-3">
+                <span className="sr-only" data-testid="template-register-preview-ambient">
+                  {ambientPreviewFamily}
+                </span>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-primary">Selected template</p>
+                  <h2 className="text-base font-semibold text-ink">{draft.name}</h2>
+                  <p className="text-xs text-muted">
+                    Document type: {draft.documentTypes[0] ?? "—"} · Current style: {getPreviewStyleFromTemplate(draft)}
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={getPreviewStyleFromTemplate(draft) === "standard" ? "primary" : "secondary"}
+                    data-testid="template-preview-style-standard"
+                    onClick={() => applyPreviewStyle(draft, "standard")}
+                  >
+                    Standard
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={getPreviewStyleFromTemplate(draft) === "modern" ? "primary" : "secondary"}
+                    data-testid="template-preview-style-modern"
+                    onClick={() => applyPreviewStyle(draft, "modern")}
+                  >
+                    Modern
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={getPreviewStyleFromTemplate(draft) === "compact" ? "primary" : "secondary"}
+                    data-testid="template-preview-style-compact"
+                    onClick={() => applyPreviewStyle(draft, "compact")}
+                  >
+                    Compact
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" variant="secondary" onClick={() => selectTemplate(draft)}>
+                    Preview
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    data-testid="template-preview-edit-selected"
+                    onClick={() => openTemplateStudioFromTemplate(draft, getPreviewStyleFromTemplate(draft))}
+                  >
+                    Edit in Studio
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    disabled={saving || draft.isDefault}
+                    onClick={() => void handleSetDefault(draft)}
+                  >
+                    Set default
+                  </Button>
+                </div>
+                <div className="max-h-[55vh] overflow-auto rounded-lg border border-line bg-white p-3">
+                  {previewHtml ? <div dangerouslySetInnerHTML={{ __html: previewHtml }} /> : <p className="py-8 text-center text-sm text-muted">Preview loading…</p>}
+                </div>
+              </div>
+            ) : (
+              <p className="py-12 text-center text-sm text-muted">Select a template from the list to preview.</p>
+            )}
+          </div>
+        </div>
         {signatureUploadIntent ? (
           <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/45 p-4" role="dialog" aria-modal="true" aria-labelledby="sig-modal-title">
             <div className="w-full max-w-md rounded-xl border border-line bg-white p-4 shadow-xl">

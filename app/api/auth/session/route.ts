@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   authSessionCookieName,
+  authSessionCookieSecure,
   authSessionMaxAge,
   createAuthSessionValue,
   guestAuthSession,
@@ -138,7 +139,7 @@ export async function PATCH(request: NextRequest) {
   response.cookies.set(authSessionCookieName, await createAuthSessionValue(nextSession), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: authSessionCookieSecure(),
     maxAge: authSessionMaxAge,
     path: "/",
   });

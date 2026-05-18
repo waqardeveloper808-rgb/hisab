@@ -213,7 +213,7 @@ export function CustomersRegister() {
         entity="customer"
         title="Customer Import"
         description="Upload or paste customer rows, review field mapping, inspect validation, and post customers directly into the active workspace register."
-        exampleSource={"customer,email,phone,city,country,vat_number\nAl Waha Stores,ops@alwaha.sa,966500000001,Riyadh,Saudi Arabia,300123456700003"}
+        exampleSource={`customer,CR Number,Opening Balance,email,phone,city,country,vat_number,building_number,street,district,postal_code,secondary_number\nAcme Trading,7030123456,15000.50,ops@acme.sa,+966512345678,Riyadh,SA,301234567890003,7421,King Fahd Road,Al Olaya,12214,3184`}
         sourceLabelDefault="customers-import.csv"
         fields={getCustomerImportFields()}
         requiredFields={getDirectoryImportRequiredFields("customer")}
@@ -227,6 +227,8 @@ export function CustomersRegister() {
         }}
         previewColumns={[
           { label: "Customer", value: (row) => row.displayName },
+          { label: "CR", value: (row) => row.crNumber || "-" },
+          { label: "Opening bal.", value: (row) => (row.openingBalance != null ? String(row.openingBalance) : "-") },
           { label: "Email", value: (row) => row.email || "-" },
           { label: "Phone", value: (row) => row.phone || "-" },
           { label: "City", value: (row) => row.city || "-" },

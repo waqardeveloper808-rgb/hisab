@@ -29,7 +29,7 @@ class WorkspaceSettingsAndBooksApiTest extends TestCase
             'company' => [
                 'legal_name' => 'Settings Co Updated',
                 'trade_name' => 'Settings Trade',
-                'tax_number' => '300000000000111',
+                'tax_number' => '300000000000113',
                 'registration_number' => 'REG-111',
                 'base_currency' => 'SAR',
                 'locale' => 'en',
@@ -53,14 +53,26 @@ class WorkspaceSettingsAndBooksApiTest extends TestCase
                 'default_vat_payable_account_code' => '2200',
                 'default_vat_receivable_account_code' => '1300',
                 'zatca_environment' => 'production',
-                'numbering_rules' => [
+                'numbering_rules' => array_merge([
+                    'englishName' => 'Settings Co',
+                    'arabicName' => 'شركة الإعدادات',
+                    'phone' => '+966500000000',
+                    'addressBuildingNumber' => '7421',
+                    'addressStreet' => 'King Fahd Road',
+                    'addressArea' => 'Al Olaya',
+                    'addressCity' => 'Riyadh',
+                    'addressPostalCode' => '12214',
+                    'addressAdditionalNumber' => '3184',
+                    'addressCountry' => 'SA',
+                    'shortAddress' => 'Riyadh 12214',
+                ], [
                     'invoice_footer' => 'Thank you',
-                ],
+                ]),
             ],
         ])->assertOk()
             ->assertJsonPath('data.company.legal_name', 'Settings Co Updated')
             ->assertJsonPath('data.settings.zatca_environment', 'production')
-            ->assertJsonPath('data.settings.numbering_rules.invoice_footer', 'Thank you');
+            ->assertJsonPath('data.settings.numbering_rules.englishName', 'Settings Co');
     }
 
     public function test_general_ledger_returns_posted_lines(): void
@@ -74,10 +86,11 @@ class WorkspaceSettingsAndBooksApiTest extends TestCase
 
         $company = Company::findOrFail($companyId);
 
-        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => 'Ledger Customer',
-        ])->json('data.id');
+            'tax_number' => $this->uniqueKsaVatNumber('ledger-co-customer'),
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()->where('company_id', $companyId)->where('code', 'VAT15')->value('id');
         $incomeAccountId = $company->accounts()->where('code', '4000')->value('id');

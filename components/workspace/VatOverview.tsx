@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Card } from "@/components/Card";
@@ -16,10 +17,34 @@ import {
 } from "@/lib/workspace-api";
 import { currency } from "@/components/workflow/utils";
 
+function isWorkspacePreviewMode(): boolean {
+  if (typeof window === "undefined") return false;
+  return (
+    window.location.search.includes("mode=preview")
+    || document.cookie.includes("workspace_mode=preview")
+    || document.body.dataset.workspaceMode === "preview"
+  );
+}
+
+function parseLedgerMetaAmount(value: string | undefined): number | null {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+  const parsed = Number(String(value).replace(/,/g, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function sumVatAmounts(rows: Array<{ vatAmount: number }>) {
+  return rows.reduce((sum, row) => sum + row.vatAmount, 0);
+}
+
 const emptyState: ReportsSnapshot = {
   vatSummary: [],
+  vatReconciliationMeta: null,
   vatDetail: [],
   vatReceivedDetails: [],
+  vatReceivedLineDetails: [],
+  cashFlow: null,
   vatPaidDetails: [],
   receivablesAging: [],
   payablesAging: [],
@@ -39,7 +64,6 @@ export function VatOverview() {
   const [toDate, setToDate] = useState("");
   const [received, setReceived] = useState<VatReceivedDetailRecord[]>([]);
   const [paid, setPaid] = useState<VatPaidDetailRecord[]>([]);
-  const [openModal, setOpenModal] = useState<"received" | "paid" | null>(null);
   const [intelligence, setIntelligence] = useState<IntelligenceSnapshot | null>(null);
 
   useEffect(() => {
@@ -49,7 +73,14 @@ export function VatOverview() {
         console.error("[VatOverview] getReportsSnapshot failed:", err);
         setSnapshot(emptyState);
       });
-    getReportIntelligence().then(setIntelligence).catch((err: unknown) => { console.error('[VatOverview] getReportIntelligence failed:', err); });
+  }, []);
+
+  useEffect(() => {
+    if (isWorkspacePreviewMode()) {
+      setIntelligence(null);
+      return;
+    }
+    void getReportIntelligence().then(setIntelligence).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -73,9 +104,35 @@ export function VatOverview() {
       });
   }, [fromDate, toDate]);
 
-  const vatReceived = received.reduce((sum, row) => sum + row.vatAmount, 0);
-  const vatPaid = paid.reduce((sum, row) => sum + row.vatAmount, 0);
+  const hasPeriodFilter = Boolean(fromDate || toDate);
+  const receivedDetailRows = hasPeriodFilter ? received : (snapshot.vatReceivedDetails.length > 0 ? snapshot.vatReceivedDetails : received);
+  const paidDetailRows = hasPeriodFilter ? paid : (snapshot.vatPaidDetails.length > 0 ? snapshot.vatPaidDetails : paid);
+
+  let vatReceived: number;
+  let vatPaid: number;
+  if (hasPeriodFilter) {
+    vatReceived = sumVatAmounts(received);
+    vatPaid = sumVatAmounts(paid);
+  } else {
+    const ledgerReceived = parseLedgerMetaAmount(snapshot.vatReconciliationMeta?.vatReceived);
+    const ledgerPaid = parseLedgerMetaAmount(snapshot.vatReconciliationMeta?.vatPaid);
+    if (ledgerReceived !== null && ledgerPaid !== null) {
+      vatReceived = ledgerReceived;
+      vatPaid = ledgerPaid;
+    } else {
+      vatReceived = sumVatAmounts(snapshot.vatReceivedDetails.length > 0 ? snapshot.vatReceivedDetails : received);
+      vatPaid = sumVatAmounts(snapshot.vatPaidDetails.length > 0 ? snapshot.vatPaidDetails : paid);
+    }
+  }
   const vatPayable = vatReceived - vatPaid;
+
+  const showVatEmptyState =
+    snapshot.backendReady
+    && !hasPeriodFilter
+    && !snapshot.vatReconciliationMeta
+    && snapshot.vatSummary.length === 0
+    && receivedDetailRows.length === 0
+    && paidDetailRows.length === 0;
 
   return (
     <div className="space-y-3">
@@ -99,30 +156,66 @@ export function VatOverview() {
       </Card>
 
       <div className="grid gap-2.5 lg:grid-cols-[1fr_1fr_0.9fr]">
-        <Card className="rounded-xl bg-white/95 p-3" data-inspector-vat-section="received">
+        <Card className="rounded-xl border-l-4 border-l-emerald-500/80 bg-white/95 p-3" data-inspector-vat-section="received">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">VAT Received</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{currency(vatReceived)} SAR</p>
-          <p className="mt-1 text-xs text-muted">{received.length} invoices in the current period</p>
+          <p className="mt-1 text-2xl font-bold text-ink">
+            {showVatEmptyState ? "—" : `${currency(vatReceived)} SAR`}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            {hasPeriodFilter
+              ? `${received.length} output-VAT documents in the filtered period`
+              : `${receivedDetailRows.length} output-VAT documents (ledger totals match VAT summary)`}
+          </p>
           <div className="mt-3">
-            <Button size="xs" variant="secondary" onClick={() => setOpenModal("received")}>See details</Button>
+            <Link
+              href="/workspace/user/vat/received"
+              className="inline-flex items-center rounded-md border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-sm outline-none ring-primary/30 transition hover:border-primary/35 hover:text-primary focus-visible:ring-2"
+              data-testid="vat-received-open-register"
+            >
+              See details
+            </Link>
           </div>
         </Card>
 
-        <Card className="rounded-xl bg-white/95 p-3" data-inspector-vat-section="paid">
+        <Card className="rounded-xl border-l-4 border-l-sky-500/80 bg-white/95 p-3" data-inspector-vat-section="paid">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">VAT Paid</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{currency(vatPaid)} SAR</p>
-          <p className="mt-1 text-xs text-muted">{paid.length} records in the current period</p>
+          <p className="mt-1 text-2xl font-bold text-ink">
+            {showVatEmptyState ? "—" : `${currency(vatPaid)} SAR`}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            {hasPeriodFilter
+              ? `${paid.length} input-VAT records in the filtered period`
+              : `${paidDetailRows.length} input-VAT records (ledger totals match VAT summary)`}
+          </p>
           <div className="mt-3">
-            <Button size="xs" variant="secondary" onClick={() => setOpenModal("paid")}>See details</Button>
+            <Link
+              href="/workspace/user/vat/paid"
+              className="inline-flex items-center rounded-md border border-line bg-white px-2.5 py-1 text-xs font-semibold text-ink shadow-sm outline-none ring-primary/30 transition hover:border-primary/35 hover:text-primary focus-visible:ring-2"
+              data-testid="vat-paid-open-register"
+            >
+              See details
+            </Link>
           </div>
         </Card>
 
         <Card className="rounded-xl border border-primary/25 bg-primary-soft/40 p-3" data-inspector-vat-section="payable">
           <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">VAT Payable</p>
-          <p className="mt-1 text-2xl font-bold text-ink">{currency(vatPayable)} SAR</p>
+          <p className="mt-1 text-2xl font-bold text-ink">
+            {showVatEmptyState ? "—" : `${currency(vatPayable)} SAR`}
+          </p>
           <p className="mt-1 text-xs leading-5 text-muted">VAT Payable = VAT Received - VAT Paid</p>
         </Card>
       </div>
+
+      {snapshot.vatReconciliationMeta ? (
+        <Card className="rounded-xl border border-line bg-surface-soft/40 p-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">Posted ledger reconciliation</p>
+          <p className="mt-1 text-xs text-muted">
+            Payable account movement: received {snapshot.vatReconciliationMeta.vatReceived} SAR · receivable (input) {snapshot.vatReconciliationMeta.vatPaid} SAR · net payable {snapshot.vatReconciliationMeta.vatPayable} SAR
+            {snapshot.vatReconciliationMeta.validationStatus ? ` · ${snapshot.vatReconciliationMeta.validationStatus}` : ""}
+          </p>
+        </Card>
+      ) : null}
 
       <WorkspaceDataTable
         registerTableId="vat-dashboard-summary"
@@ -156,51 +249,6 @@ export function VatOverview() {
         </Card>
       ) : null}
 
-      {openModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/45 px-4 py-6" role="dialog" aria-modal="true">
-          <div className="max-h-[85vh] w-full max-w-5xl overflow-auto rounded-2xl bg-white p-4 shadow-[0_30px_90px_-40px_rgba(17,32,24,0.55)]" data-inspector-vat-modal={openModal}>
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-primary">{openModal === "received" ? "VAT Received" : "VAT Paid"} details</p>
-                <h2 className="text-lg font-semibold text-ink">{openModal === "received" ? "Invoices filtered by current period" : "Expenses, purchases, and rent filtered by current period"}</h2>
-              </div>
-              <Button size="xs" variant="secondary" onClick={() => setOpenModal(null)}>Close</Button>
-            </div>
-
-            {openModal === "received" ? (
-              <WorkspaceDataTable
-                registerTableId="vat-dashboard-received-modal"
-                title="VAT received details"
-                caption="Full invoice list filtered by the current VAT screen period."
-                rows={received}
-                emptyMessage="No invoices matched the current VAT period."
-                columns={[
-                  { id: "invoice", header: "Invoice number", defaultWidth: 128, render: (row) => row.invoiceNumber },
-                  { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.date },
-                  { id: "customer", header: "Customer", defaultWidth: 200, render: (row) => row.customer },
-                  { id: "taxable", header: "Taxable amount", align: "right", defaultWidth: 130, render: (row) => `${currency(row.taxableAmount)} SAR` },
-                  { id: "vat", header: "VAT amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.vatAmount)} SAR` },
-                ]}
-              />
-            ) : (
-              <WorkspaceDataTable
-                registerTableId="vat-dashboard-paid-modal"
-                title="VAT paid details"
-                caption="Expenses, purchases, and rent filtered by the current VAT screen period."
-                rows={paid}
-                emptyMessage="No purchase-side VAT records matched the current VAT period."
-                columns={[
-                  { id: "reference", header: "Reference", defaultWidth: 130, render: (row) => row.reference },
-                  { id: "date", header: "Date", defaultWidth: 110, render: (row) => row.date },
-                  { id: "vendor", header: "Vendor", defaultWidth: 200, render: (row) => row.vendor },
-                  { id: "category", header: "Category", defaultWidth: 120, render: (row) => row.category.replaceAll("_", " ") },
-                  { id: "vat", header: "VAT amount", align: "right", defaultWidth: 120, render: (row) => `${currency(row.vatAmount)} SAR` },
-                ]}
-              />
-            )}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }

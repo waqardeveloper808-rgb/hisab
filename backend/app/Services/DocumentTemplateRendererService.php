@@ -72,8 +72,13 @@ SVG;
         if (! $template && $document->template_id) {
             $template = DocumentTemplate::query()
                 ->where('company_id', $company->id)
+                ->where('is_active', true)
                 ->with('logoAsset')
                 ->find($document->template_id);
+        }
+
+        if (! $template) {
+            $template = $this->resolveFallbackTemplate($company, $document);
         }
 
         if (! $template) {
@@ -214,6 +219,15 @@ SVG;
         ];
     }
 
+    private function resolveFallbackTemplate(Company $company, Document $document): ?DocumentTemplate
+    {
+        try {
+            return $this->templateEngineRuntime->requireTemplate($company, null, (string) $document->type)->loadMissing('logoAsset');
+        } catch (ValidationException) {
+            return null;
+        }
+    }
+
     private function buildHtml(Company $company, Document $document, ?DocumentTemplate $template): string
     {
         $settings = $template?->settings ?? [];
@@ -271,10 +285,21 @@ SVG;
     private function renderCanonicalTemplate(Company $company, Document $document, ?DocumentTemplate $template, string $documentTitle, string $accentColor, string $logo, string $family, string $contactLabel, string $defaultNote, bool $showCommercialTotals, bool $showVatSection, bool $isTaxComplianceDocument, ?string $stampUrl, ?string $signatureUrl): string
     {
         $settings = $template?->settings ?? [];
-        $spacingScale = max((float) ($settings['spacing_scale'] ?? 0.9), 0.82);
+        $chrome = $this->familyChrome($family, $settings);
+        $settings = array_merge($settings, [
+            '_use_section_stack_gap' => true,
+            '_layout_family' => $family,
+            '_layout_chrome' => $chrome,
+        ]);
+
+        $spacingScale = max((float) $chrome['spacing_scale'], 0.82);
         $fontFamily = e((string) ($settings['font_family'] ?? self::DOCUMENT_FONT_STACK));
         $fontSize = max((int) ($settings['font_size'] ?? 12), 11);
-        $titleSize = max((int) ($settings['title_font_size'] ?? 24), 22);
+        $titleSize = match ($family) {
+            self::TEMPLATE_FAMILY_MODERN => max((int) ($settings['title_font_size'] ?? 27), 26),
+            self::TEMPLATE_FAMILY_INDUSTRIAL => max((int) ($settings['title_font_size'] ?? 22), 20),
+            default => max((int) ($settings['title_font_size'] ?? 25), 22),
+        };
         $theme = $this->themePalette($family, $accentColor);
 
         $sectionOrder = $this->buildSectionOrder((string) ($settings['section_order'] ?? ''));
@@ -291,7 +316,7 @@ SVG;
             'customer' => $this->renderCustomerSection($document, $contactLabel, $theme, $fontSize, $spacingScale, $settings),
             'items' => $this->renderItemsSection($document, $theme, $fontSize, $spacingScale, $showCommercialTotals, $settings),
             'totals' => $showCommercialTotals ? $this->renderTotalsSection($document, $theme, $fontSize, $spacingScale, $showVatSection, $settings) : '',
-            'notes' => filled($document->notes ?: $defaultNote) ? $this->renderNotesSection($document->notes ?: $defaultNote, $theme, $fontSize, $spacingScale) : '',
+            'notes' => filled($document->notes ?: $defaultNote) ? $this->renderNotesSection($document->notes ?: $defaultNote, $theme, $fontSize, $spacingScale, $settings) : '',
             'footer' => $this->renderFooterSection($company, $document, $theme, $fontSize, $spacingScale, $isTaxComplianceDocument, $stampUrl, $signatureUrl, $settings),
         ];
 
@@ -301,9 +326,21 @@ SVG;
             ->filter(fn (string $html) => $html !== '')
             ->implode('');
 
+        [$articleRadius, $articleShadow] = match ($family) {
+            self::TEMPLATE_FAMILY_MODERN => [10, '0 4px 18px rgba(15,23,42,0.08)'],
+            self::TEMPLATE_FAMILY_INDUSTRIAL => [4, 'none'],
+            default => [6, 'none'],
+        };
+        $canvasPad = (int) $chrome['canvas_padding'];
+        $topBar = (int) $chrome['top_bar_height'];
+        $tplName = e((string) ($template?->name ?? ''));
+        $articleStyle = 'background:#ffffff;border:1px solid '.$theme['frame'].';font-family:'.$fontFamily.',Tahoma,Arial,sans-serif;color:'.$theme['text'].';padding:'.$canvasPad.'px;border-radius:'.$articleRadius.'px;box-shadow:'.$articleShadow.';border-top:'.$topBar.'px solid '.$theme['accent'].';';
+        $gapPx = (int) round($chrome['section_gap']);
+        $sectionsStack = '<div style="display:flex;flex-direction:column;gap:'.$gapPx.'px;">'.$sections.'</div>';
+
         return '<div style="max-width:980px;margin:0 auto;padding:'.self::SPACE_16.'px;background:#ffffff;">'
-            .'<article data-doc-root="true" style="background:#ffffff;border:1px solid '.$theme['frame'].';font-family:'.$fontFamily.',Tahoma,Arial,sans-serif;color:'.$theme['text'].';padding:'.self::SPACE_16.'px;">'
-            .$sections
+            .'<article data-doc-root="true" data-template-family="'.e($family).'" data-template-name="'.$tplName.'" style="'.$articleStyle.'">'
+            .$sectionsStack
             .'</article></div>';
     }
 
@@ -401,9 +438,9 @@ SVG;
     private function familyChrome(string $family, array $settings): array
     {
         $defaults = match ($family) {
-            self::TEMPLATE_FAMILY_INDUSTRIAL => ['grid_columns' => 3, 'section_gap' => 10, 'spacing_scale' => 0.9, 'canvas_padding' => 16, 'top_bar_height' => 4],
-            self::TEMPLATE_FAMILY_MODERN => ['grid_columns' => 2, 'section_gap' => 14, 'spacing_scale' => 1.04, 'canvas_padding' => 20, 'top_bar_height' => 5],
-            default => ['grid_columns' => 2, 'section_gap' => 8, 'spacing_scale' => 0.9, 'canvas_padding' => 14, 'top_bar_height' => 3],
+            self::TEMPLATE_FAMILY_INDUSTRIAL => ['grid_columns' => 3, 'section_gap' => 6, 'spacing_scale' => 0.88, 'canvas_padding' => 12, 'top_bar_height' => 3],
+            self::TEMPLATE_FAMILY_MODERN => ['grid_columns' => 2, 'section_gap' => 18, 'spacing_scale' => 1.0, 'canvas_padding' => 20, 'top_bar_height' => 4],
+            default => ['grid_columns' => 2, 'section_gap' => 12, 'spacing_scale' => 0.95, 'canvas_padding' => 14, 'top_bar_height' => 3],
         };
 
         return [
@@ -435,7 +472,15 @@ SVG;
         $logoMaxWidth = max(72, min(260, (int) ($settings['logo_max_width'] ?? 160)));
         $logoMaxHeight = max(44, min(160, (int) ($settings['logo_max_height'] ?? 62)));
 
-        return '<section data-doc-section="header" style="display:grid;grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr);gap:0;align-items:start;padding-bottom:'.self::SPACE_16.'px;border-bottom:1px solid '.$theme['frame'].';margin-bottom:'.self::SPACE_16.'px;">'
+        $family = (string) ($settings['_layout_family'] ?? self::TEMPLATE_FAMILY_CLASSIC);
+        $headerColGap = match ($family) {
+            self::TEMPLATE_FAMILY_MODERN => 20,
+            self::TEMPLATE_FAMILY_INDUSTRIAL => 10,
+            default => 16,
+        };
+        $mb = $this->sectionBlockMarginBottom($settings);
+
+        return '<section data-doc-section="header" style="display:grid;grid-template-columns:minmax(0,1fr) 132px minmax(0,1fr);gap:'.$headerColGap.'px;align-items:start;padding-bottom:'.self::SPACE_16.'px;border-bottom:1px solid '.$theme['frame'].';margin-bottom:'.$mb.'px;">'
             .'<div style="display:grid;gap:'.self::SPACE_4.'px;align-content:start;text-align:left;font-size:'.$fontSize.'px;line-height:1.5;color:'.$theme['text'].';padding-right:'.self::SPACE_12.'px;">'
             .'<div style="font-size:'.($fontSize + 6).'px;font-weight:800;line-height:1.15;">'.e($sellerNameEn).'</div>'
             .($sellerAddressEn !== '' ? '<div>'.e($sellerAddressEn).'</div>' : '')
@@ -487,9 +532,13 @@ SVG;
             [$referenceLabels['en'], $referenceLabels['ar'], (string) data_get($document->custom_fields, 'reference', '')],
         ], fn (array $row) => filled($row[2]));
 
-        return '<section data-doc-section="document-info" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:'.self::SPACE_12.'px;margin-bottom:'.self::SPACE_16.'px;">'
-            .collect($rows)->map(function (array $row) use ($fontSize, $labelColorEn, $labelColorAr, $theme): string {
-                return '<div data-doc-meta-card="true" style="display:grid;min-width:0;border:1px solid '.$theme['frame'].';background:#fff;padding:'.self::SPACE_12.'px;gap:'.self::SPACE_8.'px;">'
+        $family = (string) ($settings['_layout_family'] ?? self::TEMPLATE_FAMILY_CLASSIC);
+        $mb = $this->sectionBlockMarginBottom($settings);
+        $cardChrome = $this->infoMetaCardChrome($family, $theme);
+
+        return '<section data-doc-section="document-info" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:'.self::SPACE_12.'px;margin-bottom:'.$mb.'px;">'
+            .collect($rows)->map(function (array $row) use ($fontSize, $labelColorEn, $labelColorAr, $theme, $cardChrome): string {
+                return '<div data-doc-meta-card="true" style="display:grid;min-width:0;'.$cardChrome.'">'
                     .'<div data-doc-meta-labels="true" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:'.self::SPACE_12.'px;align-items:start;">'
                     .'<div data-doc-label="en" style="font-size:'.($fontSize - 2).'px;line-height:1.25;font-weight:700;color:'.$labelColorEn.';text-transform:uppercase;letter-spacing:.06em;overflow-wrap:anywhere;">'.e($row[0]).'</div>'
                     .'<div data-doc-label="ar" dir="rtl" style="font-size:'.($fontSize - 2).'px;font-weight:700;color:'.$labelColorAr.';font-family:'.self::ARABIC_FONT_STACK.';direction:rtl;unicode-bidi:isolate;text-align:right;line-height:1.35;overflow-wrap:anywhere;">'.e($row[1]).'</div>'
@@ -516,7 +565,12 @@ SVG;
             return '';
         }
 
-        return '<section data-doc-section="delivery" style="border:1px solid '.$theme['frame'].';background:'.$theme['section'].';padding:'.self::SPACE_12.'px;margin-bottom:'.self::SPACE_16.'px;">'
+        $family = (string) ($settings['_layout_family'] ?? self::TEMPLATE_FAMILY_CLASSIC);
+        $modernShell = $family === self::TEMPLATE_FAMILY_MODERN ? 'border-radius:10px;box-shadow:0 2px 12px rgba(15,23,42,0.06);overflow:hidden;' : '';
+        $pad = $family === self::TEMPLATE_FAMILY_MODERN ? self::SPACE_16 : self::SPACE_12;
+        $mb = $this->sectionBlockMarginBottom($settings);
+
+        return '<section data-doc-section="delivery" style="border:1px solid '.$theme['frame'].';background:'.$theme['section'].';padding:'.$pad.'px;'.$modernShell.'margin-bottom:'.$mb.'px;">'
             .'<div style="margin-bottom:'.self::SPACE_8.'px;font-size:'.($fontSize - 2).'px;text-transform:uppercase;letter-spacing:.06em;color:'.$theme['muted'].';font-weight:800;">Delivery / التسليم</div>'
             .'<div style="display:grid;gap:'.self::SPACE_8.'px;">'
             .collect($rows)->map(fn (array $row) => '<div data-doc-bilingual-row="true" style="display:grid;grid-template-columns:1fr 1fr;gap:'.self::SPACE_12.'px;"><div style="text-align:left;"><strong>'.e($row[0]).':</strong> '.e((string) $row[2]).'</div><div dir="rtl" style="text-align:right;"><strong>'.e($row[1]).':</strong> '.e((string) $row[2]).'</div></div>')->implode('')
@@ -551,7 +605,11 @@ SVG;
             $country,
         ], fn (?string $value) => filled($value)));
 
-        return '<section data-doc-section="customer" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0;border:1px solid '.$theme['frame'].';margin-bottom:'.self::SPACE_16.'px;">'
+        $family = (string) ($settings['_layout_family'] ?? self::TEMPLATE_FAMILY_CLASSIC);
+        $modernShell = $family === self::TEMPLATE_FAMILY_MODERN ? 'border-radius:10px;box-shadow:0 2px 12px rgba(15,23,42,0.06);overflow:hidden;' : '';
+        $mb = $this->sectionBlockMarginBottom($settings);
+
+        return '<section data-doc-section="customer" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:0;'.$modernShell.'border:1px solid '.$theme['frame'].';margin-bottom:'.$mb.'px;">'
             .'<div style="padding:'.self::SPACE_12.'px;border-right:1px solid '.$theme['frame'].';font-size:'.$fontSize.'px;line-height:1.45;">'
             .($buyerNameEn !== '' ? '<div data-doc-party="en" style="font-size:'.($fontSize + 1).'px;font-weight:800;line-height:1.25;">'.e($buyerNameEn).'</div>' : '')
             .($buyerNameAr !== '' ? '<div data-doc-party="ar" dir="rtl" style="margin-top:'.self::SPACE_4.'px;font-family:'.self::ARABIC_FONT_STACK.';font-size:'.($fontSize + 1).'px;font-weight:800;line-height:1.35;text-align:right;">'.e($buyerNameAr).'</div>' : '')
@@ -581,6 +639,20 @@ SVG;
 
     private function renderItemsSection(Document $document, array $theme, int $fontSize, float $spacingScale, bool $showCommercialTotals, array $settings): string
     {
+        $family = (string) ($settings['_layout_family'] ?? self::TEMPLATE_FAMILY_CLASSIC);
+        $cellPad = match ($family) {
+            self::TEMPLATE_FAMILY_MODERN => '9px 8px',
+            self::TEMPLATE_FAMILY_INDUSTRIAL => '5px 6px',
+            default => '7px 6px',
+        };
+        $thPad = match ($family) {
+            self::TEMPLATE_FAMILY_MODERN => '10px 8px',
+            self::TEMPLATE_FAMILY_INDUSTRIAL => '5px 5px',
+            default => '8px 6px',
+        };
+        $mb = $this->sectionBlockMarginBottom($settings);
+        $itemShell = $family === self::TEMPLATE_FAMILY_MODERN ? 'border:1px solid '.$theme['frame'].';border-radius:10px;padding:'.self::SPACE_16.'px;box-shadow:0 2px 12px rgba(15,23,42,0.05);' : '';
+
         $columns = $this->resolveItemTableColumns($settings);
         $bilingualTableHeadings = filter_var($settings['table_heading_bilingual'] ?? false, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) ?? false;
         $labelQuantity = $this->resolveLabelPair($settings, 'quantity', 'Qty', 'الكمية');
@@ -603,7 +675,7 @@ SVG;
             'total' => $labelTotal,
         ];
 
-        $rows = $document->lines->map(function (DocumentLine $line, int $index) use ($columns, $fontSize, $spacingScale, $showCommercialTotals, $theme): string {
+        $rows = $document->lines->map(function (DocumentLine $line, int $index) use ($columns, $fontSize, $spacingScale, $showCommercialTotals, $theme, $cellPad): string {
             $vatAmount = (float) ($line->tax_amount ?? 0);
             $taxableAmount = (float) (($line->gross_amount ?? null) !== null ? $line->gross_amount : ((float) $line->quantity * (float) $line->unit_price));
             $lineTotal = $showCommercialTotals ? $taxableAmount + $vatAmount : $taxableAmount;
@@ -629,28 +701,28 @@ SVG;
                 'total' => number_format($lineTotal, 2),
             ];
 
-            return '<tr>'.$columns->map(function (array $column) use ($rowValues, $theme): string {
+            return '<tr>'.$columns->map(function (array $column) use ($rowValues, $theme, $cellPad): string {
                 $key = $column['key'];
                 $alignment = in_array($key, ['serial'], true) ? 'center' : (in_array($key, ['description'], true) ? 'left' : 'right');
                 $fontWeight = $key === 'total' ? '700' : '400';
 
-                return '<td style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:6px;text-align:'.$alignment.';font-variant-numeric:tabular-nums;vertical-align:middle;font-weight:'.$fontWeight.';">'.($rowValues[$key] ?? '').'</td>';
+                return '<td style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.$cellPad.';text-align:'.$alignment.';font-variant-numeric:tabular-nums;vertical-align:middle;font-weight:'.$fontWeight.';">'.($rowValues[$key] ?? '').'</td>';
             })->implode('').'</tr>';
         })->implode('');
 
-        return '<section data-doc-section="items" style="margin-bottom:'.self::SPACE_16.'px;">'
-            .'<table style="width:100%;border-collapse:collapse;font-size:'.$fontSize.'px;line-height:1.3;">'
+        return '<section data-doc-section="items" style="'.$itemShell.'margin-bottom:'.$mb.'px;">'
+            .'<table style="width:100%;max-width:100%;border-collapse:collapse;table-layout:fixed;font-size:'.$fontSize.'px;line-height:1.3;">'
             .'<thead>'
-            .'<tr>'.$columns->map(function (array $column) use ($bilingualTableHeadings, $theme, $labelMap): string {
+            .'<tr>'.$columns->map(function (array $column) use ($bilingualTableHeadings, $theme, $labelMap, $thPad): string {
                 $key = $column['key'];
                 $labels = $labelMap[$key] ?? ['en' => ucfirst($key), 'ar' => ucfirst($key)];
                 $alignment = in_array($key, ['serial'], true) ? 'center' : (in_array($key, ['description'], true) ? 'left' : 'right');
 
                 if (! $bilingualTableHeadings) {
-                    return '<th style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:'.$alignment.';font-weight:800;background:'.$theme['header'].';">'.e((string) $labels['en']).'</th>';
+                    return '<th style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.$thPad.';text-align:'.$alignment.';font-weight:800;background:'.$theme['header'].';">'.e((string) $labels['en']).'</th>';
                 }
 
-                return '<th style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_8.'px;text-align:'.$alignment.';font-weight:800;background:'.$theme['header'].';">'
+                return '<th style="width:'.$column['width'].'%;border:1px solid '.$theme['frame'].';padding:'.$thPad.';text-align:'.$alignment.';font-weight:800;background:'.$theme['header'].';">'
                     .'<div>'.e((string) $labels['en']).'</div>'
                     .'<div dir="rtl" style="font-family:'.self::ARABIC_FONT_STACK.';text-align:right;font-size:11px;font-weight:700;">'.e((string) $labels['ar']).'</div>'
                     .'</th>';
@@ -665,6 +737,7 @@ SVG;
 
     private function renderTotalsSection(Document $document, array $theme, int $fontSize, float $spacingScale, bool $showVatSection, array $settings): string
     {
+        $mb = $this->sectionBlockMarginBottom($settings);
         $subtotalLabel = $this->resolveLabelPair($settings, 'subtotal', 'Subtotal', 'الإجمالي الفرعي');
         $taxableLabel = $this->resolveLabelPair($settings, 'taxable', 'Taxable Amount', 'المبلغ الخاضع للضريبة');
         $vatLabel = $this->resolveLabelPair($settings, 'vat', 'VAT', 'الضريبة');
@@ -678,18 +751,20 @@ SVG;
             $rows[] = [$vatLabel['en'], $vatLabel['ar'], number_format((float) $document->tax_total, 2)];
         }
 
-        return '<section data-doc-section="totals" style="display:flex;justify-content:flex-end;margin-bottom:'.self::SPACE_16.'px;">'
-            .'<div data-doc-total-block="true" style="width:360px;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_12.'px;background:linear-gradient(180deg,#ffffff 0%,'.$theme['header'].' 100%);">'
+        return '<section data-doc-section="totals" style="display:flex;justify-content:flex-end;margin-bottom:'.$mb.'px;">'
+            .'<div data-doc-total-block="true" style="width:min(440px,100%);max-width:100%;min-width:0;flex:0 1 auto;border:1px solid '.$theme['frame'].';padding:'.self::SPACE_12.'px;background:linear-gradient(180deg,#ffffff 0%,'.$theme['header'].' 100%);">'
             .collect($rows)->map(fn (array $row) => '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:'.self::SPACE_12.'px;padding:'.self::SPACE_8.'px 0;border-bottom:1px solid '.$theme['frame'].';font-size:'.$fontSize.'px;line-height:1.3;"><span>'.e($row[0]).'</span><strong style="text-align:right;font-variant-numeric:tabular-nums;">'.e($row[2]).'</strong></div>')->implode('')
-            .'<div data-doc-total-row="true" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:'.self::SPACE_16.'px;padding:'.self::SPACE_12.'px 0 '.self::SPACE_8.'px;font-size:'.($fontSize + 5).'px;line-height:1.1;font-weight:900;border-top:2px solid '.$theme['accent'].';margin-top:'.self::SPACE_8.'px;">'
+            .'<div data-doc-total-row="true" style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:'.self::SPACE_16.'px;padding:'.self::SPACE_12.'px 0 '.self::SPACE_8.'px;font-size:'.($fontSize + 5).'px;line-height:1.15;font-weight:900;border-top:2px solid '.$theme['accent'].';margin-top:'.self::SPACE_8.'px;">'
                 .'<span style="display:grid;gap:'.self::SPACE_4.'px;"><span>'.e($grandTotalLabel['en']).'</span><span dir="rtl" style="font-family:'.self::ARABIC_FONT_STACK.';font-size:'.($fontSize + 1).'px;line-height:1.2;text-align:right;">'.e($grandTotalLabel['ar']).'</span></span>'
-            .'<strong data-doc-total-value="true" style="text-align:right;font-variant-numeric:tabular-nums;">'.number_format((float) $document->grand_total, 2).' '.e((string) $document->currency_code).'</strong></div>'
+            .'<strong data-doc-total-value="true" style="text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word;">'.number_format((float) $document->grand_total, 2).' '.e((string) $document->currency_code).'</strong></div>'
             .'</div></section>';
     }
 
-    private function renderNotesSection(string $notes, array $theme, int $fontSize, float $spacingScale): string
+    private function renderNotesSection(string $notes, array $theme, int $fontSize, float $spacingScale, array $settings): string
     {
-        return '<section data-doc-section="notes" style="border-top:1px solid '.$theme['frame'].';padding-top:'.self::SPACE_12.'px;margin-bottom:'.self::SPACE_12.'px;">'
+        $tail = ! empty($settings['_use_section_stack_gap']) ? 0 : self::SPACE_12;
+
+        return '<section data-doc-section="notes" style="border-top:1px solid '.$theme['frame'].';padding-top:'.self::SPACE_12.'px;margin-bottom:'.$tail.'px;">'
             .'<div style="font-size:'.$fontSize.'px;line-height:1.35;">'.e($notes).'</div>'
             .'</section>';
     }
@@ -795,6 +870,20 @@ SVG;
             'key' => $c['key'],
             'width' => round(100 * $c['width'] / $sumWidths, 4),
         ]);
+    }
+
+    private function sectionBlockMarginBottom(array $settings): int
+    {
+        return ! empty($settings['_use_section_stack_gap']) ? 0 : self::SPACE_16;
+    }
+
+    private function infoMetaCardChrome(string $family, array $theme): string
+    {
+        if ($family === self::TEMPLATE_FAMILY_MODERN) {
+            return 'border:1px solid '.$theme['frame'].';background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(15,23,42,0.06);padding:'.self::SPACE_16.'px;gap:'.self::SPACE_8.'px;';
+        }
+
+        return 'border:1px solid '.$theme['frame'].';background:#fff;padding:'.self::SPACE_12.'px;gap:'.self::SPACE_8.'px;';
     }
 
     private function defaultLogoDataUri(): string

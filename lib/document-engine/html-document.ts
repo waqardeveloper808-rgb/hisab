@@ -1,8 +1,9 @@
-import { InvoiceTemplate } from "@/lib/document-engine/InvoiceTemplate";
 import { ARABIC_FONT_STACK_LITERAL } from "@/lib/workspace/arabic-font-stack";
-import { mapInvoiceToSaudiStandard } from "@/lib/document-engine/mappers/mapInvoiceToSaudiStandard";
-import { renderTaxInvoiceSaudiStandard } from "@/lib/document-engine/renderers/renderTaxInvoiceSaudiStandard";
-import { taxInvoiceSaudiStandardCss } from "@/lib/document-engine/styles/tax-invoice-saudi-standard-inline";
+import { renderCompactDocument } from "@/lib/document-engine/renderers/renderCompactDocument";
+import { compactDocumentCss } from "@/lib/document-engine/styles/compact-document-inline";
+import { complianceAllowsPhase1Qr } from "@/lib/document-engine/zatca-qr-eligibility";
+import { buildZatcaQrPayload } from "@/lib/document-engine/zatca-qr-payload";
+import { mainLogoPath } from "@/lib/brand";
 import type {
   CompanyAssetLike,
   CompanyProfileSnapshot,
@@ -15,7 +16,7 @@ function getDocumentTitlePair(type: string) {
   return {
     tax_invoice: { en: "Tax Invoice", ar: "فاتورة ضريبية" },
     quotation: { en: "Quotation", ar: "عرض سعر" },
-    proforma_invoice: { en: "Proforma Invoice", ar: "فاتورة مبدئية" },
+    proforma_invoice: { en: "Proforma Invoice", ar: "فاتورة أولية" },
     credit_note: { en: "Credit Note", ar: "إشعار دائن" },
     debit_note: { en: "Debit Note", ar: "إشعار مدين" },
     delivery_note: { en: "Delivery Note", ar: "إشعار تسليم" },
@@ -48,30 +49,66 @@ function getDocumentPartyLabel(type: string) {
 
 function getDocumentReferenceLabel(type: string, custom: Record<string, string | number | boolean | null>) {
   if (type === "credit_note" || type === "debit_note") {
+    const val = textValue(custom.source_invoice_number);
+    if (!val) return null;
     return {
       en: "Source Invoice",
       ar: "الفاتورة المرجعية",
-      value: textValue(custom.source_invoice_number),
+      value: val,
     };
   }
 
   if (type === "quotation") {
+    const val = textValue(custom.reference);
+    if (!val) return null;
     return {
       en: "Reference",
       ar: "المرجع",
-      value: textValue(custom.reference),
+      value: val,
     };
   }
 
   if (type === "proforma_invoice") {
+    const val = textValue(custom.reference);
+    if (!val) return null;
     return {
       en: "Quotation Ref",
       ar: "مرجع عرض السعر",
-      value: textValue(custom.reference),
+      value: val,
     };
   }
 
+  if (type === "tax_invoice") {
+    const ref = textValue(custom.reference ?? custom.linked_invoice_number ?? "");
+    if (ref) {
+      return {
+        en: "Reference",
+        ar: "المرجع",
+        value: ref,
+      };
+    }
+  }
+
   return null;
+}
+
+/** Only when the user supplies explicit wording (no auto-generated amount-in-words on tax/credit/debit). */
+function resolveAmountInWords(custom: Record<string, string | number | boolean | null>): { en: string; ar: string } | null {
+  const en = textValue(custom.amount_in_words_en, "");
+  const ar = textValue(custom.amount_in_words_ar, "");
+  if (en.trim() || ar.trim()) {
+    return { en: en.trim(), ar: ar.trim() };
+  }
+  return null;
+}
+
+function resolveFooterNote(
+  custom: Record<string, string | number | boolean | null>,
+): { en: string; ar: string } | null {
+  const en = textValue(custom.footer_note_en, "");
+  const ar = textValue(custom.footer_note_ar, "");
+  if (!en.trim() && !ar.trim()) return null;
+  return { en: en.trim(), ar: ar.trim() };
 }
 
 const fallbackCompany: CompanyProfileSnapshot = {
@@ -118,6 +155,49 @@ function numberValue(value: unknown, fallback = 0) {
   return fallback;
 }
 
+function boolFromCustom(custom: Record<string, string | number | boolean | null>, key: string, fallback: boolean) {
+  const raw = custom[key];
+  if (typeof raw === "boolean") return raw;
+  if (typeof raw === "string") {
+    const s = raw.trim().toLowerCase();
+    if (s === "true" || s === "1" || s === "yes") return true;
+    if (s === "false" || s === "0" || s === "no") return false;
+  }
+  if (typeof raw === "number") return raw !== 0;
+  return fallback;
+}
+
+function resolveIssueTime(issueDate: string, custom: Record<string, string | number | boolean | null>) {
+  const t = textValue(custom.issue_time ?? custom.issueTime ?? "");
+  if (t) return t;
+  if (issueDate.includes("T")) {
+    const d = new Date(issueDate);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+    }
+  }
+  return "";
+}
+
+function pickZatcaCompliance(
+  custom: Record<string, string | number | boolean | null>,
+  complianceRoot: Record<string, unknown> | null | undefined,
+) {
+  const root = complianceRoot ?? {};
+  const nested =
+    root.zatca && typeof root.zatca === "object" ? (root.zatca as Record<string, unknown>) : {};
+  const nestedUuid = typeof nested.uuid === "string" ? nested.uuid : "";
+  const nestedInv = typeof nested.invoice_hash === "string" ? nested.invoice_hash : "";
+  const nestedPrev = typeof nested.previous_invoice_hash === "string" ? nested.previous_invoice_hash : "";
+  const rootUuid = typeof root.icv_uuid === "string" ? root.icv_uuid : "";
+  const rootHash = typeof root.icv_hash === "string" ? root.icv_hash : "";
+  return {
+    uuid: textValue(custom.zatca_uuid, textValue(custom.icv_uuid, textValue(nestedUuid, rootUuid))),
+    invoiceHash: textValue(custom.zatca_invoice_hash, textValue(nestedInv, rootHash)),
+    previousInvoiceHash: textValue(custom.zatca_previous_invoice_hash, nestedPrev),
+  };
+}
+
 function buildEnglishAddress(company: CompanyProfileSnapshot) {
   const parts = [company.addressStreet, company.addressArea, company.addressCity, company.addressPostalCode, company.addressCountry]
     .map((value) => value.trim())
@@ -155,13 +235,14 @@ export function buildInvoiceRenderModel(input: {
   const partyLabel = getDocumentPartyLabel(kind);
   const reference = getDocumentReferenceLabel(kind, custom);
   const showVat = !["delivery_note", "purchase_order"].includes(kind);
-  const showQr = ["tax_invoice", "credit_note", "debit_note"].includes(kind);
+  const phase1QrCompliance = complianceAllowsPhase1Qr(kind, custom);
 
   const lines = input.document.lines.map((line, index) => {
     const lineSubtotal = numberValue(line.grossAmount, numberValue(line.quantity) * numberValue(line.unitPrice));
-    const lineVatAmount = input.document.taxableTotal > 0
-      ? (lineSubtotal / input.document.taxableTotal) * input.document.taxTotal
-      : 0;
+    const lineVatAmount =
+      input.document.taxableTotal > 0 ? (lineSubtotal / input.document.taxableTotal) * input.document.taxTotal : 0;
+    const discountRaw = line.metadata?.custom_fields?.discount ?? line.metadata?.custom_fields?.line_discount;
+    const discountAmount = Math.abs(numberValue(discountRaw, 0));
 
     return {
       id: line.id,
@@ -174,11 +255,31 @@ export function buildInvoiceRenderModel(input: {
       vatAmount: Number(lineVatAmount.toFixed(2)),
       vatLabel: `${vatRate.toFixed(0)}%`,
       total: Number((lineSubtotal + lineVatAmount).toFixed(2)),
+      discountAmount,
+      unitLabel: textValue(line.metadata?.custom_fields?.unit ?? line.metadata?.custom_fields?.unit_label, ""),
     };
   });
 
-  const model: DocumentRenderModel = {
+  const subtitleBadgeEn = textValue(custom.subtitle_badge_en, textValue(custom.document_copy_en, "ORIGINAL"));
+  const subtitleBadgeAr = textValue(custom.subtitle_badge_ar, textValue(custom.document_copy_ar, "نسخة أصلية"));
+
+  const complianceMeta = input.document.compliance_metadata as Record<string, unknown> | null | undefined;
+  const zFields = pickZatcaCompliance(custom, complianceMeta);
+
+  const notesRaw =
+    typeof input.document.notes === "string" && input.document.notes.trim()
+      ? input.document.notes.trim()
+      : "";
+  const notesMerged = notesRaw || textValue(custom.document_notes ?? custom.notes, "");
+
+  const amountInWords = resolveAmountInWords(custom);
+  const footerNote = resolveFooterNote(custom);
+
+  const draft: DocumentRenderModel = {
     customFields: custom,
+    notes: notesMerged.trim() ? notesMerged.trim() : null,
+    amountInWords,
+    footerNote,
     document: {
       kind,
       titleEn: title.en,
@@ -189,7 +290,11 @@ export function buildInvoiceRenderModel(input: {
       partyLabelAr: partyLabel.ar,
       showVatColumn: showVat,
       showVatTotals: showVat,
-      showQr,
+      showQr: phase1QrCompliance,
+      showVatPercentColumn: boolFromCustom(custom, "show_vat_percent_column", false),
+      showUnitColumn: boolFromCustom(custom, "show_unit_column", false),
+      subtitleBadgeEn,
+      subtitleBadgeAr,
       referenceLabelEn: reference?.en,
       referenceLabelAr: reference?.ar,
       referenceValue: reference?.value,
@@ -206,16 +311,20 @@ export function buildInvoiceRenderModel(input: {
       addressEn: textValue(custom.seller_address_en, buildEnglishAddress(company)),
       addressAr: textValue(custom.seller_address_ar, buildArabicAddress(company)),
       logoUrl,
+      defaultBrandLogoPath: mainLogoPath,
     },
     customer: {
       name: textValue(custom.buyer_name_en, contact?.displayName || "-"),
+      nameAr: textValue(custom.buyer_name_ar, contact?.displayNameAr || ""),
       address: textValue(custom.buyer_address_en, contact?.billingAddress?.line1 || contact?.billingAddress?.city || "-"),
+      addressAr: textValue(custom.buyer_address_ar, contact?.billingAddress?.line1Ar || ""),
       vatNumber: textValue(custom.buyer_vat_number, contact?.vatNumber || "-"),
       contact: textValue(custom.buyer_phone, contact?.phone || "-"),
     },
     invoice: {
       number: input.document.documentNumber,
       issueDate: input.document.issueDate,
+      issueTime: resolveIssueTime(input.document.issueDate, custom),
       supplyDate: input.document.supplyDate || input.document.issueDate,
       dueDate: input.document.dueDate,
       currency,
@@ -225,18 +334,27 @@ export function buildInvoiceRenderModel(input: {
       grandTotal: Number(input.document.grandTotal.toFixed(2)),
       lines,
     },
+    zatca: null,
   };
 
-  return model;
+  if (phase1QrCompliance && ["tax_invoice", "credit_note", "debit_note"].includes(kind)) {
+    return {
+      ...draft,
+      zatca: {
+        enabled: true,
+        qrPayload: buildZatcaQrPayload(draft),
+        uuid: zFields.uuid,
+        invoiceHash: zFields.invoiceHash,
+        previousInvoiceHash: zFields.previousInvoiceHash,
+      },
+    };
+  }
+
+  return draft;
 }
 
 export function buildDocumentHtml(model: DocumentRenderModel) {
-  if (model.document.kind === "tax_invoice") {
-    const contract = mapInvoiceToSaudiStandard(model);
-    return renderTaxInvoiceSaudiStandard(contract);
-  }
-
-  return InvoiceTemplate({ model });
+  return renderCompactDocument(model);
 }
 
 export function buildPrintableDocumentShell(bodyHtml: string) {
@@ -255,24 +373,28 @@ export function buildPrintableDocumentShell(bodyHtml: string) {
         line-height: 1.45;
         font-size: 12px;
       }
-      .gh-document-page {
+      .cd-document-page {
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        padding: 20px;
+        padding: 16px;
         background: #f5f5f5;
       }
-      .gh-document-page > article {
-        width: 210mm;
-        min-height: 297mm;
-        background: #ffffff;
+      .cd-document-page > .cd-document-root {
         box-shadow: 0 2px 12px rgba(0,0,0,.08);
+        min-height: 297mm;
       }
-      ${taxInvoiceSaudiStandardCss}
+      @page { size: A4 portrait; margin: 10mm; }
+      @media print {
+        body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cd-document-page { padding: 0 !important; background: #fff !important; }
+        .cd-document-page > .cd-document-root { box-shadow: none !important; }
+      }
+      ${compactDocumentCss}
     </style>
   </head>
   <body>
-    <div class="gh-document-page">${bodyHtml}</div>
+    <div class="cd-document-page">${bodyHtml}</div>
   </body>
 </html>`;
 }

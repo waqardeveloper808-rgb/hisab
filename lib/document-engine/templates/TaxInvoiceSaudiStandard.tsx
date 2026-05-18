@@ -16,8 +16,10 @@ function money(value: number, currency: string) {
   }).format(value)} ${currency}`;
 }
 
-function qrImageUrl(data: string) {
-  return `https://quickchart.io/qr?size=220&text=${encodeURIComponent(data)}`;
+function qrImageSrc(contract: TaxInvoiceSaudiStandardContract["document"]): string {
+  const dataUrl = contract.qrImageDataUrl?.trim();
+  if (dataUrl?.startsWith("data:")) return dataUrl;
+  return "";
 }
 
 function metaCell(labelEn: string, labelAr: string, value: string) {
@@ -181,14 +183,18 @@ export function TaxInvoiceSaudiStandard({
         </table>
       </section>
 
-      <section class="saudi-qr-and-totals">
-        <div class="saudi-qr-block" data-zatca-qr-required="true">
-          <img class="saudi-qr-img" src="${escapeHtml(qrImageUrl(contract.document.qrCodeData))}" alt="Invoice QR" />
+      <section class="saudi-qr-and-totals${contract.document.showPhase1Qr ? "" : " saudi-qr-and-totals--no-qr"}">
+        ${
+          contract.document.showPhase1Qr
+            ? `<div class="saudi-qr-block" data-zatca-qr-required="true">
+          <img class="saudi-qr-img" src="${escapeHtml(qrImageSrc(contract.document))}" alt="Invoice QR" data-qrcode-source="local" />
           <div class="saudi-qr-note">
             <div>${escapeHtml(contract.compliance.qrComplianceNoteEn)}</div>
             <div class="saudi-ar">${escapeHtml(contract.compliance.qrComplianceNoteAr)}</div>
           </div>
-        </div>
+        </div>`
+            : ""
+        }
 
         <div class="saudi-totals" data-totals-box="true">
           <div class="saudi-totals-row">

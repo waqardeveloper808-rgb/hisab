@@ -263,13 +263,13 @@ function addArchitectureModuleControls(moduleCode: ControlModuleCode, architectu
 }
 
 function addPhase1ModuleControls(moduleCode: ControlModuleCode, phase1Id: string, sourceFile = "data/master-design/ksa-phase1.ts") {
-  const module = phase1ById.get(phase1Id);
-  if (!module) {
+  const phase1Module = phase1ById.get(phase1Id);
+  if (!phase1Module) {
     return;
   }
 
-  const owner = module.name;
-  module.requiredFeatures.forEach((feature, index) => {
+  const owner = phase1Module.name;
+  phase1Module.requiredFeatures.forEach((feature, index) => {
     createRuleEntry({
       module_code: moduleCode,
       source_standard_document: "KSA Phase 1 Module Specs",

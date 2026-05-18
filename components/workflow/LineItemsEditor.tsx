@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useCallback, useId, useState } from "react";
 import { Button } from "@/components/Button";
 import { EntityPicker } from "@/components/workflow/EntityPicker";
 import { QuickCreateDialog } from "@/components/workflow/QuickCreateDialog";
@@ -26,6 +26,28 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
   const formId = useId();
   const [openCreateForLine, setOpenCreateForLine] = useState<string | null>(null);
   const [draftItemName, setDraftItemName] = useState("");
+
+  const searchItemPickerOptions = useCallback(
+    async (query: string) => {
+      const results = await searchItems(query);
+      return results.map((item, position) => {
+        const option = itemToOption(item, kind);
+        const normalizedQuery = query.trim();
+
+        return {
+          ...option,
+          group: normalizedQuery
+            ? "Matching items"
+            : position === 0
+              ? "Recent"
+              : position < 3
+                ? "Frequently used"
+                : "More items",
+        };
+      });
+    },
+    [searchItems, kind],
+  );
 
   const compactLineFieldDefinitions = lineFieldDefinitions.filter((field) => !/service\s*period/i.test(field.name));
 
@@ -156,24 +178,7 @@ export function LineItemsEditor({ kind, lines, onChange, costCenters = [], lineF
                   label="Product or service"
                   placeholder="Search item name or code"
                   selectedOption={selectedItem ? itemToOption(selectedItem, kind) : null}
-                  onSearch={async (query) => {
-                    const results = await searchItems(query);
-                    return results.map((item, position) => {
-                      const option = itemToOption(item, kind);
-                      const normalizedQuery = query.trim();
-
-                      return {
-                        ...option,
-                        group: normalizedQuery
-                          ? "Matching items"
-                          : position === 0
-                            ? "Recent"
-                            : position < 3
-                              ? "Frequently used"
-                              : "More items",
-                      };
-                    });
-                  }}
+                  onSearch={searchItemPickerOptions}
                   onSelect={(option) => {
                     const match = items.find((item) => item.id === option.id);
                     if (match) {

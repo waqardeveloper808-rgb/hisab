@@ -273,12 +273,24 @@ export function topCriticalFails(
 }
 
 export function copyFaultText(point: SystemMonitorControlPoint): string {
+  const evidenceState =
+    point.status === "pass"
+      ? "verified (pass)"
+      : point.link_missing
+        ? "link_missing"
+        : point.evidence_references.length
+          ? "references captured"
+          : "not verified / incomplete evidence";
   return [
     `ID: ${point.id}`,
     `Status: ${point.status}`,
     `Severity: ${point.severity}`,
-    `Module: ${point.module}`,
+    `Primary module: ${point.primaryModuleName}`,
+    `Primary group: ${point.primaryGroupName}`,
+    `Module (domain): ${point.module}`,
     `Title: ${point.title}`,
+    `Audit result: ${point.auditResult || point.actual_behavior}`,
+    `Evidence status: ${evidenceState}`,
     `Expected: ${point.expected_behavior}`,
     `Actual: ${point.actual_behavior}`,
     `Root cause: ${point.root_cause_hint ?? "Not available"}`,

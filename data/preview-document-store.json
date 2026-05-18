@@ -2586,7 +2586,7 @@
     "type": "tax_invoice",
     "status": "finalized",
     "contact_id": 101,
-    "document_number": "UI-VALID-001",
+    "document_number": "INV-2026-VALID-001",
     "issue_date": "2026-04-17",
     "supply_date": "2026-04-17",
     "due_date": "2026-04-24",
@@ -2603,7 +2603,7 @@
     "sent_at": null,
     "sent_to_email": "finance@alnoor.sa",
     "custom_fields": {
-      "reference": "UI-VALID-001",
+      "reference": "INV-2026-VALID-001",
       "currency": "SAR",
       "supply_date": "2026-04-17",
       "buyer_vat_number": "300998877660003",

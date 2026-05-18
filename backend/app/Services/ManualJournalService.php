@@ -6,6 +6,7 @@ use App\Models\Account;
 use App\Models\Company;
 use App\Models\JournalEntry;
 use App\Models\User;
+use App\Services\AccountingAccountGuardService;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
 use Carbon\Carbon;
@@ -14,7 +15,10 @@ use Illuminate\Validation\ValidationException;
 
 class ManualJournalService
 {
-    public function __construct(private readonly AccountingPeriodService $accountingPeriodService) {}
+    public function __construct(
+        private readonly AccountingPeriodService $accountingPeriodService,
+        private readonly AccountingAccountGuardService $accountingAccountGuardService,
+    ) {}
 
     private function nextEntryNumber(Company $company): string
     {
@@ -40,6 +44,7 @@ class ManualJournalService
         }
 
         $lines = $data['lines'] ?? [];
+        $sourceContext = (string) ($data['source_context'] ?? 'manual_journal');
         if (count($lines) < 2) {
             throw ValidationException::withMessages([
                 'lines' => 'A journal entry must have at least two lines.',
@@ -94,6 +99,8 @@ class ManualJournalService
                 ]);
             }
 
+            $this->accountingAccountGuardService->validateManualJournalLine($company, $line, $lines, $sourceContext);
+
             $totalDebit = $totalDebit->plus($debit);
             $totalCredit = $totalCredit->plus($credit);
         }
@@ -108,7 +115,7 @@ class ManualJournalService
             ]);
         }
 
-        return DB::transaction(function () use ($company, $actor, $data, $entryDate, $postingDate, $status, $lines) {
+        return DB::transaction(function () use ($company, $actor, $data, $entryDate, $postingDate, $status, $lines, $sourceContext) {
             $journal = JournalEntry::create([
                 'company_id' => $company->id,
                 'entry_number' => $this->nextEntryNumber($company),
@@ -164,6 +171,21 @@ class ManualJournalService
             'posted_by' => $actor->id,
             'posted_at' => now(),
         ]);
+
+        foreach ($journal->lines as $line) {
+            $this->accountingAccountGuardService->validateManualJournalLine(
+                $company,
+                [
+                    'account_id' => $line->account_id,
+                    'document_id' => $line->document_id,
+                    'reference' => $journal->reference,
+                    'debit' => $line->debit,
+                    'credit' => $line->credit,
+                ],
+                $journal->lines->toArray(),
+                (string) ($journal->source_type ?? 'manual_journal'),
+            );
+        }
 
         return $journal->fresh('lines');
     }

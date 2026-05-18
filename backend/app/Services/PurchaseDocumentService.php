@@ -11,6 +11,7 @@ use App\Models\DocumentSequence;
 use App\Models\User;
 use App\Services\Intelligence\IntelligenceEngine;
 use App\Services\Intelligence\SmartTriggerService;
+use App\Services\AccountingAccountGuardService;
 use App\Services\VAT\VATLedgerService;
 use Brick\Math\BigDecimal;
 use Carbon\Carbon;
@@ -29,6 +30,7 @@ class PurchaseDocumentService
         private readonly IntelligenceEngine $intelligenceEngine,
         private readonly SmartTriggerService $smartTriggerService,
         private readonly VATLedgerService $vatLedgerService,
+        private readonly AccountingAccountGuardService $accountingAccountGuardService,
     ) {
     }
 
@@ -226,6 +228,8 @@ class PurchaseDocumentService
                         ),
                     ]),
                 ]);
+
+                $this->accountingAccountGuardService->validatePostingPropagation($document->fresh());
             }
 
             $this->audit($company->id, $user->id, 'purchase_document.finalized', $document, null, $document->fresh()->toArray());
@@ -341,6 +345,8 @@ class PurchaseDocumentService
                 'posted_journal_entry_id' => $entry->id,
                 'posted_at' => now(),
             ]);
+
+            $this->accountingAccountGuardService->validatePostingPropagation($creditNote->fresh());
 
             $this->audit($company->id, $user->id, 'purchase_document.credit_note_issued', $creditNote, null, $creditNote->fresh()->toArray());
 

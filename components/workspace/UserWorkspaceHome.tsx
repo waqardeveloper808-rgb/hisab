@@ -91,7 +91,9 @@ export function UserWorkspaceHome() {
             <p className="mt-1 text-sm text-muted">
               {hasLiveData
                 ? "Track receivables, payables, VAT, and recent activity from one compact workspace surface."
-                : "Demo-ready placeholders keep the workspace readable until live invoices, bills, and payments start flowing."}
+                : snapshot.backendReady
+                  ? "Workspace is connected; create documents to populate KPIs and activity from live registers."
+                  : "Connect the workspace session to load receivables, payables, and VAT from the accounting engine."}
             </p>
           </div>
           <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-muted">

@@ -54,6 +54,21 @@ export type NavGroup = {
 /** Canonical user workspace application routes. */
 export const USER_WORKSPACE_BASE = "/workspace/user";
 
+/** `/workspace/user/templates` list hub only — not `/templates/studio`. */
+export const WORKSPACE_USER_TEMPLATES_HUB = `${USER_WORKSPACE_BASE}/templates`;
+
+/** Active check for app chrome (`WorkspaceAppSidebar`) and tools. */
+export function isWorkspaceUserNavLinkActive(pathname: string, href: string): boolean {
+  const path = href.split("?")[0];
+  if (path === USER_WORKSPACE_BASE) {
+    return pathname === USER_WORKSPACE_BASE || pathname === `${USER_WORKSPACE_BASE}/dashboard`;
+  }
+  if (path === WORKSPACE_USER_TEMPLATES_HUB) {
+    return pathname === WORKSPACE_USER_TEMPLATES_HUB || pathname === `${WORKSPACE_USER_TEMPLATES_HUB}/`;
+  }
+  return pathname === path || pathname.startsWith(`${path}/`);
+}
+
 export const dashboardLink: NavLink = {
   id: "dashboard",
   label: "Dashboard",

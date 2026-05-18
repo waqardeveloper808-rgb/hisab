@@ -69,10 +69,6 @@ export function AdminWorkspaceHome() {
 
   useEffect(() => {
     if (isPreview) {
-      setCustomers(previewCustomers);
-      setPlans(previewPlans);
-      setSupportAccounts(previewSupportAccounts);
-      setAgents(previewAgents);
       return;
     }
 
@@ -82,10 +78,15 @@ export function AdminWorkspaceHome() {
     listPlatformAgents({}).then(setAgents).catch((err: unknown) => { console.error('[AdminWorkspaceHome] listPlatformAgents failed:', err); setAgents([]); });
   }, [isPreview]);
 
-  const subscribedCustomers = customers.filter((customer) => customer.subscription !== null).length;
-  const trialingCustomers = customers.filter((customer) => customer.subscription?.status === "trialing").length;
-  const inactiveSupport = supportAccounts.filter((account) => !account.isPlatformActive).length;
-  const hiddenPlans = plans.filter((plan) => !plan.isVisible || !plan.isActive).length;
+  const displayCustomers = isPreview ? previewCustomers : customers;
+  const displayPlans = isPreview ? previewPlans : plans;
+  const displaySupportAccounts = isPreview ? previewSupportAccounts : supportAccounts;
+  const displayAgents = isPreview ? previewAgents : agents;
+
+  const subscribedCustomers = displayCustomers.filter((customer) => customer.subscription !== null).length;
+  const trialingCustomers = displayCustomers.filter((customer) => customer.subscription?.status === "trialing").length;
+  const inactiveSupport = displaySupportAccounts.filter((account) => !account.isPlatformActive).length;
+  const hiddenPlans = displayPlans.filter((plan) => !plan.isVisible || !plan.isActive).length;
 
   return (
     <div className="space-y-4">
@@ -103,10 +104,10 @@ export function AdminWorkspaceHome() {
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {[
-          ["Customers", String(customers.length), `${subscribedCustomers} companies currently have a subscription linked`],
-          ["Plans", String(plans.length), `${hiddenPlans} plan entries need visibility or status review`],
-          ["Support accounts", String(supportAccounts.length), `${inactiveSupport} support accounts are inactive`],
-          ["Referral agents", String(agents.length), `${agents.filter((agent) => agent.isActive).length} agents are currently active`],
+          ["Customers", String(displayCustomers.length), `${subscribedCustomers} companies currently have a subscription linked`],
+          ["Plans", String(displayPlans.length), `${hiddenPlans} plan entries need visibility or status review`],
+          ["Support accounts", String(displaySupportAccounts.length), `${inactiveSupport} support accounts are inactive`],
+          ["Referral agents", String(displayAgents.length), `${displayAgents.filter((agent) => agent.isActive).length} agents are currently active`],
         ].map(([title, value, caption]) => (
           <Card key={title} className="rounded-xl bg-white/95 p-3">
             <p className="text-sm font-semibold text-muted">{title}</p>
@@ -121,7 +122,7 @@ export function AdminWorkspaceHome() {
           registerTableId="admin-customer-queue"
           title="Customer review queue"
           caption="Customers that should be checked for subscription state, ownership, or activation."
-          rows={customers.slice(0, 6)}
+          rows={displayCustomers.slice(0, 6)}
           emptyMessage="Customer records will appear here once the admin APIs respond."
           columns={[
             { id: "company", header: "Company", defaultWidth: 200, render: (row) => row.legalName },

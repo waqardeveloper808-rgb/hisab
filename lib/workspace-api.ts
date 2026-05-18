@@ -16,6 +16,10 @@ type BackendContact = {
   phone?: string | null;
   tax_number?: string | null;
   vat_number?: string | null;
+  commercial_registration_number?: string | null;
+  opening_balance?: string | number | null;
+  opening_balance_type?: string | null;
+  opening_balance_as_of?: string | null;
   custom_fields?: Record<string, unknown> | null;
   billing_address?: {
     city?: string | null;
@@ -403,13 +407,6 @@ export type DashboardSnapshot = {
   backendReady: boolean;
 };
 
-export type RegistersSnapshot = {
-  invoiceRegister: WorkspaceDocumentRecord[];
-  billsRegister: WorkspaceDocumentRecord[];
-  paymentsRegister: WorkspacePaymentRecord[];
-  backendReady: boolean;
-};
-
 export type VatSummaryRow = {
   code: string;
   name: string;
@@ -430,20 +427,73 @@ export type VatDetailRow = {
 
 export type VatReceivedDetailRecord = {
   id: number;
+  /** Same as invoiceNumber / document_number — explicit for registers. */
+  documentNumber?: string;
+  /** Sales document identifier for deep links when present from API rows. */
+  documentId?: number;
   invoiceNumber: string;
+  documentType?: string;
+  /** ISO/issue date string from ledger (issue_date). */
   date: string;
+  /** Alias of date used by newer register UIs. */
+  issueDate?: string;
   customer: string;
   taxableAmount: number;
   vatAmount: number;
+  status?: string;
+  source?: string;
+};
+
+export type VatReceivedLineDetailRecord = {
+  lineId: number;
+  documentId: number;
+  invoiceNumber: string;
+  documentType: string;
+  date: string;
+  customer?: string | null;
+  taxCode: string;
+  taxRate?: number | null;
+  lineDescription: string;
+  taxableAmount: number;
+  vatAmount: number;
+  status?: string | null;
+};
+
+export type CashFlowLineSnapshot = {
+  accountCode?: string | null;
+  accountName?: string | null;
+  debit: number;
+  credit: number;
+  net: number;
+  entryNumber?: string | null;
+  entryDate?: string | null;
+  sourceType?: string | null;
+  description?: string | null;
+};
+
+export type CashFlowSnapshot = {
+  operating: CashFlowLineSnapshot[];
+  investing: CashFlowLineSnapshot[];
+  financing: CashFlowLineSnapshot[];
+  operatingTotal: number;
+  investingTotal: number;
+  financingTotal: number;
+  netChange: number;
 };
 
 export type VatPaidDetailRecord = {
   id: number;
   reference: string;
+  documentType?: string;
   date: string;
+  issueDate?: string;
   vendor: string;
+  taxableAmount?: number;
   vatAmount: number;
   category: string;
+  status?: string;
+  documentId?: number;
+  source?: string;
 };
 
 export type IntelligenceSuggestionRecord = {
@@ -478,6 +528,7 @@ export type InventoryStockRecord = {
   itemId: number | null;
   productName: string;
   material: string;
+  description: string;
   inventoryType: string;
   size: string;
   source: "production" | "purchase";
@@ -486,15 +537,46 @@ export type InventoryStockRecord = {
   committed: number;
   available: number;
   reorderLevel: number;
+  averageUnitCost: number;
+  inventoryValue: number;
+  status: string;
   batchNumber: string;
   productionDate: string;
   recordedBy: string;
+  journalEntryId: number | null;
   journalEntryNumber: string;
   inventoryAccountCode: string;
   inventoryAccountName: string;
   attachments: Attachment[];
   documentLinks: Array<{ documentId?: number | null; documentNumber: string; documentType: string; status?: string | null }>;
   lastUpdated: string;
+};
+
+export type JournalRegisterRow = {
+  id: number;
+  entryNumber: string;
+  entryDate: string;
+  status: string;
+  sourceType: string | null;
+  sourceId: number | null;
+  reference: string | null;
+  description: string | null;
+  creatorName: string | null;
+};
+
+export type RegistersSnapshot = {
+  invoiceRegister: WorkspaceDocumentRecord[];
+  billsRegister: WorkspaceDocumentRecord[];
+  paymentsRegister: WorkspacePaymentRecord[];
+  quotationRegister: WorkspaceDocumentRecord[];
+  proformaInvoiceRegister: WorkspaceDocumentRecord[];
+  salesCreditNoteRegister: WorkspaceDocumentRecord[];
+  salesDebitNoteRegister: WorkspaceDocumentRecord[];
+  purchaseOrderRegister: WorkspaceDocumentRecord[];
+  purchaseCreditNoteRegister: WorkspaceDocumentRecord[];
+  journalRegister: JournalRegisterRow[];
+  inventoryRegister: InventoryStockRecord[];
+  backendReady: boolean;
 };
 
 export type InventoryAdjustmentRecord = {
@@ -509,6 +591,7 @@ export type InventoryAdjustmentRecord = {
   quantity: number;
   source: "production" | "purchase";
   recordedBy: string;
+  journalEntryId?: number | null;
   journalEntryNumber: string;
   inventoryAccountCode: string;
   inventoryAccountName: string;
@@ -611,9 +694,17 @@ export type AuditTrailRow = {
 
 export type ReportsSnapshot = {
   vatSummary: VatSummaryRow[];
+  vatReconciliationMeta?: {
+    vatReceived: string;
+    vatPaid: string;
+    vatPayable: string;
+    validationStatus?: string;
+  } | null;
   vatDetail: VatDetailRow[];
   vatReceivedDetails: VatReceivedDetailRecord[];
   vatPaidDetails: VatPaidDetailRecord[];
+  vatReceivedLineDetails: VatReceivedLineDetailRecord[];
+  cashFlow: CashFlowSnapshot | null;
   receivablesAging: AgingRow[];
   payablesAging: AgingRow[];
   trialBalance: TrialBalanceRow[];
@@ -972,6 +1063,7 @@ export type DocumentCenterRecord = WorkspaceDocumentRecord & {
   sentAt: string;
   sentToEmail: string;
   templateName: string;
+  templateId: number | null;
   customFields: Record<string, string | number | boolean | null>;
 };
 
@@ -1472,7 +1564,7 @@ function mapContact(contact: BackendContact): ContactRecord {
     district: contact.billing_address?.district ?? String(customFields.district ?? ""),
     postalCode: contact.billing_address?.postal_code ?? String(customFields.postal_code ?? ""),
     secondaryNumber: contact.billing_address?.secondary_number ?? String(customFields.secondary_number ?? ""),
-    crNumber: String(customFields.cr_number ?? ""),
+    crNumber: (contact.commercial_registration_number ?? String(customFields.cr_number ?? "")).trim(),
     additionalDocumentNumbers: String(customFields.additional_document_numbers ?? ""),
     defaultRevenueAccount: String(customFields.default_revenue_account ?? ""),
     defaultCostCenter: String(customFields.default_cost_center ?? ""),
@@ -1483,6 +1575,17 @@ function mapContact(contact: BackendContact): ContactRecord {
     beneficiaryIban: String(customFields.beneficiary_iban ?? ""),
     beneficiaryReference: String(customFields.beneficiary_reference ?? ""),
     customFields: String(customFields.notes ?? ""),
+    openingBalance:
+      contact.opening_balance !== undefined && contact.opening_balance !== null
+        ? numberValue(contact.opening_balance)
+        : numberValue(customFields.opening_balance as string | number | undefined),
+    openingBalanceType: contact.opening_balance_type ?? undefined,
+    openingBalanceAsOf:
+      typeof contact.opening_balance_as_of === "string" && contact.opening_balance_as_of.trim()
+        ? contact.opening_balance_as_of.trim()
+        : typeof customFields.opening_balance_as_of === "string"
+          ? String(customFields.opening_balance_as_of).trim()
+          : undefined,
   };
 }
 
@@ -1766,6 +1869,7 @@ function mapDocumentCenterRecord(document: BackendDocumentCenterRecord): Documen
     sentAt: document.sent_at ?? "",
     sentToEmail: document.sent_to_email ?? "",
     templateName: document.template?.name ?? "",
+    templateId: document.template?.id ?? null,
     customFields: document.custom_fields ?? {},
   };
 }
@@ -1963,6 +2067,11 @@ export async function createContactInBackend(payload: ContactPayload): Promise<C
         email: payload.email || null,
         phone: payload.phone || null,
         tax_number: payload.vatNumber || null,
+        commercial_registration_number: payload.crNumber?.trim() || null,
+        opening_balance_amount:
+          payload.openingBalance !== undefined && payload.openingBalance !== null ? payload.openingBalance : undefined,
+        opening_balance_type: payload.openingBalanceType?.trim() || null,
+        opening_balance_as_of: payload.openingBalanceAsOf || null,
         billing_address: payload.city || payload.street || payload.country ? {
           city: payload.city || null,
           country: payload.country || null,
@@ -1973,27 +2082,6 @@ export async function createContactInBackend(payload: ContactPayload): Promise<C
           postal_code: payload.postalCode || null,
           secondary_number: payload.secondaryNumber || null,
         } : null,
-        custom_fields: {
-          origin: payload.origin || "inside_ksa",
-          vat_number: payload.vatNumber || null,
-          country: payload.country || null,
-          street: payload.street || null,
-          building_number: payload.buildingNumber || null,
-          district: payload.district || null,
-          postal_code: payload.postalCode || null,
-          secondary_number: payload.secondaryNumber || null,
-          cr_number: payload.crNumber || null,
-          additional_document_numbers: payload.additionalDocumentNumbers || null,
-          default_revenue_account: payload.defaultRevenueAccount || null,
-          default_cost_center: payload.defaultCostCenter || null,
-          default_tax: payload.defaultTax || null,
-          purchasing_defaults: payload.purchasingDefaults || null,
-          beneficiary_name: payload.beneficiaryName || null,
-          beneficiary_bank: payload.beneficiaryBank || null,
-          beneficiary_iban: payload.beneficiaryIban || null,
-          beneficiary_reference: payload.beneficiaryReference || null,
-          notes: payload.customFields || null,
-        },
       }),
     });
 
@@ -2399,21 +2487,140 @@ export async function getDashboardSnapshot(signal?: AbortSignal): Promise<Dashbo
 
 export async function getRegistersSnapshot(): Promise<RegistersSnapshot> {
   try {
-    const [invoiceRegister, billsRegister, paymentsRegister] = await Promise.all([
+    const [
+      invoiceRegister,
+      billsRegister,
+      paymentsRegister,
+      quotationRegister,
+      proformaInvoiceRegister,
+      salesCreditNoteRegister,
+      salesDebitNoteRegister,
+      purchaseOrderRegister,
+      purchaseCreditNoteRegister,
+      journalRegisterEnvelope,
+      inventoryRegister,
+    ] = await Promise.all([
       request<ApiEnvelope<BackendDocument[]>>("reports/invoice-register"),
       request<ApiEnvelope<BackendDocument[]>>("reports/bills-register"),
       request<ApiEnvelope<BackendPayment[]>>("reports/payments-register"),
+      request<ApiEnvelope<BackendDocument[]>>("reports/quotation-register"),
+      request<ApiEnvelope<BackendDocument[]>>("reports/proforma-invoice-register"),
+      request<ApiEnvelope<BackendDocument[]>>("reports/sales-credit-note-register"),
+      request<ApiEnvelope<BackendDocument[]>>("reports/debit-note-sales-register"),
+      request<ApiEnvelope<BackendDocument[]>>("reports/purchase-order-register"),
+      request<ApiEnvelope<BackendDocument[]>>("reports/purchase-credit-note-register"),
+      request<ApiEnvelope<
+        Array<{
+          id: number;
+          entry_number: string;
+          entry_date?: string | null;
+          status: string;
+          source_type?: string | null;
+          source_id?: number | null;
+          reference?: string | null;
+          description?: string | null;
+          creator_name?: string | null;
+        }>
+      >>("reports/journal-register"),
+      listInventoryStock(),
     ]);
 
     return {
       invoiceRegister: invoiceRegister.data.map(mapDocument),
       billsRegister: billsRegister.data.map(mapDocument),
       paymentsRegister: paymentsRegister.data.map(mapPayment),
+      quotationRegister: quotationRegister.data.map(mapDocument),
+      proformaInvoiceRegister: proformaInvoiceRegister.data.map(mapDocument),
+      salesCreditNoteRegister: salesCreditNoteRegister.data.map(mapDocument),
+      salesDebitNoteRegister: salesDebitNoteRegister.data.map(mapDocument),
+      purchaseOrderRegister: purchaseOrderRegister.data.map(mapDocument),
+      purchaseCreditNoteRegister: purchaseCreditNoteRegister.data.map(mapDocument),
+      journalRegister: journalRegisterEnvelope.data.map((row) => ({
+        id: row.id,
+        entryNumber: row.entry_number,
+        entryDate: row.entry_date ?? "",
+        status: row.status,
+        sourceType: row.source_type ?? null,
+        sourceId: row.source_id ?? null,
+        reference: row.reference ?? null,
+        description: row.description ?? null,
+        creatorName: row.creator_name ?? null,
+      })),
+      inventoryRegister,
       backendReady: true,
     };
   } catch (err) {
     throw err;
   }
+}
+
+export async function fetchSalesDocumentsRegister(
+  options: { type: string; signal?: AbortSignal },
+): Promise<WorkspaceDocumentRecord[]> {
+  const params = new URLSearchParams();
+  params.set("type", options.type);
+  params.set("limit", "100");
+  const result = await request<ApiEnvelope<BackendDocument[]>>(`sales-documents?${params.toString()}`, { signal: options.signal });
+  return result.data.map(mapDocument);
+}
+
+export async function fetchPurchaseDocumentsRegister(
+  options: { type: string; signal?: AbortSignal },
+): Promise<WorkspaceDocumentRecord[]> {
+  const params = new URLSearchParams();
+  params.set("type", options.type);
+  params.set("limit", "100");
+  const result = await request<ApiEnvelope<BackendDocument[]>>(`purchase-documents?${params.toString()}`, { signal: options.signal });
+  return result.data.map(mapDocument);
+}
+
+type CashFlowLineApiRow = {
+  account_code?: string | null;
+  account_name?: string | null;
+  debit?: string | number | null;
+  credit?: string | number | null;
+  net?: string | number | null;
+  entry_number?: string | null;
+  entry_date?: string | null;
+  source_type?: string | null;
+  description?: string | null;
+};
+
+function mapCashFlowLineSnapshots(rows: unknown): CashFlowLineSnapshot[] {
+  const arr = Array.isArray(rows) ? rows : [];
+
+  return arr.map((raw) => {
+    const r = raw as CashFlowLineApiRow;
+    return {
+      accountCode: r.account_code != null ? String(r.account_code) : null,
+      accountName: r.account_name != null ? String(r.account_name) : null,
+      debit: numberValue(r.debit ?? 0),
+      credit: numberValue(r.credit ?? 0),
+      net: numberValue(r.net ?? 0),
+      entryNumber: r.entry_number != null ? String(r.entry_number) : null,
+      entryDate: r.entry_date != null ? String(r.entry_date) : null,
+      sourceType: r.source_type != null ? String(r.source_type) : null,
+      description: r.description != null ? String(r.description) : null,
+    };
+  });
+}
+
+function mapCashFlowSnapshotPayload(raw: unknown): CashFlowSnapshot | null {
+  if (raw === null || typeof raw !== "object") {
+    return null;
+  }
+  const o = raw as Record<string, unknown>;
+  const num = (val: unknown) => typeof val === "number" || typeof val === "string" ? numberValue(val) : 0;
+
+  return {
+    operating: mapCashFlowLineSnapshots(o.operating),
+    investing: mapCashFlowLineSnapshots(o.investing),
+    financing: mapCashFlowLineSnapshots(o.financing),
+    operatingTotal: num(o.operating_total),
+    investingTotal: num(o.investing_total),
+    financingTotal: num(o.financing_total),
+    netChange: num(o.net_change),
+  };
 }
 
 export async function getReportsSnapshot(filters?: { invoiceId?: number; invoiceNumber?: string }, signal?: AbortSignal): Promise<ReportsSnapshot> {
@@ -2429,11 +2636,19 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
       ? `reports/trial-balance?${impactQuery.toString()}`
       : "reports/trial-balance";
 
-    const [vatSummary, vatDetail, vatReceivedDetails, vatPaidDetails, receivablesAging, payablesAging, trialBalance, profitLoss, balanceSheet, profitByCustomer, profitByProduct, expenseBreakdown, auditTrail] = await Promise.all([
-      request<ApiEnvelope<Array<{ code: string; name: string; tax_rate: string | number; taxable_amount: string | number; tax_amount: string | number }>>>("reports/vat-summary", { signal }),
+    const [vatSummaryEnvelope, vatDetail, vatReceivedDetails, vatPaidDetails, receivablesAging, payablesAging, trialBalance, profitLoss, balanceSheet, profitByCustomer, profitByProduct, expenseBreakdown, auditTrail, vatReceivedLineDetails, cashFlowEnvelope] = await Promise.all([
+      request<{
+        data: Array<{ code: string; name: string; tax_rate: string | number; taxable_amount: string | number; tax_amount: string | number }>;
+        meta?: {
+          vat_received: string;
+          vat_paid: string;
+          vat_payable: string;
+          validation_status?: string;
+        };
+      }>("reports/vat-summary", { signal }),
       request<ApiEnvelope<Array<{ code: string; name: string; tax_rate: string | number; output_taxable_amount: string | number; output_tax_amount: string | number; input_taxable_amount: string | number; input_tax_amount: string | number }>>>("reports/vat-detail", { signal }),
-      request<ApiEnvelope<Array<{ id: number; document_number: string; issue_date: string; customer: string; taxable_amount: string | number; vat_amount: string | number }>>>("reports/vat-received-details", { signal }),
-      request<ApiEnvelope<Array<{ id: number; reference: string; issue_date: string; vendor: string; vat_amount: string | number; category: string }>>>("reports/vat-paid-details", { signal }),
+      request<ApiEnvelope<Array<{ id: number; document_type?: string; document_number: string; issue_date: string; customer?: string | null; taxable_amount: string | number; vat_amount: string | number; status?: string }>>>("reports/vat-received-details", { signal }),
+      request<ApiEnvelope<Array<{ id: number; reference: string; document_type?: string; issue_date: string; vendor?: string | null; taxable_amount?: string | number; vat_amount: string | number; category?: string | null; status?: string }>>>("reports/vat-paid-details", { signal }),
       request<ApiEnvelope<Array<{ document_number: string; balance_due: string | number; bucket: string }>>>("reports/receivables-aging", { signal }),
       request<ApiEnvelope<Array<{ document_number: string; balance_due: string | number; bucket: string }>>>("reports/payables-aging", { signal }),
       request<ApiEnvelope<Array<{ code: string; name: string; type: string; debit_total: string | number; credit_total: string | number; balance: string | number }>>>(trialBalancePath, { signal }),
@@ -2443,18 +2658,55 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
       request<ApiEnvelope<Array<{ item_id: number; item_name: string; quantity: string | number; revenue: string | number; estimated_cost: string | number; profit: string | number }>>>("reports/profit-by-product", { signal }),
       request<ApiEnvelope<Array<{ category_code: string; category_name: string; total: string | number }>>>("reports/expense-breakdown", { signal }),
       request<ApiEnvelope<Array<{ id: number; event: string; auditable_type: string; auditable_id: number; created_at: string }>>>("reports/audit-trail", { signal }),
+      request<
+        ApiEnvelope<
+          Array<{
+            line_id: number;
+            document_id: number;
+            document_number: string;
+            document_type: string;
+            issue_date: string;
+            customer?: string | null;
+            tax_code?: string | null;
+            tax_rate?: string | number | null;
+            line_description?: string | null;
+            taxable_amount: string | number;
+            vat_amount: string | number;
+            status?: string | null;
+          }>
+        >
+      >("reports/vat-received-line-details", { signal }),
+      request<
+        ApiEnvelope<{
+          operating?: unknown;
+          investing?: unknown;
+          financing?: unknown;
+          operating_total?: string | number;
+          investing_total?: string | number;
+          financing_total?: string | number;
+          net_change?: string | number;
+        }>
+      >("reports/cash-flow", { signal }),
     ]);
 
     const toArray = <T>(val: T | T[]): T[] => (Array.isArray(val) ? val : []);
 
     return {
-      vatSummary: toArray(vatSummary.data).map((row) => ({
+      vatSummary: toArray(vatSummaryEnvelope.data).map((row) => ({
         code: row.code,
         name: row.name,
         rate: numberValue(row.tax_rate),
         taxableAmount: numberValue(row.taxable_amount),
         taxAmount: numberValue(row.tax_amount),
       })),
+      vatReconciliationMeta: vatSummaryEnvelope.meta
+        ? {
+            vatReceived: vatSummaryEnvelope.meta.vat_received,
+            vatPaid: vatSummaryEnvelope.meta.vat_paid,
+            vatPayable: vatSummaryEnvelope.meta.vat_payable,
+            validationStatus: vatSummaryEnvelope.meta.validation_status,
+          }
+        : null,
       vatDetail: toArray(vatDetail.data).map((row) => ({
         code: row.code,
         name: row.name,
@@ -2464,22 +2716,31 @@ export async function getReportsSnapshot(filters?: { invoiceId?: number; invoice
         inputTaxableAmount: numberValue(row.input_taxable_amount),
         inputTaxAmount: numberValue(row.input_tax_amount),
       })),
-      vatReceivedDetails: toArray(vatReceivedDetails.data).map((row) => ({
-        id: row.id,
-        invoiceNumber: row.document_number,
-        date: row.issue_date,
-        customer: row.customer,
-        taxableAmount: numberValue(row.taxable_amount),
-        vatAmount: numberValue(row.vat_amount),
-      })),
-      vatPaidDetails: toArray(vatPaidDetails.data).map((row) => ({
-        id: row.id,
-        reference: row.reference,
-        date: row.issue_date,
-        vendor: row.vendor,
-        vatAmount: numberValue(row.vat_amount),
-        category: row.category,
-      })),
+      vatReceivedDetails: toArray(vatReceivedDetails.data).map((row) => normalizeVatReceivedDetail(row as VatRegisterPayload)),
+      vatPaidDetails: toArray(vatPaidDetails.data).map((row) => normalizeVatPaidDetail(row as VatRegisterPayload)),
+      vatReceivedLineDetails: toArray(vatReceivedLineDetails.data).map((row) => {
+        const issueDate = row.issue_date != null ? String(row.issue_date) : "";
+        const dateShort = issueDate.length >= 10 ? issueDate.slice(0, 10) : issueDate;
+
+        return {
+          lineId: row.line_id,
+          documentId: row.document_id,
+          invoiceNumber: row.document_number,
+          documentType: row.document_type,
+          date: dateShort,
+          customer: row.customer,
+          taxCode: String(row.tax_code ?? ""),
+          taxRate:
+            row.tax_rate === undefined || row.tax_rate === null
+              ? null
+              : numberValue(row.tax_rate),
+          lineDescription: String(row.line_description ?? ""),
+          taxableAmount: numberValue(row.taxable_amount),
+          vatAmount: numberValue(row.vat_amount),
+          status: row.status,
+        };
+      }),
+      cashFlow: mapCashFlowSnapshotPayload(cashFlowEnvelope?.data ?? null),
       receivablesAging: toArray(receivablesAging.data).map((row) => ({
         documentNumber: row.document_number,
         balanceDue: numberValue(row.balance_due),
@@ -3164,13 +3425,15 @@ export async function previewDocumentTemplate(template: Omit<DocumentTemplateRec
 }
 
 export async function exportDocumentTemplatePdf(template: Omit<DocumentTemplateRecord, "id" | "logoAssetUrl">, documentType: string): Promise<TemplatePdfDownloadRecord> {
-  const response = await fetch(`${getWorkspaceApiBase()}/templates/export-pdf`, {
+  // The workspace proxy only serves local template PDFs for explicit preview/demo requests.
+  const response = await fetch(`${getWorkspaceApiBase()}/templates/export-pdf?mode=preview`, {
     method: "POST",
     cache: "no-store",
     credentials: "include",
     headers: {
       Accept: "application/pdf",
       "Content-Type": "application/json",
+      "X-Workspace-Mode": "preview",
     },
     body: JSON.stringify({
       name: template.name,
@@ -3279,16 +3542,51 @@ export async function retryCommunication(communicationId: number): Promise<Commu
   return mapCommunication(result.data);
 }
 
-export function getDocumentPdfUrl(documentId: number, options?: { templateId?: number | null }) {
+export function detectWorkspacePreviewModeForPdf(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  if (window.location.search.includes("mode=preview")) {
+    return true;
+  }
+  if (typeof document !== "undefined") {
+    if (document.cookie.includes("workspace_mode=preview")) {
+      return true;
+    }
+    if (document.body?.dataset?.workspaceMode === "preview") {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function getDocumentPdfUrl(
+  documentId: number,
+  options?: {
+    templateId?: number | null;
+    mode?: "backend" | "preview";
+  },
+) {
   const searchParams = new URLSearchParams();
 
   if (typeof options?.templateId === "number") {
     searchParams.set("template_id", String(options.templateId));
   }
 
-  return searchParams.size
-    ? `${getWorkspaceApiBase()}/documents/${documentId}/pdf?${searchParams.toString()}`
-    : `${getWorkspaceApiBase()}/documents/${documentId}/pdf`;
+  const isPreview =
+    options?.mode === "preview" || detectWorkspacePreviewModeForPdf();
+
+  if (isPreview) {
+    searchParams.set("mode", "preview");
+  }
+
+  const action = isPreview ? "export-pdf" : "pdf";
+  const query = searchParams.toString();
+  const base = getWorkspaceApiBase();
+
+  return query
+    ? `${base}/documents/${documentId}/${action}?${query}`
+    : `${base}/documents/${documentId}/${action}`;
 }
 
 export async function listDocumentTemplates(): Promise<DocumentTemplateRecord[]> {
@@ -3724,6 +4022,10 @@ export type BankAccountRecord = {
   name: string;
   balance: number;
   normalBalance: "debit" | "credit" | null;
+  debitTotal: number;
+  creditTotal: number;
+  balanceStatus: "positive" | "negative" | "zero" | null;
+  balanceExplanation: string;
 };
 
 export type StatementLineRecord = {
@@ -3758,7 +4060,15 @@ export type StatementLineCandidateRecord = {
 
 export async function listBankAccounts(): Promise<BankAccountRecord[]> {
   const result = await request<ApiEnvelope<Array<{
-    id: number; code: string; name: string; balance: string | number; normal_balance?: "debit" | "credit" | null;
+    id: number;
+    code: string;
+    name: string;
+    balance: string | number;
+    normal_balance?: "debit" | "credit" | null;
+    debit_total?: string | number;
+    credit_total?: string | number;
+    balance_status?: "positive" | "negative" | "zero" | null;
+    balance_explanation?: string | null;
   }>>>("reconciliation/bank-accounts");
   return result.data.map((account) => ({
     id: account.id,
@@ -3766,6 +4076,10 @@ export async function listBankAccounts(): Promise<BankAccountRecord[]> {
     name: account.name,
     balance: numberValue(account.balance),
     normalBalance: account.normal_balance ?? null,
+    debitTotal: numberValue(account.debit_total),
+    creditTotal: numberValue(account.credit_total),
+    balanceStatus: account.balance_status ?? null,
+    balanceExplanation: typeof account.balance_explanation === "string" ? account.balance_explanation : "",
   }));
 }
 
@@ -3917,6 +4231,152 @@ export async function getCashFlowReport(filters?: { fromDate?: string; toDate?: 
   };
 }
 
+/** Maps backend / preview snake_case + camelCase VAT received rows onto `VatReceivedDetailRecord`. */
+type VatRegisterPayload = Record<string, unknown>;
+
+export function normalizeVatReceivedDetail(payload: VatRegisterPayload): VatReceivedDetailRecord {
+  const idRaw = payload.id ?? payload.document_id ?? payload.documentId;
+  const id = typeof idRaw === "number" && Number.isFinite(idRaw) ? idRaw : Number(idRaw);
+  const documentIdCandidate = payload.document_id ?? payload.documentId;
+  let documentId: number | undefined;
+  if (typeof documentIdCandidate === "number" && Number.isFinite(documentIdCandidate)) {
+    documentId = documentIdCandidate;
+  } else if (documentIdCandidate !== undefined && documentIdCandidate !== null && `${documentIdCandidate}`.trim() !== "") {
+    const n = Number(documentIdCandidate);
+    if (Number.isFinite(n)) documentId = n;
+  }
+
+  const documentNumberRaw = payload.document_number ?? payload.documentNumber;
+  const invoiceNumber =
+    typeof documentNumberRaw === "string" && documentNumberRaw.trim()
+      ? documentNumberRaw.trim()
+      : typeof documentNumberRaw === "number"
+        ? String(documentNumberRaw)
+        : "-";
+
+  const issueRaw = payload.issue_date ?? payload.issueDate ?? payload.date;
+  const dateStr = issueRaw !== undefined && issueRaw !== null ? String(issueRaw) : "";
+
+  const typeCombined = payload.document_type ?? payload.documentType ?? payload.type;
+  const documentType =
+    typeCombined !== undefined && typeCombined !== null && `${typeCombined}`.trim() !== ""
+      ? String(typeCombined).trim()
+      : undefined;
+
+  const statusCombined = payload.status;
+  const status =
+    statusCombined !== undefined && statusCombined !== null && `${statusCombined}`.trim() !== ""
+      ? String(statusCombined).trim()
+      : undefined;
+
+  const taxableRaw = payload.taxable_amount ?? payload.taxableAmount;
+  const vatRaw = payload.vat_amount ?? payload.vatAmount;
+  const taxableAmount = taxableRaw !== undefined && taxableRaw !== null ? numberValue(taxableRaw as string | number) : 0;
+  const vatAmount = vatRaw !== undefined && vatRaw !== null ? numberValue(vatRaw as string | number) : 0;
+
+  const customerRaw = payload.customer ?? payload.vendor;
+  const customer =
+    customerRaw !== undefined && customerRaw !== null && `${customerRaw}`.trim() !== ""
+      ? String(customerRaw).trim()
+      : "-";
+
+  const sourceRaw = payload.source;
+  const source =
+    typeof sourceRaw === "string" && sourceRaw.trim()
+      ? sourceRaw.trim()
+      : "posted_document";
+
+  return {
+    id: Number.isFinite(id) ? Number(id) : 0,
+    invoiceNumber,
+    documentNumber: invoiceNumber === "-" ? undefined : invoiceNumber,
+    ...(documentId !== undefined ? { documentId } : {}),
+    ...(documentType !== undefined ? { documentType } : {}),
+    date: dateStr,
+    issueDate: dateStr,
+    customer,
+    taxableAmount,
+    vatAmount,
+    ...(status !== undefined ? { status } : {}),
+    source,
+  };
+}
+
+export function normalizeVatPaidDetail(payload: VatRegisterPayload): VatPaidDetailRecord {
+  const idRaw = payload.id ?? payload.document_id ?? payload.documentId;
+  const idNum = typeof idRaw === "number" && Number.isFinite(idRaw) ? idRaw : Number(idRaw);
+  const documentIdCandidate = payload.document_id ?? payload.documentId;
+  let documentId: number | undefined;
+  if (typeof documentIdCandidate === "number" && Number.isFinite(documentIdCandidate)) {
+    documentId = documentIdCandidate;
+  } else if (documentIdCandidate !== undefined && documentIdCandidate !== null && `${documentIdCandidate}`.trim() !== "") {
+    const n = Number(documentIdCandidate);
+    if (Number.isFinite(n)) documentId = n;
+  }
+
+  const refRaw = payload.reference ?? payload.document_number ?? payload.documentNumber ?? payload.number;
+  const reference =
+    refRaw !== undefined && refRaw !== null && `${refRaw}`.trim() !== "" ? String(refRaw).trim() : "-";
+
+  const issueRaw = payload.issue_date ?? payload.issueDate ?? payload.date;
+  const dateStr = issueRaw !== undefined && issueRaw !== null ? String(issueRaw) : "";
+
+  const typeCombined = payload.document_type ?? payload.documentType ?? payload.type;
+  const documentType =
+    typeCombined !== undefined && typeCombined !== null && `${typeCombined}`.trim() !== ""
+      ? String(typeCombined).trim()
+      : undefined;
+
+  const statusCombined = payload.status;
+  const status =
+    statusCombined !== undefined && statusCombined !== null && `${statusCombined}`.trim() !== ""
+      ? String(statusCombined).trim()
+      : undefined;
+
+  const vendorRaw = payload.vendor ?? payload.supplier ?? payload.customer;
+  const vendor =
+    vendorRaw !== undefined && vendorRaw !== null && `${vendorRaw}`.trim() !== ""
+      ? String(vendorRaw).trim()
+      : "-";
+
+  const taxableRaw = payload.taxable_amount ?? payload.taxableAmount;
+  const vatRaw = payload.vat_amount ?? payload.vatAmount;
+  const taxableAmount =
+    taxableRaw !== undefined && taxableRaw !== null ? numberValue(taxableRaw as string | number) : undefined;
+  const vatAmount = vatRaw !== undefined && vatRaw !== null ? numberValue(vatRaw as string | number) : 0;
+
+  const categoryRaw = payload.category;
+  const category =
+    categoryRaw !== undefined && categoryRaw !== null && `${categoryRaw}`.trim() !== ""
+      ? String(categoryRaw).trim()
+      : documentType === "vendor_bill"
+        ? "expense"
+        : documentType === "purchase_credit_note"
+          ? "purchase_credit"
+          : "purchase";
+
+  const sourceRaw = payload.source;
+  const source =
+    typeof sourceRaw === "string" && sourceRaw.trim()
+      ? sourceRaw.trim()
+      : "posted_document";
+
+  return {
+    id: Number.isFinite(idNum) ? Number(idNum) : 0,
+    reference,
+    ...(documentType !== undefined ? { documentType } : {}),
+    date: dateStr,
+    issueDate: dateStr,
+    vendor,
+    ...(taxableAmount !== undefined ? { taxableAmount } : {}),
+    vatAmount,
+    category,
+    ...(status !== undefined ? { status } : {}),
+    ...(documentId !== undefined ? { documentId } : {}),
+    source,
+  };
+}
+
 export async function listVatReceivedDetails(filters?: {
   fromDate?: string;
   toDate?: string;
@@ -3926,16 +4386,9 @@ export async function listVatReceivedDetails(filters?: {
   if (filters?.toDate) searchParams.set("to_date", filters.toDate);
 
   const path = searchParams.size ? `reports/vat-received-details?${searchParams.toString()}` : "reports/vat-received-details";
-  const result = await request<ApiEnvelope<Array<{ id: number; document_number: string; issue_date: string; customer?: string | null; taxable_amount: string | number; vat_amount: string | number }>>>(path);
+  const result = await request<ApiEnvelope<VatRegisterPayload[]>>(path);
 
-  return result.data.map((row) => ({
-    id: row.id,
-    invoiceNumber: row.document_number,
-    date: row.issue_date,
-    customer: row.customer ?? "-",
-    taxableAmount: numberValue(row.taxable_amount),
-    vatAmount: numberValue(row.vat_amount),
-  }));
+  return result.data.map((row) => normalizeVatReceivedDetail(row));
 }
 
 export async function listVatPaidDetails(filters?: {
@@ -3947,16 +4400,9 @@ export async function listVatPaidDetails(filters?: {
   if (filters?.toDate) searchParams.set("to_date", filters.toDate);
 
   const path = searchParams.size ? `reports/vat-paid-details?${searchParams.toString()}` : "reports/vat-paid-details";
-  const result = await request<ApiEnvelope<Array<{ id: number; reference: string; issue_date: string; vendor?: string | null; vat_amount: string | number; category?: string | null }>>>(path);
+  const result = await request<ApiEnvelope<VatRegisterPayload[]>>(path);
 
-  return result.data.map((row) => ({
-    id: row.id,
-    reference: row.reference,
-    date: row.issue_date,
-    vendor: row.vendor ?? "-",
-    vatAmount: numberValue(row.vat_amount),
-    category: row.category ?? "purchase",
-  }));
+  return result.data.map((row) => normalizeVatPaidDetail(row));
 }
 
 export async function listInventoryStock(): Promise<InventoryStockRecord[]> {
@@ -3965,6 +4411,7 @@ export async function listInventoryStock(): Promise<InventoryStockRecord[]> {
     item_id?: number | null;
     product_name: string;
     material: string;
+    description?: string | null;
     inventory_type: string;
     size: string;
     source: "production" | "purchase";
@@ -3972,9 +4419,13 @@ export async function listInventoryStock(): Promise<InventoryStockRecord[]> {
     quantity_on_hand: string | number;
     committed_quantity: string | number;
     reorder_level: string | number;
+    average_unit_cost?: string | number;
+    inventory_value?: string | number;
+    status?: string;
     batch_number?: string | null;
     production_date?: string | null;
     recorded_by?: string | null;
+    journal_entry_id?: number | null;
     journal_entry_number?: string | null;
     inventory_account_code?: string | null;
     inventory_account_name?: string | null;
@@ -3983,29 +4434,39 @@ export async function listInventoryStock(): Promise<InventoryStockRecord[]> {
     updated_at: string;
   }>>>("inventory/stock");
 
-  return result.data.map((row) => ({
-    id: row.id,
-    itemId: row.item_id ?? null,
-    productName: row.product_name,
-    material: row.material,
-    inventoryType: row.inventory_type,
-    size: row.size,
-    source: row.source,
-    code: row.code,
-    onHand: numberValue(row.quantity_on_hand),
-    committed: numberValue(row.committed_quantity),
-    available: numberValue(row.quantity_on_hand) - numberValue(row.committed_quantity),
-    reorderLevel: numberValue(row.reorder_level),
-    batchNumber: row.batch_number ?? "",
-    productionDate: row.production_date ?? "",
-    recordedBy: row.recorded_by ?? "Workspace User",
-    journalEntryNumber: row.journal_entry_number ?? "Pending",
-    inventoryAccountCode: row.inventory_account_code ?? "130",
-    inventoryAccountName: row.inventory_account_name ?? "VAT Receivable",
-    attachments: row.attachments ?? [],
-    documentLinks: row.document_links ?? [],
-    lastUpdated: row.updated_at,
-  }));
+  return result.data.map((row) => {
+    const qty = numberValue(row.quantity_on_hand);
+    const avg = row.average_unit_cost !== undefined ? numberValue(row.average_unit_cost) : 0;
+    const val = row.inventory_value !== undefined ? numberValue(row.inventory_value) : Math.round(qty * avg * 100) / 100;
+    return {
+      id: row.id,
+      itemId: row.item_id ?? null,
+      productName: row.product_name,
+      material: row.material,
+      description: (row.description ?? "").trim() || [row.material, row.size].filter(Boolean).join(" · "),
+      inventoryType: row.inventory_type,
+      size: row.size,
+      source: row.source,
+      code: row.code,
+      onHand: qty,
+      committed: numberValue(row.committed_quantity),
+      available: qty - numberValue(row.committed_quantity),
+      reorderLevel: numberValue(row.reorder_level),
+      averageUnitCost: avg,
+      inventoryValue: val,
+      status: row.status ?? "in_stock",
+      batchNumber: row.batch_number ?? "",
+      productionDate: row.production_date ?? "",
+      recordedBy: row.recorded_by ?? "Workspace User",
+      journalEntryId: row.journal_entry_id ?? null,
+      journalEntryNumber: row.journal_entry_number ?? "Pending",
+      inventoryAccountCode: row.inventory_account_code ?? "130",
+      inventoryAccountName: row.inventory_account_name ?? "VAT Receivable",
+      attachments: row.attachments ?? [],
+      documentLinks: row.document_links ?? [],
+      lastUpdated: row.updated_at,
+    };
+  });
 }
 
 export async function createInventoryStockRecord(payload: InventoryCreatePayload): Promise<InventoryStockRecord> {
@@ -4014,6 +4475,7 @@ export async function createInventoryStockRecord(payload: InventoryCreatePayload
     item_id?: number | null;
     product_name: string;
     material: string;
+    description?: string | null;
     inventory_type: string;
     size: string;
     source: "production" | "purchase";
@@ -4021,9 +4483,13 @@ export async function createInventoryStockRecord(payload: InventoryCreatePayload
     quantity_on_hand: string | number;
     committed_quantity: string | number;
     reorder_level: string | number;
+    average_unit_cost?: string | number;
+    inventory_value?: string | number;
+    status?: string;
     batch_number?: string | null;
     production_date?: string | null;
     recorded_by?: string | null;
+    journal_entry_id?: number | null;
     journal_entry_number?: string | null;
     inventory_account_code?: string | null;
     inventory_account_name?: string | null;
@@ -4060,22 +4526,30 @@ export async function createInventoryStockRecord(payload: InventoryCreatePayload
   });
 
   const row = result.data;
+  const qty = numberValue(row.quantity_on_hand);
+  const avg = row.average_unit_cost !== undefined ? numberValue(row.average_unit_cost) : 0;
+  const val = row.inventory_value !== undefined ? numberValue(row.inventory_value) : Math.round(qty * avg * 100) / 100;
   return {
     id: row.id,
     itemId: row.item_id ?? null,
     productName: row.product_name,
     material: row.material,
+    description: (row.description ?? "").trim() || [row.material, row.size].filter(Boolean).join(" · "),
     inventoryType: row.inventory_type,
     size: row.size,
     source: row.source,
     code: row.code,
-    onHand: numberValue(row.quantity_on_hand),
+    onHand: qty,
     committed: numberValue(row.committed_quantity),
-    available: numberValue(row.quantity_on_hand) - numberValue(row.committed_quantity),
+    available: qty - numberValue(row.committed_quantity),
     reorderLevel: numberValue(row.reorder_level),
+    averageUnitCost: avg,
+    inventoryValue: val,
+    status: row.status ?? "in_stock",
     batchNumber: row.batch_number ?? "",
     productionDate: row.production_date ?? "",
     recordedBy: row.recorded_by ?? "Workspace User",
+    journalEntryId: row.journal_entry_id ?? null,
     journalEntryNumber: row.journal_entry_number ?? "Pending",
     inventoryAccountCode: row.inventory_account_code ?? "130",
     inventoryAccountName: row.inventory_account_name ?? "VAT Receivable",
@@ -4089,6 +4563,7 @@ export async function createInventoryAdjustment(payload: InventoryAdjustmentPayl
   const result = await request<ApiEnvelope<{
     id: number; date: string; reference: string; reason: string; item_count: number; status: "draft" | "posted";
     code: string; product_name: string; quantity: string | number; source: "production" | "purchase"; recorded_by?: string | null;
+    journal_entry_id?: number | null;
     journal_entry_number?: string | null; inventory_account_code?: string | null; inventory_account_name?: string | null; attachments?: Attachment[] | null;
     document_links?: Array<{ documentId?: number | null; documentNumber: string; documentType: string; status?: string | null }> | null; transaction_type?: string | null;
   }>>("inventory/adjustments", {
@@ -4119,6 +4594,7 @@ export async function createInventoryAdjustment(payload: InventoryAdjustmentPayl
     quantity: numberValue(row.quantity),
     source: row.source,
     recordedBy: row.recorded_by ?? "Workspace User",
+    journalEntryId: row.journal_entry_id ?? null,
     journalEntryNumber: row.journal_entry_number ?? "Pending",
     inventoryAccountCode: row.inventory_account_code ?? "113",
     inventoryAccountName: row.inventory_account_name ?? "Inventory",
@@ -4132,6 +4608,7 @@ export async function createInventorySale(payload: InventorySalePayload): Promis
   const result = await request<ApiEnvelope<{
     id: number; date: string; reference: string; reason: string; item_count: number; status: "draft" | "posted";
     code: string; product_name: string; quantity: string | number; source: "production" | "purchase"; recorded_by?: string | null;
+    journal_entry_id?: number | null;
     journal_entry_number?: string | null; inventory_account_code?: string | null; inventory_account_name?: string | null; attachments?: Attachment[] | null;
     document_links?: Array<{ documentId?: number | null; documentNumber: string; documentType: string; status?: string | null }> | null; transaction_type?: string | null;
   }>>("inventory/sales", {
@@ -4165,6 +4642,7 @@ export async function createInventorySale(payload: InventorySalePayload): Promis
     quantity: numberValue(row.quantity),
     source: row.source,
     recordedBy: row.recorded_by ?? "Workspace User",
+    journalEntryId: row.journal_entry_id ?? null,
     journalEntryNumber: row.journal_entry_number ?? "Pending",
     inventoryAccountCode: row.inventory_account_code ?? "113",
     inventoryAccountName: row.inventory_account_name ?? "Inventory",
@@ -4187,6 +4665,7 @@ export async function listInventoryAdjustments(): Promise<InventoryAdjustmentRec
     quantity: string | number;
     source: "production" | "purchase";
     recorded_by?: string | null;
+    journal_entry_id?: number | null;
     journal_entry_number?: string | null;
     inventory_account_code?: string | null;
     inventory_account_name?: string | null;
@@ -4207,6 +4686,7 @@ export async function listInventoryAdjustments(): Promise<InventoryAdjustmentRec
     quantity: numberValue(row.quantity),
     source: row.source,
     recordedBy: row.recorded_by ?? "Workspace User",
+    journalEntryId: row.journal_entry_id ?? null,
     journalEntryNumber: row.journal_entry_number ?? "Pending",
     inventoryAccountCode: row.inventory_account_code ?? "130",
     inventoryAccountName: row.inventory_account_name ?? "VAT Receivable",

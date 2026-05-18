@@ -14,7 +14,7 @@ import {
   getDirectoryImportRequiredFields,
   getItemImportFields,
 } from "@/lib/directory-import";
-import { createItemInBackend, getWorkspaceDirectory, updateItemInBackend } from "@/lib/workspace-api";
+import { createItemInBackend, getWorkspaceDirectory, listInventoryStock, updateItemInBackend } from "@/lib/workspace-api";
 import { currency } from "@/components/workflow/utils";
 import { exportRowsToCsv } from "@/lib/spreadsheet";
 
@@ -44,6 +44,7 @@ const emptyDraft: {
 
 export function ProductsServicesRegister() {
   const [items, setItems] = useState<ItemRecord[]>([]);
+  const [stockByItemId, setStockByItemId] = useState<Record<number, { qty: number; avgCost: number; value: number }>>({});
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"active" | "archived" | "all">("active");
@@ -63,6 +64,40 @@ export function ProductsServicesRegister() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    listInventoryStock()
+      .then((rows) => {
+        if (cancelled) {
+          return;
+        }
+        const next: Record<number, { qty: number; avgCost: number; value: number }> = {};
+        for (const row of rows) {
+          if (row.itemId == null) {
+            continue;
+          }
+          const cur = next[row.itemId] ?? { qty: 0, avgCost: 0, value: 0 };
+          cur.qty += row.onHand;
+          cur.value += row.inventoryValue;
+          next[row.itemId] = cur;
+        }
+        for (const id of Object.keys(next)) {
+          const sid = Number(id);
+          const agg = next[sid];
+          agg.avgCost = agg.qty > 0 ? Math.round((agg.value / agg.qty) * 100) / 100 : 0;
+        }
+        setStockByItemId(next);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setStockByItemId({});
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [items]);
 
   const filteredItems = useMemo(
     () => items.filter((row) => {
@@ -321,31 +356,43 @@ export function ProductsServicesRegister() {
           <table className="min-w-full text-sm">
             <thead className="border-b border-line bg-surface-soft/70">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-muted">Name</th>
                 <th className="px-4 py-3 text-left font-semibold text-muted">Code</th>
-                <th className="px-4 py-3 text-left font-semibold text-muted">Type</th>
                 <th className="px-4 py-3 text-left font-semibold text-muted">Status</th>
+                <th className="px-4 py-3 text-left font-semibold text-muted">Name</th>
+                <th className="px-4 py-3 text-left font-semibold text-muted">Description</th>
+                <th className="px-4 py-3 text-left font-semibold text-muted">Inventory tracking</th>
+                <th className="px-4 py-3 text-right font-semibold text-muted">Qty on hand</th>
+                <th className="px-4 py-3 text-right font-semibold text-muted">Avg unit cost</th>
+                <th className="px-4 py-3 text-right font-semibold text-muted">Inventory value</th>
+                <th className="px-4 py-3 text-left font-semibold text-muted">Type</th>
                 <th className="px-4 py-3 text-right font-semibold text-muted">Sale price</th>
-                <th className="px-4 py-3 text-right font-semibold text-muted">Purchase price</th>
                 <th className="px-4 py-3 text-left font-semibold text-muted">Tax</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td className="px-4 py-4 text-muted" colSpan={7}>Loading items...</td></tr>
-              ) : filteredItems.length ? filteredItems.map((item) => (
+                <tr><td className="px-4 py-4 text-muted" colSpan={11}>Loading items...</td></tr>
+              ) : filteredItems.length ? filteredItems.map((item) => {
+                const bid = item.backendId;
+                const stock = bid !== undefined ? stockByItemId[bid] : undefined;
+                const tracking = item.inventoryClassification?.replaceAll("_", " ") ?? (item.kind === "product" ? "inventory tracked" : "non-stock");
+                return (
                 <tr key={item.id} className={["border-t border-line/70 cursor-pointer", selectedItem?.id === item.id ? "bg-primary-soft/20" : "hover:bg-surface-soft/40"].join(" ")} onClick={() => setSelectedItemId(item.id)}>
-                  <td className="px-4 py-3 font-semibold text-ink">{item.name}</td>
-                  <td className="px-4 py-3 text-muted">{item.sku || "-"}</td>
-                  <td className="px-4 py-3 text-muted capitalize">{item.kind}</td>
+                  <td className="px-4 py-3 text-muted">{item.sku || "—"}</td>
                   <td className="px-4 py-3 text-muted">{item.isActive === false ? "Archived" : "Active"}</td>
+                  <td className="px-4 py-3 font-semibold text-ink">{item.name}</td>
+                  <td className="px-4 py-3 text-muted max-w-[14rem] truncate">{item.description?.trim() ? item.description : "—"}</td>
+                  <td className="px-4 py-3 text-muted capitalize">{tracking}</td>
+                  <td className="px-4 py-3 text-right text-muted">{stock && item.kind === "product" ? stock.qty : "—"}</td>
+                  <td className="px-4 py-3 text-right text-muted">{stock && item.kind === "product" ? `${currency(stock.avgCost)}` : "—"}</td>
+                  <td className="px-4 py-3 text-right text-muted">{stock && item.kind === "product" ? `${currency(stock.value)}` : "—"}</td>
+                  <td className="px-4 py-3 text-muted capitalize">{item.kind}</td>
                   <td className="px-4 py-3 text-right text-muted">{currency(item.salePrice)} SAR</td>
-                  <td className="px-4 py-3 text-right text-muted">{currency(item.purchasePrice)} SAR</td>
                   <td className="px-4 py-3 text-muted">{item.taxLabel}</td>
                 </tr>
-              )) : (
+              ); }) : (
                 <tr>
-                  <td className="px-4 py-6" colSpan={7}>
+                  <td className="px-4 py-6" colSpan={11}>
                     <div className="rounded-lg border border-dashed border-line bg-surface-soft px-4 py-4 text-sm text-muted">
                       <p className="font-semibold text-ink">No products or services are ready yet.</p>
                       <p className="mt-1">Add the first saved item here so sales and purchase documents stop depending on one-off line descriptions.</p>

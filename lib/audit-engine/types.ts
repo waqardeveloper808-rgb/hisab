@@ -47,6 +47,26 @@ export type RegistryControlPoint = {
   cross_validation_sources: string[];
   measurable_fields: string[];
   anti_cheat_rules: string[];
+  /** Optional Phase 1+ metadata — preserved when present in registry JSON. */
+  phase?: 1 | 2;
+  collector_type?:
+    | "build"
+    | "lint"
+    | "test"
+    | "route"
+    | "screenshot"
+    | "pdf_document"
+    | "zatca"
+    | "accounting"
+    | "vat"
+    | "import"
+    | "ui_placeholder"
+    | "composite";
+  phase_2_non_blocking?: boolean;
+  blocker_for?: string[];
+  route_scope?: string;
+  pass_condition?: string;
+  fail_condition?: string;
 };
 
 export type ControlPointRegistry = {

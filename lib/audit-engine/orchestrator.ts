@@ -38,7 +38,7 @@ function inferModuleFromRoute(routePattern?: string) {
 }
 
 function selectControls(registryControls: RegistryControlPoint[], request: AuditRequest) {
-  const active = registryControls.filter((control) => control.status !== "deprecated");
+  const active = registryControls.filter((control) => control.status !== "deprecated" && control.status !== "draft");
   if (request.scope === "selected_controls") {
     const selected = new Set(request.control_ids ?? []);
     return active.filter((control) => selected.has(control.id));

@@ -9,6 +9,7 @@ import { DocumentLinkTrigger } from "@/components/workspace/DocumentLinkTrigger"
 import { DocumentLinkPreviewModal } from "@/components/workspace/DocumentLinkPreviewModal";
 import { WorkspaceModeNotice } from "@/components/workspace/WorkspaceModeNotice";
 import type { Attachment } from "@/lib/accounting-engine";
+import { formatCurrency } from "@/lib/workspace/format";
 import { createInventoryAdjustment, createInventorySale, createInventoryStockRecord, getWorkspaceDirectory, listDocuments, listInventoryStock, type DocumentCenterRecord, type InventoryStockRecord } from "@/lib/workspace-api";
 
 type StockRegisterProps = {
@@ -419,20 +420,23 @@ export function StockRegister({ inventoryFilter = "", title = "Stock Register", 
 			) : null}
 
 			<div className="rounded-md border border-line bg-white overflow-hidden">
-				<div className="grid grid-cols-[0.8fr_1fr_0.9fr_0.8fr_0.5fr_0.5fr_0.8fr_0.8fr_1fr_0.75fr] gap-1 px-2 py-1 border-b border-line bg-surface-soft/30 text-[9px] font-bold uppercase tracking-wider text-muted">
+				<div className="grid grid-cols-[0.7fr_1fr_1fr_0.75fr_0.55fr_0.45fr_0.45fr_0.5fr_0.55fr_0.65fr_0.95fr_0.65fr] gap-1 px-2 py-1 border-b border-line bg-surface-soft/30 text-[9px] font-bold uppercase tracking-wider text-muted">
 					<span>Code</span>
 					<span>Product</span>
-					<span>Material / Size</span>
-					<span>Type</span>
-					<span className="text-right">On Hand</span>
-					<span className="text-right">Available</span>
+					<span>Description</span>
+					<span>Tracking</span>
+					<span>Status</span>
+					<span className="text-right">Qty</span>
+					<span className="text-right">Avail</span>
+					<span className="text-right">Avg cost</span>
+					<span className="text-right">Value</span>
 					<span>Journal</span>
-					<span>Recorded By</span>
-					<span>Customer / Documents</span>
+					<span>Documents</span>
 					<span>Updated</span>
 				</div>
 				{filtered.map((item) => {
 					const isLow = item.available <= item.reorderLevel;
+					const statusLabel = item.status === "low_stock" ? "Low stock" : "In stock";
 					return (
 						<div
 							key={item.id}
@@ -447,16 +451,18 @@ export function StockRegister({ inventoryFilter = "", title = "Stock Register", 
 									setPreviewRecord(item);
 								}
 							}}
-							className={`grid w-full grid-cols-[0.8fr_1fr_0.9fr_0.8fr_0.5fr_0.5fr_0.8fr_0.8fr_1fr_0.75fr] gap-1 px-2 py-1.5 border-b border-line text-left transition hover:bg-surface-soft/35 focus:outline-none focus:ring-2 focus:ring-primary/20 ${isLow ? "bg-red-50/50" : ""}`}
+							className={`grid w-full grid-cols-[0.7fr_1fr_1fr_0.75fr_0.55fr_0.45fr_0.45fr_0.5fr_0.55fr_0.65fr_0.95fr_0.65fr] gap-1 px-2 py-1.5 border-b border-line text-left transition hover:bg-surface-soft/35 focus:outline-none focus:ring-2 focus:ring-primary/20 ${isLow ? "bg-red-50/50" : ""}`}
 						>
 							<span className="text-xs font-semibold text-primary">{item.code}</span>
 							<span className="text-[11px] text-ink truncate">{item.productName}</span>
-							<span className="text-[10px] text-muted">{item.material} / {item.size}</span>
-							<span className="text-[10px] text-muted capitalize">{item.inventoryType.replace("_", " ")}</span>
+							<span className="text-[10px] text-muted truncate">{item.description || `${item.material} / ${item.size}`}</span>
+							<span className="text-[10px] text-muted capitalize">{item.inventoryType.replaceAll("_", " ")}</span>
+							<span className="text-[10px] font-medium text-ink">{statusLabel}</span>
 							<span className="text-[11px] text-right font-medium text-ink">{item.onHand}</span>
 							<span className={`text-[11px] text-right font-medium ${isLow ? "text-red-700" : "text-ink"}`}>{item.available}</span>
-							<span className="text-[10px] text-muted">{item.journalEntryNumber}</span>
-							<span className="text-[10px] text-muted truncate">{item.recordedBy}</span>
+							<span className="text-[10px] text-right text-muted">{formatCurrency(item.averageUnitCost)}</span>
+							<span className="text-[10px] text-right font-semibold text-ink">{formatCurrency(item.inventoryValue)}</span>
+							<span className="text-[10px] text-muted">{item.journalEntryNumber}{item.journalEntryId ? ` (#${item.journalEntryId})` : ""}</span>
 							<span className="flex flex-wrap gap-1 text-[10px] text-muted">{(item.documentLinks ?? []).slice(0, 3).map((link) => <DocumentLinkTrigger key={`${item.id}-${link.documentNumber}`} link={link} onPreview={setLinkPreview} className="cursor-pointer text-primary underline-offset-2 hover:underline" />)}</span>
 							<span className="text-[10px] text-muted">{item.lastUpdated ? item.lastUpdated.slice(0, 10) : "—"}</span>
 						</div>
@@ -491,8 +497,11 @@ export function StockRegister({ inventoryFilter = "", title = "Stock Register", 
 								<p><strong>On hand:</strong> {previewRecord.onHand}</p>
 								<p><strong>Committed:</strong> {previewRecord.committed}</p>
 								<p><strong>Available:</strong> {previewRecord.available}</p>
+								<p><strong>Avg unit cost:</strong> {formatCurrency(previewRecord.averageUnitCost)}</p>
+								<p><strong>Inventory value:</strong> {formatCurrency(previewRecord.inventoryValue)}</p>
+								<p><strong>Status:</strong> {previewRecord.status === "low_stock" ? "Low stock" : "In stock"}</p>
 								<p><strong>Reorder level:</strong> {previewRecord.reorderLevel}</p>
-								<p><strong>Journal:</strong> {previewRecord.journalEntryNumber}</p>
+								<p><strong>Journal:</strong> {previewRecord.journalEntryNumber}{previewRecord.journalEntryId ? ` (id ${previewRecord.journalEntryId})` : ""}</p>
 								<p><strong>Account:</strong> {previewRecord.inventoryAccountCode} · {previewRecord.inventoryAccountName}</p>
 								{lastStockMovement ? <p><strong>Last {lastStockMovement.type}:</strong> {lastStockMovement.before} -&gt; {lastStockMovement.after} ({lastStockMovement.reference})</p> : null}
 							</div>

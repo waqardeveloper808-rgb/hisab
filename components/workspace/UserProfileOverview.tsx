@@ -43,16 +43,18 @@ export function UserProfileOverview() {
   const [feedback, setFeedback] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = readStoredProfile();
-    setDraft((current) => ({
-      ...current,
-      displayName: stored?.displayName ?? session?.name ?? current.displayName,
-      email: stored?.email ?? session?.email ?? current.email,
-      phone: stored?.phone ?? current.phone,
-      jobTitle: stored?.jobTitle ?? current.jobTitle,
-      preferredLanguage: stored?.preferredLanguage ?? current.preferredLanguage,
-      timezone: stored?.timezone ?? current.timezone,
-    }));
+    queueMicrotask(() => {
+      const stored = readStoredProfile();
+      setDraft((current) => ({
+        ...current,
+        displayName: stored?.displayName ?? session?.name ?? current.displayName,
+        email: stored?.email ?? session?.email ?? current.email,
+        phone: stored?.phone ?? current.phone,
+        jobTitle: stored?.jobTitle ?? current.jobTitle,
+        preferredLanguage: stored?.preferredLanguage ?? current.preferredLanguage,
+        timezone: stored?.timezone ?? current.timezone,
+      }));
+    });
   }, [session?.email, session?.name]);
 
   const profileSummary = useMemo(() => ([

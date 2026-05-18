@@ -68,6 +68,11 @@ export type DocumentRecord = {
   lines: DocumentLine[];
   notes?: string;
   templateId?: string;
+  /** When set, register + preview use this instead of demo `findCustomer(customerId)`. */
+  partyDisplayName?: string;
+  partySecondaryLine?: string;
+  /** When false, sidebar preview hides client-side PDF/XML that target demo document ids. */
+  supportsLocalTemplateExport?: boolean;
 };
 
 export type PaymentRecord = {

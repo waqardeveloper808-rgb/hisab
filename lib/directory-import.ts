@@ -18,6 +18,10 @@ export type DirectoryImportField =
   | "city"
   | "country"
   | "vatNumber"
+  | "commercialRegistrationNumber"
+  | "openingBalance"
+  | "openingBalanceType"
+  | "openingBalanceAsOf"
   | "street"
   | "buildingNumber"
   | "district"
@@ -56,6 +60,10 @@ const fieldLabels: Record<DirectoryImportField, string> = {
   city: "City",
   country: "Country",
   vatNumber: "VAT number",
+  commercialRegistrationNumber: "Commercial registration (CR)",
+  openingBalance: "Opening balance",
+  openingBalanceType: "Opening balance type",
+  openingBalanceAsOf: "Opening balance date",
   street: "Street",
   buildingNumber: "Building number",
   district: "District",
@@ -97,6 +105,54 @@ const fieldSuggestions: Record<DirectoryImportField, string[]> = {
   city: ["city", "town"],
   country: ["country", "country_name", "nation"],
   vatNumber: ["vat", "vat_number", "vat_registration_number", "tax_number", "tax_no", "trn", "tax_registration_no"],
+  commercialRegistrationNumber: [
+    "cr",
+    "cr_number",
+    "cr_no",
+    "cr number",
+    "commercial_registration",
+    "commercial registration",
+    "commercial_registration_number",
+    "commercial registration number",
+    "commercial_reg",
+    "commercial_reg_number",
+    "registration_commercial",
+    "moma",
+  ],
+  openingBalance: [
+    "opening_balance",
+    "opening_bal",
+    "opening_balance_sar",
+    "opening balance",
+    "ob",
+    "ar_opening_balance",
+    "ap_opening_balance",
+    "starting_balance",
+    "initial_balance",
+    "balance_forward",
+    "balance",
+  ],
+  openingBalanceType: [
+    "opening_balance_type",
+    "opening balance type",
+    "ob_type",
+    "opening_bal_type",
+    "balance_type",
+    "normal_balance",
+    "ar_normal_balance",
+    "opening_normal_balance",
+  ],
+  openingBalanceAsOf: [
+    "opening_balance_as_of",
+    "opening_balance_date",
+    "opening balance date",
+    "opening balance as of",
+    "ob_as_of",
+    "ob_date",
+    "balance_as_of",
+    "as_of_date",
+    "opening date",
+  ],
   street: ["street", "address", "address_line_1", "line_1", "billing_address", "mailing_address"],
   buildingNumber: ["building_number", "building", "building_no", "building_number_no"],
   district: ["district", "area", "neighborhood", "quarter"],
@@ -223,6 +279,50 @@ function parseAmount(value: string | undefined) {
   return Number.isFinite(parsed) ? parsed : Number.NaN;
 }
 
+function normalizeOpeningBalanceType(raw: string | undefined): string | undefined {
+  if (!raw?.trim()) {
+    return undefined;
+  }
+  const n = normalizeHeader(raw).replace(/\s+/g, "_");
+  if (
+    (n.includes("credit") || n.endsWith("_cr") || n === "normal_credit") &&
+    !n.includes("debit_note")
+  ) {
+    return "normal_credit";
+  }
+  if (n.includes("debit") || n === "normal_debit" || n.endsWith("_dr")) {
+    return "normal_debit";
+  }
+
+  return undefined;
+}
+
+/** ISO yyyy-mm-dd or common yyyy/mm/dd; otherwise Date.parse fallback. */
+function parseOpeningBalanceAsOf(value: string | undefined): string | undefined {
+  if (!value?.trim()) {
+    return undefined;
+  }
+  const t = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) {
+    return t;
+  }
+
+  const m = /^(\d{4})[/\\.](\d{1,2})[/\\.](\d{1,2})$/.exec(t);
+  if (m) {
+    const y = Number(m[1]);
+    const mo = String(Number(m[2])).padStart(2, "0");
+    const d = String(Number(m[3])).padStart(2, "0");
+    return `${y}-${mo}-${d}`;
+  }
+
+  const ms = Date.parse(t);
+  if (!Number.isNaN(ms)) {
+    return new Date(ms).toISOString().slice(0, 10);
+  }
+
+  return undefined;
+}
+
 function normalizeItemKind(value: string | undefined) {
   const normalized = normalizeHeader(value ?? "");
   if (["product", "stock", "inventory", "goods", "finished_good", "finished_goods"].includes(normalized)) {
@@ -237,7 +337,23 @@ export function getDirectoryImportFieldLabel(field: DirectoryImportField) {
 }
 
 export function getCustomerImportFields() {
-  return ["displayName", "email", "phone", "city", "country", "vatNumber", "street", "buildingNumber", "district", "postalCode", "secondaryNumber"] as DirectoryImportField[];
+  return [
+    "displayName",
+    "email",
+    "phone",
+    "city",
+    "country",
+    "vatNumber",
+    "commercialRegistrationNumber",
+    "openingBalance",
+    "openingBalanceType",
+    "openingBalanceAsOf",
+    "street",
+    "buildingNumber",
+    "district",
+    "postalCode",
+    "secondaryNumber",
+  ] as DirectoryImportField[];
 }
 
 export function getItemImportFields() {
@@ -317,6 +433,28 @@ export function buildCustomerImportPreview(
     const district = readMappedCell(row, table, mapping, "district");
     const postalCode = readMappedCell(row, table, mapping, "postalCode");
     const secondaryNumber = readMappedCell(row, table, mapping, "secondaryNumber");
+    const crRaw = readMappedCell(row, table, mapping, "commercialRegistrationNumber");
+    const openingBalRaw = readMappedCell(row, table, mapping, "openingBalance");
+    const openingTypeRaw = readMappedCell(row, table, mapping, "openingBalanceType");
+    const openingAsOfRaw = readMappedCell(row, table, mapping, "openingBalanceAsOf");
+    const openingBalance = openingBalRaw ? parseAmount(openingBalRaw) : 0;
+    const openingBalanceTypeNormalized = normalizeOpeningBalanceType(openingTypeRaw);
+    const openingBalanceAsOfNormalized = parseOpeningBalanceAsOf(openingAsOfRaw);
+
+    if (openingBalRaw && Number.isNaN(openingBalance)) {
+      issues.push({ rowNumber, severity: "error", message: "Opening balance must be a numeric amount." });
+      return;
+    }
+
+    if (openingAsOfRaw && openingBalanceAsOfNormalized === undefined) {
+      issues.push({ rowNumber, severity: "error", message: "Opening balance date must be a recognizable date (prefer YYYY-MM-DD)." });
+      return;
+    }
+
+    if (openingTypeRaw && openingBalanceTypeNormalized === undefined) {
+      issues.push({ rowNumber, severity: "error", message: "Opening balance type must mention debit or credit (e.g. normal_debit / normal_credit)." });
+      return;
+    }
 
     if (row.every((cell) => !cell.trim())) {
       return;
@@ -335,6 +473,12 @@ export function buildCustomerImportPreview(
     if (!isValidKsaVatNumber(vatNumber)) {
       issues.push({ rowNumber, severity: "error", message: "VAT number must be 15 digits, start with 3, end with 3, and contain numbers only." });
       return;
+    }
+
+    if (openingBalance !== 0) {
+      warnings.add(
+        "Opening balance is saved on the customer record. Post a manual opening journal if this amount must appear in the general ledger.",
+      );
     }
 
     const addressErrors = validateSaudiNationalAddress({
@@ -365,6 +509,12 @@ export function buildCustomerImportPreview(
       issues.push({ rowNumber, severity: "warning", message: "City is blank. Invoice address completion may still be needed." });
     }
 
+    if (crRaw) {
+      warnings.add(
+        "Commercial registration (CR) is included in customer import and persists as commercial_registration_number on the contact.",
+      );
+    }
+
     rows.push({
       kind: "customer",
       displayName,
@@ -373,6 +523,10 @@ export function buildCustomerImportPreview(
       city,
       country,
       vatNumber,
+      crNumber: crRaw || undefined,
+      openingBalance: openingBalRaw ? openingBalance : undefined,
+      openingBalanceType: openingBalanceTypeNormalized,
+      openingBalanceAsOf: openingBalanceAsOfNormalized,
       street,
       buildingNumber,
       district,

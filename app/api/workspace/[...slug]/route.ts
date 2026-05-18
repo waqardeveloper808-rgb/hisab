@@ -5,9 +5,8 @@ import {
   resolveWorkspaceBackendContext,
   resolveWorkspaceBackendPath,
 } from "@/lib/workspace-session";
-import {
-  renderDocumentPdf,
-} from "@/lib/document-engine/index";
+import { renderDocumentPdf } from "@/lib/document-engine/render-document-pdf";
+
 import type { CompanyProfileSnapshot, CompanyAssetLike } from "@/lib/document-engine/types";
 import { renderWorkspaceDocumentHtml } from "@/lib/workspace-preview";
 
@@ -131,6 +130,13 @@ const allowedRoots = new Set([
 function isExplicitPreviewRequest(request: NextRequest) {
   return request.nextUrl.searchParams.get("mode")?.toLowerCase() === "preview"
     || request.headers.get("X-Workspace-Mode")?.toLowerCase() === "preview";
+}
+
+function readPreviewNumberParam(params: URLSearchParams, key: string): number | null {
+  const raw = params.get(key);
+  if (!raw || !raw.trim()) return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
 }
 
 function enforceWorkspaceMode(response: NextResponse, mode: "backend" | "preview") {
@@ -338,8 +344,11 @@ async function renderAuthenticatedDocumentEngine(params: {
         metadata: line.metadata,
       })),
       compliance_metadata: {
-        zatca_ready: true,
-        xml_ready: true,
+        compliance_stage: "foundation_only",
+        zatca_ready: false,
+        xml_ready: false,
+        validation_not_run: true,
+        clearance_not_submitted: true,
         document_mode: document.type,
       },
     },
@@ -444,8 +453,11 @@ async function renderAuthenticatedTemplatePreview(params: {
         },
       ],
       compliance_metadata: {
-        zatca_ready: true,
-        xml_ready: true,
+        compliance_stage: "foundation_only",
+        zatca_ready: false,
+        xml_ready: false,
+        validation_not_run: true,
+        clearance_not_submitted: true,
         document_mode: String(params.payload.document_type ?? "tax_invoice"),
       },
     },
@@ -768,6 +780,15 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
   }
 
   if (request.method === "POST" && slug[0] === "templates" && slug[1] === "export-pdf") {
+    if (!isExplicitPreviewRequest(request)) {
+      return NextResponse.json(
+        {
+          message:
+            "Local template PDF uses the preview/demo renderer. Use ?mode=preview or X-Workspace-Mode: preview, or export a finalized document via GET …/documents/{id}/pdf through the workspace proxy.",
+        },
+        { status: 403, headers: { "X-Workspace-Mode": "backend" } },
+      );
+    }
     const payload = await request.json().catch(() => ({}));
     const pdf = await renderTemplatePdfFromPayload(payload);
     return new NextResponse(Buffer.from(pdf.bytes), {
@@ -776,7 +797,7 @@ async function handleWorkspaceRequest(request: NextRequest, context: { params: P
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${pdf.fileName}"`,
         "Cache-Control": "no-store",
-        "X-Workspace-Mode": "backend",
+        "X-Workspace-Mode": "preview",
       },
     });
   }
@@ -930,6 +951,7 @@ async function handlePreviewRequest(request: NextRequest, slug: string[]) {
     createPreviewTemplate,
     duplicatePreviewDocument,
     finalizePreviewDocument,
+    getPreviewCashFlow,
     getPreviewBalanceSheet,
     getPreviewDocumentDetail,
     getPreviewDocumentPdf,
@@ -962,6 +984,7 @@ async function handlePreviewRequest(request: NextRequest, slug: string[]) {
     listPreviewTrialBalance,
     listPreviewVatDetail,
     listPreviewVatPaidDetails,
+    listPreviewVatReceivedLineDetails,
     listPreviewVatReceivedDetails,
     listPreviewVatSummary,
     matchPreviewStatementLine,
@@ -973,6 +996,21 @@ async function handlePreviewRequest(request: NextRequest, slug: string[]) {
   } = await import("@/lib/workspace-preview");
 
   assertExplicitWorkspacePreviewRequest(request.nextUrl.searchParams, request.headers.get("X-Workspace-Mode"));
+
+  if (slug[0] === "intelligence" && slug[1] === "reports" && request.method === "GET") {
+    return NextResponse.json(
+      {
+        data: {
+          preview: true,
+          available: false,
+          insights: [],
+          warnings: [],
+          message: "Report intelligence is disabled in workspace preview mode.",
+        },
+      },
+      { status: 200, headers: { "X-Workspace-Mode": "preview" } },
+    );
+  }
 
   if (slug[0] === "contacts") {
     if (request.method === "GET") {
@@ -1190,6 +1228,29 @@ async function handlePreviewRequest(request: NextRequest, slug: string[]) {
   if (slug[0] === "sales-documents" || slug[0] === "purchase-documents") {
     const kind = slug[0] === "sales-documents" ? "sales" : "purchase";
 
+    if (
+      request.method === "GET" &&
+      slug.length === 1
+    ) {
+      const params = request.nextUrl.searchParams;
+
+      const documents = await listPreviewDocuments({
+        group: kind,
+        type: params.get("type"),
+        status: params.get("status"),
+        search: params.get("search") ?? params.get("q"),
+        fromDate: params.get("from_date") ?? params.get("fromDate"),
+        toDate: params.get("to_date") ?? params.get("toDate"),
+        minTotal: readPreviewNumberParam(params, "min_total") ?? readPreviewNumberParam(params, "minTotal"),
+        maxTotal: readPreviewNumberParam(params, "max_total") ?? readPreviewNumberParam(params, "maxTotal"),
+      });
+
+      return NextResponse.json(
+        { data: documents },
+        { headers: { "X-Workspace-Mode": "preview" } },
+      );
+    }
+
     if (request.method === "POST" && slug.length === 1) {
       const payload = await request.json();
       const created = await createPreviewDocument(kind, payload);
@@ -1254,6 +1315,21 @@ async function handlePreviewRequest(request: NextRequest, slug: string[]) {
         return NextResponse.json({ data: await listPreviewVatReceivedDetails({ fromDate: request.nextUrl.searchParams.get("from_date"), toDate: request.nextUrl.searchParams.get("to_date") }) }, { headers: { "X-Workspace-Mode": "preview" } });
       case "vat-paid-details":
         return NextResponse.json({ data: await listPreviewVatPaidDetails({ fromDate: request.nextUrl.searchParams.get("from_date"), toDate: request.nextUrl.searchParams.get("to_date") }) }, { headers: { "X-Workspace-Mode": "preview" } });
+      case "vat-received-line-details":
+        return NextResponse.json(
+          {
+            data: await listPreviewVatReceivedLineDetails({
+              fromDate: request.nextUrl.searchParams.get("from_date"),
+              toDate: request.nextUrl.searchParams.get("to_date"),
+            }),
+          },
+          { headers: { "X-Workspace-Mode": "preview" } },
+        );
+      case "cash-flow":
+        return NextResponse.json(
+          { data: await getPreviewCashFlow() },
+          { headers: { "X-Workspace-Mode": "preview" } },
+        );
       case "receivables-aging":
         return NextResponse.json({ data: await listPreviewReceivablesAging() }, { headers: { "X-Workspace-Mode": "preview" } });
       case "payables-aging":

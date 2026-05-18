@@ -1,26 +1,9 @@
-import { WorkspaceRegister } from "@/components/workspace/WorkspaceRegister";
-import { invoices } from "@/data/workspace/invoices";
+import { InvoicesRegisterClient } from "./InvoicesRegisterClient";
 
 export const metadata = {
-  title: "Workspace — Invoices",
+  title: "Workspace — Tax invoices",
 };
 
 export default function WorkspaceInvoicesPage() {
-  return (
-    <WorkspaceRegister
-      config={{
-        title: "Tax invoices",
-        subtitle: "ZATCA-ready invoices issued from this workspace.",
-        documents: invoices,
-        createLabel: "New invoice",
-        createDocumentHref: "/workspace/invoices/new?documentType=tax_invoice",
-        suggestionId: "register-invoices",
-        suggestionTitle: "Single source of truth for billing",
-        suggestionDescription:
-          "Click any row to open the document preview, record a payment, or issue a credit note.",
-        emptyTitle: "No invoices match the current filters",
-        emptyDescription: "Adjust the search term or clear the active status filter.",
-      }}
-    />
-  );
+  return <InvoicesRegisterClient />;
 }

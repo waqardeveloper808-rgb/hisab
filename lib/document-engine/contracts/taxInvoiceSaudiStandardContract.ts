@@ -50,7 +50,12 @@ export type TaxInvoiceSaudiStandardContract = {
     reference: string;
     orderNumber: string;
     currency: string;
+    /** Phase 1 QR (simplified / B2C scenario only) — see `showPhase1Qr`. */
     qrCodeData: string;
+    /** Local QR raster (data URL) — optional until server enrichment. */
+    qrImageDataUrl?: string;
+    /** When false, QR markup is omitted (standard B2B tax invoice). */
+    showPhase1Qr: boolean;
     pageNumber: number;
     totalPages: number;
   };

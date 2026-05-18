@@ -19,6 +19,12 @@ export type ContactRecord = {
   postalCode?: string;
   secondaryNumber?: string;
   crNumber?: string;
+  /** Opening balance stored on contact (decimal); does not auto-post receivable journals. */
+  openingBalance?: number;
+  /** AR/AP normal balance hint (persisted server-side); optional on create. */
+  openingBalanceType?: string;
+  /** Effective date for opening_balance (YYYY-MM-DD, optional). */
+  openingBalanceAsOf?: string;
   additionalDocumentNumbers?: string;
   defaultRevenueAccount?: string;
   defaultCostCenter?: string;
@@ -80,6 +86,9 @@ export type ContactPayload = {
   postalCode?: string;
   secondaryNumber?: string;
   crNumber?: string;
+  openingBalance?: number;
+  openingBalanceType?: string;
+  openingBalanceAsOf?: string;
   additionalDocumentNumbers?: string;
   defaultRevenueAccount?: string;
   defaultCostCenter?: string;

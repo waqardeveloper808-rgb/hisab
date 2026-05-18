@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { buildDocumentHtml, buildInvoiceRenderModel } from "@/lib/document-engine/index";
+import { enrichTaxInvoiceCompactWithPhase1Qr } from "@/lib/document-engine/enrich-tax-invoice-qr-server";
 
-function createModel(type: string) {
+function createModel(type: string, customOverride: Record<string, string> = {}) {
   return buildInvoiceRenderModel({
     company: {
       legalName: "Hisabix LLC",
@@ -34,7 +35,7 @@ function createModel(type: string) {
       taxableTotal: 100,
       taxTotal: type === "delivery_note" ? 0 : 15,
       grandTotal: type === "delivery_note" ? 100 : 115,
-      customFields: { source_invoice_number: "INV-2026-1101", reference: "QUO-2026-1401" },
+      customFields: { source_invoice_number: "INV-2026-1101", reference: "QUO-2026-1401", ...customOverride },
       lines: [
         {
           id: 10,
@@ -85,5 +86,21 @@ describe("document engine", () => {
     expect(html).toContain("Credit Note");
     expect(html).toContain("Source Invoice");
     expect(html).toContain("INV-2026-1101");
+  });
+
+  it("omits ZATCA module for standard B2B tax invoice", () => {
+    const html = buildDocumentHtml(createModel("tax_invoice"));
+    expect(html).toContain('data-zatca-module="false"');
+  });
+
+  it("enables ZATCA module only for simplified tax invoice", async () => {
+    const base = createModel("tax_invoice", { zatca_invoice_category: "simplified" });
+    const taxModel = await enrichTaxInvoiceCompactWithPhase1Qr(base);
+    const tax = buildDocumentHtml(taxModel);
+    expect(tax).toContain('data-zatca-module="true"');
+    const prof = buildDocumentHtml(createModel("proforma_invoice"));
+    expect(prof).toContain('data-zatca-module="false"');
+    const cn = buildDocumentHtml(createModel("credit_note"));
+    expect(cn).toContain('data-zatca-module="false"');
   });
 });

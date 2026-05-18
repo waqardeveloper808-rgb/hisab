@@ -110,18 +110,20 @@ export function useRegisterTableLayout(
   });
 
   useLayoutEffect(() => {
-    setWidths((prev) => {
-      const stored = loadRegisterTableWidthsForKey(widthsKey);
-      const next = { ...prev };
-      let changed = false;
-      for (const d of defs) {
-        if (next[d.id] == null || next[d.id]! < REGISTER_TABLE_MIN_COL_PX) {
-          const w = stored[d.id];
-          next[d.id] = w != null && w >= REGISTER_TABLE_MIN_COL_PX ? w : d.defaultWidth;
-          changed = true;
+    queueMicrotask(() => {
+      setWidths((prev) => {
+        const stored = loadRegisterTableWidthsForKey(widthsKey);
+        const next = { ...prev };
+        let changed = false;
+        for (const d of defs) {
+          if (next[d.id] == null || next[d.id]! < REGISTER_TABLE_MIN_COL_PX) {
+            const w = stored[d.id];
+            next[d.id] = w != null && w >= REGISTER_TABLE_MIN_COL_PX ? w : d.defaultWidth;
+            changed = true;
+          }
         }
-      }
-      return changed ? next : prev;
+        return changed ? next : prev;
+      });
     });
   }, [widthsKey, defs]);
 

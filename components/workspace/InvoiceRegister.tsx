@@ -2,6 +2,7 @@
 
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Eye } from "lucide-react";
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { currency } from "@/components/workflow/utils";
@@ -15,6 +16,7 @@ import type { ContactRecord, ItemRecord, TransactionLine } from "@/components/wo
 import {
   createContactInBackend,
   createItemInBackend,
+  detectWorkspacePreviewModeForPdf,
   duplicateDocument,
   finalizeTransactionDraft,
   getDocument,
@@ -51,6 +53,7 @@ const INVOICE_COL_ORDER: InvoiceColumnKey[] = ["invoice", "customer", "date", "s
 
 const INVOICE_WIDTH_DEFS: RegisterColumnWidthDef[] = [
   { id: "__select", defaultWidth: 52 },
+  { id: "__preview", defaultWidth: 44 },
   { id: "invoice", defaultWidth: 220 },
   { id: "customer", defaultWidth: 180 },
   { id: "date", defaultWidth: 110 },
@@ -388,6 +391,7 @@ export function InvoiceRegister() {
 
   const handleInvoiceSelection = useCallback((invoiceId: number) => {
     setSelectedInvoiceId(invoiceId);
+    setSelectedInvoiceIds([]);
     setHistoryOpen(false);
     setMobilePane("preview");
   }, []);
@@ -487,9 +491,13 @@ export function InvoiceRegister() {
       }
 
       if (action === "download") {
+        const previewMode = detectWorkspacePreviewModeForPdf();
         targetInvoices.forEach((invoice) => {
           const anchor = document.createElement("a");
-          anchor.href = getDocumentPdfUrl(invoice.id);
+          anchor.href = getDocumentPdfUrl(invoice.id, {
+            templateId: typeof invoice.templateId === "number" ? invoice.templateId : undefined,
+            mode: previewMode ? "preview" : "backend",
+          });
           anchor.download = `${invoice.number}.pdf`;
           anchor.click();
         });
@@ -497,8 +505,16 @@ export function InvoiceRegister() {
       }
 
       if (action === "print") {
+        const previewMode = detectWorkspacePreviewModeForPdf();
         targetInvoices.forEach((invoice) => {
-          window.open(getDocumentPdfUrl(invoice.id), "_blank", "noopener,noreferrer");
+          window.open(
+            getDocumentPdfUrl(invoice.id, {
+              templateId: typeof invoice.templateId === "number" ? invoice.templateId : undefined,
+              mode: previewMode ? "preview" : "backend",
+            }),
+            "_blank",
+            "noopener,noreferrer",
+          );
         });
         setRegisterNotice({ tone: "success", text: `Print preview opened for ${targetInvoices.length} invoice${targetInvoices.length === 1 ? "" : "s"}.` });
       }
@@ -743,7 +759,7 @@ export function InvoiceRegister() {
     () => INVOICE_COL_ORDER.filter((key) => visibleInvoiceColumns.includes(key)),
     [visibleInvoiceColumns],
   );
-  const invoiceTableOrderedIds = useMemo(() => ["__select", ...activeColumns], [activeColumns]);
+  const invoiceTableOrderedIds = useMemo(() => ["__select", "__preview", ...activeColumns], [activeColumns]);
   const { wrapRef, colPercents, beginResizePair } = useRegisterTableLayout("v2.register.invoices", INVOICE_WIDTH_DEFS, invoiceTableOrderedIds);
   const invPctById = useMemo(() => Object.fromEntries(colPercents.map((c) => [c.id, c.percent])), [colPercents]);
 
@@ -922,7 +938,7 @@ export function InvoiceRegister() {
               <span className="text-xs font-bold text-ink ml-auto">{currency(selectedInvoice.grandTotal)} SAR</span>
               <span className="mx-1 h-4 w-px bg-line" />
               <button type="button" onClick={() => openInvoiceWorkspace(selectedInvoice.id, "edit")} className="h-6 rounded border border-line bg-white px-2 text-[10px] font-semibold text-ink hover:bg-surface-soft">Edit</button>
-              <button type="button" onClick={() => void runRegisterAction("download", [selectedInvoice])} className="h-6 rounded border border-line bg-white px-2 text-[10px] font-semibold text-ink hover:bg-surface-soft">Download</button>
+              <button type="button" data-testid={`invoice-download-action-${selectedInvoice.id}`} onClick={() => void runRegisterAction("download", [selectedInvoice])} className="h-6 rounded border border-line bg-white px-2 text-[10px] font-semibold text-ink hover:bg-surface-soft">Download</button>
               <button type="button" onClick={() => void runRegisterAction("print", [selectedInvoice])} className="h-6 rounded border border-line bg-white px-2 text-[10px] font-semibold text-ink hover:bg-surface-soft">Print</button>
               <button type="button" onClick={() => void runRegisterAction("send", [selectedInvoice])} className="h-6 rounded border border-line bg-white px-2 text-[10px] font-semibold text-ink hover:bg-surface-soft">Send</button>
               <button type="button" onClick={() => void runRegisterAction("duplicate", [selectedInvoice])} className="h-6 rounded border border-line bg-white px-2 text-[10px] font-semibold text-ink hover:bg-surface-soft">Duplicate</button>
@@ -970,8 +986,11 @@ export function InvoiceRegister() {
                       >
                         <input type="checkbox" checked={filteredInvoices.length > 0 && filteredInvoices.every((inv) => selectedInvoiceIds.includes(inv.id))} onChange={(e) => toggleSelectAllVisible(e.target.checked)} aria-label="Select all" className="mt-0.5" />
                       </RegisterTableHeaderCell>
+                      <RegisterTableHeaderCell className="border-b border-line" onResizePointerDown={(x) => beginResizePair(1, x)}>
+                        <span className="sr-only">Preview</span>
+                      </RegisterTableHeaderCell>
                       {activeColumns.map((column, colIdx) => {
-                        const headerIdx = colIdx + 1;
+                        const headerIdx = colIdx + 2;
                         return (
                           <RegisterTableHeaderCell
                             key={column}
@@ -1003,16 +1022,36 @@ export function InvoiceRegister() {
                   </thead>
                   <tbody>
                     {loading ? (
-                      <tr><td colSpan={activeColumns.length + 1} className="px-3 py-3 text-xs text-muted">Loading…</td></tr>
+                      <tr><td colSpan={activeColumns.length + 2} className="px-3 py-3 text-xs text-muted">Loading…</td></tr>
                     ) : null}
                     {!loading && filteredInvoices.length > 0 ? filteredInvoices.map((invoice) => {
                       const normalizedStatus = normalizeInvoiceStatus(invoice);
                       const isSelected = invoice.id === selectedInvoiceId;
                       const isChecked = selectedInvoiceIds.includes(invoice.id);
                       return (
-                        <tr key={invoice.id} data-inspector-register-row="true" className={[isSelected ? "bg-primary-soft/30" : "hover:bg-surface-soft/40", "cursor-pointer"].join(" ")}>
+                        <tr
+                          key={invoice.id}
+                          data-inspector-register-row="true"
+                          data-testid={`invoice-row-${invoice.id}`}
+                          className={[isSelected ? "bg-primary-soft/30" : "hover:bg-surface-soft/40", "cursor-pointer"].join(" ")}
+                        >
                           <td className="border-b border-line/60 px-2 py-2 align-top">
-                            <input type="checkbox" checked={isChecked} onChange={(e) => toggleInvoiceSelection(invoice.id, e.target.checked)} aria-label={`Select ${invoice.number}`} />
+                            <input type="checkbox" checked={isChecked} onChange={(e) => toggleInvoiceSelection(invoice.id, e.target.checked)} aria-label={`Select ${invoice.number}`} className="mt-0.5" />
+                          </td>
+                          <td className="border-b border-line/60 px-1 py-2 align-middle" onClick={(event) => event.stopPropagation()}>
+                            <button
+                              type="button"
+                              data-testid={`invoice-preview-action-${invoice.id}`}
+                              aria-label={`Preview ${invoice.number}`}
+                              className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-line bg-white text-muted hover:border-primary/40 hover:text-primary"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                handleInvoiceSelection(invoice.id);
+                              }}
+                            >
+                              <Eye size={15} aria-hidden />
+                            </button>
                           </td>
                           {activeColumns.map((column) => (
                             <td
@@ -1047,7 +1086,7 @@ export function InvoiceRegister() {
                       );
                     }) : null}
                     {!loading && filteredInvoices.length === 0 ? (
-                      <tr><td colSpan={activeColumns.length + 1} className="px-3 py-3 text-xs text-muted">{invoices.length === 0 ? "No invoices yet." : "No match."}</td></tr>
+                      <tr><td colSpan={activeColumns.length + 2} className="px-3 py-3 text-xs text-muted">{invoices.length === 0 ? "No invoices yet." : "No match."}</td></tr>
                     ) : null}
                   </tbody>
                 </table>
@@ -1056,7 +1095,7 @@ export function InvoiceRegister() {
 
             {/* Preview pane — only rendered when a document is selected */}
             {viewMode === "split" ? (
-              <div className={["overflow-auto p-1.5 transition-all duration-300 ease-out lg:block lg:p-2", mobilePane === "register" ? "hidden" : "block"].join(" ")}>
+              <div className={["overflow-auto p-1.5 transition-all duration-300 ease-out lg:block lg:p-2", mobilePane === "register" ? "hidden" : "block"].join(" ")} data-testid="invoice-preview-pane">
                 <InvoiceDetailWorkspace
                   documentId={selectedInvoice?.id ?? selectedInvoiceId}
                   mode="panel"

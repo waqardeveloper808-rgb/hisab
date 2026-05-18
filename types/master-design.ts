@@ -34,6 +34,20 @@ export type MasterDesignModuleSpec = {
   definitionOfDone: string[];
 };
 
+export type MasterDesignCountryArchitecture = {
+  activePhase1Product: "KSA";
+  phase1Label: string;
+  ksaServiceBoundary: readonly string[];
+  futureCountryReadiness: readonly Readonly<{
+    id: string;
+    displayName: string;
+    phase: string;
+    evaluationScope: "metadata-only";
+    gatesKsaPhase1: false;
+    notes: string;
+  }>[];
+};
+
 export type MasterDesignTargetMap = {
   productName: string;
   phase: "Phase 1";
@@ -43,6 +57,8 @@ export type MasterDesignTargetMap = {
   sharedPlatformRules: string[];
   franceReadinessRequirements: string[];
   updatedAt: string;
+  /** KSA Phase 1 active product vs Phase 2 planned metadata; future countries do not block KSA Phase 1. */
+  countryArchitecture?: MasterDesignCountryArchitecture;
 };
 
 export type MasterDesignNodeType =

@@ -36,11 +36,11 @@ class CoreAccountingEngineExecutionTest extends TestCase
         $this->assertNotNull($company->accounts()->where('code', '5000')->value('id'));
         $this->assertNotNull($company->accounts()->where('code', '6900')->value('id'));
 
-        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => 'Core Customer',
-            'tax_number' => '300000000009999',
-        ])->assertCreated()->json('data.id');
+            'tax_number' => '300000000009993',
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()->where('company_id', $companyId)->where('code', 'VAT15')->value('id');
         $incomeAccountId = $company->accounts()->where('code', '4000')->value('id');

@@ -1,1 +1,0 @@
-- No field visibility switches found in customer or document info panel.

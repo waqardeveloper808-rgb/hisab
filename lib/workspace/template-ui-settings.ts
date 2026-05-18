@@ -4,17 +4,19 @@
 import {
   COLORS,
   COLUMN_LABELS,
+  mmToPx,
   type ColumnKey,
   type SchemaDocType,
   type SectionKey,
 } from "./document-template-schemas";
+import {
+  getItemsTableInnerTargetPx,
+  sanitizeItemColumnWidthRecord,
+} from "./item-column-resize";
 
-/** Millimetres → CSS pixels at 96dpi. */
-export function mmToPx(mm: number): number {
-  return (mm * 96) / 25.4;
-}
+export { mmToPx };
 
-/** Riyal display in totals (per product spec — Unicode Saudi Riyal / legacy forms vary by font). */
+/** Single canonical currency glyph for SAR in preview + PDF (engine contract). */
 export const TOTALS_RIYAL_GLYPH = "⃁";
 
 /** Single canonical currency glyph for SAR in preview + PDF (engine contract). */
@@ -24,7 +26,11 @@ export const CURRENCY_DISPLAY_SYMBOL = TOTALS_RIYAL_GLYPH;
  * Workspace Template Studio persisted UI (documented for migration).
  * Includes `studioLayout` (left/right panel widths) — same key, no separate store.
  */
-export const TEMPLATE_UI_STORAGE_KEY = "hisabix.wsv2.templateUi.v1";
+/** Current key — v2 migrates poisoned v1 widths; v3 reads as one-shot legacy after experimental v3 key (A4-D). */
+export const TEMPLATE_UI_STORAGE_KEY = "hisabix.wsv2.templateUi.v2";
+/** One-shot reads only; migrated into `TEMPLATE_UI_STORAGE_KEY` then removed. */
+const LEGACY_TEMPLATE_UI_STORAGE_KEY_V3 = "hisabix.wsv2.templateUi.v3";
+const LEGACY_TEMPLATE_UI_STORAGE_KEY_V1 = "hisabix.wsv2.templateUi.v1";
 const STORAGE_KEY = TEMPLATE_UI_STORAGE_KEY;
 
 export type CardBorderSettings = {
@@ -80,9 +86,9 @@ export type QrBlockSettings = {
 };
 
 export const DEFAULT_QR_BLOCK: QrBlockSettings = {
-  cardWidthPx: 150,
-  cardMinHeightPx: 120,
-  imageSizePx: 125,
+  cardWidthPx: 152,
+  cardMinHeightPx: 104,
+  imageSizePx: 96,
   align: "left",
   showCaptions: true,
 };
@@ -116,14 +122,14 @@ export type TotalsBlockSettings = {
 
 /** Defaults aligned from Workspace Template Studio verified state on 2026-04-26. */
 export const DEFAULT_TOTALS_BLOCK: TotalsBlockSettings = {
-  cardWidthPx: 430,
+  cardWidthPx: 300,
   cardMinHeightPx: 0,
-  cardPaddingPx: 12,
-  rowGapPx: 6,
-  totals_desc_col_width_px: 260,
-  totals_currency_col_width_px: 10,
-  totals_amount_col_width_px: 117,
-  totals_desc_align: "center",
+  cardPaddingPx: 6,
+  rowGapPx: 3,
+  totals_desc_col_width_px: 150,
+  totals_currency_col_width_px: 12,
+  totals_amount_col_width_px: 108,
+  totals_desc_align: "left",
   totals_currency_align: "center",
   totals_amount_align: "right",
 };
@@ -163,12 +169,12 @@ export const DEFAULT_INFO_CARD_LAYOUT: InfoCardLayoutSettings = {
   documentCardWidthPx: 0,
   documentCardMinHeightPx: 0,
   documentCardHeightPx: 0,
-  rowPaddingYPx: 3,
-  rowGapPx: 3,
-  cardPaddingPx: 0,
-  englishColumnWidthPx: 150,
-  valueColumnWidthPx: 225,
-  arabicColumnWidthPx: 150,
+  rowPaddingYPx: 2,
+  rowGapPx: 2,
+  cardPaddingPx: 6,
+  englishColumnWidthPx: 130,
+  valueColumnWidthPx: 200,
+  arabicColumnWidthPx: 130,
   englishAlign: "left",
   valueAlign: "center",
   arabicAlign: "right",
@@ -224,23 +230,37 @@ export type HeaderBlockSettings = {
   logoAlign: HeaderTextAlign;
   englishAlign: HeaderTextAlign;
   arabicAlign: HeaderTextAlign;
+  /** Seller / company name in header (English card), px — Template Studio + PDF. */
+  englishCompanyNameFontPx?: number;
+  /** Seller / company name in header (Arabic card), px — Template Studio + PDF. */
+  arabicCompanyNameFontPx?: number;
+  /** Fixed header card chrome height (preview); text shrinks inside. */
+  headerCardHeightPx?: number;
+  headerCardMaxHeightPx?: number;
+  /** Detail lines below company name — base px before shrink-to-fit. */
+  headerLineFontPx?: number;
+  headerLineMinFontPx?: number;
 };
 
 export const DEFAULT_HEADER_BLOCK: HeaderBlockSettings = {
   structure: "three_column",
   columnWidthMode: "equal",
-  englishCardWidthPx: 240,
-  /** Middle column: wide enough for default logo box (150px) + card padding without crowding. */
-  logoCardWidthPx: 248,
-  arabicCardWidthPx: 240,
-  cardGapPx: 12,
-  cardPaddingPx: 12,
-  /** Max box for logo; preview/PDF use contain-style fitting so aspect ratio is preserved (no stretch/crop). */
-  logoWidthPx: 150,
-  logoHeightPx: 150,
+  englishCardWidthPx: 228,
+  logoCardWidthPx: 228,
+  arabicCardWidthPx: 228,
+  cardGapPx: 8,
+  cardPaddingPx: 6,
+  logoWidthPx: 96,
+  logoHeightPx: 72,
   logoAlign: "center",
   englishAlign: "left",
   arabicAlign: "right",
+  englishCompanyNameFontPx: 12,
+  arabicCompanyNameFontPx: 12,
+  headerCardHeightPx: 108,
+  headerCardMaxHeightPx: 108,
+  headerLineFontPx: 8,
+  headerLineMinFontPx: 6,
 };
 
 /** Stamp / signature card chrome (preview + PDF). */
@@ -265,19 +285,19 @@ export type StampSignatureBlockSettings = {
 };
 
 export const DEFAULT_STAMP_SIGNATURE_BLOCK: StampSignatureBlockSettings = {
-  cardMinHeightPx: 140,
-  cardMaxHeightPx: 220,
-  cardPaddingPx: 12,
-  stampImageWidthPx: 150,
-  stampImageHeightPx: 90,
-  signatureImageWidthPx: 150,
-  signatureImageHeightPx: 90,
+  cardMinHeightPx: 96,
+  cardMaxHeightPx: 168,
+  cardPaddingPx: 8,
+  stampImageWidthPx: 132,
+  stampImageHeightPx: 76,
+  signatureImageWidthPx: 132,
+  signatureImageHeightPx: 76,
   footerLineEnabled: true,
   footerLabelPosition: "bottom",
-  preferBottomWhenSpaceAvailable: true,
+  preferBottomWhenSpaceAvailable: false,
 };
 
-/** Template Studio chrome only — persisted in `hisabix.wsv2.templateUi.v1` as `studioLayout`. */
+/** Template Studio chrome only — persisted in `hisabix.wsv2.templateUi.v2` as `studioLayout`. */
 export type StudioLayoutSettings = {
   leftPanelWidthPx: number;
   rightPanelWidthPx: number;
@@ -431,8 +451,8 @@ export const DEFAULT_MARGINS_MM: TemplateMargins = {
 export const DEFAULT_TITLE: TemplateTitleSettings = {
   en: "",
   ar: "",
-  enFontPx: 25,
-  arFontPx: 21,
+  enFontPx: 12,
+  arFontPx: 12,
   /** Match body English typography — not accent green. */
   enColor: "#111827",
   arColor: "#111827",
@@ -447,6 +467,8 @@ export const DEFAULT_TYPOGRAPHY: TemplateTypography = {
   arSizeScale: 1,
   enColor: "#111827",
   arColor: "#111827",
+  english: { fontSize: 9 },
+  arabic: { fontSize: 9 },
 };
 
 export const DEFAULT_CARD_BORDER: CardBorderSettings = {
@@ -479,12 +501,12 @@ export function defaultTemplateUi(): TemplateUiSettings {
 }
 
 /**
- * "Modern" (slot #2) — compact 9px-class body, logo under company row, bilingual info cards,
- * header row tint, two-column company header. Used for `tmpl-modern` when no custom UI in storage.
+ * Modern (slot #2) — card-forward, airy layout per `template-specs.md`: stronger
+ * hierarchy, comfort table density, bilingual info panels (not compact).
  */
 export function modernTemplatePresetUi(): TemplateUiSettings {
   return mergeTemplateUi(defaultTemplateUi(), {
-    showHeaderGreenAccent: false,
+    showHeaderGreenAccent: true,
     headerRowColor: "#E8F4EC",
     headerBlock: {
       ...DEFAULT_HEADER_BLOCK,
@@ -495,19 +517,54 @@ export function modernTemplatePresetUi(): TemplateUiSettings {
     },
     typography: {
       ...DEFAULT_TYPOGRAPHY,
-      enSizeScale: 0.75,
-      arSizeScale: 0.75,
+      enSizeScale: 1,
+      arSizeScale: 1,
     },
     title: {
       ...DEFAULT_TITLE,
-      enFontPx: 16,
-      arFontPx: 14,
+      enFontPx: 12,
+      arFontPx: 12,
     },
     totalsBlock: {
       ...DEFAULT_TOTALS_BLOCK,
       totals_desc_align: "center",
       totals_currency_align: "center",
       totals_amount_align: "right",
+    },
+    infoCardLayout: {
+      ...DEFAULT_INFO_CARD_LAYOUT,
+      rowPaddingYPx: 4,
+      rowGapPx: 4,
+      cardPaddingPx: 8,
+    },
+  });
+}
+
+/** Dense / compact preset — visibly tighter than Standard and Modern. */
+export function compactTemplatePresetUi(): TemplateUiSettings {
+  return mergeTemplateUi(defaultTemplateUi(), {
+    typography: {
+      ...DEFAULT_TYPOGRAPHY,
+      enSizeScale: 0.94,
+      arSizeScale: 0.96,
+    },
+    cardBorder: {
+      show: true,
+      widthPx: 1,
+      radiusPx: 6,
+      color: "#CBD5E1",
+    },
+    headerRowColor: "#F8FAFC",
+    showHeaderGreenAccent: false,
+    margins: { topMm: 7, rightMm: 7, bottomMm: 7, leftMm: 7 },
+    headerBlock: {
+      ...DEFAULT_HEADER_BLOCK,
+      cardPaddingPx: 8,
+      cardGapPx: 8,
+      logoWidthPx: 96,
+      logoHeightPx: 80,
+      englishCompanyNameFontPx: 12,
+      arabicCompanyNameFontPx: 12,
     },
     infoCardLayout: {
       ...DEFAULT_INFO_CARD_LAYOUT,
@@ -605,10 +662,60 @@ export function migrateTemplateUiPayload(input: unknown): Partial<TemplateUiSett
   if (hb && hb.columnWidthMode == null) {
     out.headerBlock = { ...DEFAULT_HEADER_BLOCK, ...hb, columnWidthMode: "equal" };
   }
+  const hb2 = out.headerBlock as Partial<HeaderBlockSettings> | undefined;
+  if (hb2) {
+    const clampPx = (n: unknown) => {
+      const v = Math.round(Number(n));
+      if (!Number.isFinite(v)) return undefined;
+      return Math.min(18, Math.max(7, v));
+    };
+    const en = clampPx(hb2.englishCompanyNameFontPx);
+    const ar = clampPx(hb2.arabicCompanyNameFontPx);
+    out.headerBlock = {
+      ...DEFAULT_HEADER_BLOCK,
+      ...hb2,
+      ...(en != null ? { englishCompanyNameFontPx: en } : {}),
+      ...(ar != null ? { arabicCompanyNameFontPx: ar } : {}),
+    };
+  }
 
-  const loose = out as Record<string, unknown>;
-  delete loose.english_font_color;
-  delete loose.arabic_font_color;
+  const titleMig = out.title as TemplateTitleSettings | undefined;
+  let titleNext = titleMig;
+  if (titleNext && typeof titleNext.enFontPx === "number") {
+    const v = Math.round(titleNext.enFontPx);
+    if (
+      (v >= 24 && v <= 28) ||
+      v === 21 ||
+      v === 22 ||
+      v === 25 ||
+      v === 27 ||
+      v === 18
+    ) {
+      titleNext = { ...titleNext, enFontPx: 12 };
+    }
+  }
+  if (titleNext && typeof titleNext.arFontPx === "number") {
+    const v = Math.round(titleNext.arFontPx);
+    if ([18, 21, 22].includes(v) || v >= 25) titleNext = { ...titleNext, arFontPx: 12 };
+  }
+  if (titleNext !== titleMig && titleNext) out.title = titleNext;
+
+  const typoMig = out.typography as TemplateTypography | undefined;
+  if (
+    typoMig?.english?.fontSize === 12 ||
+    typoMig?.arabic?.fontSize === 12
+  ) {
+    out.typography = {
+      ...DEFAULT_TYPOGRAPHY,
+      ...typoMig,
+      english: { ...typoMig?.english, fontSize: 9 },
+      arabic: { ...typoMig?.arabic, fontSize: 9 },
+    };
+  }
+
+  const looseFinal = out as Record<string, unknown>;
+  delete looseFinal.english_font_color;
+  delete looseFinal.arabic_font_color;
 
   const icRaw = out.infoCardLayout as Record<string, unknown> | undefined;
   if (icRaw && typeof icRaw === "object") {
@@ -622,16 +729,89 @@ export function migrateTemplateUiPayload(input: unknown): Partial<TemplateUiSett
     out.infoCardLayout = merged;
   }
 
+  const itemKeysBase: ColumnKey[] = [
+    "index",
+    "description",
+    "quantity",
+    "unit",
+    "price",
+    "taxableAmount",
+    "vatRate",
+    "vatAmount",
+    "lineTotal",
+  ];
+  const collectMigrateItemKeys = (rec?: Partial<Record<ColumnKey, number>>): ColumnKey[] => {
+    const k = [...itemKeysBase];
+    if (!rec) return k;
+    for (const key of Object.keys(rec) as ColumnKey[]) {
+      if (!k.includes(key)) k.push(key);
+    }
+    return k;
+  };
+  const migMargins = out.margins ?? DEFAULT_MARGINS_MM;
+  const itemTargetPx = getItemsTableInnerTargetPx(migMargins, { sectionPaddingPx: 8, borderPx: 1 });
+
+  const iwGlob = out.itemColumnWidths as Partial<Record<ColumnKey, number>> | undefined;
+  if (iwGlob && Object.keys(iwGlob).length > 0) {
+    const k = collectMigrateItemKeys(iwGlob);
+    out.itemColumnWidths = {
+      ...iwGlob,
+      ...sanitizeItemColumnWidthRecord(k, iwGlob, itemTargetPx),
+    };
+  }
+  const byT = out.itemColumnWidthsByTemplateId;
+  if (byT && typeof byT === "object") {
+    const nextMap: Record<string, Partial<Record<ColumnKey, number>>> = { ...byT };
+    for (const [tid, rec] of Object.entries(byT)) {
+      if (!rec || typeof rec !== "object") continue;
+      const r = rec as Partial<Record<ColumnKey, number>>;
+      const keys = collectMigrateItemKeys(r);
+      nextMap[tid] = { ...r, ...sanitizeItemColumnWidthRecord(keys, r, itemTargetPx) };
+    }
+    out.itemColumnWidthsByTemplateId = nextMap;
+  }
+
+  const hbName = out.headerBlock as Partial<HeaderBlockSettings> | undefined;
+  if (
+    hbName &&
+    typeof hbName.englishCompanyNameFontPx === "number"
+  ) {
+    const vn = Math.round(hbName.englishCompanyNameFontPx);
+    if (vn === 14 || vn === 16 || vn === 18) {
+      out.headerBlock = { ...DEFAULT_HEADER_BLOCK, ...hbName, englishCompanyNameFontPx: 12 };
+    }
+  }
+  const hbAr = out.headerBlock as Partial<HeaderBlockSettings> | undefined;
+  if (hbAr && typeof hbAr.arabicCompanyNameFontPx === "number") {
+    const va = Math.round(hbAr.arabicCompanyNameFontPx);
+    if (va === 14 || va === 16 || va === 18) {
+      out.headerBlock = { ...DEFAULT_HEADER_BLOCK, ...hbAr, arabicCompanyNameFontPx: 12 };
+    }
+  }
+
   return out;
 }
 
 export function readTemplateUiFromStorage(): TemplateUiSettings | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const current = window.localStorage.getItem(STORAGE_KEY);
+    const v3legacy = window.localStorage.getItem(LEGACY_TEMPLATE_UI_STORAGE_KEY_V3);
+    const v1 = window.localStorage.getItem(LEGACY_TEMPLATE_UI_STORAGE_KEY_V1);
+    const raw = current ?? v3legacy ?? v1;
     if (!raw) return null;
     const parsed = JSON.parse(raw) as unknown;
-    return mergeTemplateUi(defaultTemplateUi(), migrateTemplateUiPayload(parsed));
+    const merged = mergeTemplateUi(defaultTemplateUi(), migrateTemplateUiPayload(parsed));
+    if (v3legacy || v1) {
+      try {
+        window.localStorage.removeItem(LEGACY_TEMPLATE_UI_STORAGE_KEY_V3);
+        window.localStorage.removeItem(LEGACY_TEMPLATE_UI_STORAGE_KEY_V1);
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      } catch {
+        /* ignore quota */
+      }
+    }
+    return merged;
   } catch {
     return null;
   }
@@ -642,6 +822,8 @@ export function clearTemplateUiStorage(): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(LEGACY_TEMPLATE_UI_STORAGE_KEY_V3);
+    window.localStorage.removeItem(LEGACY_TEMPLATE_UI_STORAGE_KEY_V1);
   } catch {
     /* ignore */
   }
@@ -673,6 +855,12 @@ export function mergeTemplateUi(
   base: TemplateUiSettings,
   patch: TemplateUiMergePatch,
 ): TemplateUiSettings {
+  const clampCompanyNamePx = (n: unknown): number => {
+    const next = Number(n);
+    if (!Number.isFinite(next)) return 12;
+    return Math.min(18, Math.max(7, Math.round(next)));
+  };
+
   const mergedTypo: TemplateTypography = {
     ...base.typography,
     ...patch.typography,
@@ -691,6 +879,7 @@ export function mergeTemplateUi(
   if (mergedTypo.arabic?.fontFamily) {
     mergedTypo.arFontStack = mergedTypo.arabic.fontFamily;
   }
+  const mergedHeaderBlock = { ...DEFAULT_HEADER_BLOCK, ...base.headerBlock, ...patch.headerBlock };
   return {
     ...base,
     ...patch,
@@ -712,7 +901,11 @@ export function mergeTemplateUi(
     },
     qrBlock: { ...DEFAULT_QR_BLOCK, ...base.qrBlock, ...patch.qrBlock },
     totalsBlock: { ...DEFAULT_TOTALS_BLOCK, ...base.totalsBlock, ...patch.totalsBlock },
-    headerBlock: { ...DEFAULT_HEADER_BLOCK, ...base.headerBlock, ...patch.headerBlock },
+    headerBlock: {
+      ...mergedHeaderBlock,
+      englishCompanyNameFontPx: clampCompanyNamePx(mergedHeaderBlock.englishCompanyNameFontPx ?? 12),
+      arabicCompanyNameFontPx: clampCompanyNamePx(mergedHeaderBlock.arabicCompanyNameFontPx ?? 12),
+    },
     stampSignatureBlock: normalizeStampSignatureBlock({
       ...DEFAULT_STAMP_SIGNATURE_BLOCK,
       ...base.stampSignatureBlock,
@@ -783,3 +976,5 @@ export function writeTemplateAsset(
   }
 }
 
+/** Re-export of canvas layout tokens (Standard / Modern / Compact) owned in `layout-style-contract.ts`. */
+export { LAYOUT_STYLE_CONTRACT as TEMPLATE_STYLE_LAYOUT_TOKENS } from "@/lib/template-engine/layout-style-contract";

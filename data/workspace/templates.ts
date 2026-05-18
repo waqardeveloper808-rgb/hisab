@@ -8,33 +8,23 @@ import type { TemplateRecord } from "@/lib/workspace/types";
 // by the template's documentType — so an invoice template assigned to a
 // quotation will still render with the Quotation schema.
 //
-// Tax invoice has three real style variants of the same schema (data-style
-// on the .paper root affects spacing / density / accent treatment). All
-// other document types intentionally expose ONE real "Hisabix Standard"
-// template instead of fake style choices, per the schema-driven spec rule:
-// "Do not show three templates if only one style exists."
+// Tax invoice and the major commercial document types expose three real
+// style variants of the same schema (data-style on the .paper root affects
+// spacing / density / accent treatment). The catalog keeps the variants real
+// so Studio and register preview can resolve Standard / Modern / Compact
+// without fake placeholder records.
 
 export const templates: TemplateRecord[] = [
   // ── Tax invoice — three real style variants of the same schema
   {
     id: "tmpl-standard",
-    name: "Default",
+    name: "Standard",
     documentType: "invoice",
     style: "standard",
     language: "bilingual",
     isDefault: true,
     presentation: "default",
     updatedAt: "2026-04-25T17:05:00+03:00",
-  },
-  {
-    id: "tmpl-invoice-zatca-standard",
-    name: "Standard",
-    documentType: "invoice",
-    style: "standard",
-    language: "bilingual",
-    isDefault: false,
-    presentation: "zatca_standard",
-    updatedAt: "2026-04-25T23:05:00+03:00",
   },
   {
     id: "tmpl-modern",
@@ -47,14 +37,13 @@ export const templates: TemplateRecord[] = [
   },
   {
     id: "tmpl-compact",
-    name: "Hisabix Compact — Dense table",
+    name: "Compact",
     documentType: "invoice",
     style: "compact",
     language: "bilingual",
     isDefault: false,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
-
   // ── Simplified tax invoice
   {
     id: "tmpl-simp-standard",
@@ -63,6 +52,24 @@ export const templates: TemplateRecord[] = [
     style: "standard",
     language: "bilingual",
     isDefault: true,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-simp-modern",
+    name: "Hisabix Simplified Tax Invoice — Modern",
+    documentType: "simplified_invoice",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-simp-compact",
+    name: "Hisabix Simplified Tax Invoice — Compact",
+    documentType: "simplified_invoice",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
 
@@ -76,6 +83,24 @@ export const templates: TemplateRecord[] = [
     isDefault: true,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
+  {
+    id: "tmpl-qte-modern",
+    name: "Hisabix Quotation — Modern",
+    documentType: "quotation",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-qte-compact",
+    name: "Hisabix Quotation — Compact",
+    documentType: "quotation",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
 
   // ── Proforma
   {
@@ -85,6 +110,24 @@ export const templates: TemplateRecord[] = [
     style: "standard",
     language: "bilingual",
     isDefault: true,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-pro-modern",
+    name: "Hisabix Proforma Invoice — Modern",
+    documentType: "proforma",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-pro-compact",
+    name: "Hisabix Proforma Invoice — Compact",
+    documentType: "proforma",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
 
@@ -98,6 +141,24 @@ export const templates: TemplateRecord[] = [
     isDefault: true,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
+  {
+    id: "tmpl-cn-modern",
+    name: "Hisabix Credit Note — Modern",
+    documentType: "credit_note",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-cn-compact",
+    name: "Hisabix Credit Note — Compact",
+    documentType: "credit_note",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
 
   // ── Debit note
   {
@@ -107,6 +168,24 @@ export const templates: TemplateRecord[] = [
     style: "standard",
     language: "bilingual",
     isDefault: true,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-dn-modern",
+    name: "Hisabix Debit Note — Modern",
+    documentType: "debit_note",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-dn-compact",
+    name: "Hisabix Debit Note — Compact",
+    documentType: "debit_note",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
 
@@ -120,6 +199,24 @@ export const templates: TemplateRecord[] = [
     isDefault: true,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
+  {
+    id: "tmpl-dlv-modern",
+    name: "Hisabix Delivery Note — Modern",
+    documentType: "delivery_note",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-dlv-compact",
+    name: "Hisabix Delivery Note — Compact",
+    documentType: "delivery_note",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
 
   // ── Purchase order
   {
@@ -129,6 +226,24 @@ export const templates: TemplateRecord[] = [
     style: "standard",
     language: "bilingual",
     isDefault: true,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-po-modern",
+    name: "Hisabix Purchase Order — Modern",
+    documentType: "purchase_order",
+    style: "modern",
+    language: "bilingual",
+    isDefault: false,
+    updatedAt: "2026-04-25T17:05:00+03:00",
+  },
+  {
+    id: "tmpl-po-compact",
+    name: "Hisabix Purchase Order — Compact",
+    documentType: "purchase_order",
+    style: "compact",
+    language: "bilingual",
+    isDefault: false,
     updatedAt: "2026-04-25T17:05:00+03:00",
   },
 ];

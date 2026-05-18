@@ -17,6 +17,8 @@
 
 import QRCode from "qrcode";
 
+import { tlvBytesPhase1, phase1TlvUint8ArrayToBase64, normalizePhase1Money } from "@/lib/workspace/exports/zatca-phase1-tlv";
+
 export type ZatcaPhase1Input = {
   sellerName: string;
   vatNumber: string;
@@ -40,60 +42,10 @@ export type ZatcaPhase1Result = {
   };
 };
 
-/**
- * Encode a single TLV chunk: tag (1 byte) | length (1 byte) | UTF-8 value bytes.
- * Throws if value > 255 bytes (Phase 1 spec) — rare for the 5 tags above.
- */
-function tlv(tag: number, value: string): Uint8Array {
-  const bytes = new TextEncoder().encode(value);
-  if (bytes.length > 255) {
-    throw new Error(
-      `ZATCA TLV tag ${tag} exceeds 255 bytes (got ${bytes.length})`,
-    );
-  }
-  const out = new Uint8Array(bytes.length + 2);
-  out[0] = tag;
-  out[1] = bytes.length;
-  out.set(bytes, 2);
-  return out;
-}
-
-function concatBytes(parts: Uint8Array[]): Uint8Array {
-  const total = parts.reduce((sum, part) => sum + part.length, 0);
-  const out = new Uint8Array(total);
-  let offset = 0;
-  for (const part of parts) {
-    out.set(part, offset);
-    offset += part.length;
-  }
-  return out;
-}
-
-function bytesToBase64(bytes: Uint8Array): string {
-  // Browser path: btoa on a binary string built char-by-char.
-  if (typeof btoa === "function") {
-    let binary = "";
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-  }
-  // Node fallback (used by SSR or tests).
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const Buffer = (globalThis as { Buffer?: { from: (b: Uint8Array) => { toString: (e: string) => string } } }).Buffer;
-  if (Buffer) return Buffer.from(bytes).toString("base64");
-  throw new Error("No base64 encoder available");
-}
-
 function bytesToHex(bytes: Uint8Array): string {
   return Array.from(bytes)
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
-}
-
-function formatMoney(value: number): string {
-  if (!Number.isFinite(value)) return "0.00";
-  return value.toFixed(2);
 }
 
 /**
@@ -109,18 +61,18 @@ export async function buildPhase1Qr(
   const timestamp =
     input.timestamp ??
     new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
-  const invoiceTotal = formatMoney(input.invoiceTotal);
-  const vatAmount = formatMoney(input.vatAmount);
+  const invoiceTotal = normalizePhase1Money(input.invoiceTotal);
+  const vatAmount = normalizePhase1Money(input.vatAmount);
 
-  const payload = concatBytes([
-    tlv(1, sellerName),
-    tlv(2, vatNumber),
-    tlv(3, timestamp),
-    tlv(4, invoiceTotal),
-    tlv(5, vatAmount),
-  ]);
+  const payload = tlvBytesPhase1({
+    sellerName,
+    vatNumber,
+    timestampIso: timestamp,
+    invoiceTotal,
+    vatAmount,
+  });
 
-  const base64 = bytesToBase64(payload);
+  const base64 = phase1TlvUint8ArrayToBase64(payload);
   const payloadHex = bytesToHex(payload);
 
   // QR encoding: medium error correction is sufficient for a 5-tag Phase 1

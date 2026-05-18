@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\CostCenter;
 use App\Models\Item;
 use App\Models\TaxCategory;
+use App\Services\AccountingAccountGuardService;
 use App\Services\VAT\VATCalculationService;
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
@@ -15,8 +16,10 @@ use Illuminate\Validation\ValidationException;
 
 class TaxCalculationService
 {
-    public function __construct(private readonly VATCalculationService $vatCalculationService)
-    {
+    public function __construct(
+        private readonly VATCalculationService $vatCalculationService,
+        private readonly AccountingAccountGuardService $accountingAccountGuardService,
+    ) {
     }
 
     public function calculate(Company $company, array $lines, string $context = 'sales'): array
@@ -71,7 +74,8 @@ class TaxCalculationService
                 ]);
             }
 
-            $this->validateLedgerAccount($ledgerAccount, $context, $index);
+            $documentType = $context === 'purchase' ? 'purchase_invoice' : 'tax_invoice';
+            $this->accountingAccountGuardService->validateDocumentLineAccount($company, $documentType, $ledgerAccount, $index);
 
             $quantity = BigDecimal::of((string) ($line['quantity'] ?? '0'));
             $unitPrice = BigDecimal::of((string) ($line['unit_price'] ?? $item?->default_sale_price ?? '0'));

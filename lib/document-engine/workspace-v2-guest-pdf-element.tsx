@@ -7,10 +7,9 @@ import React from "react";
 import {
   WorkspaceDocumentRenderer,
   makeRendererCustomer,
-  makeRendererSeller,
 } from "@/components/workspace/WorkspaceDocumentRenderer";
 import { getSchemaForKind, type TemplateStyle } from "@/lib/workspace/document-template-schemas";
-import { defaultTemplateUi } from "@/lib/workspace/template-ui-settings";
+import { compactTemplatePresetUi, defaultTemplateUi, modernTemplatePresetUi } from "@/lib/workspace/template-ui-settings";
 import type { Customer, DocumentKind, DocumentLine, DocumentRecord, DocumentStatus } from "@/lib/workspace/types";
 import { buildPhase1Qr } from "@/lib/workspace/exports/qr";
 import { previewCompany } from "@/data/preview-company";
@@ -36,7 +35,7 @@ function previewTypeToDocumentKind(docType: string): DocumentKind {
 function previewTemplateToStyle(template: GuestPreviewTemplate | undefined): TemplateStyle {
   const layout = String(template?.settings?.layout ?? "");
   if (layout === "modern_carded") return "modern";
-  if (layout === "industrial_supply") return "compact";
+  if (layout === "industrial_supply" || layout === "compact_carded" || layout === "compact_dense") return "compact";
   return "standard";
 }
 
@@ -75,6 +74,25 @@ function previewContactToCustomer(contact: GuestPreviewContact | null, document:
     addressEn: (cf.buyer_address_en != null ? String(cf.buyer_address_en) : null) ?? contact?.billing_address?.line_1 ?? undefined,
     addressAr: (cf.buyer_address_ar != null ? String(cf.buyer_address_ar) : null) ?? contact?.billing_address?.line_1_ar ?? undefined,
     outstandingBalance: document.balance_due,
+  };
+}
+
+function nonEmpty(value: unknown): string {
+  return value == null ? "" : String(value).trim();
+}
+
+function makePreviewSeller(document: GuestPreviewDocument) {
+  const cf = document.custom_fields ?? {};
+
+  return {
+    name: nonEmpty(cf.seller_name_en) || previewCompany.sellerName,
+    nameAr: nonEmpty(cf.seller_name_ar) || previewCompany.sellerNameAr,
+    vatNumber: nonEmpty(cf.seller_vat_number) || previewCompany.vatNumber,
+    registrationNumber: nonEmpty(cf.seller_cr_number) || previewCompany.registrationNumber,
+    addressEn: nonEmpty(cf.seller_address_en) || previewCompany.sellerAddressEn,
+    addressAr: nonEmpty(cf.seller_address_ar) || previewCompany.sellerAddressAr,
+    email: nonEmpty(cf.seller_email) || previewCompany.sellerEmail,
+    phone: nonEmpty(cf.seller_phone) || previewCompany.sellerPhone,
   };
 }
 
@@ -157,12 +175,12 @@ export async function buildGuestV2RendererElement(params: GuestV2ElementParams):
   return React.createElement(WorkspaceDocumentRenderer, {
     schema,
     doc: record,
-    seller: makeRendererSeller(),
+    seller: makePreviewSeller(document),
     customer: makeRendererCustomer(customer),
     language: "bilingual",
     style,
     qrImageDataUrl: qrDataUrl,
-    ui: defaultTemplateUi(),
+    ui: style === "modern" ? modernTemplatePresetUi() : style === "compact" ? compactTemplatePresetUi() : defaultTemplateUi(),
     templateId: record.templateId,
   });
 }

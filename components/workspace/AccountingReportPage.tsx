@@ -11,7 +11,7 @@ import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
 import { WorkspaceDataTable } from "@/components/workspace/WorkspaceDataTable";
 import { buildReportIntelligence as buildReportIntelligenceFallback } from "@/lib/intelligence-layer";
 import { buildProfitLossDetail, buildReportComparison, buildVatMonthlyTrend } from "@/lib/report-analytics";
-import { getReportIntelligence, getReportsSnapshot, type IntelligenceSnapshot, type ReportsSnapshot } from "@/lib/workspace-api";
+import { getReportIntelligence, getReportsSnapshot, type CashFlowLineSnapshot, type IntelligenceSnapshot, type ReportsSnapshot } from "@/lib/workspace-api";
 import { mapWorkspaceHref } from "@/lib/workspace-path";
 import { currency } from "@/components/workflow/utils";
 
@@ -37,8 +37,11 @@ const REPORT_META: Record<ReportType, { title: string; subtitle: string }> = {
 
 const fallbackState: ReportsSnapshot = {
   vatSummary: [],
+  vatReconciliationMeta: null,
   vatDetail: [],
   vatReceivedDetails: [],
+  vatReceivedLineDetails: [],
+  cashFlow: null,
   vatPaidDetails: [],
   receivablesAging: [],
   payablesAging: [],
@@ -254,6 +257,7 @@ function TrialBalanceReport({ snapshot, query, basePath, hasInvoiceFilter, invoi
   });
   const totalDebit = rows.reduce((s, r) => s + (r.debitTotal ?? 0), 0);
   const totalCredit = rows.reduce((s, r) => s + (r.creditTotal ?? 0), 0);
+  const debitCreditResidual = Math.abs(totalDebit - totalCredit);
 
   return (
     <>
@@ -262,6 +266,14 @@ function TrialBalanceReport({ snapshot, query, basePath, hasInvoiceFilter, invoi
         <KpiCard title="Total Debits" value={`${currency(totalDebit)} SAR`} />
         <KpiCard title="Total Credits" value={`${currency(totalCredit)} SAR`} />
       </div>
+      {hasInvoiceFilter || debitCreditResidual <= 0.03 ? null : (
+        <Card className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">
+          <p className="font-semibold">Trial balance imbalance (visible subset)</p>
+          <p className="mt-1 text-xs">
+            Debit/credit totals for the filtered view differ by {currency(debitCreditResidual)} SAR. Expand the selection or reconcile journals if this persists after clearing filters — full-company totals should tie at zero residual.
+          </p>
+        </Card>
+      )}
       <WorkspaceDataTable
         registerTableId="report-trial-balance"
         title="Trial Balance"
@@ -291,10 +303,11 @@ function TrialBalanceReport({ snapshot, query, basePath, hasInvoiceFilter, invoi
           <h2 className="text-base font-semibold text-ink">Totals</h2>
           <p className="mt-0.5 text-xs leading-5 text-muted">Visible debit and credit totals for the current trial balance selection.</p>
         </div>
-        <div className="grid gap-2 px-4 py-3 sm:grid-cols-3 text-sm">
+        <div className="grid gap-2 px-4 py-3 sm:grid-cols-2 lg:grid-cols-4 text-sm">
           <div className="rounded-lg border border-line bg-surface-soft/35 px-3 py-2"><span className="text-muted">Accounts</span><div className="mt-1 font-semibold text-ink">{rows.length}</div></div>
           <div className="rounded-lg border border-line bg-surface-soft/35 px-3 py-2"><span className="text-muted">Debit total</span><div className="mt-1 font-semibold text-ink">{currency(totalDebit)} SAR</div></div>
           <div className="rounded-lg border border-line bg-surface-soft/35 px-3 py-2"><span className="text-muted">Credit total</span><div className="mt-1 font-semibold text-ink">{currency(totalCredit)} SAR</div></div>
+          <div className="rounded-lg border border-line bg-surface-soft/35 px-3 py-2"><span className="text-muted">Debit − credit residual</span><div className="mt-1 font-semibold text-ink">{currency(debitCreditResidual)} SAR</div></div>
         </div>
       </Card>
     </>
@@ -489,31 +502,96 @@ function BalanceSheetReport({ snapshot, basePath }: { snapshot: ReportsSnapshot;
 
 /* ─── Cash Flow ─── */
 function CashFlowReport({ snapshot }: { snapshot: ReportsSnapshot }) {
-  // Derive a simplified cash flow from the available data
+  const cf = snapshot.cashFlow;
   const pl = snapshot.profitLoss;
-  const sections = [
-    { activity: "Operating", amount: pl.netProfit, note: "Net profit from operations" },
-    { activity: "Investing", amount: 0, note: "Capital expenditure (not yet tracked)" },
-    { activity: "Financing", amount: 0, note: "Debt/equity changes (not yet tracked)" },
+
+  const rowColumns = [
+    { id: "entry", header: "Entry / date", defaultWidth: 140, render: (r: CashFlowLineSnapshot) => (
+      <>
+        <div className="font-semibold text-ink">{r.entryNumber ?? "—"}</div>
+        <div className="text-[11px] text-muted">{r.entryDate ?? "—"}</div>
+      </>
+    ) },
+    {
+      id: "account",
+      header: "Account",
+      defaultWidth: 140,
+      render: (r: CashFlowLineSnapshot) => (
+        <>
+          <div className="font-semibold text-ink">{r.accountCode ?? "—"}</div>
+          <div className="text-[11px] text-muted line-clamp-2">{r.accountName ?? ""}</div>
+        </>
+      ),
+    },
+    {
+      id: "flow",
+      header: "Debit / credit / net",
+      align: "right" as const,
+      defaultWidth: 150,
+      render: (r: CashFlowLineSnapshot) => (
+        <span className="tabular-nums text-xs">
+          {currency(r.debit)} / {currency(r.credit)} / <span className="font-semibold">{currency(r.net)}</span>
+        </span>
+      ),
+    },
+    { id: "source", header: "Source", defaultWidth: 110, render: (r: CashFlowLineSnapshot) => r.sourceType ?? "—" },
+    { id: "desc", header: "Description", defaultWidth: 200, render: (r: CashFlowLineSnapshot) => r.description ?? "—" },
   ];
+
+  if (!cf) {
+    return (
+      <>
+        <Card className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-950">
+          Live cash-flow lines from bank/cash journal movements are unavailable (snapshot did not load). The figures below approximate operating cash using net profit only — not a substitute for treasury reconciliation.
+        </Card>
+        <div className="grid grid-cols-2 gap-2">
+          <KpiCard title="Net profit (proxy)" value={`${currency(pl.netProfit)} SAR`} />
+          <KpiCard title="Net change (proxy)" value={`${currency(pl.netProfit)} SAR`} />
+        </div>
+      </>
+    );
+  }
+
+  const hasLines = cf.operating.length + cf.investing.length + cf.financing.length > 0;
+
   return (
     <>
-      <div className="grid grid-cols-2 gap-2">
-        <KpiCard title="Net Cash from Operations" value={`${currency(pl.netProfit)} SAR`} />
-        <KpiCard title="Net Change in Cash" value={`${currency(pl.netProfit)} SAR`} />
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+        <KpiCard title="Operating Δ" value={`${currency(cf.operatingTotal)} SAR`} positive={cf.operatingTotal >= 0} />
+        <KpiCard title="Investing Δ" value={`${currency(cf.investingTotal)} SAR`} positive={cf.investingTotal >= 0} />
+        <KpiCard title="Financing Δ" value={`${currency(cf.financingTotal)} SAR`} positive={cf.financingTotal >= 0} />
+        <KpiCard title="Net movement" value={`${currency(cf.netChange)} SAR`} positive={cf.netChange >= 0} />
+        <KpiCard title="P&amp;L net (reference)" value={`${currency(pl.netProfit)} SAR`} positive={pl.netProfit >= 0} />
       </div>
+      {!hasLines && snapshot.backendReady ? (
+        <Card className="rounded-xl bg-white/95 p-3 text-xs text-muted">No cash/bank postings in the selected window. Funding, payments, or receipts posted to treasury accounts appear here.</Card>
+      ) : null}
       <WorkspaceDataTable
-        registerTableId="report-cash-flow"
-        title="Cash Flow by Activity"
-        caption="Simplified cash flow statement. Full indirect method will be available when bank reconciliation is connected."
-        rows={sections}
-        emptyMessage="Cash flow data will appear after posting activity."
-        columns={[
-          { id: "activity", header: "Activity", defaultWidth: 140, render: (r) => r.activity },
-          { id: "amount", header: "Amount", align: "right", defaultWidth: 120, render: (r) => `${currency(r.amount)} SAR` },
-          { id: "note", header: "Note", defaultWidth: 280, render: (r) => r.note },
-        ]}
+        registerTableId="report-cf-operating"
+        title="Operating — cash ledger lines"
+        caption="Debit/credit postings on treasury accounts (classification by journal source)."
+        rows={cf.operating}
+        emptyMessage="Operating cash ledger lines appear when AR/AP, sales receipts, expense payments hit bank/cash."
+        columns={rowColumns}
       />
+      <div className="grid gap-2.5 xl:grid-cols-2">
+        <WorkspaceDataTable
+          registerTableId="report-cf-investing"
+          title="Investing — cash ledger lines"
+          caption="Capital asset-related movements."
+          rows={cf.investing}
+          emptyMessage="Investing treasury lines appear when capex/asset journals post to cash/bank."
+          columns={rowColumns}
+        />
+        <WorkspaceDataTable
+          registerTableId="report-cf-financing"
+          title="Financing — cash ledger lines"
+          caption="Loans, capital, drawings classified at journal source."
+          rows={cf.financing}
+          emptyMessage="Financing treasury lines appear for loan/capital/drawing postings."
+          columns={rowColumns}
+        />
+      </div>
     </>
   );
 }
@@ -559,26 +637,69 @@ function AgingReport({ snapshot, kind, basePath }: { snapshot: ReportsSnapshot; 
 }
 
 /* ─── VAT Summary ─── */
+function parseLedgerMetaNumber(raw: string | undefined): number | null {
+  if (!raw || String(raw).trim() === "") {
+    return null;
+  }
+  const v = Number(String(raw).replace(/,/g, ""));
+  return Number.isFinite(v) ? v : null;
+}
+
 function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; basePath: string }) {
   const totalTax = snapshot.vatSummary.reduce((s, r) => s + r.taxAmount, 0);
   const totalTaxable = snapshot.vatSummary.reduce((s, r) => s + r.taxableAmount, 0);
-  const vatReceived = snapshot.vatDetail.reduce((sum, row) => sum + row.outputTaxAmount, 0);
-  const vatPaid = snapshot.vatDetail.reduce((sum, row) => sum + row.inputTaxAmount, 0);
-  const vatPayable = vatReceived - vatPaid;
+
+  const outputFromDocuments = snapshot.vatDetail.reduce((sum, row) => sum + row.outputTaxAmount, 0);
+  const inputFromDocuments = snapshot.vatDetail.reduce((sum, row) => sum + row.inputTaxAmount, 0);
+
+  const meta = snapshot.vatReconciliationMeta;
+  const ledgerReceivedLedger = parseLedgerMetaNumber(meta?.vatReceived);
+  const ledgerPaidLedger = parseLedgerMetaNumber(meta?.vatPaid);
+  const ledgerPayableMetaParsed = parseLedgerMetaNumber(meta?.vatPayable);
+  const ledgerReceived = ledgerReceivedLedger ?? outputFromDocuments;
+  const ledgerPaid = ledgerPaidLedger ?? inputFromDocuments;
+  const impliedLedgerPayable = ledgerReceived - ledgerPaid;
+  const ledgerPayable = ledgerPayableMetaParsed ?? impliedLedgerPayable;
+  const payableMetaResidual =
+    ledgerPayableMetaParsed !== null ? Math.abs(ledgerPayableMetaParsed - impliedLedgerPayable) : 0;
+
+  const lineVatAgg = snapshot.vatReceivedLineDetails.reduce((sum, row) => sum + row.vatAmount, 0);
+  const docReceivedVatAgg = snapshot.vatReceivedDetails.reduce((sum, row) => sum + row.vatAmount, 0);
+  const lineVsDocResidual = Math.abs(lineVatAgg - docReceivedVatAgg);
 
   return (
     <>
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
         <KpiCard title="Tax Codes" value={String(snapshot.vatSummary.length)} />
-        <KpiCard title="Total Taxable" value={`${currency(totalTaxable)} SAR`} />
-        <KpiCard title="VAT Received" value={`${currency(vatReceived)} SAR`} />
-        <KpiCard title="VAT Payable" value={`${currency(vatPayable)} SAR`} positive={vatPayable >= 0} />
+        <KpiCard title="Output taxable (codes)" value={`${currency(totalTaxable)} SAR`} />
+        <KpiCard title="VAT Received (ledger)" value={`${currency(ledgerReceived)} SAR`} />
+        <KpiCard title="VAT Paid (ledger)" value={`${currency(ledgerPaid)} SAR`} />
+        <KpiCard title="VAT Payable (ledger)" value={`${currency(ledgerPayable)} SAR`} positive={ledgerPayable >= 0} />
       </div>
-      <div className="grid gap-2 xl:grid-cols-3">
-        <KpiCard title="VAT Received" value={`${currency(vatReceived)} SAR`} />
-        <KpiCard title="VAT Paid" value={`${currency(vatPaid)} SAR`} />
-        <KpiCard title="VAT Payable" value={`${currency(vatPayable)} SAR`} positive={vatPayable >= 0} />
-      </div>
+      {(meta?.validationStatus === "mismatch" || payableMetaResidual > 0.03 || lineVsDocResidual > 1) ? (
+        <Card className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-5 text-amber-950">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold">VAT reconciliation alert</p>
+              <p className="mt-1">
+                Ledger meta vs derived checks flagged a residue: payable meta Δ {currency(payableMetaResidual)} SAR;
+                taxable line-vs-document VAT Δ {currency(lineVsDocResidual)} SAR.
+                Review posting dates and open items before filing.
+              </p>
+            </div>
+            <div className="rounded-md border border-amber-300 bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide">
+              Ledger status: {(meta?.validationStatus ?? "n/a")}
+            </div>
+          </div>
+        </Card>
+      ) : null}
+      <Card className="rounded-xl border border-line bg-white/95 p-3 text-xs leading-5 text-muted">
+        <span className="font-semibold text-ink">Reconciliation telemetry</span>
+        <span className="mx-2">•</span>
+        Payable (meta vs implied) residual <span className="tabular-nums text-ink">{currency(payableMetaResidual)}</span>
+        {" · "}
+        Line VAT vs document VAT residual <span className="tabular-nums text-ink">{currency(lineVsDocResidual)}</span>
+      </Card>
       <Card className="rounded-xl bg-white/95 p-3">
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
           <div>
@@ -620,15 +741,42 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
           { id: "inVat", header: "Input VAT", align: "right", defaultWidth: 120, render: (r) => `${currency(r.inputTaxAmount)} SAR` },
         ]}
       />
+      <WorkspaceDataTable
+        registerTableId="report-vat-received-line-details"
+        title="VAT Received — taxable lines"
+        caption="One row per posted invoice/bill/debit-note line carrying output VAT — reconciles totals to document-level receipts."
+        rows={snapshot.vatReceivedLineDetails}
+        emptyMessage="Line-level taxable rows appear once sales documents carry tax-category lines."
+        columns={[
+          { id: "doc", header: "Document / type", defaultWidth: 130, render: (r) => (
+            <>
+              <div className="font-semibold text-ink">{r.invoiceNumber}</div>
+              <div className="text-[10px] uppercase text-muted">{r.documentType}</div>
+            </>
+          ) },
+          { id: "issue", header: "Date", defaultWidth: 100, render: (r) => r.date },
+          { id: "customer", header: "Customer", defaultWidth: 160, render: (r) => r.customer || "—" },
+          { id: "line", header: "Line", defaultWidth: 180, render: (r) => r.lineDescription || `Line #${r.lineId}` },
+          { id: "code", header: "Tax", defaultWidth: 72, render: (r) => r.taxCode || "—" },
+          { id: "taxable", header: "Taxable", align: "right", defaultWidth: 110, render: (r) => `${currency(r.taxableAmount)} SAR` },
+          { id: "vat", header: "VAT", align: "right", defaultWidth: 100, render: (r) => `${currency(r.vatAmount)} SAR` },
+        ]}
+      />
       <div className="grid gap-2.5 xl:grid-cols-2">
         <WorkspaceDataTable
           registerTableId="report-vat-received-details"
-          title="VAT Received Details"
-          caption="Customer-side VAT collected from tax invoices and debit notes."
+          title="VAT Received Details (documents)"
+          caption="Invoice-level aggregates for filings and ageing cross-check."
           rows={snapshot.vatReceivedDetails}
           emptyMessage="VAT received details will appear after sales documents are finalized."
           columns={[
-            { id: "invoice", header: "Invoice", defaultWidth: 128, render: (r) => r.invoiceNumber },
+            { id: "invoice", header: "Document", defaultWidth: 140, render: (r) => (
+              <>
+                <div>{r.invoiceNumber}</div>
+                {r.documentType ? <div className="text-[10px] uppercase text-muted">{r.documentType}</div> : null}
+              </>
+            ) },
+            { id: "status", header: "Status", defaultWidth: 104, render: (r) => (r.status ? String(r.status).replaceAll("_", " ") : "—") },
             { id: "date", header: "Date", defaultWidth: 110, render: (r) => r.date },
             { id: "customer", header: "Customer", defaultWidth: 200, render: (r) => r.customer || "—" },
             { id: "taxable", header: "Taxable", align: "right", defaultWidth: 130, render: (r) => `${currency(r.taxableAmount)} SAR` },
@@ -638,14 +786,16 @@ function VatSummaryReport({ snapshot, basePath }: { snapshot: ReportsSnapshot; b
         <WorkspaceDataTable
           registerTableId="report-vat-paid-details"
           title="VAT Paid Details"
-          caption="Supplier-side VAT recoverable from bills and purchase invoices."
+          caption="Supplier-side VAT including taxable bases for reclaim review."
           rows={snapshot.vatPaidDetails}
           emptyMessage="VAT paid details will appear after purchase documents are finalized."
           columns={[
             { id: "reference", header: "Reference", defaultWidth: 130, render: (r) => r.reference },
+            { id: "status", header: "Status", defaultWidth: 104, render: (r) => (r.status ? String(r.status).replaceAll("_", " ") : "—") },
             { id: "date", header: "Date", defaultWidth: 110, render: (r) => r.date },
             { id: "vendor", header: "Vendor", defaultWidth: 200, render: (r) => r.vendor || "—" },
             { id: "category", header: "Category", defaultWidth: 120, render: (r) => r.category || "—" },
+            { id: "taxable", header: "Taxable", align: "right", defaultWidth: 130, render: (r) => `${currency(r.taxableAmount ?? 0)} SAR` },
             { id: "vat", header: "VAT", align: "right", defaultWidth: 120, render: (r) => `${currency(r.vatAmount)} SAR` },
           ]}
         />

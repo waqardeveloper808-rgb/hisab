@@ -113,6 +113,11 @@ class Document extends Model
         return $this->belongsTo(CostCenter::class);
     }
 
+    public function postedJournalEntry(): BelongsTo
+    {
+        return $this->belongsTo(JournalEntry::class, 'posted_journal_entry_id');
+    }
+
     public function lines(): HasMany
     {
         return $this->hasMany(DocumentLine::class);

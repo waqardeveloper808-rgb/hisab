@@ -13,7 +13,7 @@ import {
   type ControlPointPriority,
   type ControlPointSeverity,
 } from "@/backend/app/Support/Standards/control-point-categories";
-import { validateControlPointRegistry, type ControlPointRegistryValidation } from "@/backend/app/Support/Standards/control-point-validation";
+import type { ControlPointRegistryValidation } from "@/backend/app/Support/Standards/control-point-validation";
 
 export type {
   ControlPointApplicability,
@@ -391,8 +391,29 @@ export const standardsControlPointsByCategory = Object.fromEntries(
 
 export type ControlPointValidationSummary = ControlPointRegistryValidation;
 
-export function validateStandardsControlPoints(controlPoints: readonly StandardsControlPoint[] = standardsControlPoints) {
-  return validateControlPointRegistry(controlPoints);
+/** V1 archive dataset — structural check only (does not use V2 `validateControlPointRegistry`). */
+export function validateStandardsControlPoints(controlPoints: readonly StandardsControlPoint[] = standardsControlPoints): ControlPointRegistryValidation {
+  const idCounts = new Map<string, number>();
+  for (const controlPoint of controlPoints) {
+    idCounts.set(controlPoint.id, (idCounts.get(controlPoint.id) ?? 0) + 1);
+  }
+  const duplicateIds = Array.from(idCounts.entries())
+    .filter(([, count]) => count > 1)
+    .map(([id]) => id);
+  const missingRequiredFields = controlPoints
+    .filter((cp) => !cp.id.trim() || !cp.title.trim() || !cp.rule.trim())
+    .map((cp) => cp.id);
+  return {
+    totalControlPoints: controlPoints.length,
+    duplicateIds,
+    modulesCovered: [],
+    missingRequiredFields,
+    invalidModuleIds: [],
+    invalidApplicabilityIds: [],
+    invalidScoringIds: [],
+    invalidEvidenceIds: [],
+    auditEngineReady: duplicateIds.length === 0 && missingRequiredFields.length === 0,
+  };
 }
 
 export const standardsControlPointValidation = validateStandardsControlPoints();

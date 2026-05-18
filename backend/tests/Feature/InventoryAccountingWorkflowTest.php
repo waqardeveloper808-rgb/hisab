@@ -209,10 +209,11 @@ class InventoryAccountingWorkflowTest extends TestCase
     {
         $this->actingAs($user);
         $company = Company::findOrFail($companyId);
-        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", [
+        $contactId = $this->postJson("/api/companies/{$companyId}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => 'Inventory Customer',
-        ])->json('data.id');
+            'tax_number' => $this->uniqueKsaVatNumber('inventory-wf-customer'),
+        ], $this->ksaContactExtras()))->assertCreated()->json('data.id');
 
         $taxCategoryId = TaxCategory::query()->where('company_id', $companyId)->where('code', 'VAT15')->value('id');
         $incomeAccountId = $company->accounts()->where('code', '4000')->value('id');

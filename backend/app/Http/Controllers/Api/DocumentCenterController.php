@@ -13,6 +13,7 @@ use App\Services\PlanLimitService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class DocumentCenterController extends Controller
 {
@@ -108,7 +109,7 @@ class DocumentCenterController extends Controller
         ]);
     }
 
-    public function preview(Request $request, Company $company, Document $document): JsonResponse
+    public function preview(Request $request, Company $company, Document $document): JsonResponse|SymfonyResponse
     {
         $this->ensureCompanyAccess($request->user(), $company);
         $this->ensureDocumentOwnership($company, $document);
@@ -125,9 +126,25 @@ class DocumentCenterController extends Controller
             $templateOverride = $company->documentTemplates()->with('logoAsset')->findOrFail($payload['template_id']);
         }
 
+        $html = $this->renderer->renderHtml($company, $document, $templateOverride);
+
+        $acceptHeader = (string) $request->header('Accept', '');
+        $wantsJsonOnly = (bool) preg_match('/application\/json/i', $acceptHeader) && ! preg_match('/text\/html/i', $acceptHeader);
+        if ($wantsJsonOnly) {
+            return response()->json([
+                'data' => [
+                    'html' => $html,
+                ],
+            ]);
+        }
+
+        if (preg_match('/text\/html/i', $acceptHeader)) {
+            return response($html, 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
         return response()->json([
             'data' => [
-                'html' => $this->renderer->renderHtml($company, $document, $templateOverride),
+                'html' => $html,
             ],
         ]);
     }

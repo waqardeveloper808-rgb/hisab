@@ -161,9 +161,17 @@ Route::middleware('workspace.access')->group(function () {
         Route::get('/reports/invoice-register', [ReportController::class, 'invoiceRegister']);
         Route::get('/reports/bills-register', [ReportController::class, 'billsRegister']);
         Route::get('/reports/payments-register', [ReportController::class, 'paymentsRegister']);
+        Route::get('/reports/quotation-register', [ReportController::class, 'quotationRegister']);
+        Route::get('/reports/proforma-invoice-register', [ReportController::class, 'proformaInvoiceRegister']);
+        Route::get('/reports/sales-credit-note-register', [ReportController::class, 'salesCreditNoteRegister']);
+        Route::get('/reports/debit-note-sales-register', [ReportController::class, 'debitNoteSalesRegister']);
+        Route::get('/reports/purchase-order-register', [ReportController::class, 'purchaseOrderRegister']);
+        Route::get('/reports/purchase-credit-note-register', [ReportController::class, 'purchaseCreditNoteRegister']);
+        Route::get('/reports/journal-register', [ReportController::class, 'journalRegister']);
         Route::get('/reports/vat-summary', [ReportController::class, 'vatSummary']);
         Route::get('/reports/vat-detail', [ReportController::class, 'vatDetail']);
         Route::get('/reports/vat-received-details', [ReportController::class, 'vatReceivedDetails']);
+        Route::get('/reports/vat-received-line-details', [ReportController::class, 'vatReceivedLineDetails']);
         Route::get('/reports/vat-paid-details', [ReportController::class, 'vatPaidDetails']);
         Route::get('/reports/receivables-aging', [ReportController::class, 'receivablesAging']);
         Route::get('/reports/payables-aging', [ReportController::class, 'payablesAging']);

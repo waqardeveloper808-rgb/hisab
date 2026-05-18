@@ -177,18 +177,20 @@ export function ChartOfAccountsRegister() {
   const balanceById = useMemo(() => previewJournalBalanceByAccountId(), []);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(COA_STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Account[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setAccounts(parsed);
+    queueMicrotask(() => {
+      try {
+        const raw = localStorage.getItem(COA_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as Account[];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setAccounts(parsed);
+          }
         }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
-    setCoaReady(true);
+      setCoaReady(true);
+    });
   }, []);
 
   useEffect(() => {

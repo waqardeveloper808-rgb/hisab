@@ -9,6 +9,7 @@ import {
   USER_WORKSPACE_BASE,
   dashboardLink,
   navGroups,
+  isWorkspaceUserNavLinkActive,
   type NavGroup,
 } from "@/lib/workspace/navigation";
 import { iconLogoPath, mainLogoPath, appName } from "@/lib/brand";
@@ -107,13 +108,7 @@ export function WorkspaceAppSidebar({
   );
 
   const isLinkActive = useCallback(
-    (href: string) => {
-      const path = href.split("?")[0];
-      if (path === USER_WORKSPACE_BASE) {
-        return pathname === USER_WORKSPACE_BASE || pathname === `${USER_WORKSPACE_BASE}/dashboard`;
-      }
-      return pathname === path || pathname.startsWith(`${path}/`);
-    },
+    (href: string) => isWorkspaceUserNavLinkActive(pathname, href),
     [pathname],
   );
 
@@ -179,7 +174,12 @@ export function WorkspaceAppSidebar({
                 type="button"
                 className="wsv2-nav-group-btn"
                 data-open={open ? "true" : "false"}
-                onClick={() => toggleGroup(group.id)}
+                data-testid={`workspace-nav-group-${group.id}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  toggleGroup(group.id);
+                }}
                 aria-expanded={open}
               >
                 <group.icon size={15} />
@@ -210,6 +210,7 @@ export function WorkspaceAppSidebar({
                         href={link.href}
                         className="wsv2-nav-link"
                         data-active={active ? "true" : "false"}
+                        data-testid={`workspace-nav-link-${link.id}`}
                         onClick={onCloseMobile}
                       >
                         <link.icon />

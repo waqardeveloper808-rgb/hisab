@@ -77,7 +77,7 @@ class CashFlowService
             $source = (string) ($entry?->source_type ?? '');
             if (in_array($source, ['asset_purchase', 'asset_disposal'], true)) {
                 $statement['investing'][] = $row;
-            } elseif (in_array($source, ['loan', 'capital', 'drawing'], true)) {
+            } elseif (in_array($source, ['loan', 'capital', 'drawing', 'opening_balance'], true)) {
                 $statement['financing'][] = $row;
             } else {
                 $statement['operating'][] = $row;

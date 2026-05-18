@@ -212,6 +212,11 @@ class TemplateEngineRuntimeService
             'assetAssignmentCapableCount' => $templates->filter(fn (DocumentTemplate $template) => in_array('logo_asset_id', $template->fields ?? [], true))->count(),
             'sectionOrderCapableCount' => $templates->filter(fn (DocumentTemplate $template) => count($template->sections ?? []) > 0)->count(),
             'familyDiversityCount' => $templates->pluck('layout')->filter()->unique()->count(),
+            'layoutFamilyCounts' => [
+                'classic_corporate' => $templates->where('layout', 'classic_corporate')->count(),
+                'modern_carded' => $templates->where('layout', 'modern_carded')->count(),
+                'industrial_supply' => $templates->where('layout', 'industrial_supply')->count(),
+            ],
             'templateLinkedDocuments' => $documents->take(50)->map(fn (Document $document) => [
                 'document_id' => $document->id,
                 'template_id' => $document->template_id,
@@ -264,6 +269,11 @@ class TemplateEngineRuntimeService
             'templatesExist' => $companies->sum('templateCount') > 0,
             'linkedDocumentsCount' => $companies->sum('linkedDocumentsCount'),
             'familyDiversityCount' => $companies->flatMap(fn (array $entry) => collect($entry['templates'] ?? [])->pluck('layout'))->filter()->unique()->count(),
+            'layoutFamilyCounts' => [
+                'classic_corporate' => $companies->sum(fn (array $e) => (int) (($e['layoutFamilyCounts'] ?? [])['classic_corporate'] ?? 0)),
+                'modern_carded' => $companies->sum(fn (array $e) => (int) (($e['layoutFamilyCounts'] ?? [])['modern_carded'] ?? 0)),
+                'industrial_supply' => $companies->sum(fn (array $e) => (int) (($e['layoutFamilyCounts'] ?? [])['industrial_supply'] ?? 0)),
+            ],
             'templateLinkedDocuments' => $companies->flatMap(fn (array $entry) => $entry['templateLinkedDocuments'] ?? [])->take(100)->values()->all(),
             'templates' => $companies->flatMap(fn (array $entry) => $entry['templates'] ?? [])->values()->all(),
             'companies' => $companies->all(),

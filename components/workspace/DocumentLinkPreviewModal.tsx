@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Download, ExternalLink, Printer, Send, SquarePen, X } from "lucide-react";
-import { getDocument, getDocumentPdfUrl, getDocumentPreview, sendDocument, type DocumentDetailRecord, type DocumentPreviewRecord } from "@/lib/workspace-api";
+import { getDocument, getDocumentPreview, sendDocument, type DocumentDetailRecord, type DocumentPreviewRecord } from "@/lib/workspace-api";
+import { buildDocumentPdfUrl } from "@/lib/workspace/document-actions";
 
 type DocumentLinkPreview = {
   documentId?: number | null;
@@ -78,7 +79,7 @@ export function DocumentLinkPreviewModal({ link, onClose }: DocumentLinkPreviewM
               Edit
             </Link>
             {link.documentId ? (
-              <a href={getDocumentPdfUrl(link.documentId)} download className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink hover:border-primary/40 hover:text-primary">
+              <a href={buildDocumentPdfUrl(link.documentType, link.documentId)} download className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink hover:border-primary/40 hover:text-primary">
                 <Download className="h-4 w-4" />
                 Download
               </a>
@@ -89,7 +90,7 @@ export function DocumentLinkPreviewModal({ link, onClose }: DocumentLinkPreviewM
                 onClick={() => {
                   const id = link.documentId;
                   if (id == null) return;
-                  window.open(getDocumentPdfUrl(id), "_blank", "noopener,noreferrer");
+                  window.open(buildDocumentPdfUrl(link.documentType, id), "_blank", "noopener,noreferrer");
                 }}
                 className="inline-flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink hover:border-primary/40 hover:text-primary"
               >

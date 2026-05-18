@@ -1,13 +1,8 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { chromium } from "playwright";
 import QRCode from "qrcode";
 import { defaultChartOfAccounts } from "@/lib/accounting-engine";
-import {
-  buildDocumentHtml as buildUnifiedDocumentHtml,
-  buildInvoiceRenderModel,
-  renderDocumentPdf,
-} from "@/lib/document-engine";
+import { renderDocumentPdf } from "@/lib/document-engine/render-document-pdf";
 import { processLogoImage } from "@/lib/logo-intelligence";
 import type { Attachment } from "@/lib/accounting-engine";
 import { previewCompany } from "@/data/preview-company";
@@ -1613,12 +1608,16 @@ export async function listPreviewVatReceivedDetails(filters?: {
 
   return documents
     .filter((document) => document.status !== "draft")
-    .filter((document) => document.type === "tax_invoice" || document.type === "debit_note")
+    .filter((document) =>
+      ["tax_invoice", "debit_note", "credit_note", "cash_invoice", "api_invoice"].includes(document.type),
+    )
     .filter((document) => !filters?.fromDate || document.issue_date >= filters.fromDate)
     .filter((document) => !filters?.toDate || document.issue_date <= filters.toDate)
     .map((document) => ({
       id: document.id,
       document_number: document.document_number,
+      document_type: document.type,
+      status: document.status,
       issue_date: document.issue_date,
       customer: document.contact.display_name,
       taxable_amount: roundCurrency(document.taxable_total),
@@ -1634,17 +1633,194 @@ export async function listPreviewVatPaidDetails(filters?: {
 
   return documents
     .filter((document) => document.status !== "draft")
-    .filter((document) => document.type === "vendor_bill" || document.type === "purchase_invoice")
+    .filter((document) =>
+      ["vendor_bill", "purchase_invoice", "purchase_credit_note"].includes(document.type),
+    )
     .filter((document) => !filters?.fromDate || document.issue_date >= filters.fromDate)
     .filter((document) => !filters?.toDate || document.issue_date <= filters.toDate)
     .map((document) => ({
       id: document.id,
       reference: document.document_number,
+      document_type: document.type,
+      status: document.status,
       issue_date: document.issue_date,
       vendor: document.contact.display_name,
+      taxable_amount: roundCurrency(document.taxable_total),
       vat_amount: roundCurrency(document.tax_total),
-      category: document.title.toLowerCase().includes("rent") ? "rent" : document.type === "vendor_bill" ? "expense" : "purchase",
+      category: document.title.toLowerCase().includes("rent") ? "rent" : document.type === "vendor_bill" ? "expense" : document.type === "purchase_credit_note" ? "purchase_credit" : "purchase",
     }));
+}
+
+export function isPreviewPostingStatus(status: string | null | undefined): boolean {
+  const normalized = String(status ?? "").trim().toLowerCase();
+  return !["draft", "cancelled", "void"].includes(normalized);
+}
+
+export function roundPreviewMoney(value: number): number {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
+}
+
+const VAT_RECEIVED_LINE_DOC_TYPES = new Set([
+  "tax_invoice",
+  "debit_note",
+  "cash_invoice",
+  "recurring_invoice",
+  "api_invoice",
+]);
+
+export async function listPreviewVatReceivedLineDetails(filters?: {
+  fromDate?: string | null;
+  toDate?: string | null;
+}) {
+  const documents = await listPreviewDocuments({
+    group: "sales",
+    fromDate: filters?.fromDate ?? null,
+    toDate: filters?.toDate ?? null,
+  });
+
+  const rows: Array<{
+    line_id: number;
+    document_id: number;
+    document_number: string;
+    document_type: string;
+    issue_date: string;
+    customer: string;
+    tax_code: string | null;
+    tax_rate: number;
+    line_description: string | null;
+    taxable_amount: number;
+    vat_amount: number;
+    status: string;
+  }> = [];
+
+  for (const doc of documents) {
+    if (!VAT_RECEIVED_LINE_DOC_TYPES.has(doc.type)) {
+      continue;
+    }
+    if (!isPreviewPostingStatus(doc.status)) {
+      continue;
+    }
+
+    const detail = await getPreviewDocumentDetail(doc.id);
+    const lineList = detail?.lines?.length
+      ? detail.lines
+      : [
+          {
+            id: doc.id * 10 + 1,
+            description: doc.title,
+            quantity: 1,
+            unit_price: doc.taxable_total,
+            gross_amount: doc.taxable_total,
+            metadata: { custom_fields: { vat_rate: 15 } },
+          },
+        ];
+
+    for (const line of lineList) {
+      const rate = numericValue(line.metadata?.custom_fields?.vat_rate, 15);
+      const taxableBase = roundPreviewMoney(Number(line.gross_amount));
+      const vatAmt = roundPreviewMoney((taxableBase * rate) / 100);
+      const rawCode = line.metadata?.custom_fields?.tax_code;
+      const taxCode = typeof rawCode === "string" && rawCode.trim() ? rawCode.trim() : "STD";
+
+      rows.push({
+        line_id: line.id,
+        document_id: doc.id,
+        document_number: doc.document_number,
+        document_type: doc.type,
+        issue_date: doc.issue_date,
+        customer: doc.contact.display_name,
+        tax_code: taxCode,
+        tax_rate: rate,
+        line_description: line.description ?? null,
+        taxable_amount: taxableBase,
+        vat_amount: vatAmt,
+        status: doc.status,
+      });
+    }
+  }
+
+  return rows;
+}
+
+function isPreviewCashBankLine(line: { account_code?: string | null; account_name?: string | null }) {
+  const code = String(line.account_code ?? "").trim();
+  const name = String(line.account_name ?? "").toLowerCase();
+  if (code === "120" || code === "121" || code === "1010") {
+    return true;
+  }
+  return name.includes("bank") || name.includes("cash");
+}
+
+function classifyPreviewCashFlowBucket(entry: {
+  memo?: string | null;
+  reference?: string | null;
+  source_type?: string | null;
+  lines?: Array<{ account_code?: string | null; description?: string | null }>;
+}): "operating" | "investing" | "financing" {
+  const haystack = `${entry.memo ?? ""} ${entry.reference ?? ""} ${entry.source_type ?? ""}`.toLowerCase();
+  const lineText = (entry.lines ?? []).map((l) => `${l.account_code ?? ""} ${l.description ?? ""}`).join(" ").toLowerCase();
+
+  if (haystack.includes("equity") || haystack.includes("loan") || haystack.includes("dividend") || lineText.includes("3100") || lineText.includes("3200")) {
+    return "financing";
+  }
+  if ((haystack.includes("asset") && haystack.includes("purchase")) || haystack.includes("equipment") || lineText.includes("1500") || lineText.includes("1600")) {
+    return "investing";
+  }
+  return "operating";
+}
+
+export async function getPreviewCashFlow() {
+  const journals = await listPreviewJournals();
+  const operating: Array<Record<string, unknown>> = [];
+  const investing: Array<Record<string, unknown>> = [];
+  const financing: Array<Record<string, unknown>> = [];
+
+  for (const entry of journals) {
+    if (String(entry.status ?? "").toLowerCase() === "draft") {
+      continue;
+    }
+    const bucket = classifyPreviewCashFlowBucket(entry);
+    const target = bucket === "investing" ? investing : bucket === "financing" ? financing : operating;
+
+    for (const line of entry.lines ?? []) {
+      if (!isPreviewCashBankLine(line)) {
+        continue;
+      }
+      const debit = Number(line.debit ?? 0);
+      const credit = Number(line.credit ?? 0);
+      const net = roundPreviewMoney(debit - credit);
+      target.push({
+        account_code: line.account_code ?? null,
+        account_name: line.account_name ?? null,
+        debit,
+        credit,
+        net,
+        entry_number: entry.entry_number,
+        entry_date: entry.entry_date,
+        source_type: entry.source_type ?? null,
+        description: line.description ?? entry.memo ?? null,
+      });
+    }
+  }
+
+  const sumNet = (rows: Array<Record<string, unknown>>) => roundPreviewMoney(
+    rows.reduce((sum, r) => sum + Number(r.net ?? 0), 0),
+  );
+
+  const operatingTotal = sumNet(operating);
+  const investingTotal = sumNet(investing);
+  const financingTotal = sumNet(financing);
+  const netChange = roundPreviewMoney(operatingTotal + investingTotal + financingTotal);
+
+  return {
+    operating,
+    investing,
+    financing,
+    operating_total: operatingTotal,
+    investing_total: investingTotal,
+    financing_total: financingTotal,
+    net_change: netChange,
+  };
 }
 
 export async function listPreviewInventoryStock() {

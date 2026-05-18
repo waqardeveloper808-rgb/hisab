@@ -210,12 +210,12 @@ class CommunicationModuleTest extends TestCase
     {
         $company = $this->createCompany($user);
 
-        $contactResponse = $this->postJson("/api/companies/{$company->id}/contacts", [
+        $contactResponse = $this->postJson("/api/companies/{$company->id}/contacts", array_merge([
             'type' => 'customer',
             'display_name' => 'Communication Customer',
             'email' => 'customer@example.com',
-            'tax_number' => '300000000000010',
-        ]);
+            'tax_number' => '300000000000013',
+        ], $this->ksaContactExtras()));
         $contactResponse->assertCreated();
         $contact = Contact::findOrFail($contactResponse->json('data.id'));
 

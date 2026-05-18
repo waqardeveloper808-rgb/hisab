@@ -30,14 +30,31 @@ class SalesDocumentController extends Controller
         $payload = $request->validate([
             'status' => ['nullable', 'string', 'max:40'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'type' => ['nullable', 'string', 'max:240'],
         ]);
+
+        $salesTypesAllowed = ['quotation', 'proforma_invoice', 'delivery_note', 'tax_invoice', 'credit_note', 'debit_note', 'recurring_invoice', 'cash_invoice', 'api_invoice'];
 
         $query = Document::query()
             ->where('company_id', $company->id)
-            ->whereIn('type', ['quotation', 'proforma_invoice', 'delivery_note', 'tax_invoice', 'credit_note', 'debit_note', 'recurring_invoice', 'cash_invoice', 'api_invoice'])
+            ->whereIn('type', $salesTypesAllowed)
             ->with('contact:id,display_name')
             ->orderByDesc('issue_date')
             ->orderByDesc('id');
+
+        $typeCsv = isset($payload['type']) ? trim((string) $payload['type']) : '';
+        if ($typeCsv !== '') {
+            $wanted = collect(explode(',', $typeCsv))
+                ->map(fn (string $s) => trim($s))
+                ->filter(fn (string $s) => $s !== '')
+                ->values()
+                ->all();
+
+            $filtered = array_values(array_intersect($salesTypesAllowed, $wanted));
+            if ($filtered !== []) {
+                $query->whereIn('type', $filtered);
+            }
+        }
 
         if (! empty($payload['status'])) {
             $query->where('status', $payload['status']);

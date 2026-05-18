@@ -11,12 +11,15 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type ChangeEvent,
   type Dispatch,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
+  type ReactNode,
   type SetStateAction,
 } from "react";
 import {
@@ -26,6 +29,7 @@ import {
   Eye,
   EyeOff,
   FileCode,
+  Layers3,
   LogOut,
   Maximize2,
   Minus,
@@ -42,9 +46,8 @@ import { invoices } from "@/data/workspace/invoices";
 import { findCustomer } from "@/data/workspace/customers";
 import { USER_WORKSPACE_BASE } from "@/lib/workspace/navigation";
 import { buildPhase1Qr } from "@/lib/workspace/exports/qr";
-import { buildInvoicePdf } from "@/lib/workspace/exports/pdf";
 import { buildInvoiceUbl } from "@/lib/workspace/exports/xml";
-import { downloadBytes, downloadXml } from "@/lib/workspace/exports/download";
+import { downloadXml } from "@/lib/workspace/exports/download";
 import { TEMPLATE_STYLE_OPTIONS } from "@/lib/template-engine";
 import {
   COLUMN_LABELS,
@@ -65,9 +68,12 @@ import {
 } from "@/lib/workspace/document-template-schemas";
 import { buildDocumentLayout } from "@/lib/workspace/document-template-renderer";
 import {
+  fitItemColumnWidthsToTarget,
   fitWidthsWithLockedColumn,
   getItemsTableInnerTargetPx,
-  ITEM_COLUMN_SAFETY_MIN_PX,
+  itemColumnHardMinPx,
+  itemColumnMinPx,
+  sanitizeItemColumnWidthRecord,
   widthsArrayToRecord,
 } from "@/lib/workspace/item-column-resize";
 import {
@@ -82,8 +88,10 @@ import {
   SLUG_TO_SCHEMA,
   defaultTemplateUi,
   modernTemplatePresetUi,
+  compactTemplatePresetUi,
   zatcaStandardPresetUi,
   mergeTemplateUi,
+  migrateTemplateUiPayload,
   readTemplateUiFromStorage,
   writeTemplateUiToStorage,
   readTemplateAssetsFromStorage,
@@ -94,6 +102,7 @@ import {
   type QrBlockSettings,
   type StudioDocumentTypeSlug,
   type TemplateAssetState,
+  type TemplateUiSettings,
   type TotalsColAlign,
 } from "@/lib/workspace/template-ui-settings";
 import {
@@ -130,6 +139,49 @@ function itemColHeadingInputId(col: ColumnKey, lang: "en" | "ar"): string {
   return `wsv2-item-col-${slug}-label-${lang}`;
 }
 
+function InspectorGroup({
+  title,
+  children,
+  defaultOpen = false,
+  dataTestId,
+}: {
+  title: string;
+  children: ReactNode;
+  defaultOpen?: boolean;
+  dataTestId?: string;
+}) {
+  return (
+    <details
+      className="rounded-2xl border border-slate-200 bg-white p-3"
+      open={defaultOpen}
+      data-testid={dataTestId}
+    >
+      <summary className="cursor-pointer text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+        {title}
+      </summary>
+      <div className="mt-3 space-y-3">{children}</div>
+    </details>
+  );
+}
+
+function ControlRow({
+  label,
+  children,
+  hint,
+}: {
+  label: string;
+  children: ReactNode;
+  hint?: string;
+}) {
+  return (
+    <label className="block space-y-1">
+      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">{label}</span>
+      {children}
+      {hint ? <span className="block text-xs text-slate-400">{hint}</span> : null}
+    </label>
+  );
+}
+
 // Map a TemplateRecord.documentType to the schema's SchemaDocType.
 const TEMPLATE_TO_SCHEMA: Record<string, SchemaDocType> = {
   invoice: "tax_invoice",
@@ -153,7 +205,7 @@ const DOC_TYPE_PILLS: { id: SchemaDocType; label: string; ar: string }[] = [
   { id: "purchase_order", label: "Purchase Order", ar: "أمر شراء" },
 ];
 
-/** Right-inspector document type dropdown — same order as pills. */
+/** Right-inspector document type dropdown — same order as toolbar select. */
 const DOC_TYPE_SELECT_ORDER: StudioDocumentTypeSlug[] = [
   "tax-invoice",
   "simplified-tax",
@@ -215,8 +267,134 @@ const AR_FONT_PRESETS: { label: string; value: string }[] = [
   },
 ];
 
+type StudioPopoverKind =
+  | "header-name-size"
+  | "customer-fields"
+  | "document-fields"
+  | "item-columns"
+  | "item-heading";
+
+type StudioPopoverState =
+  | null
+  | {
+      kind: StudioPopoverKind;
+      anchor: { x: number; y: number };
+      column?: ColumnKey;
+    };
+
+function StudioFloatingPopover({
+  state,
+  onClose,
+  children,
+}: {
+  state: NonNullable<StudioPopoverState>;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
+  useLayoutEffect(() => {
+    const left = Math.max(16, Math.min(state.anchor.x - 160, window.innerWidth - 340));
+    const top = Math.max(16, Math.min(state.anchor.y, window.innerHeight - 260));
+    setPos({ left, top });
+  }, [state.anchor.x, state.anchor.y]);
+  if (!pos) return null;
+  return (
+    <div
+      className="wsv2-inline-popover hisab-studio-inline-popover rounded-xl border border-slate-200 bg-white p-3 shadow-xl"
+      data-testid={`studio-popover-${state.kind}`}
+      style={{
+        position: "fixed",
+        left: pos.left,
+        top: pos.top,
+        zIndex: 80,
+        width: 320,
+        maxWidth: "calc(100vw - 32px)",
+        boxSizing: "border-box",
+      }}
+    >
+      <div className="mb-2 flex justify-end">
+        <button
+          type="button"
+          className="wsv2-popover-close text-lg leading-none text-slate-500 hover:text-slate-800"
+          aria-label="Close"
+          onClick={onClose}
+        >
+          ×
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function uiPresetForStyle(nextStyle: TemplateStyle): TemplateUiSettings {
+  if (nextStyle === "modern") return modernTemplatePresetUi();
+  if (nextStyle === "compact") return compactTemplatePresetUi();
+  return defaultTemplateUi();
+}
+
+function StudioPanelSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  const slug =
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "section";
+  return (
+    <section
+      className="hisab-studio-panel-section"
+      data-testid={`studio-panel-section-${slug}`}
+    >
+      <h3 className="hisab-studio-panel-heading">{title}</h3>
+      <div className="hisab-studio-panel-body">{children}</div>
+    </section>
+  );
+}
+
+/** Keep user layout knobs when swapping base presets (toolbar + deep-link URL). */
+function mergeTemplateUiPreservingUserLayout(
+  preset: TemplateUiSettings,
+  prev: TemplateUiSettings,
+): TemplateUiSettings {
+  return mergeTemplateUi(preset, {
+    itemColumnWidthsByTemplateId: prev.itemColumnWidthsByTemplateId,
+    studioLayout: prev.studioLayout,
+    itemHeaderLabels: prev.itemHeaderLabels,
+    hiddenItemColumns: prev.hiddenItemColumns,
+    margins: prev.margins,
+    headerBlock: prev.headerBlock,
+  });
+}
+
+function resolveStudioCatalogTemplateId(raw: string | undefined, styleHint?: string | null): string {
+  const first = templates[0]!.id;
+  if (!raw?.trim()) return first;
+  const t = raw.trim();
+  if (/^\d+$/.test(t)) {
+    const s = (styleHint ?? "standard") as TemplateStyle;
+    if (s === "modern") return "tmpl-modern";
+    if (s === "compact") return "tmpl-compact";
+    return "tmpl-standard";
+  }
+  return templates.find((x) => x.id === t)?.id ?? first;
+}
+
+function studioWidthPersistKey(catalogId: string, rawUrlId: string | undefined): string {
+  if (rawUrlId?.trim() && /^\d+$/.test(rawUrlId.trim())) {
+    return `backend-${rawUrlId.trim()}`;
+  }
+  return catalogId;
+}
+
 type Props = {
   templateId?: string;
+  initialStyle?: TemplateStyle;
+  documentTypeParam?: string;
 };
 
 type InfoLayoutPatch = Partial<InfoCardLayoutSettings>;
@@ -493,16 +671,40 @@ function InfoCardLayoutControls(props: {
   );
 }
 
-export function WorkspaceTemplateStudio({ templateId }: Props) {
+function mapUrlDocumentTypeToSchema(raw: string | undefined): SchemaDocType | null {
+  if (!raw?.trim()) return null;
+  const t = raw.trim();
+  if (t in DOCUMENT_TEMPLATE_SCHEMAS) {
+    return t as SchemaDocType;
+  }
+  const slug = t.replace(/_/g, "-") as StudioDocumentTypeSlug;
+  return SLUG_TO_SCHEMA[slug] ?? null;
+}
+
+export function WorkspaceTemplateStudio({
+  templateId: urlTemplateId,
+  initialStyle: urlInitialStyle,
+  documentTypeParam,
+}: Props) {
+  const catalogTemplateId = useMemo(
+    () => resolveStudioCatalogTemplateId(urlTemplateId, urlInitialStyle ?? null),
+    [urlTemplateId, urlInitialStyle],
+  );
+  const widthPersistKey = useMemo(
+    () => studioWidthPersistKey(catalogTemplateId, urlTemplateId),
+    [catalogTemplateId, urlTemplateId],
+  );
   const initialTemplate = useMemo(
-    () => templates.find((tmpl) => tmpl.id === templateId) ?? templates[0],
-    [templateId],
+    () => templates.find((tmpl) => tmpl.id === catalogTemplateId) ?? templates[0]!,
+    [catalogTemplateId],
   );
 
   // Doc type drives the schema. Prefer persisted Studio slug, then URL template.
   const initialDocType =
     TEMPLATE_TO_SCHEMA[initialTemplate.documentType] ?? "tax_invoice";
   const [docType, setDocType] = useState<SchemaDocType>(() => {
+    const fromUrl = mapUrlDocumentTypeToSchema(documentTypeParam);
+    if (fromUrl) return fromUrl;
     const ui = readTemplateUiFromStorage() ?? defaultTemplateUi();
     const slug = ui.studioDocumentType;
     if (slug && SLUG_TO_SCHEMA[slug]) return SLUG_TO_SCHEMA[slug];
@@ -542,7 +744,14 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
         hiddenItemColumns: {},
       }),
     );
-  }, [docType, defaultColumnKeys, initialTemplate.id]);
+  }, [docType, defaultColumnKeys, catalogTemplateId]);
+
+  useEffect(() => {
+    const fromUrl = mapUrlDocumentTypeToSchema(documentTypeParam);
+    if (fromUrl) {
+      setDocType(fromUrl);
+    }
+  }, [documentTypeParam]);
 
   const toggleSection = (key: SectionKey) =>
     setHiddenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -600,7 +809,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
   }, [docType]);
 
   // ── Style / language / spacing / zoom ────────────────────────────────────
-  const [style, setStyle] = useState<TemplateStyle>(initialTemplate.style);
+  const [style, setStyle] = useState<TemplateStyle>(() => urlInitialStyle ?? initialTemplate.style);
   const [language, setLanguage] = useState<LangMode>(
     initialTemplate.language as LangMode,
   );
@@ -612,29 +821,117 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
   );
   const [density, setDensity] = useState<"compact" | "normal" | "wide">("normal");
   const [zoom, setZoom] = useState<number>(1);
+  const [canvasA4Overflow, setCanvasA4Overflow] = useState(false);
+
+  const [studioPopover, setStudioPopover] = useState<StudioPopoverState>(null);
+
+  const openStudioPopover = useCallback(
+    (event: ReactMouseEvent<HTMLElement>, next: Omit<NonNullable<StudioPopoverState>, "anchor">) => {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      setStudioPopover({
+        ...next,
+        anchor: { x: rect.left + rect.width / 2, y: rect.bottom + 8 },
+      });
+    },
+    [],
+  );
+
+  const studioControls = useMemo(
+    () => ({
+      enabled: true,
+      openHeaderNameSize: (e: ReactMouseEvent<HTMLElement>) => openStudioPopover(e, { kind: "header-name-size" }),
+      openCustomerFields: (e: ReactMouseEvent<HTMLElement>) => openStudioPopover(e, { kind: "customer-fields" }),
+      openDocumentFields: (e: ReactMouseEvent<HTMLElement>) => openStudioPopover(e, { kind: "document-fields" }),
+      openItemColumns: (e: ReactMouseEvent<HTMLElement>) => openStudioPopover(e, { kind: "item-columns" }),
+      openItemHeading: (e: ReactMouseEvent<HTMLElement>, column: ColumnKey) =>
+        openStudioPopover(e, { kind: "item-heading", column }),
+    }),
+    [openStudioPopover],
+  );
 
   const [templateUi, setTemplateUi] = useState(() => {
     const stored = readTemplateUiFromStorage();
     if (stored) return stored;
-    return initialTemplate.id === "tmpl-modern" ? modernTemplatePresetUi() : defaultTemplateUi();
+    const seed =
+      urlInitialStyle ??
+      (initialTemplate.style as TemplateStyle | undefined) ??
+      ("standard" as TemplateStyle);
+    return uiPresetForStyle(seed);
   });
   const hiddenItemColumns = templateUi.hiddenItemColumns ?? {};
   const infoLayoutMerged = { ...DEFAULT_INFO_CARD_LAYOUT, ...templateUi.infoCardLayout };
   const [templateAssets, setTemplateAssets] = useState<TemplateAssetState>(() =>
     readTemplateAssetsFromStorage(),
   );
-  const [invoiceTmpl, setInvoiceTmpl] = useState<"default" | "zatca">(
-    initialTemplate.id === "tmpl-invoice-zatca-standard" ? "zatca" : "default",
-  );
 
   useEffect(() => {
     writeTemplateUiToStorage(templateUi);
   }, [templateUi]);
 
+  const legacyWidthsSanitizedRef = useRef(false);
+  useEffect(() => {
+    if (legacyWidthsSanitizedRef.current) return;
+    legacyWidthsSanitizedRef.current = true;
+    setTemplateUi((cur) => {
+      const patch = migrateTemplateUiPayload(cur);
+      const merged = mergeTemplateUi(cur, patch);
+      const widthsKey = (u: TemplateUiSettings) =>
+        JSON.stringify({ g: u.itemColumnWidths ?? {}, m: u.itemColumnWidthsByTemplateId ?? {} });
+      if (widthsKey(merged) !== widthsKey(cur)) {
+        console.log("[template-studio] sanitized legacy item column widths");
+        return merged;
+      }
+      return cur;
+    });
+  }, []);
+
   const tableInnerTarget = useMemo(
-    () => getItemsTableInnerTargetPx(templateUi.margins),
+    () => getItemsTableInnerTargetPx(templateUi.margins, { sectionPaddingPx: 8, borderPx: 1 }),
     [templateUi.margins],
   );
+  const sanitizedTemplateUi = useMemo(() => {
+    const keys = itemColumnKeys(schema);
+    const target = getItemsTableInnerTargetPx(templateUi.margins, {
+      sectionPaddingPx: 8,
+      borderPx: 1,
+    });
+    const applyFit = (rec: Partial<Record<ColumnKey, number>> | undefined) => {
+      if (!rec || Object.keys(rec).length === 0) return rec;
+      const sanitized = sanitizeItemColumnWidthRecord(keys, rec, target);
+      const raw = keys.map((k) => sanitized[k] ?? itemColumnMinPx(k));
+      const fitted = fitItemColumnWidthsToTarget(keys, raw, target, itemColumnMinPx);
+      const o: Partial<Record<ColumnKey, number>> = {};
+      keys.forEach((k, i) => {
+        o[k] = fitted[i]!;
+      });
+      return o;
+    };
+
+    let changed = false;
+    const iw = templateUi.itemColumnWidths;
+    let nextIw = iw;
+    if (iw && Object.keys(iw).length > 0) {
+      const nf = applyFit(iw)!;
+      if (JSON.stringify(nf) !== JSON.stringify(iw)) changed = true;
+      nextIw = nf;
+    }
+    const byT = templateUi.itemColumnWidthsByTemplateId;
+    let nextBy = byT;
+    if (byT && Object.keys(byT).length > 0) {
+      nextBy = { ...byT };
+      for (const [tid, rec] of Object.entries(byT)) {
+        if (!rec) continue;
+        const nf = applyFit(rec)!;
+        if (JSON.stringify(nf) !== JSON.stringify(rec)) changed = true;
+        nextBy[tid] = nf;
+      }
+    }
+    if (!changed) return templateUi;
+    return mergeTemplateUi(templateUi, {
+      itemColumnWidths: nextIw,
+      itemColumnWidthsByTemplateId: nextBy,
+    });
+  }, [schema, templateUi]);
   const previewLayout = useMemo(
     () =>
       buildDocumentLayout({
@@ -647,8 +944,8 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
         hiddenFields,
         hiddenColumns: hiddenItemColumns,
         columnOrder,
-        ui: templateUi,
-        templateId: initialTemplate.id,
+        ui: sanitizedTemplateUi,
+        templateId: widthPersistKey,
       }),
     [
       schema,
@@ -659,14 +956,34 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
       hiddenFields,
       hiddenItemColumns,
       columnOrder,
-      templateUi,
-      initialTemplate.id,
+      sanitizedTemplateUi,
+      widthPersistKey,
     ],
   );
 
+  const studioTableMetrics = useMemo(() => {
+    const tgt = Math.round(previewLayout.itemTableTargetWidthPx ?? tableInnerTarget);
+    const used = Math.round(previewLayout.itemColumns.reduce((s, c) => s + c.widthPx, 0));
+    const descCol = Math.round(previewLayout.itemColumns.find((c) => c.key === "description")?.widthPx ?? 0);
+    const totalCol = Math.round(previewLayout.itemColumns.find((c) => c.key === "lineTotal")?.widthPx ?? 0);
+    const widestPx = previewLayout.itemColumns.reduce((m, c) => Math.max(m, c.widthPx), 0);
+    const overflow = used > tgt + 2;
+    const descriptionIsWidest = descCol > 0 && descCol >= widestPx - 0.5;
+    const totalIsNotWidest = totalCol < widestPx - 0.5 && totalCol <= descCol;
+    return {
+      tgt,
+      used,
+      descCol,
+      totalCol,
+      overflow,
+      descriptionIsWidest,
+      totalIsNotWidest,
+    };
+  }, [previewLayout, tableInnerTarget]);
+
   const preflightNotes = useMemo(() => {
     const notes: string[] = [];
-    const inner = getItemsTableInnerTargetPx(templateUi.margins);
+    const inner = tableInnerTarget;
     const sumW = previewLayout.itemColumns.reduce((s, c) => s + c.widthPx, 0);
     if (sumW > inner + 2) {
       notes.push("Items table column widths may exceed the inner width budget.");
@@ -680,6 +997,9 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     if (!templateAssets.logoDataUrl) notes.push("Logo not uploaded (optional).");
     if (!templateAssets.stampDataUrl) notes.push("Stamp not uploaded (optional).");
     if (!templateAssets.signatureDataUrl) notes.push("Signature not uploaded (optional).");
+    if (canvasA4Overflow) {
+      notes.push("A4 portrait canvas reports vertical overflow — content may clip in Studio before print/export.");
+    }
     if (schema.qr.applicable) {
       notes.push(
         previewLayout.qr.status === "not_applicable"
@@ -691,10 +1011,11 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     return notes;
   }, [
     previewLayout,
-    templateUi.margins,
+    tableInnerTarget,
     templateUi.totalsBlock,
     templateAssets,
     schema.qr.applicable,
+    canvasA4Overflow,
   ]);
 
   // Real ZATCA Phase 1 QR foundation — only when the schema marks QR
@@ -733,6 +1054,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     "not_checked",
   );
   const [preflightOpen, setPreflightOpen] = useState(false);
+  const [advancedPanelOpen, setAdvancedPanelOpen] = useState(false);
   const [signatureModal, setSignatureModal] = useState<{ dataUrl: string } | null>(null);
   const [sigDraftName, setSigDraftName] = useState("");
   const [sigDraftPosition, setSigDraftPosition] = useState("");
@@ -741,45 +1063,56 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     if (busy) return;
     setBusy("pdf");
     try {
-      const result = await buildInvoicePdf({
-        doc: sample,
-        schema,
-        language,
-        seller: {
-          name: previewCompany.sellerName,
-          nameAr: previewCompany.sellerNameAr,
-          vatNumber: previewCompany.vatNumber,
-          registrationNumber: previewCompany.registrationNumber,
-          addressEn: previewCompany.sellerAddressEn,
-          addressAr: previewCompany.sellerAddressAr,
-          email: previewCompany.sellerEmail,
-          phone: previewCompany.sellerPhone,
-        },
-        customer: {
-          name: customer?.legalName ?? "Customer",
-          nameAr: customer?.legalNameAr,
-          vatNumber: customer?.vatNumber,
-          city: customer?.city,
-          country: "SA",
-          email: customer?.email,
-          phone: customer?.phone,
-        },
-        qrPngDataUrl: qrDataUrl ?? undefined,
-        ui: templateUi,
-        hiddenSections,
-        hiddenFields,
-        hiddenColumns: hiddenItemColumns,
-        columnOrder,
-        templateId: initialTemplate.id,
-        templateAssets: {
-          logoDataUrl: templateAssets.logoDataUrl,
-          stampDataUrl: templateAssets.stampDataUrl,
-          signatureDataUrl: templateAssets.signatureDataUrl,
-          signatoryName: templateAssets.signatoryName,
-          signatoryDesignation: templateAssets.signatoryDesignation,
-        },
-      });
-      downloadBytes(result.bytes, result.filename, "application/pdf");
+      const payload = {
+          doc: sample,
+          schema,
+          language,
+          seller: {
+            name: previewCompany.sellerName,
+            nameAr: previewCompany.sellerNameAr,
+            vatNumber: previewCompany.vatNumber,
+            registrationNumber: previewCompany.registrationNumber,
+            addressEn: previewCompany.sellerAddressEn,
+            addressAr: previewCompany.sellerAddressAr,
+            email: previewCompany.sellerEmail,
+            phone: previewCompany.sellerPhone,
+          },
+          customer: {
+            name: customer?.legalName ?? "Customer",
+            nameAr: customer?.legalNameAr,
+            vatNumber: customer?.vatNumber,
+            city: customer?.city,
+            country: "SA",
+            email: customer?.email,
+            phone: customer?.phone,
+          },
+          qrPngDataUrl: qrDataUrl ?? undefined,
+          ui: sanitizedTemplateUi,
+          hiddenSections,
+          hiddenFields,
+          hiddenColumns: hiddenItemColumns,
+          columnOrder,
+          templateId: widthPersistKey,
+          templateAssets: {
+            logoDataUrl: templateAssets.logoDataUrl,
+            stampDataUrl: templateAssets.stampDataUrl,
+            signatureDataUrl: templateAssets.signatureDataUrl,
+            signatoryName: templateAssets.signatoryName,
+            signatoryDesignation: templateAssets.signatoryDesignation,
+          },
+          templateStyle: style,
+        };
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "/api/workspace/template-studio/pdf";
+      form.style.display = "none";
+      const input = document.createElement("textarea");
+      input.name = "payload";
+      input.value = JSON.stringify(payload);
+      form.appendChild(input);
+      document.body.appendChild(form);
+      form.submit();
+      window.setTimeout(() => form.remove(), 0);
       setPdfParityStatus("checked_last_export");
     } finally {
       setBusy(null);
@@ -898,19 +1231,20 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
 
   const onItemColumnWidthChange = useCallback(
     (widths: Partial<Record<ColumnKey, number>>) => {
-      setTemplateUi((prev) =>
-        mergeTemplateUi(prev, {
+      setTemplateUi((prev) => {
+        const keys = itemColumnKeys(schema);
+        const prevRec = prev.itemColumnWidthsByTemplateId?.[widthPersistKey] ?? {};
+        const merged = { ...prevRec, ...widths };
+        const sanitizedRec = sanitizeItemColumnWidthRecord(keys, merged, tableInnerTarget);
+        return mergeTemplateUi(prev, {
           itemColumnWidthsByTemplateId: {
             ...prev.itemColumnWidthsByTemplateId,
-            [initialTemplate.id]: {
-              ...prev.itemColumnWidthsByTemplateId?.[initialTemplate.id],
-              ...widths,
-            },
+            [widthPersistKey]: sanitizedRec,
           },
-        }),
-      );
+        });
+      });
     },
-    [initialTemplate.id],
+    [widthPersistKey, schema, tableInnerTarget],
   );
 
   const setItemColumnWidthPx = useCallback(
@@ -920,11 +1254,11 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
       const raw = previewLayout.itemColumns.map((c) => c.widthPx);
       const idx = keys.indexOf(key);
       if (idx < 0) return;
-      const px = Math.max(ITEM_COLUMN_SAFETY_MIN_PX, Math.floor(nextPx));
-      const fitted = fitWidthsWithLockedColumn(keys, raw, idx, px);
+      const px = Math.max(itemColumnHardMinPx(key), Math.floor(nextPx));
+      const fitted = fitWidthsWithLockedColumn(keys, raw, idx, px, tableInnerTarget);
       onItemColumnWidthChange(widthsArrayToRecord(keys, fitted));
     },
-    [previewLayout, onItemColumnWidthChange],
+    [previewLayout, onItemColumnWidthChange, tableInnerTarget],
   );
 
   const adjustItemColumnWidthPx = useCallback(
@@ -952,12 +1286,18 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
   }, []);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === "development") {
-      const id = window.setTimeout(() => {
-        const paper = document.querySelector(".wsv2-doc-paper-inner");
-        const itemSection = document.querySelector('.wsv2-wf-section[data-section="items"]');
-        const wrap = document.querySelector("[data-wsv2-items-table-wrap]");
-        const table = document.querySelector(".wsv2-wf-items-table");
+    const id = window.setTimeout(() => {
+      const canvasPaper = document.querySelector(
+        ".wsv2-template-studio .wsv2-doc-paper-inner[data-a4-overflow]",
+      );
+      setCanvasA4Overflow(canvasPaper?.getAttribute("data-a4-overflow") === "true");
+      if (process.env.NODE_ENV === "development") {
+        const paper = document.querySelector(".wsv2-template-studio .wsv2-doc-paper-inner");
+        const itemSection = document.querySelector(
+          '.wsv2-template-studio .wsv2-wf-section[data-section="items"]',
+        );
+        const wrap = document.querySelector(".wsv2-template-studio [data-wsv2-items-table-wrap]");
+        const table = document.querySelector(".wsv2-template-studio .wsv2-wf-items-table");
         const log = (name: string, el: Element | null) => {
           if (el && el.scrollWidth > el.clientWidth + 1) {
             console.warn(
@@ -969,10 +1309,21 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
         log("items section", itemSection);
         log("items wrap", wrap);
         log("items table", table);
-      }, 400);
-      return () => clearTimeout(id);
-    }
-  }, [templateUi, columnOrder, hiddenItemColumns, docType, zoom, hiddenSections]);
+      }
+    }, 400);
+    return () => clearTimeout(id);
+  }, [
+    templateUi,
+    columnOrder,
+    hiddenItemColumns,
+    docType,
+    zoom,
+    hiddenSections,
+    sanitizedTemplateUi,
+    style,
+    language,
+    previewLayout,
+  ]);
 
   const stepZoom = (direction: "in" | "out") => {
     const idx = ZOOM_STEPS.findIndex((value) => Math.abs(value - zoom) < 0.001);
@@ -989,6 +1340,9 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
   const studioLayoutMerged = templateUi.studioLayout ?? DEFAULT_STUDIO_LAYOUT;
   const leftPanelW = studioLayoutMerged.leftPanelWidthPx;
   const rightPanelW = studioLayoutMerged.rightPanelWidthPx;
+  const studioGridCols = advancedPanelOpen
+    ? `${leftPanelW}px 6px minmax(0, 1fr) 6px ${rightPanelW}px`
+    : `${leftPanelW}px 6px minmax(0, 1fr)`;
 
   type PanelResizeDrag = {
     which: "left" | "right";
@@ -1068,10 +1422,25 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
     }
   }, [styleVariantsForDocType, style]);
 
+  useEffect(() => {
+    if (!urlInitialStyle || !styleVariantsForDocType.includes(urlInitialStyle)) return;
+    setStyle(urlInitialStyle);
+    setTemplateUi((prev) =>
+      mergeTemplateUiPreservingUserLayout(uiPresetForStyle(urlInitialStyle), prev),
+    );
+  }, [urlInitialStyle, styleVariantsForDocType]);
+
+  const headerFontPxOptions = useMemo(() => Array.from({ length: 23 }, (_, i) => i + 10), []);
+
   return (
-    <div className="wsv2-template-studio" role="dialog" aria-label="Template studio">
+    <div
+      className="hisab-template-studio-page wsv2-template-studio wsv2-template-studio-page"
+      data-testid="template-studio-page"
+      role="region"
+      aria-label="Template studio"
+    >
       {/* Top toolbar — file actions */}
-      <div className="wsv2-studio-top">
+      <div className="wsv2-studio-top" data-testid="template-studio-toolbar">
         <Link
           href={`${USER_WORKSPACE_BASE}/templates`}
           className="wsv2-icon-btn"
@@ -1083,6 +1452,17 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           {initialTemplate.name} · {schema.title.en}
         </span>
         <div className="spacer" />
+        <button
+          type="button"
+          className="wsv2-icon-btn hisab-studio-toolbar-button"
+          data-testid="template-studio-advanced-toggle"
+          aria-expanded={advancedPanelOpen}
+          aria-controls="template-studio-advanced-panel"
+          onClick={() => setAdvancedPanelOpen((v) => !v)}
+          title={advancedPanelOpen ? "Hide advanced inspector" : "Show advanced inspector"}
+        >
+          <Layers3 size={13} /> Advanced
+        </button>
         <div className="group">
           <button type="button" className="wsv2-icon-btn">
             <Save size={13} /> Save draft
@@ -1122,206 +1502,222 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
       <div
         className="wsv2-studio-body"
         style={{
-          gridTemplateColumns: `${leftPanelW}px 6px minmax(0, 1fr) 6px ${rightPanelW}px`,
+          gridTemplateColumns: studioGridCols,
         }}
       >
-      {/* Left panel — sections come straight from the schema. */}
-      <aside className="wsv2-studio-left" aria-label="Template sections">
-        <h5>Sections / الأقسام</h5>
-        {schema.sections.map((id) => {
-          const label = SECTION_LABELS[id];
-          const isHidden = Boolean(hiddenSections[id]);
-          return (
-            <div
-              key={id}
-              className="layer"
-              data-active={activeSection === id ? "true" : "false"}
-              role="button"
-              tabIndex={0}
-              onClick={() => focusSection(id)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") focusSection(id);
-              }}
-              style={{ display: "flex", alignItems: "center" }}
-            >
-              <span className="layer-label">
-                {language === "arabic" ? label.ar : label.en}
-                {language === "bilingual" ? (
-                  <span
-                    style={{
-                      color: "var(--wsv2-ink-subtle)",
-                      marginInlineStart: 6,
-                      fontWeight: 400,
-                    }}
-                  >
-                    {label.ar}
-                  </span>
-                ) : null}
-              </span>
-              <button
-                type="button"
-                className="eye"
-                data-hidden={isHidden ? "true" : "false"}
-                aria-label={isHidden ? `Show ${label.en}` : `Hide ${label.en}`}
-                title={isHidden ? "Show section" : "Hide section"}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  toggleSection(id);
+      <aside
+        className="wsv2-studio-left hisab-studio-basic-panel"
+        data-testid="template-studio-basic-panel"
+        aria-label="Basic template controls"
+      >
+        <StudioPanelSection title="Template identity">
+          <div className="space-y-1 text-xs">
+            <p className="font-semibold text-slate-800">{initialTemplate.name}</p>
+            <p className="text-[11px] text-slate-500">
+              {initialTemplate.isDefault
+                ? "This catalog sample is marked default for its document family."
+                : "Set the workspace default from the template register after sign-in."}
+            </p>
+          </div>
+        </StudioPanelSection>
+
+        <StudioPanelSection title="Typography">
+          <div className="space-y-2">
+            <div className="wsv2-field">
+              <label htmlFor="wsv2-basic-en-font">English font</label>
+              <select
+                id="wsv2-basic-en-font"
+                className="w-full"
+                value={templateUi.typography.enFontStack}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: {
+                        ...p.typography,
+                        enFontStack: v,
+                        english: { ...p.typography.english, fontFamily: v },
+                      },
+                    }),
+                  );
                 }}
               >
-                {isHidden ? <EyeOff size={13} /> : <Eye size={13} />}
-              </button>
+                {EN_FONT_PRESETS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+                {!EN_FONT_PRESETS.some((o) => o.value === templateUi.typography.enFontStack) ? (
+                  <option value={templateUi.typography.enFontStack}>Custom (current)</option>
+                ) : null}
+              </select>
             </div>
-          );
-        })}
+            <div className="wsv2-field">
+              <label htmlFor="wsv2-basic-ar-font">Arabic font</label>
+              <select
+                id="wsv2-basic-ar-font"
+                className="w-full"
+                value={templateUi.typography.arFontStack}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: {
+                        ...p.typography,
+                        arFontStack: v,
+                        arabic: { ...p.typography.arabic, fontFamily: v },
+                      },
+                    }),
+                  );
+                }}
+              >
+                {AR_FONT_PRESETS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+                {!AR_FONT_PRESETS.some((o) => o.value === templateUi.typography.arFontStack) ? (
+                  <option value={templateUi.typography.arFontStack}>Custom (current)</option>
+                ) : null}
+              </select>
+            </div>
+            <div className="wsv2-field wsv2-color-row">
+              <label htmlFor="wsv2-basic-en-color">English color</label>
+              <input
+                id="wsv2-basic-en-color"
+                type="color"
+                value={templateUi.typography.enColor}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, enColor: v, english: { ...p.typography.english, color: v } },
+                    }),
+                  );
+                }}
+                className="wsv2-color-swatch"
+              />
+              <input
+                type="text"
+                className="wsv2-hex-input"
+                value={templateUi.typography.enColor}
+                onChange={(e) => {
+                  const v = e.target.value.trim();
+                  if (!/^#[0-9A-Fa-f]{6}$/.test(v)) return;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, enColor: v, english: { ...p.typography.english, color: v } },
+                    }),
+                  );
+                }}
+                aria-label="English color hex"
+              />
+            </div>
+            <div className="wsv2-field wsv2-color-row">
+              <label htmlFor="wsv2-basic-ar-color">Arabic color</label>
+              <input
+                id="wsv2-basic-ar-color"
+                type="color"
+                value={templateUi.typography.arColor}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, arColor: v, arabic: { ...p.typography.arabic, color: v } },
+                    }),
+                  );
+                }}
+                className="wsv2-color-swatch"
+              />
+              <input
+                type="text"
+                className="wsv2-hex-input"
+                value={templateUi.typography.arColor}
+                onChange={(e) => {
+                  const v = e.target.value.trim();
+                  if (!/^#[0-9A-Fa-f]{6}$/.test(v)) return;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, arColor: v, arabic: { ...p.typography.arabic, color: v } },
+                    }),
+                  );
+                }}
+                aria-label="Arabic color hex"
+              />
+            </div>
+            <div className="wsv2-field">
+              <label htmlFor="wsv2-basic-en-font-size">English body size (px)</label>
+              <input
+                id="wsv2-basic-en-font-size"
+                type="number"
+                min={8}
+                max={18}
+                className="w-full"
+                value={templateUi.typography.english?.fontSize ?? 12}
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  if (!Number.isFinite(n)) return;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, english: { ...p.typography.english, fontSize: n } },
+                    }),
+                  );
+                }}
+              />
+            </div>
+            <div className="wsv2-field">
+              <label htmlFor="wsv2-basic-ar-font-size">Arabic body size (px)</label>
+              <input
+                id="wsv2-basic-ar-font-size"
+                type="number"
+                min={8}
+                max={18}
+                className="w-full"
+                value={templateUi.typography.arabic?.fontSize ?? 12}
+                onChange={(e) => {
+                  const n = Number(e.target.value);
+                  if (!Number.isFinite(n)) return;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, arabic: { ...p.typography.arabic, fontSize: n } },
+                    }),
+                  );
+                }}
+              />
+            </div>
+          </div>
+        </StudioPanelSection>
 
-        <h5>Layout</h5>
-        <div className="wsv2-field">
-          <label htmlFor="wsv2-select-template-style">Select Template Style</label>
-          <select
-            id="wsv2-select-template-style"
-            className="wsv2-template-style-select"
-            aria-label="Select template style"
-            value={style}
-            onChange={(e) => setStyle(e.target.value as TemplateStyle)}
-          >
-            {styleVariantsForDocType.map((value) => {
-              const opt = TEMPLATE_STYLE_OPTIONS.find((o) => o.value === value);
-              const label =
-                opt?.label ?? value.charAt(0).toUpperCase() + value.slice(1);
-              return (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              );
-            })}
-          </select>
-          {styleVariantsForDocType.length === 1 ? (
-            <span
-              style={{
-                fontSize: 10.5,
-                color: "var(--wsv2-ink-subtle)",
-                marginTop: 4,
-                display: "block",
-              }}
-            >
-              Only one real style exists for this document type — additional
-              variants intentionally hidden.
-            </span>
-          ) : null}
-        </div>
-
-        <h5>Company assets</h5>
-        <div className="wsv2-asset-row">
-          <input id="wsv2-upload-logo" type="file" accept="image/*" className="wsv2-sr-only" onChange={onAssetLogo} />
-          <label htmlFor="wsv2-upload-logo" className="wsv2-asset-btn">
-            Logo
-          </label>
-          {templateAssets.logoDataUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={templateAssets.logoDataUrl} alt="" className="wsv2-asset-thumb" />
-          ) : null}
-          {templateAssets.logoDataUrl ? (
-            <button
-              type="button"
-              className="wsv2-asset-remove"
-              onClick={() => {
-                writeTemplateAsset("logo", null);
-                setTemplateAssets(readTemplateAssetsFromStorage());
-              }}
-            >
-              Remove
-            </button>
-          ) : null}
-        </div>
-        <div className="wsv2-asset-row">
-          <input id="wsv2-upload-stamp" type="file" accept="image/*" className="wsv2-sr-only" onChange={onAssetStamp} />
-          <label htmlFor="wsv2-upload-stamp" className="wsv2-asset-btn">
-            Stamp
-          </label>
-          {templateAssets.stampDataUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={templateAssets.stampDataUrl} alt="" className="wsv2-asset-thumb" />
-          ) : null}
-          {templateAssets.stampDataUrl ? (
-            <button
-              type="button"
-              className="wsv2-asset-remove"
-              onClick={() => {
-                writeTemplateAsset("stamp", null);
-                setTemplateAssets(readTemplateAssetsFromStorage());
-              }}
-            >
-              Remove
-            </button>
-          ) : null}
-        </div>
-        <div className="wsv2-asset-row">
-          <input
-            id="wsv2-upload-signature"
-            type="file"
-            accept="image/*"
-            className="wsv2-sr-only"
-            onChange={onAssetSignaturePick}
-          />
-          <label htmlFor="wsv2-upload-signature" className="wsv2-asset-btn">
-            Signature
-          </label>
-          {templateAssets.signatureDataUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={templateAssets.signatureDataUrl} alt="" className="wsv2-asset-thumb" />
-          ) : null}
-          {templateAssets.signatureDataUrl ? (
-            <button
-              type="button"
-              className="wsv2-asset-remove"
-              onClick={() => {
-                writeTemplateAsset("signature", null);
-                writeTemplateAsset("signatory", null);
-                writeTemplateAsset("designation", null);
-                setTemplateAssets(readTemplateAssetsFromStorage());
-              }}
-            >
-              Remove
-            </button>
-          ) : null}
-        </div>
-
-        <div className="wsv2-field wsv2-field-compact">
-          <button type="button" className="wsv2-reset-defaults" onClick={resetStudioDefaults}>
-            Reset studio defaults
-          </button>
-        </div>
-
-        <div className="wsv2-field">
-          <label>Spacing</label>
-          <select
-            value={spacing}
-            onChange={(event) =>
-              setSpacing(event.target.value as "tight" | "balanced" | "airy")
-            }
-          >
-            <option value="tight">Tight</option>
-            <option value="balanced">Balanced</option>
-            <option value="airy">Airy</option>
-          </select>
-        </div>
-        <div className="wsv2-field">
-          <label>
-            <Type size={11} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
-            Font scale
-          </label>
-          <select
-            value={fontScale}
-            onChange={(event) =>
-              setFontScale(event.target.value as "compact" | "regular" | "large")
-            }
-          >
-            <option value="compact">Compact</option>
-            <option value="regular">Regular</option>
-            <option value="large">Large</option>
-          </select>
-        </div>
+        <StudioPanelSection title="Margins">
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {(["topMm", "bottomMm", "leftMm", "rightMm"] as const).map((key) => (
+              <label key={key} className="wsv2-field">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+                  {key === "topMm"
+                    ? "Top"
+                    : key === "bottomMm"
+                      ? "Bottom"
+                      : key === "leftMm"
+                        ? "Left"
+                        : "Right"}{" "}
+                  (mm)
+                </span>
+                <input
+                  type="number"
+                  min={4}
+                  max={40}
+                  className="mt-1 w-full"
+                  value={templateUi.margins[key]}
+                  onChange={(e) => {
+                    const n = Number(e.target.value);
+                    if (!Number.isFinite(n)) return;
+                    setTemplateUi((p) => mergeTemplateUi(p, { margins: { ...p.margins, [key]: n } }));
+                  }}
+                />
+              </label>
+            ))}
+          </div>
+        </StudioPanelSection>
       </aside>
 
       <div
@@ -1339,48 +1735,65 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
         }}
       />
 
-      {/* Sub-toolbar — doc-type pills, language tabs, zoom */}
+      {/* Sub-toolbar — document type, style, language tabs, zoom */}
       <div className="wsv2-studio-subtop">
-        <div className="wsv2-doctype-pills" role="tablist" aria-label="Document type">
-          {DOC_TYPE_PILLS.map((pill) => (
-            <button
-              key={pill.id}
-              type="button"
-              role="tab"
-              aria-selected={docType === pill.id}
-              data-active={docType === pill.id ? "true" : "false"}
-              onClick={() => setDocType(pill.id)}
-              title={`${pill.label} / ${pill.ar}`}
-            >
-              {pill.label}
-            </button>
-          ))}
-        </div>
+        <label className="wsv2-field wsv2-subtop-field" htmlFor="wsv2-document-type-toolbar">
+          <span>Document Type</span>
+          <select
+            id="wsv2-document-type-toolbar"
+            value={docType}
+            onChange={(event) => setDocType(event.target.value as SchemaDocType)}
+            aria-label="Document type"
+          >
+            {DOC_TYPE_PILLS.map((pill) => (
+              <option key={pill.id} value={pill.id}>
+                {pill.label}
+              </option>
+            ))}
+          </select>
+        </label>
 
-        {docType === "tax_invoice" ? (
-          <div className="wsv2-doctype-pills" role="group" aria-label="Invoice base template">
-            <button
-              type="button"
-              data-active={invoiceTmpl === "default" ? "true" : "false"}
-              onClick={() => {
-                setInvoiceTmpl("default");
-                setTemplateUi((prev) => mergeTemplateUi(defaultTemplateUi(), { margins: prev.margins }));
+        <label className="wsv2-field" htmlFor="wsv2-select-template-style-toolbar" style={{ minWidth: 140 }}>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.12em]" style={{ color: "var(--wsv2-ink-subtle)" }}>
+            Template style
+          </span>
+          <select
+            id="wsv2-select-template-style-toolbar"
+            data-testid="template-style-select"
+            className="wsv2-template-style-select mt-1 w-full min-w-[8rem]"
+            aria-label="Select template style"
+            value={style}
+            onChange={(e) => {
+              const v = e.target.value as TemplateStyle;
+              setStyle(v);
+              setTemplateUi((p) =>
+                mergeTemplateUiPreservingUserLayout(uiPresetForStyle(v), p),
+              );
+            }}
+          >
+            {styleVariantsForDocType.map((value) => {
+              const opt = TEMPLATE_STYLE_OPTIONS.find((o) => o.value === value);
+              const labelText = opt?.label ?? value.charAt(0).toUpperCase() + value.slice(1);
+              return (
+                <option key={value} value={value}>
+                  {labelText}
+                </option>
+              );
+            })}
+          </select>
+          {styleVariantsForDocType.length === 1 ? (
+            <span
+              style={{
+                fontSize: 10,
+                color: "var(--wsv2-ink-subtle)",
+                marginTop: 4,
+                display: "block",
               }}
             >
-              Default
-            </button>
-            <button
-              type="button"
-              data-active={invoiceTmpl === "zatca" ? "true" : "false"}
-              onClick={() => {
-                setInvoiceTmpl("zatca");
-                setTemplateUi((prev) => mergeTemplateUi(zatcaStandardPresetUi(), { margins: prev.margins }));
-              }}
-            >
-              Standard
-            </button>
-          </div>
-        ) : null}
+              One style variant applies to this doc type.
+            </span>
+          ) : null}
+        </label>
 
         <div className="lang-tabs" role="tablist" aria-label="Language mode">
           {(["english", "arabic", "bilingual"] as LangMode[]).map((lang) => (
@@ -1392,7 +1805,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
               data-active={language === lang ? "true" : "false"}
               onClick={() => setLanguage(lang)}
             >
-              {lang === "english" ? "EN" : lang === "arabic" ? "AR" : "EN + AR"}
+              {lang === "english" ? "EN" : lang === "arabic" ? "AR" : "EN+AR"}
             </button>
           ))}
         </div>
@@ -1413,11 +1826,11 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           </button>
         </div>
 
-        <span className="page-indicator">A4 · 210 × 297 mm</span>
       </div>
 
       {/* Canvas — single shared schema renderer. */}
       <section
+        data-testid="template-studio-canvas"
         className="wsv2-studio-canvas"
         aria-label="Document canvas"
         onClick={() => {
@@ -1428,12 +1841,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           className="paper"
           style={{
             transform: `scale(${zoom})`,
-            padding:
-              spacing === "tight"
-                ? "20px 24px"
-                : spacing === "airy"
-                ? "36px 40px"
-                : "28px 32px",
+            padding: 0,
             fontSize: fontSizePx,
           }}
         >
@@ -1453,15 +1861,18 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
             onSectionSelect={(id) => focusSection(id)}
             setSectionRef={setSectionRef}
             qrImageDataUrl={qrDataUrl}
-            ui={templateUi}
+            ui={sanitizedTemplateUi}
             templateAssets={templateAssets}
             resizableItemColumns
             onItemColumnWidthChange={onItemColumnWidthChange}
-            templateId={initialTemplate.id}
+            templateId={widthPersistKey}
+            studioControls={studioControls}
           />
         </div>
       </section>
 
+      {advancedPanelOpen ? (
+        <>
       <div
         id="wsv2-right-resize-handle"
         className="wsv2-resize-handle wsv2-resize-handle-right"
@@ -1479,219 +1890,149 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
 
       {/* Right inspector — document + section filters, global type, then section controls. */}
       <aside
+        id="template-studio-advanced-panel"
         className="wsv2-studio-right wsv2-global-controls"
-        aria-label="Inspector"
+        data-testid="template-studio-advanced-panel"
+        aria-label="Advanced inspector"
       >
-        <div className="wsv2-section-control-panel">
-          <h5>Document</h5>
-          <div className="wsv2-field">
-            <label htmlFor="wsv2-document-type">Document type</label>
-            <select
-              id="wsv2-document-type"
-              value={SCHEMA_TO_SLUG[docType]}
-              onChange={(e) => {
-                const slug = e.target.value as StudioDocumentTypeSlug;
-                const next = SLUG_TO_SCHEMA[slug];
-                if (next) setDocType(next);
-              }}
-            >
-              {DOC_TYPE_SELECT_ORDER.map((slug) => (
-                <option key={slug} value={slug}>
-                  {DOC_TYPE_SELECT_LABEL[slug]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="wsv2-field">
-            <label htmlFor="wsv2-section-selector">Section</label>
-            <select
-              id="wsv2-section-selector"
-              value={activeSection}
-              onChange={(event) => focusSection(event.target.value as SectionKey)}
-            >
-              {schema.sections.map((id) => (
-                <option key={id} value={id}>
-                  {SECTION_INSPECTOR_LABEL[id]}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <div className="space-y-3" data-testid="template-studio-inspector-groups">
+          <InspectorGroup title="Canvas sections" defaultOpen={false} dataTestId="inspector-group-canvas-sections">
+            <p className="text-[11px] text-slate-500">
+              Navigate and show or hide logical blocks rendered on the A4 preview (same renderer as PDF export).
+            </p>
+            {schema.sections.map((id) => {
+              const label = SECTION_LABELS[id];
+              const isHidden = Boolean(hiddenSections[id]);
+              return (
+                <div
+                  key={id}
+                  className="layer"
+                  data-active={activeSection === id ? "true" : "false"}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => focusSection(id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") focusSection(id);
+                  }}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <span className="layer-label">
+                    {language === "arabic" ? label.ar : label.en}
+                    {language === "bilingual" ? (
+                      <span
+                        style={{
+                          color: "var(--wsv2-ink-subtle)",
+                          marginInlineStart: 6,
+                          fontWeight: 400,
+                        }}
+                      >
+                        {label.ar}
+                      </span>
+                    ) : null}
+                  </span>
+                  <button
+                    type="button"
+                    className="eye"
+                    data-hidden={isHidden ? "true" : "false"}
+                    aria-label={isHidden ? `Show ${label.en}` : `Hide ${label.en}`}
+                    title={isHidden ? "Show section" : "Hide section"}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleSection(id);
+                    }}
+                  >
+                    {isHidden ? <EyeOff size={13} /> : <Eye size={13} />}
+                  </button>
+                </div>
+              );
+            })}
+          </InspectorGroup>
 
-        <div className="wsv2-field wsv2-color-row">
-          <label htmlFor="wsv2-header-row-color">Header row color</label>
-          <input
-            id="wsv2-header-row-color"
-            type="color"
-            value={templateUi.headerRowColor ?? "#E8F4EC"}
-            onChange={(e) => {
-              const v = e.target.value;
-              setTemplateUi((p) => mergeTemplateUi(p, { headerRowColor: v }));
-            }}
-            className="wsv2-color-swatch"
-          />
-          <input
-            type="text"
-            className="wsv2-hex-input"
-            value={templateUi.headerRowColor ?? ""}
-            onChange={(e) => {
-              const v = e.target.value.trim();
-              if (v && !/^#[0-9A-Fa-f]{6}$/.test(v)) return;
-              setTemplateUi((p) => mergeTemplateUi(p, { headerRowColor: v || undefined }));
-            }}
-            placeholder="#E8F4EC"
-            aria-label="Header row color hex"
-          />
-        </div>
+          <InspectorGroup title="Document" defaultOpen dataTestId="inspector-group-document">
+            <ControlRow label="Document type" hint="Keeps toolbar document tabs and this selector in sync.">
+              <div className="wsv2-field">
+                <select
+                  id="wsv2-document-type"
+                  value={SCHEMA_TO_SLUG[docType]}
+                  onChange={(e) => {
+                    const slug = e.target.value as StudioDocumentTypeSlug;
+                    const next = SLUG_TO_SCHEMA[slug];
+                    if (next) setDocType(next);
+                  }}
+                >
+                  {DOC_TYPE_SELECT_ORDER.map((slug) => (
+                    <option key={slug} value={slug}>
+                      {DOC_TYPE_SELECT_LABEL[slug]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </ControlRow>
+            <p className="text-[10px] leading-snug text-slate-500">
+              Template style, EN/AR, zoom, and layout presets stay in the sub-toolbar.
+              Use &quot;Canvas sections&quot; to focus or hide logical blocks; studio spacing and font scale are under
+              &quot;Layout&quot;; logo/stamp/signature live under Company assets.
+            </p>
+          </InspectorGroup>
 
-        <h5>Typography / colors</h5>
-        <div className="wsv2-field">
-          <label htmlFor="wsv2-english-font">English font</label>
-          <select
-            id="wsv2-english-font"
-            value={templateUi.typography.enFontStack}
-            onChange={(e) => {
-              const v = e.target.value;
-              setTemplateUi((p) =>
-                mergeTemplateUi(p, {
-                  typography: {
-                    ...p.typography,
-                    enFontStack: v,
-                    english: { ...p.typography.english, fontFamily: v },
-                  },
-                }),
-              );
-            }}
-          >
-            {EN_FONT_PRESETS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-            {!EN_FONT_PRESETS.some((o) => o.value === templateUi.typography.enFontStack) ? (
-              <option value={templateUi.typography.enFontStack}>Custom (current)</option>
-            ) : null}
-          </select>
-        </div>
-        <div className="wsv2-field">
-          <label htmlFor="wsv2-arabic-font">Arabic font</label>
-          <select
-            id="wsv2-arabic-font"
-            value={templateUi.typography.arFontStack}
-            onChange={(e) => {
-              const v = e.target.value;
-              setTemplateUi((p) =>
-                mergeTemplateUi(p, {
-                  typography: {
-                    ...p.typography,
-                    arFontStack: v,
-                    arabic: { ...p.typography.arabic, fontFamily: v },
-                  },
-                }),
-              );
-            }}
-          >
-            {AR_FONT_PRESETS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-            {!AR_FONT_PRESETS.some((o) => o.value === templateUi.typography.arFontStack) ? (
-              <option value={templateUi.typography.arFontStack}>Custom (current)</option>
-            ) : null}
-          </select>
-        </div>
-        <div className="wsv2-field wsv2-color-row">
-          <label htmlFor="wsv2-english-font-color">English font color</label>
-          <input
-            id="wsv2-english-font-color"
-            type="color"
-            value={templateUi.typography.enColor}
-            onChange={(e) => {
-              const v = e.target.value;
-              setTemplateUi((p) =>
-                mergeTemplateUi(p, {
-                  typography: { ...p.typography, enColor: v, english: { ...p.typography.english, color: v } },
-                }),
-              );
-            }}
-            className="wsv2-color-swatch"
-          />
-          <input
-            type="text"
-            className="wsv2-hex-input"
-            value={templateUi.typography.enColor}
-            onChange={(e) => {
-              const v = e.target.value.trim();
-              if (!/^#[0-9A-Fa-f]{6}$/.test(v)) return;
-              setTemplateUi((p) =>
-                mergeTemplateUi(p, {
-                  typography: { ...p.typography, enColor: v, english: { ...p.typography.english, color: v } },
-                }),
-              );
-            }}
-            aria-label="English color hex"
-          />
-        </div>
-        <div className="wsv2-field wsv2-color-row">
-          <label htmlFor="wsv2-arabic-font-color">Arabic font color</label>
-          <input
-            id="wsv2-arabic-font-color"
-            type="color"
-            value={templateUi.typography.arColor}
-            onChange={(e) => {
-              const v = e.target.value;
-              setTemplateUi((p) =>
-                mergeTemplateUi(p, {
-                  typography: { ...p.typography, arColor: v, arabic: { ...p.typography.arabic, color: v } },
-                }),
-              );
-            }}
-            className="wsv2-color-swatch"
-          />
-          <input
-            type="text"
-            className="wsv2-hex-input"
-            value={templateUi.typography.arColor}
-            onChange={(e) => {
-              const v = e.target.value.trim();
-              if (!/^#[0-9A-Fa-f]{6}$/.test(v)) return;
-              setTemplateUi((p) =>
-                mergeTemplateUi(p, {
-                  typography: { ...p.typography, arColor: v, arabic: { ...p.typography.arabic, color: v } },
-                }),
-              );
-            }}
-            aria-label="Arabic color hex"
-          />
-        </div>
+          <InspectorGroup title="Selected section" defaultOpen dataTestId="inspector-group-selected-section">
+            <ControlRow label="Section focus" hint="Toggle visibility via “Canvas sections” above.">
+              <div className="wsv2-field">
+                <select
+                  id="wsv2-section-selector"
+                  value={activeSection}
+                  onChange={(event) => focusSection(event.target.value as SectionKey)}
+                >
+                  {schema.sections.map((id) => (
+                    <option key={id} value={id}>
+                      {SECTION_INSPECTOR_LABEL[id]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </ControlRow>
+          </InspectorGroup>
 
-        <p className="wsv2-parity-line" role="status">
-          Preview/PDF parity:{" "}
-          {pdfParityStatus === "not_checked" ? "Not checked" : "Checked by last export"}
-        </p>
+          <InspectorGroup title="Layout" dataTestId="inspector-group-layout">
+            <div className="wsv2-field wsv2-field-compact">
+              <button type="button" className="wsv2-reset-defaults" onClick={resetStudioDefaults}>
+                Reset studio defaults
+              </button>
+            </div>
 
-        <div className="wsv2-preflight">
-          <button
-            type="button"
-            className="wsv2-preflight-toggle"
-            onClick={() => setPreflightOpen((o) => !o)}
-            aria-expanded={preflightOpen}
-          >
-            Preflight {preflightOpen ? "▾" : "▸"}
-          </button>
-          {preflightOpen ? (
-            <ul className="wsv2-preflight-list">
-              {preflightNotes.map((n, i) => (
-                <li key={`preflight-${i}`}>{n}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
+            <div className="wsv2-field">
+              <label>Spacing</label>
+              <select
+                value={spacing}
+                onChange={(event) =>
+                  setSpacing(event.target.value as "tight" | "balanced" | "airy")
+                }
+              >
+                <option value="tight">Tight</option>
+                <option value="balanced">Balanced</option>
+                <option value="airy">Airy</option>
+              </select>
+            </div>
+            <div className="wsv2-field">
+              <label>
+                <Type size={11} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
+                Font scale
+              </label>
+              <select
+                value={fontScale}
+                onChange={(event) =>
+                  setFontScale(event.target.value as "compact" | "regular" | "large")
+                }
+              >
+                <option value="compact">Compact</option>
+                <option value="regular">Regular</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
 
-        {activeSection === "header" ? (
-          <>
-            <h5>Header</h5>
+            <h5 style={{ margin: "8px 0 2px", fontSize: "11px", fontWeight: 700 }}>
+              Header
+            </h5>
             <p
               style={{
                 fontSize: 10.5,
@@ -1700,8 +2041,8 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                 lineHeight: 1.35,
               }}
             >
-              Three cards: English company, logo, Arabic company. Upload the logo from{" "}
-              <strong>Company assets</strong> on the left.
+              Three cards: English company, logo, Arabic company. Upload the logo under{" "}
+              <strong>Company assets</strong> in this inspector.
             </p>
             <div className="wsv2-field">
               <label htmlFor="wsv2-header-column-mode">Header columns</label>
@@ -1739,8 +2080,8 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                     lineHeight: 1.35,
                   }}
                 >
-                  Custom card widths + gaps ({sum}px) exceed content width budget (~{inner}px). The
-                  preview and PDF will scale columns down.
+                  Custom card widths + gaps ({sum}px) exceed content width budget (~{inner}px). The preview and PDF will
+                  scale columns down.
                 </p>
               );
             })()}
@@ -1938,8 +2279,155 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                 <option value="right">Right</option>
               </select>
             </div>
-          </>
-        ) : null}
+          </InspectorGroup>
+
+          <InspectorGroup title="Typography / colors" defaultOpen dataTestId="inspector-group-typography-colors">
+            <div className="wsv2-field">
+              <label htmlFor="wsv2-english-font">English font</label>
+              <select
+                id="wsv2-english-font"
+                value={templateUi.typography.enFontStack}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: {
+                        ...p.typography,
+                        enFontStack: v,
+                        english: { ...p.typography.english, fontFamily: v },
+                      },
+                    }),
+                  );
+                }}
+              >
+                {EN_FONT_PRESETS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+                {!EN_FONT_PRESETS.some((o) => o.value === templateUi.typography.enFontStack) ? (
+                  <option value={templateUi.typography.enFontStack}>Custom (current)</option>
+                ) : null}
+              </select>
+            </div>
+            <div className="wsv2-field">
+              <label htmlFor="wsv2-arabic-font">Arabic font</label>
+              <select
+                id="wsv2-arabic-font"
+                value={templateUi.typography.arFontStack}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: {
+                        ...p.typography,
+                        arFontStack: v,
+                        arabic: { ...p.typography.arabic, fontFamily: v },
+                      },
+                    }),
+                  );
+                }}
+              >
+                {AR_FONT_PRESETS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+                {!AR_FONT_PRESETS.some((o) => o.value === templateUi.typography.arFontStack) ? (
+                  <option value={templateUi.typography.arFontStack}>Custom (current)</option>
+                ) : null}
+              </select>
+            </div>
+            <div className="wsv2-field wsv2-color-row">
+              <label htmlFor="wsv2-english-font-color">English font color</label>
+              <input
+                id="wsv2-english-font-color"
+                type="color"
+                value={templateUi.typography.enColor}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, enColor: v, english: { ...p.typography.english, color: v } },
+                    }),
+                  );
+                }}
+                className="wsv2-color-swatch"
+              />
+              <input
+                type="text"
+                className="wsv2-hex-input"
+                value={templateUi.typography.enColor}
+                onChange={(e) => {
+                  const v = e.target.value.trim();
+                  if (!/^#[0-9A-Fa-f]{6}$/.test(v)) return;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, enColor: v, english: { ...p.typography.english, color: v } },
+                    }),
+                  );
+                }}
+                aria-label="English color hex"
+              />
+            </div>
+            <div className="wsv2-field wsv2-color-row">
+              <label htmlFor="wsv2-arabic-font-color">Arabic font color</label>
+              <input
+                id="wsv2-arabic-font-color"
+                type="color"
+                value={templateUi.typography.arColor}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, arColor: v, arabic: { ...p.typography.arabic, color: v } },
+                    }),
+                  );
+                }}
+                className="wsv2-color-swatch"
+              />
+              <input
+                type="text"
+                className="wsv2-hex-input"
+                value={templateUi.typography.arColor}
+                onChange={(e) => {
+                  const v = e.target.value.trim();
+                  if (!/^#[0-9A-Fa-f]{6}$/.test(v)) return;
+                  setTemplateUi((p) =>
+                    mergeTemplateUi(p, {
+                      typography: { ...p.typography, arColor: v, arabic: { ...p.typography.arabic, color: v } },
+                    }),
+                  );
+                }}
+                aria-label="Arabic color hex"
+              />
+            </div>
+            <div className="wsv2-field wsv2-color-row">
+              <label htmlFor="wsv2-header-row-color">Header row color</label>
+              <input
+                id="wsv2-header-row-color"
+                type="color"
+                value={templateUi.headerRowColor ?? "#E8F4EC"}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setTemplateUi((p) => mergeTemplateUi(p, { headerRowColor: v }));
+                }}
+                className="wsv2-color-swatch"
+              />
+              <input
+                type="text"
+                className="wsv2-hex-input"
+                value={templateUi.headerRowColor ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value.trim();
+                  if (v && !/^#[0-9A-Fa-f]{6}$/.test(v)) return;
+                  setTemplateUi((p) => mergeTemplateUi(p, { headerRowColor: v || undefined }));
+                }}
+                placeholder="#E8F4EC"
+                aria-label="Header row color hex"
+              />
+            </div>
+          </InspectorGroup>
 
         {activeSection === "title" ? (
           <>
@@ -2024,8 +2512,8 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           </>
         ) : null}
 
-        {/* Items table columns from schema. Required columns can't be hidden. */}
-        {activeSection === "items" ? (
+        {/* Items table columns from schema — always available in Inspector. */}
+          <InspectorGroup title="Table columns" defaultOpen={false} dataTestId="inspector-group-table-columns">
         <>
         <h5>Items table — columns &amp; density</h5>
         <div className="wsv2-field">
@@ -2053,13 +2541,13 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
             const widthValue = plCol
               ? Math.round(plCol.widthPx)
               : Math.round(
-                  templateUi.itemColumnWidthsByTemplateId?.[initialTemplate.id]?.[col] ??
+                  templateUi.itemColumnWidthsByTemplateId?.[widthPersistKey]?.[col] ??
                     templateUi.itemColumnWidths?.[col] ??
                     schema.itemColumns.find((c) => c.key === col)?.widthPx ??
                     40,
                 );
             const colTitle = `${COLUMN_LABELS[col].en}${required ? " (required)" : ""}`;
-            const colWidthMin = ITEM_COLUMN_SAFETY_MIN_PX;
+            const colWidthMin = itemColumnHardMinPx(col);
             return (
               <div
                 key={col}
@@ -2182,6 +2670,33 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           })}
         </div>
         <p
+          className={studioTableMetrics.overflow ? "wsv2-inspector-table-overflow" : undefined}
+          style={{
+            fontSize: 10.5,
+            fontWeight: studioTableMetrics.overflow ? 700 : 400,
+            color: studioTableMetrics.overflow ? "#b91c1c" : "var(--wsv2-ink-subtle)",
+            margin: "8px 0 0",
+            lineHeight: 1.35,
+          }}
+        >
+          Table width: available {studioTableMetrics.tgt}px · used {studioTableMetrics.used}px · description{" "}
+          {studioTableMetrics.descCol}px · total {studioTableMetrics.totalCol}px · overflow:{" "}
+          {studioTableMetrics.overflow ? "YES" : "NO"} · description widest:{" "}
+          {studioTableMetrics.descriptionIsWidest ? "YES" : "NO"}
+        </p>
+        <p
+          style={{
+            fontSize: 10.5,
+            color: "var(--wsv2-ink-subtle)",
+            margin: "6px 0 0",
+            lineHeight: 1.35,
+          }}
+        >
+          Column widths sum:{" "}
+          {Math.round(previewLayout.itemColumns.reduce((s, c) => s + c.widthPx, 0))} px (inner budget{" "}
+          {tableInnerTarget} px).
+        </p>
+        <p
           style={{
             fontSize: 10.5,
             color: "var(--wsv2-ink-subtle)",
@@ -2193,10 +2708,11 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           page or adjust widths here (totals re-balance to fit the card).
         </p>
         </>
-        ) : null}
+          </InspectorGroup>
 
+        <InspectorGroup title="QR / totals" defaultOpen={false} dataTestId="inspector-group-qr-totals">
         {/* Totals fields the schema declares — hide rows individually. */}
-        {activeSection === "totals" && schema.totalsFields.length > 0 ? (
+        {schema.totalsFields.length > 0 ? (
           <>
             <h5>Totals</h5>
             {schema.totalsFields.map((field) => (
@@ -2571,7 +3087,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
         ) : null}
 
         {/* QR — ZATCA section */}
-        {activeSection === "qr" && schema.qr.applicable ? (
+        {schema.qr.applicable ? (
           <>
             <h5>QR code</h5>
             <CompactToggle
@@ -2731,9 +3247,87 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                   </div>
             ) : null}
           </>
-        ) : activeSection === "qr" && !schema.qr.applicable ? (
+        ) : !schema.qr.applicable ? (
           <p className="wsv2-inspector-muted">QR is not applicable for this document type.</p>
         ) : null}
+        </InspectorGroup>
+
+        <InspectorGroup title="Company assets" defaultOpen={false} dataTestId="inspector-group-company-assets">
+        <div className="wsv2-asset-row">
+          <input id="wsv2-upload-logo-inspector" type="file" accept="image/*" className="wsv2-sr-only" onChange={onAssetLogo} />
+          <label htmlFor="wsv2-upload-logo-inspector" className="wsv2-asset-btn">
+            Logo
+          </label>
+          {templateAssets.logoDataUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={templateAssets.logoDataUrl} alt="" className="wsv2-asset-thumb" />
+          ) : null}
+          {templateAssets.logoDataUrl ? (
+            <button
+              type="button"
+              className="wsv2-asset-remove"
+              onClick={() => {
+                writeTemplateAsset("logo", null);
+                setTemplateAssets(readTemplateAssetsFromStorage());
+              }}
+            >
+              Remove
+            </button>
+          ) : null}
+        </div>
+        <div className="wsv2-asset-row">
+          <input id="wsv2-upload-stamp-inspector" type="file" accept="image/*" className="wsv2-sr-only" onChange={onAssetStamp} />
+          <label htmlFor="wsv2-upload-stamp-inspector" className="wsv2-asset-btn">
+            Stamp
+          </label>
+          {templateAssets.stampDataUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={templateAssets.stampDataUrl} alt="" className="wsv2-asset-thumb" />
+          ) : null}
+          {templateAssets.stampDataUrl ? (
+            <button
+              type="button"
+              className="wsv2-asset-remove"
+              onClick={() => {
+                writeTemplateAsset("stamp", null);
+                setTemplateAssets(readTemplateAssetsFromStorage());
+              }}
+            >
+              Remove
+            </button>
+          ) : null}
+        </div>
+        <div className="wsv2-asset-row">
+          <input
+            id="wsv2-upload-signature-inspector"
+            type="file"
+            accept="image/*"
+            className="wsv2-sr-only"
+            onChange={onAssetSignaturePick}
+          />
+          <label htmlFor="wsv2-upload-signature-inspector" className="wsv2-asset-btn">
+            Signature
+          </label>
+          {templateAssets.signatureDataUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={templateAssets.signatureDataUrl} alt="" className="wsv2-asset-thumb" />
+          ) : null}
+          {templateAssets.signatureDataUrl ? (
+            <button
+              type="button"
+              className="wsv2-asset-remove"
+              onClick={() => {
+                writeTemplateAsset("signature", null);
+                writeTemplateAsset("signatory", null);
+                writeTemplateAsset("designation", null);
+                setTemplateAssets(readTemplateAssetsFromStorage());
+              }}
+            >
+              Remove
+            </button>
+          ) : null}
+        </div>
+        </InspectorGroup>
 
         {activeSection === "stampSignature" && schema.sections.includes("stampSignature") ? (
           <>
@@ -2763,7 +3357,7 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
                 lineHeight: 1.35,
               }}
             >
-              Assets are also under <strong>Company assets</strong> on the left. Signatory name and
+              Assets are also under <strong>Company assets</strong> above. Signatory name and
               position are set when you upload a signature (modal).
             </p>
             <div className="wsv2-asset-row">
@@ -2927,27 +3521,225 @@ export function WorkspaceTemplateStudio({ templateId }: Props) {
           </>
         ) : null}
 
-        <div
-          style={{
-            marginTop: 14,
-            padding: 10,
-            borderRadius: 8,
-            background: "var(--wsv2-surface-alt)",
-            border: "1px solid var(--wsv2-line)",
-            fontSize: 11.5,
-            color: "var(--wsv2-ink-muted)",
-            lineHeight: 1.5,
-          }}
-        >
-          <Sparkles size={12} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
-          {schema.zatcaClassification === "foundation_only"
-            ? "PDF + XML + QR are real client-side foundations (pdf-lib + qrcode + UBL). Not yet wired to the production ZATCA reporting pipeline; not PDF/A-3."
-            : schema.zatcaClassification === "not_applicable"
-            ? "ZATCA reporting is not applicable to this document type. PDF is generated as a clean A4 layout."
-            : "Document is informational. PDF is foundation-only."}
+        <InspectorGroup title="Preflight" defaultOpen={false} dataTestId="inspector-group-preflight">
+          <p className="wsv2-parity-line !mt-0" role="status">
+            Preview/PDF parity:{" "}
+            {pdfParityStatus === "not_checked" ? "Not checked" : "Checked by last export"}
+          </p>
+          <div className="wsv2-preflight">
+            <button
+              type="button"
+              className="wsv2-preflight-toggle"
+              onClick={() => setPreflightOpen((o) => !o)}
+              aria-expanded={preflightOpen}
+            >
+              Warnings list {preflightOpen ? "▾" : "▸"}
+            </button>
+            {preflightOpen ? (
+              <ul className="wsv2-preflight-list">
+                {preflightNotes.map((n, i) => (
+                  <li key={`preflight-${i}`}>{n}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+          <div
+            style={{
+              marginTop: 14,
+              padding: 10,
+              borderRadius: 8,
+              background: "var(--wsv2-surface-alt)",
+              border: "1px solid var(--wsv2-line)",
+              fontSize: 11.5,
+              color: "var(--wsv2-ink-muted)",
+              lineHeight: 1.5,
+            }}
+          >
+            <Sparkles size={12} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />
+            {schema.zatcaClassification === "foundation_only"
+              ? "PDF + XML + QR are real client-side foundations (pdf-lib + qrcode + UBL). Not yet wired to the production ZATCA reporting pipeline; not PDF/A-3."
+              : schema.zatcaClassification === "not_applicable"
+              ? "ZATCA reporting is not applicable to this document type. PDF is generated as a clean A4 layout."
+              : "Document is informational. PDF is foundation-only."}
+          </div>
+        </InspectorGroup>
+
         </div>
+
       </aside>
+        </>
+      ) : null}
+
       </div>
+
+      {studioPopover ? (
+        <StudioFloatingPopover state={studioPopover} onClose={() => setStudioPopover(null)}>
+          {studioPopover.kind === "header-name-size" ? (
+            <div className="space-y-3 text-sm text-slate-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Company name size</p>
+              <label className="block text-xs">
+                English (px)
+                <select
+                  className="mt-1 w-full rounded border border-slate-200 px-2 py-1"
+                  value={templateUi.headerBlock?.englishCompanyNameFontPx ?? 16}
+                  onChange={(e) =>
+                    setTemplateUi((p) =>
+                      mergeTemplateUi(p, {
+                        headerBlock: { englishCompanyNameFontPx: Number(e.target.value) },
+                      }),
+                    )
+                  }
+                >
+                  {headerFontPxOptions.map((px) => (
+                    <option key={`en-${px}`} value={px}>
+                      {px}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-xs">
+                Arabic (px)
+                <select
+                  className="mt-1 w-full rounded border border-slate-200 px-2 py-1"
+                  value={templateUi.headerBlock?.arabicCompanyNameFontPx ?? 16}
+                  onChange={(e) =>
+                    setTemplateUi((p) =>
+                      mergeTemplateUi(p, {
+                        headerBlock: { arabicCompanyNameFontPx: Number(e.target.value) },
+                      }),
+                    )
+                  }
+                >
+                  {headerFontPxOptions.map((px) => (
+                    <option key={`ar-${px}`} value={px}>
+                      {px}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          ) : null}
+          {studioPopover.kind === "customer-fields" ? (
+            <div className="max-h-64 space-y-1 overflow-y-auto text-sm">
+              <p className="text-xs font-semibold text-slate-500">Customer fields</p>
+              {schema.customerRows.map((row) => (
+                <label key={row.field} className="flex cursor-pointer items-center gap-2 rounded border border-slate-100 px-2 py-1 hover:bg-slate-50">
+                  <input
+                    type="checkbox"
+                    checked={!hiddenFields[row.field]}
+                    onChange={() => toggleField(row.field)}
+                  />
+                  <span>{FIELD_LABELS[row.field]?.en ?? row.field}</span>
+                </label>
+              ))}
+            </div>
+          ) : null}
+          {studioPopover.kind === "document-fields" ? (
+            <div className="max-h-64 space-y-1 overflow-y-auto text-sm">
+              <p className="text-xs font-semibold text-slate-500">Document fields</p>
+              {documentMetaFields(schema).map((field) => (
+                <label key={field} className="flex cursor-pointer items-center gap-2 rounded border border-slate-100 px-2 py-1 hover:bg-slate-50">
+                  <input type="checkbox" checked={!hiddenFields[field]} onChange={() => toggleField(field)} />
+                  <span>{FIELD_LABELS[field]?.en ?? field}</span>
+                </label>
+              ))}
+            </div>
+          ) : null}
+          {studioPopover.kind === "item-columns" ? (
+            <div className="max-h-72 space-y-2 overflow-y-auto text-xs">
+              <p className="text-xs font-semibold text-slate-500">Columns</p>
+              {columnOrder.map((key, idx) => {
+                const required = schema.requiredItemColumns.includes(key);
+                const visible = required ? true : !hiddenItemColumns[key];
+                const plCol = previewLayout.itemColumns.find((c) => c.key === key);
+                const widthVal = plCol ? Math.round(plCol.widthPx) : 40;
+                return (
+                  <div key={key} className="flex flex-wrap items-center gap-1 rounded border border-slate-100 p-1">
+                    <span className="min-w-[5rem] font-medium">{COLUMN_LABELS[key].en}</span>
+                    <button
+                      type="button"
+                      className="rounded border px-1 py-0.5 disabled:opacity-40"
+                      disabled={idx === 0}
+                      onClick={() => moveColumn(key, -1)}
+                    >
+                      ←
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded border px-1 py-0.5 disabled:opacity-40"
+                      disabled={idx >= columnOrder.length - 1}
+                      onClick={() => moveColumn(key, 1)}
+                    >
+                      →
+                    </button>
+                    <input
+                      type="number"
+                      className="w-14 rounded border px-1"
+                      value={widthVal}
+                      min={itemColumnHardMinPx(key)}
+                      onChange={(ev) =>
+                        setItemColumnWidthPx(key, Number(ev.target.value) || itemColumnHardMinPx(key))
+                      }
+                    />
+                    <label className="ml-auto flex items-center gap-1">
+                      <input type="checkbox" checked={visible} disabled={required} onChange={() => toggleColumn(key)} />
+                      Show
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
+          {studioPopover.kind === "item-heading" && studioPopover.column ? (
+            <div className="space-y-2 text-sm">
+              <p className="text-xs font-semibold text-slate-500">Column heading</p>
+              <label className="block text-xs">
+                English
+                <input
+                  id={itemColHeadingInputId(studioPopover.column, "en")}
+                  className="mt-1 w-full rounded border px-2 py-1"
+                  defaultValue={
+                    templateUi.itemHeaderLabels?.[studioPopover.column]?.en ??
+                    DEFAULT_ITEM_HEADER_LABELS[studioPopover.column].en
+                  }
+                  key={`${studioPopover.column}-en-${studioPopover.anchor.x}`}
+                />
+              </label>
+              <label className="block text-xs">
+                Arabic
+                <input
+                  id={itemColHeadingInputId(studioPopover.column, "ar")}
+                  className="mt-1 w-full rounded border px-2 py-1"
+                  defaultValue={
+                    templateUi.itemHeaderLabels?.[studioPopover.column]?.ar ??
+                    DEFAULT_ITEM_HEADER_LABELS[studioPopover.column].ar
+                  }
+                  key={`${studioPopover.column}-ar-${studioPopover.anchor.x}`}
+                />
+              </label>
+              <div className="flex justify-end gap-2 pt-1">
+                <button type="button" className="rounded border px-2 py-1 text-xs" onClick={() => setStudioPopover(null)}>
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="rounded bg-slate-900 px-2 py-1 text-xs text-white"
+                  onClick={() => {
+                    const col = studioPopover.column!;
+                    const enEl = document.getElementById(itemColHeadingInputId(col, "en")) as HTMLInputElement | null;
+                    const arEl = document.getElementById(itemColHeadingInputId(col, "ar")) as HTMLInputElement | null;
+                    if (enEl) setItemHeaderLabel(col, "en", enEl.value);
+                    if (arEl) setItemHeaderLabel(col, "ar", arEl.value);
+                    setStudioPopover(null);
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          ) : null}
+        </StudioFloatingPopover>
+      ) : null}
 
       {signatureModal ? (
         <div

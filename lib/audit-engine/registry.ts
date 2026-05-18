@@ -31,8 +31,15 @@ function normalizeControlPoint(control: Record<string, unknown>): RegistryContro
     ? control.validation_type
     : "hard_block";
   const severity = ["critical", "high", "medium", "low", "info"].includes(String(control.severity)) ? String(control.severity) as RegistryControlPoint["severity"] : "medium";
+  const blockerFor = Array.isArray(control.blocker_for) ? control.blocker_for.map(String) : undefined;
+  const collector =
+    typeof control.collector_type === "string"
+      ? (control.collector_type as RegistryControlPoint["collector_type"])
+      : undefined;
+  const phase =
+    Number(control.phase) === 2 ? (2 as const) : Number(control.phase) === 1 ? (1 as const) : undefined;
 
-  return {
+  const base = {
     id: String(control.id ?? ""),
     title: String(control.title ?? ""),
     module: String(control.module ?? ""),
@@ -59,6 +66,19 @@ function normalizeControlPoint(control: Record<string, unknown>): RegistryContro
     measurable_fields: Array.isArray(control.measurable_fields) ? control.measurable_fields.map(String) : [],
     anti_cheat_rules: Array.isArray(control.anti_cheat_rules) ? control.anti_cheat_rules.map(String) : [],
   };
+
+  const withMeta = {
+    ...base,
+    ...(typeof phase !== "undefined" ? { phase } : {}),
+    ...(collector ? { collector_type: collector } : {}),
+    ...(typeof control.phase_2_non_blocking === "boolean" ? { phase_2_non_blocking: control.phase_2_non_blocking } : {}),
+    ...(blockerFor?.length ? { blocker_for: blockerFor } : {}),
+    ...(typeof control.route_scope === "string" && control.route_scope.trim() ? { route_scope: control.route_scope.trim() } : {}),
+    ...(typeof control.pass_condition === "string" && control.pass_condition.trim() ? { pass_condition: control.pass_condition.trim() } : {}),
+    ...(typeof control.fail_condition === "string" && control.fail_condition.trim() ? { fail_condition: control.fail_condition.trim() } : {}),
+  };
+
+  return withMeta as RegistryControlPoint;
 }
 
 export async function loadControlPointRegistry(): Promise<ControlPointRegistry> {

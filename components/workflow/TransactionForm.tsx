@@ -330,6 +330,13 @@ export function TransactionForm({ kind, documentId, initialDocumentType, display
   const searchParams = useSearchParams();
   const { basePath } = useWorkspacePath();
   const { createContact, customers, suppliers, searchContacts, items } = useWorkspaceData();
+  const searchWorkspaceContacts = useCallback(
+    async (query: string) => {
+      const contacts = await searchContacts(config.contactKind, query || " ");
+      return contacts.map(contactToOption);
+    },
+    [searchContacts, config.contactKind],
+  );
   const [selectedContact, setSelectedContact] = useState<PickerOption | null>(null);
   const [selectedContactRecord, setSelectedContactRecord] = useState<ContactRecord | null>(null);
   const [contactValidation, setContactValidation] = useState<string | undefined>();
@@ -1725,10 +1732,7 @@ export function TransactionForm({ kind, documentId, initialDocumentType, display
               label={config.contactLabel}
               placeholder={kind === "invoice" ? "Search customer name, city, phone, or email" : "Search supplier name, city, phone, or email"}
               selectedOption={selectedContact}
-              onSearch={async (query) => {
-                const contacts = await searchContacts(config.contactKind, query || " ");
-                return contacts.map(contactToOption);
-              }}
+              onSearch={searchWorkspaceContacts}
               onSelect={handleContactSelect}
               browseLabel={kind === "invoice" ? "Show all customers" : "Show all suppliers"}
               createLabel={kind === "invoice" ? "Add a new customer" : "Add a new supplier"}
@@ -2153,7 +2157,7 @@ export function TransactionForm({ kind, documentId, initialDocumentType, display
       ) : null}
 
       <QuickCreateDialog open={createContactOpen && !readOnlyDocument} title={kind === "invoice" ? "Create customer" : "Create supplier"} description={kind === "invoice" ? "Save the customer with VAT, address, defaults, beneficiary details, and continue the invoice immediately." : "Save the supplier with purchasing defaults and beneficiary details without leaving the document draft."} onClose={() => setCreateContactOpen(false)}>
-        <QuickCreateContactForm kind={config.contactKind} initialName={draftContactName} onSubmit={createContact} onComplete={(contact) => {
+        <QuickCreateContactForm key={`contact-${draftContactName}`} kind={config.contactKind} initialName={draftContactName} onSubmit={createContact} onComplete={(contact) => {
           setSelectedContact(contactToOption(contact));
           setSelectedContactRecord(contact);
           setContactValidation(undefined);

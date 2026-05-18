@@ -3,10 +3,8 @@
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { Footer } from "@/components/Footer";
-import { FloatingAiAssistant } from "@/components/FloatingAiAssistant";
 import { Navbar } from "@/components/Navbar";
 import { ReferralCapture } from "@/components/ReferralCapture";
-import { WhatsAppSupportButton } from "@/components/WhatsAppSupportButton";
 
 type AppFrameProps = {
   children: React.ReactNode;
@@ -17,22 +15,6 @@ export function AppFrame({ children, supportHref }: AppFrameProps) {
   const pathname = usePathname();
   const isWorkspace = pathname.startsWith("/workspace");
   const isLanding = pathname === "/";
-  const isTemplateStudio =
-    pathname.includes("/document-templates")
-    || pathname.includes("/settings/templates")
-    || pathname.includes("/templates/studio");
-  const isDocumentPreviewRoute = [
-    "/workspace/invoices",
-    "/workspace/sales",
-    "/workspace/bills",
-    "/workspace/user/quotations",
-    "/workspace/user/proforma-invoices",
-    "/workspace/user/credit-notes",
-    "/workspace/user/debit-notes",
-    "/workspace/user/purchase-orders",
-  ].some((prefix) => pathname.startsWith(prefix));
-  const isJournalRegisterRoute = pathname === "/workspace/user/journal-entries" || pathname.startsWith("/workspace/user/journal-entries/");
-  const hideFloatingSupport = isTemplateStudio || isDocumentPreviewRoute || isJournalRegisterRoute;
   const referralCapture = (
     <Suspense fallback={null}>
       <ReferralCapture />
@@ -44,8 +26,6 @@ export function AppFrame({ children, supportHref }: AppFrameProps) {
       <div className="relative flex min-h-full flex-col overflow-x-hidden">
         {referralCapture}
         {children}
-        {!hideFloatingSupport ? <FloatingAiAssistant /> : null}
-        {!hideFloatingSupport ? <WhatsAppSupportButton href={supportHref} /> : null}
       </div>
     );
   }
@@ -60,8 +40,6 @@ export function AppFrame({ children, supportHref }: AppFrameProps) {
       <div className="h-[var(--navbar-height)] shrink-0" aria-hidden="true" />
       <main className={["relative flex-1", isLanding ? "overflow-hidden" : ""].join(" ")}>{children}</main>
       <Footer supportHref={supportHref} />
-      {!isLanding && !hideFloatingSupport ? <FloatingAiAssistant /> : null}
-      {!isLanding && !hideFloatingSupport ? <WhatsAppSupportButton href={supportHref} /> : null}
     </div>
   );
 }

@@ -217,3 +217,44 @@ docker-compose.override.yml
 # END
 
 # =========================================
+
+# Cleanup hardening 2026-05-18
+# Hisabix generated artifacts / agent outputs
+artifact/
+qa/
+logs/
+test-results/
+playwright-report/
+storage/app/agent-output/
+storage/app/debug/
+storage/app/temp/
+storage/app/testing/
+
+# Build/cache outputs
+.turbo/
+backend/vendor/
+backend/public/build/
+backend/storage/logs/
+backend/storage/framework/cache/
+backend/storage/framework/views/
+backend/storage/framework/sessions/
+
+# Generated archives
+*.tar.gz
+*.tgz
+
+# Auth/session/cookie/security leak files
+*cookie*.txt
+*cookies*.txt
+*auth-state*.json
+*storage-state*.json
+*.har
+
+# Generated proof/debug outputs
+*proof*.txt
+*proof*.json
+*debug*.txt
+*debug*.json
+*diagnostic*.txt
+*diagnostic*.json
+*root-cause*.md

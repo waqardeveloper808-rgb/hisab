@@ -1,0 +1,41 @@
+HISABIX RUNNABLE ZIP — BUILD REPORT
+Generated: 2026-04-30 (machine local time)
+
+RESULT: PASS (size under 500 MB, smoke-test next start OK)
+
+DELIVERABLES
+- Primary: C:\Users\HP\hisabix-runnable-final.zip (~283.4 MB)
+- Mirror:  C:\hisab\hisabix-runnable-final.zip (same bytes)
+- Requested C:\hisabix-runnable-final.zip: NOT CREATED (Access denied writing to drive root without elevation)
+
+BUILD STEPS EXECUTED
+1. Removed: .next, node_modules, root vendor, backend\vendor
+2. npm install --production → npm run build FAILED (missing tailwindcss/postcss for build)
+3. npm install (full) → npm run build → SUCCESS
+4. npm prune --production → production node_modules for runtime
+5. composer install --no-dev --optimize-autoloader in C:\hisab\backend (no composer.json at repo root)
+6. Cleanup per script: removed .git, tests, coverage, artifacts, storage\app\agent-output, node_modules\.cache, .turbo; deleted recursive *.log,*.zip,*.7z,*.rar,*.mp4,*.mov
+7. Compress-Archive from C:\hisab to ZIP path (writable location)
+
+SIZE
+- ZIP: ~283.37 MB (under 500 MB limit; retry logic not required)
+
+ZIP VALIDATION (System.IO.Compression)
+- package.json: present
+- .next\: present
+- node_modules\next\: present
+- backend\vendor\autoload.php: present
+- Entries: ~45303
+
+RUNTIME SMOKE TEST (post-prune, before final zip)
+- cmd /c npm run start → Next.js 16.2.3 ready on http://localhost:3000
+
+FILES MODIFIED (repo)
+- No application source edits; environment: rebuilt .next, node_modules, backend\vendor; deleted dirs/files per cleanup list.
+
+DEVIATIONS FROM PROMPT SCRIPT
+- Step 2: Full npm install required for build; then prune for smaller runnable tree.
+- composer: executed in backend\ not C:\hisab root.
+- ZIP destination: C:\ root not writable; used user profile + project copy.
+
+RETRIES USED FOR 500 MB LIMIT: 0 / 3

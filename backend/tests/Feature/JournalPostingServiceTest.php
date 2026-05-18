@@ -14,6 +14,33 @@ class JournalPostingServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    /** @return array{0: User, 1: Company} */
+    private function companyContext(): array
+    {
+        $user = User::factory()->create();
+        $companyId = $this->actingAs($user)->postJson('/api/companies', [
+            'legal_name' => 'Journal Posting Co',
+        ], $this->workspaceHeaders($user))->json('data.id');
+
+        return [$user, Company::findOrFail($companyId)];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function workspaceHeaders(User $user, ?Company $company = null): array
+    {
+        $headers = [
+            'X-Gulf-Hisab-Workspace-Token' => (string) config('workspace.api_token'),
+            'X-Gulf-Hisab-Actor-Id' => (string) $user->id,
+        ];
+        if ($company instanceof Company) {
+            $headers['X-Gulf-Hisab-Active-Company-Id'] = (string) $company->id;
+        }
+
+        return $headers;
+    }
+
     public function test_valid_journal_post_succeeds(): void
     {
         [$user, $company] = $this->companyContext();
@@ -32,7 +59,7 @@ class JournalPostingServiceTest extends TestCase
                     ['account_id' => $cashId, 'debit' => 100, 'credit' => 0, 'description' => 'Debit'],
                     ['account_id' => $revenueId, 'debit' => 0, 'credit' => 100, 'description' => 'Credit'],
                 ],
-            ])
+            ], $this->workspaceHeaders($user, $company))
             ->assertCreated()
             ->assertJsonPath('data.source_id', $sourceId)
             ->assertJsonPath('data.status', 'posted');
@@ -59,7 +86,7 @@ class JournalPostingServiceTest extends TestCase
                     ['account_id' => $cashId, 'debit' => 100, 'credit' => 0],
                     ['account_id' => $revenueId, 'debit' => 0, 'credit' => 90],
                 ],
-            ])
+            ], $this->workspaceHeaders($user, $company))
             ->assertStatus(422)
             ->assertJsonPath('control_id', 'ACC-001');
     }
@@ -78,7 +105,7 @@ class JournalPostingServiceTest extends TestCase
                 'entries' => [
                     ['account_id' => $cashId, 'debit' => 100, 'credit' => 0],
                 ],
-            ])
+            ], $this->workspaceHeaders($user, $company))
             ->assertStatus(422)
             ->assertJsonPath('control_id', 'ACC-002');
     }
@@ -101,19 +128,9 @@ class JournalPostingServiceTest extends TestCase
             ],
         ];
 
-        $this->actingAs($user)->postJson('/api/journal/post', $payload)->assertCreated();
-        $this->actingAs($user)->postJson('/api/journal/post', $payload)
+        $this->actingAs($user)->postJson('/api/journal/post', $payload, $this->workspaceHeaders($user, $company))->assertCreated();
+        $this->actingAs($user)->postJson('/api/journal/post', $payload, $this->workspaceHeaders($user, $company))
             ->assertStatus(422)
             ->assertJsonPath('control_id', 'ACC-010');
-    }
-
-    private function companyContext(): array
-    {
-        $user = User::factory()->create();
-        $companyId = $this->actingAs($user)->postJson('/api/companies', [
-            'legal_name' => 'Journal Posting Co',
-        ])->json('data.id');
-
-        return [$user, Company::findOrFail($companyId)];
     }
 }

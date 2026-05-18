@@ -19,7 +19,7 @@ import { WorkspaceColumnPicker, type ColumnDef } from "./WorkspaceColumnPicker";
 import { useWorkspacePath } from "@/components/workspace/WorkspacePathProvider";
 import { mapWorkspaceHref } from "@/lib/workspace-path";
 
-type RegisterConfig = {
+export type RegisterConfig = {
   title: string;
   subtitle: string;
   documents: DocumentRecord[];
@@ -126,12 +126,13 @@ export function WorkspaceRegister({ config }: Props) {
   const visibleDocuments = useMemo(() => {
     const lower = search.trim().toLowerCase();
     return config.documents.filter((doc) => {
-      const customer = findCustomer(doc.customerId);
+      const demoCustomer = doc.partyDisplayName ? null : findCustomer(doc.customerId);
       const matchesSearch =
         lower.length === 0 ||
         doc.number.toLowerCase().includes(lower) ||
-        (customer?.legalName ?? "").toLowerCase().includes(lower) ||
-        (customer?.legalNameAr ?? "").toLowerCase().includes(lower);
+        (demoCustomer?.legalName ?? "").toLowerCase().includes(lower) ||
+        (demoCustomer?.legalNameAr ?? "").toLowerCase().includes(lower) ||
+        (doc.partyDisplayName ?? "").toLowerCase().includes(lower);
       const matchesStatus = statusFilter === "all" || doc.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -248,7 +249,9 @@ export function WorkspaceRegister({ config }: Props) {
                 </thead>
                 <tbody>
                   {visibleDocuments.map((doc) => {
-                    const customer = findCustomer(doc.customerId);
+                    const demoCustomer = doc.partyDisplayName ? null : findCustomer(doc.customerId);
+                    const partyPrimary = doc.partyDisplayName ?? demoCustomer?.legalName ?? "—";
+                    const partySub = doc.partySecondaryLine ?? demoCustomer?.city ?? "";
                     return (
                       <tr
                         key={doc.id}
@@ -266,8 +269,8 @@ export function WorkspaceRegister({ config }: Props) {
                           if (colId === "customer") {
                             return (
                               <td key={colId} className="wsv2-cell-desc">
-                                <div style={{ fontWeight: 500 }}>{customer?.legalName ?? "—"}</div>
-                                <div style={{ fontSize: 11.5, color: "var(--wsv2-ink-subtle)" }}>{customer?.city ?? ""}</div>
+                                <div style={{ fontWeight: 500 }}>{partyPrimary}</div>
+                                <div style={{ fontSize: 11.5, color: "var(--wsv2-ink-subtle)" }}>{partySub}</div>
                               </td>
                             );
                           }

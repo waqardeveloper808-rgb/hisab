@@ -94,6 +94,58 @@ class DocumentTemplatePreviewTest extends TestCase
         }
     }
 
+    public function test_modern_carded_preview_emits_distinct_family_markers(): void
+    {
+        $user = User::factory()->create([
+            'platform_role' => 'super_admin',
+            'is_platform_active' => true,
+        ]);
+
+        $companyId = $this->actingAs($user)
+            ->postJson('/api/companies', [
+                'legal_name' => 'Modern Template Marker Co',
+                'trade_name' => 'Modern Template Marker Co',
+                'tax_number' => '300000000000003',
+            ])
+            ->assertCreated()
+            ->json('data.id');
+
+        $html = $this->actingAs($user)
+            ->postJson("/api/companies/{$companyId}/templates/preview", [
+                'name' => 'Modern',
+                'document_types' => ['tax_invoice'],
+                'locale_mode' => 'bilingual',
+                'accent_color' => '#0f766e',
+                'settings' => [
+                    'layout' => 'modern_carded',
+                    'section_grid_columns' => 2,
+                    'section_gap' => 18,
+                    'spacing_scale' => 1.0,
+                    'canvas_padding' => 20,
+                    'top_bar_height' => 4,
+                    'title_font_size' => 27,
+                ],
+                'document_type' => 'tax_invoice',
+            ])
+            ->assertOk()
+            ->json('data.html');
+
+        $artifactDir = getenv('HISAB_PHASE1_ARTIFACT_DIR');
+        if (is_string($artifactDir) && $artifactDir !== '' && is_dir($artifactDir)) {
+            file_put_contents($artifactDir.'/modern-template-html-snapshot-final.html', $html);
+            file_put_contents(
+                $artifactDir.'/template-api-response-final.json',
+                json_encode(['data' => ['html' => $html]], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
+            );
+        }
+
+        $this->assertStringContainsString('data-template-family="modern_carded"', $html);
+        $this->assertStringContainsString('data-template-name="Modern"', $html);
+        $this->assertStringContainsString('box-shadow:0 4px 18px rgba(15,23,42,0.08)', $html);
+        $this->assertStringContainsString('border-radius:10px', $html);
+        $this->assertStringContainsString('display:flex;flex-direction:column;gap:18px', $html);
+    }
+
     private function createBlueprintFixture(): array
     {
         $user = User::factory()->create();
@@ -246,7 +298,7 @@ class DocumentTemplatePreviewTest extends TestCase
         $this->assertStringContainsString('grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)', $html);
         $this->assertStringContainsString('>VAT</div>', $html);
         $this->assertStringContainsString('>CR</div>', $html);
-        $this->assertStringContainsString('<th style="width:5%;', $html);
+        $this->assertStringContainsString('<th style="width:4%;', $html);
         $this->assertStringContainsString('>Taxable</th>', $html);
         $this->assertStringContainsString('data-doc-total-block="true"', $html);
         $this->assertStringContainsString('>Total Due</span>', $html);

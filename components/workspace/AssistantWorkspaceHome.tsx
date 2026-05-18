@@ -52,16 +52,17 @@ export function AssistantWorkspaceHome() {
 
   useEffect(() => {
     if (isPreview) {
-      setCustomers(previewCustomers);
       return;
     }
 
     listPlatformCustomers({}).then(setCustomers).catch((err: unknown) => { console.error('[AssistantWorkspaceHome] listPlatformCustomers failed:', err); setCustomers([]); });
   }, [isPreview]);
 
-  const trialing = customers.filter((customer) => customer.subscription?.status === "trialing");
-  const suspended = customers.filter((customer) => !customer.isActive);
-  const unassignedOwner = customers.filter((customer) => !customer.owner.name && !customer.owner.email);
+  const displayCustomers = isPreview ? previewCustomers : customers;
+
+  const trialing = displayCustomers.filter((customer) => customer.subscription?.status === "trialing");
+  const suspended = displayCustomers.filter((customer) => !customer.isActive);
+  const unassignedOwner = displayCustomers.filter((customer) => !customer.owner.name && !customer.owner.email);
   const followUpQueue = [...trialing, ...suspended].slice(0, 8);
 
   return (

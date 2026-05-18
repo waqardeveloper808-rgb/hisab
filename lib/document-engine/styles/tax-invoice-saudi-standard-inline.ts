@@ -47,6 +47,7 @@ export const taxInvoiceSaudiStandardCss = `
 .saudi-line-ar { font-size: 10px; color: #5f6d79; line-height: 1.35; margin-top: 2px; }
 .saudi-vat-rate { font-size: 10px; color: #64727f; margin-top: 2px; }
 .saudi-qr-and-totals { display: grid; grid-template-columns: 1fr 320px; gap: 12px; align-items: start; }
+.saudi-qr-and-totals--no-qr { grid-template-columns: 1fr; }
 .saudi-qr-block {
   border: 1px dashed #bcc6cf; background: #fafcfd; border-radius: 4px; padding: 8px;
   display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center;

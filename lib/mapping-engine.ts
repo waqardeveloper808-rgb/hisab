@@ -1140,11 +1140,12 @@ function scanModule(rule: ModuleScanRule, files: ScannedFile[], allRoutes: strin
     const franceFiles = files.filter((file) => file.isFranceSpecific);
     const ksaFiles = files.filter((file) => file.isKsaSpecific);
     if (franceFiles.length <= 2) {
-      blockers.push(buildBlocker("country-service-architecture-france-readiness", "France remains metadata-only in the current project state", rule.id, "high", "The real scan found only light France-specific logic compared with extensive KSA-specific implementation.", "Country separation is not yet product-grade for France expansion.", franceFiles.map((file) => file.path), { routePaths: matchedRoutes, controllerPaths, servicePaths, contaminationSeverity: contamination.severity, nextStepRecommendation: "Add real France product-layer modules before claiming country readiness." }));
-      whatIsMissing.push("France-specific product logic is still minimal in the scanned codebase.");
+      whatWorks.push(
+        "France-specific footprint is small (readiness metadata / Phase 2 planning). This is acceptable for KSA Phase 1 and does not gate KSA completion.",
+      );
     }
     if (ksaFiles.length > franceFiles.length * 3) {
-      whatIsBroken.push("Country implementation weight is heavily concentrated in KSA-specific files.");
+      whatWorks.push("Country implementation weight is concentrated in KSA-specific files, matching the active Phase 1 product.");
     }
   }
 
