@@ -5,5 +5,7 @@ reports folder: C:\hisab\artifact\prompt-003-test-truth-hardening-global-mock-is
 logs folder: C:\hisab\artifact\prompt-003-test-truth-hardening-global-mock-isolation-20260518-065939\logs
 patches folder: C:\hisab\artifact\prompt-003-test-truth-hardening-global-mock-isolation-20260518-065939\patches
 branch name: rescue/prompt-003-test-truth-hardening-20260518-065939
-commit hash: working-tree-uncommitted
-validation summary: C:\hisab\artifact\prompt-003-test-truth-hardening-global-mock-isolation-20260518-065939\reports\11-test-truth-after.md
+commit hash: 45de28a8138b860d0721e57a4c65c1c79d2ad6af
+pushed branch: rescue/prompt-003-test-truth-hardening-20260518-065939
+validation summary: C:\hisab\artifact\prompt-003-test-truth-hardening-global-mock-isolation-20260518-065939\reports\closure\20-closure-validation-results.md
+final status: PASS
