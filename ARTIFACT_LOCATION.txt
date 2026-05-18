@@ -1,11 +1,9 @@
-artifact root: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306
-final zip inside artifact root: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306.zip
-convenience zip: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306.zip
-timestamp: 2026-05-18 06:26:58
-task name: prompt-001-repo-rescue-security-cleanup-truth-audit
-status: PARTIAL
-validation results: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\reports\60-validation-results.md
-reports folder: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\reports
-patches folder: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\patches
-pushed branch: rescue/prompt-001-repo-security-cleanup-20260518-061306
-commit hash: 441696c
+artifact root: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503
+final zip: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503\prompt-002-frontend-validation-stabilization-20260518-063503.zip
+convenience zip: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503.zip
+reports folder: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503\reports
+logs folder: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503\logs
+patches folder: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503\patches
+branch name: rescue/prompt-002-frontend-validation-stabilization-20260518-063503
+commit hash: 7e772cf1320aff2dd806bcc586290bd186358165
+validation summary: C:\hisab\artifact\prompt-002-frontend-validation-stabilization-20260518-063503\reports\60-validation-results.md
