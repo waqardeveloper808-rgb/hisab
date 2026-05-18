@@ -1,7 +1,11 @@
-Artifact root: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424
-Final ZIP inside artifact root: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\prompt-global-pdf-generation-fix-20260502-173424.zip
-Convenience ZIP: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424.zip
-Screenshots: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\screenshots
-Validation logs: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\logs
-Source diff: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\patches\source-diff-global-pdf-generation-fix.patch
-Final acceptance report: C:\hisab\artifact\prompt-global-pdf-generation-fix-20260502-173424\reports\final-acceptance-pdf-generation.md
+artifact root: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306
+final zip inside artifact root: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306.zip
+convenience zip: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306.zip
+timestamp: 2026-05-18 06:26:58
+task name: prompt-001-repo-rescue-security-cleanup-truth-audit
+status: PARTIAL
+validation results: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\reports\60-validation-results.md
+reports folder: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\reports
+patches folder: C:\hisab\artifact\prompt-001-repo-rescue-security-cleanup-truth-audit-20260518-061306\patches
+pushed branch: rescue/prompt-001-repo-security-cleanup-20260518-061306
+commit hash: 441696c
