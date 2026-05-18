@@ -1,4 +1,7 @@
-import { beforeEach, describe, it, expect, vi } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+import { createNextNavigationModuleMock } from "@/tests/helpers/mock-next-navigation";
+import { installAuthSessionFetchMock } from "@/tests/helpers/mock-auth-session";
+import { installWorkspaceApiFetchMock } from "@/tests/helpers/mock-workspace-api-fetch";
 
 const workspaceMocks = vi.hoisted(() => {
   let nextContactBackendId = 1000;
@@ -188,6 +191,8 @@ const workspaceMocks = vi.hoisted(() => {
   };
 });
 
+vi.mock("next/navigation", () => createNextNavigationModuleMock({ pathname: "/workspace/user/invoices/new" }));
+
 vi.mock("@/lib/workspace-api", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/workspace-api")>();
   return {
@@ -223,8 +228,72 @@ function renderTransactionForm(kind: "invoice" | "bill") {
   );
 }
 
+let restoreFetch: null | (() => void) = null;
+
 beforeEach(() => {
   workspaceMocks.resetMockIds();
+  const restoreAuthSessionFetch = installAuthSessionFetchMock();
+  const restoreWorkspaceFetch = installWorkspaceApiFetchMock([
+    {
+      path: "/api/workspace/settings",
+      body: {
+        data: {
+          company: {
+            legal_name: "Vitest Trading Co",
+            tax_number: "300000000000001",
+            base_currency: "SAR",
+          },
+          settings: {
+            default_language: "en",
+          },
+        },
+      },
+    },
+    {
+      path: "/api/workspace/templates",
+      body: { data: [] },
+    },
+    {
+      path: "/api/workspace/custom-fields",
+      body: { data: [] },
+    },
+    {
+      path: "/api/workspace/cost-centers",
+      body: { data: [] },
+    },
+    {
+      path: "/api/workspace/inventory/stock",
+      body: { data: [] },
+    },
+    {
+      path: /^\/api\/workspace\/documents(?:\/.*)?$/,
+      body: { data: [] },
+    },
+    {
+      method: "POST",
+      path: "/api/workspace/intelligence/transaction",
+      body: {
+        data: {
+          suggestions: [],
+          anomalies: [],
+          reminders: [],
+          confidenceScore: 0,
+          patterns: {},
+          metrics: {},
+        },
+      },
+    },
+  ]);
+
+  restoreFetch = () => {
+    restoreWorkspaceFetch();
+    restoreAuthSessionFetch();
+  };
+});
+
+afterEach(() => {
+  restoreFetch?.();
+  restoreFetch = null;
 });
 
 describe("transaction workflow layer", () => {
