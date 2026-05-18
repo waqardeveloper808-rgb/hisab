@@ -88,10 +88,18 @@ export const guestAuthSession: AuthSession = {
   platformRole: "guest",
 };
 
-function getSessionSecret() {
-  return process.env.AUTH_SESSION_SECRET
-    ?? process.env.GULF_HISAB_API_TOKEN
-    ?? "gulf-hisab-dev-session-secret";
+export function getSessionSecret() {
+  const explicit = process.env.AUTH_SESSION_SECRET?.trim();
+
+  if (explicit) {
+    return explicit;
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("AUTH_SESSION_SECRET is required in production.");
+  }
+
+  return "hisabix-local-dev-session-secret-do-not-use-in-production";
 }
 
 function toBase64Url(bytes: Uint8Array) {
@@ -221,27 +229,18 @@ function normalizeAuthSession(parsed: Partial<LegacyAuthSession>): AuthSession |
 
 export async function readAuthSessionOutcome(cookieValue?: string | null): Promise<AuthSessionReadResult> {
   if (! cookieValue) {
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H1',location:'lib/auth-session.ts:188',message:'Auth session cookie missing',data:{hasCookie:false},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return { status: "guest", session: null, reason: "missing" };
   }
 
   const [payload, signature] = cookieValue.split(".");
 
   if (! payload || ! signature) {
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H1',location:'lib/auth-session.ts:194',message:'Auth session cookie malformed',data:{hasPayload:Boolean(payload),hasSignature:Boolean(signature)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return { status: "invalid_session", session: null, reason: "malformed" };
   }
 
   const expectedSignature = await sign(payload);
 
   if (! await timingSafeEqual(signature, expectedSignature)) {
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H2',location:'lib/auth-session.ts:200',message:'Auth session signature invalid',data:{payloadLength:payload.length},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return { status: "invalid_session", session: null, reason: "invalid_signature" };
   }
 
@@ -249,10 +248,6 @@ export async function readAuthSessionOutcome(cookieValue?: string | null): Promi
     const decoded = new TextDecoder().decode(fromBase64Url(payload));
     const parsed = JSON.parse(decoded) as Partial<LegacyAuthSession>;
     const session = normalizeAuthSession(parsed);
-
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H1',location:'lib/auth-session.ts:209',message:'Auth session parsed',data:{normalized:Boolean(session),hasParsedCompanyId:typeof parsed.companyId==='number'||typeof parsed.company_id==='number',hasParsedActiveCompany:Boolean(parsed.workspaceContext?.activeCompany??parsed.workspace_context?.active_company),normalizedCompanyId:session?.companyId??null,hasNormalizedActiveCompany:Boolean(session?.workspaceContext?.activeCompany?.id)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
 
     if (! session) {
       return { status: "invalid_session", session: null, reason: "invalid_payload" };

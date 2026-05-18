@@ -14,8 +14,37 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const dummyLoginEmail = process.env.DUMMY_LOGIN_EMAIL?.trim().toLowerCase() || "demo@hisabix.local";
-const dummyLoginPassword = process.env.DUMMY_LOGIN_PASSWORD || "demo123";
+function isDummyLoginEnabled() {
+  return process.env.NODE_ENV !== "production" && process.env.ENABLE_DUMMY_LOGIN === "1";
+}
+
+function getDummyLoginEmail() {
+  return process.env.DUMMY_LOGIN_EMAIL?.trim().toLowerCase() ?? "";
+}
+
+function getDummyLoginPassword() {
+  return process.env.DUMMY_LOGIN_PASSWORD ?? "";
+}
+
+function getDummyLoginAbilities() {
+  const configured = process.env.DUMMY_LOGIN_ABILITIES
+    ?.split(",")
+    .map((ability) => ability.trim())
+    .filter((ability) => ability.length > 0);
+
+  if (configured && configured.length > 0) {
+    return configured;
+  }
+
+  return [
+    "workspace.dashboard.view",
+    "workspace.sales.manage",
+    "workspace.reports.view",
+    "workspace.vat.view",
+    "workspace.accounting.view",
+    "company.settings.manage",
+  ];
+}
 
 function resolvePayloadAuthToken(payloadData: Record<string, unknown> | undefined) {
   const candidateKeys = ["auth_token", "authToken", "workspace_token", "workspaceToken", "token", "access_token"];
@@ -31,11 +60,17 @@ function resolvePayloadAuthToken(payloadData: Record<string, unknown> | undefine
 }
 
 function isDummyLoginRequest(body: unknown) {
-  if (process.env.NODE_ENV === "production" || ! body || typeof body !== "object") {
+  if (!isDummyLoginEnabled() || ! body || typeof body !== "object") {
     return false;
   }
 
   const candidate = body as { email?: unknown; password?: unknown };
+  const dummyLoginEmail = getDummyLoginEmail();
+  const dummyLoginPassword = getDummyLoginPassword();
+
+  if (!dummyLoginEmail || !dummyLoginPassword) {
+    return false;
+  }
 
   return typeof candidate.email === "string"
     && typeof candidate.password === "string"
@@ -50,13 +85,14 @@ function buildDummyCompanyContext() {
     id: Number.isFinite(companyId) && companyId > 0 ? companyId : 2,
     legalName: process.env.DUMMY_LOGIN_COMPANY_NAME?.trim() || "Hisabix Demo Company",
     role: "owner",
-    abilities: ["*"],
+    abilities: getDummyLoginAbilities(),
   } satisfies WorkspaceCompanyContext;
 }
 
 async function createDummyLoginResponse() {
   const activeCompany = buildDummyCompanyContext();
-  const authToken = getWorkspaceApiToken() ?? "dummy-workspace-token";
+  const dummyLoginEmail = getDummyLoginEmail();
+  const authToken = process.env.DUMMY_LOGIN_AUTH_TOKEN?.trim() || getWorkspaceApiToken() || undefined;
   const sessionValue = await createAuthSessionValue({
     id: 999001,
     userId: 999001,
@@ -76,7 +112,7 @@ async function createDummyLoginResponse() {
       user_id: 999001,
       name: process.env.DUMMY_LOGIN_NAME?.trim() || "Demo User",
       email: dummyLoginEmail,
-      auth_token: authToken,
+      auth_token: authToken ?? null,
       company_id: activeCompany.id,
       platform_role: "admin",
       workspace_context: {

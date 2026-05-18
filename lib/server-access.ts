@@ -108,10 +108,6 @@ async function fetchWorkspaceAccessProfileResult(session: AuthSession): Promise<
 export async function requireWorkspaceAccess(requirements?: { platform?: string[]; company?: string[] }): Promise<WorkspaceAccessGateResult> {
   const { session, access, sessionStatus, accessStatus } = await getWorkspaceSessionAccess();
 
-  // #region agent log
-  fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H4',location:'lib/server-access.ts:108',message:'Server workspace access gate evaluated',data:{sessionStatus,accessStatus,sessionId:session.id,companyId:session.companyId??null,hasAccess:Boolean(access),hasRequirements:Boolean(requirements)},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
-
   if (accessStatus === "invalid_session") {
     redirect("/login");
   }

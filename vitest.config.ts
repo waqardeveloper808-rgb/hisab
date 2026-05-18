@@ -14,6 +14,7 @@ export default defineConfig({
     exclude: [
       "**/node_modules/**",
       "**/.next/**",
+      "**/artifact/**",
       "**/artifacts/**",
       "**/archive/**",
       "**/chatgpt-analysis-export/**",

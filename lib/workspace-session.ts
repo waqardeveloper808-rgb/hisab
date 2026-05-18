@@ -96,9 +96,6 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
       : { status: "guest" as const, session: null, reason: "missing" as const };
 
   if (sessionResult.status === "guest") {
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:93',message:'Workspace backend context resolved guest',data:{backendBaseUrlConfigured:Boolean(backendBaseUrl)},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     const token = getWorkspaceApiToken(null);
     const companyIdStr = getConfiguredWorkspaceCompanyId();
     const auditActorRaw = process.env.GULF_HISAB_AUDIT_ACTOR_ID ?? process.env.AUDIT_ACTOR_ID;
@@ -129,9 +126,6 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
   }
 
   if (sessionResult.status === "invalid_session" || !isSessionReady(sessionResult.session)) {
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:105',message:'Workspace backend context treated session as invalid',data:{sessionStatus:sessionResult.status,hasSession:Boolean(sessionResult.session),sessionId:sessionResult.session?.id??null,userId:sessionResult.session?.userId??null,companyId:sessionResult.session?.companyId??null,activeCompanyId:sessionResult.session?.workspaceContext?.activeCompany?.id??null,hasWorkspaceToken:Boolean(getWorkspaceApiToken(sessionResult.session??null))},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     const token = getWorkspaceApiToken(null);
     const companyIdStr = getConfiguredWorkspaceCompanyId();
     const auditActorRaw = process.env.GULF_HISAB_AUDIT_ACTOR_ID ?? process.env.AUDIT_ACTOR_ID;
@@ -162,9 +156,6 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
   }
 
   if (!hasWorkspaceCompanyContext(sessionResult.session)) {
-    // #region agent log
-    fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:121',message:'Workspace backend context missing active company context',data:{sessionStatus:sessionResult.status,sessionId:sessionResult.session.id,userId:sessionResult.session.userId,companyId:sessionResult.session.companyId??null,hasWorkspaceToken:Boolean(getWorkspaceApiToken(sessionResult.session))},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return {
       backendBaseUrl,
       activeCompanyId: null,
@@ -180,10 +171,6 @@ export function resolveWorkspaceBackendContext(sessionInput: AuthSession | AuthS
   const actorId = sessionResult.session.userId;
   const workspaceToken = getWorkspaceApiToken(sessionResult.session);
   const backendConfigured = Boolean(backendBaseUrl && activeCompanyId && actorId && workspaceToken);
-
-  // #region agent log
-  fetch('http://127.0.0.1:7465/ingest/b2483e75-3306-45a2-911d-fd8fcd98d8f8',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b10564'},body:JSON.stringify({sessionId:'b10564',runId:'identity-entry-1',hypothesisId:'H3',location:'lib/workspace-session.ts:122',message:'Workspace backend context ready path evaluated',data:{backendBaseUrlConfigured:Boolean(backendBaseUrl),activeCompanyId:activeCompanyId??null,actorId:actorId??null,hasWorkspaceToken:Boolean(workspaceToken),backendConfigured,accessStatus:backendConfigured?'ready':'backend_unconfigured'},timestamp:Date.now()})}).catch(()=>{});
-  // #endregion
 
   return {
     backendBaseUrl,
