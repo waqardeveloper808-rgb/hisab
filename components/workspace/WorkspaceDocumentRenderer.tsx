@@ -8,6 +8,7 @@
 // widths, totals/QR split, stamp/signature blocks and footer are ALL derived
 // from the schema — none of it is invented here.
 
+import Image from "next/image";
 import { forwardRef, Fragment, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type {
   CSSProperties,
@@ -656,7 +657,6 @@ function TitleSection({
   language,
   logoDataUrl,
   titleUi,
-  style,
 }: {
   layout: LayoutPlan;
   language: LangMode;
@@ -1058,7 +1058,6 @@ function ItemsSection({
   schema,
   tableTargetPx,
   textColors,
-  bodyFonts,
   studioControls,
   ui,
 }: {
@@ -1085,24 +1084,21 @@ function ItemsSection({
   const [tableTargetWidthPx, setTableTargetWidthPx] = useState(() =>
     Math.min(tableTargetPx, budgetCap),
   );
+  const effectiveTableTargetWidthPx = Math.min(tableTargetWidthPx, budgetCap);
 
   const tableRef = useRef<HTMLTableElement | null>(null);
   const tableWrapRef = useRef<HTMLDivElement | null>(null);
   const [tableHeight, setTableHeight] = useState(0);
-
-  useLayoutEffect(() => {
-    setTableTargetWidthPx((prev) => Math.min(prev, budgetCap));
-  }, [budgetCap]);
 
   const fittedWidths = useMemo(
     () =>
       fitItemColumnWidthsToTarget(
         keys,
         colsSrc.map((c) => c.widthPx),
-        tableTargetWidthPx,
+        effectiveTableTargetWidthPx,
         itemColumnMinPx,
       ),
-    [keys, colsSrc, tableTargetWidthPx],
+    [keys, colsSrc, effectiveTableTargetWidthPx],
   );
 
   const fittedCols = useMemo(
@@ -1113,7 +1109,7 @@ function ItemsSection({
   const sumW = Math.max(1, fittedWidths.reduce((s, x) => s + x, 0));
   const descWp = fittedCols.find((c) => c.key === "description")?.widthPx ?? 0;
   const lineTotalWp = fittedCols.find((c) => c.key === "lineTotal")?.widthPx ?? 0;
-  const tableOverflowFlag = sumW > tableTargetWidthPx + 1;
+  const tableOverflowFlag = sumW > effectiveTableTargetWidthPx + 1;
 
   const emitWidths = useCallback(
     (arr: number[]) => {
@@ -1121,10 +1117,10 @@ function ItemsSection({
       keys.forEach((k, i) => {
         rec[k] = arr[i];
       });
-      const clean = sanitizeItemColumnWidthRecord(keys, rec, tableTargetWidthPx);
+      const clean = sanitizeItemColumnWidthRecord(keys, rec, effectiveTableTargetWidthPx);
       onWidthChange?.(clean);
     },
-    [keys, onWidthChange, tableTargetWidthPx],
+    [effectiveTableTargetWidthPx, keys, onWidthChange],
   );
 
   useLayoutEffect(() => {
@@ -1154,7 +1150,7 @@ function ItemsSection({
     const move = (ev: PointerEvent) => {
       if (ev.pointerId !== pointerId) return;
       const delta = ev.clientX - startX;
-      const next = applyBoundaryDragPx(keys, startWidths, rightIndex, delta, tableTargetWidthPx);
+      const next = applyBoundaryDragPx(keys, startWidths, rightIndex, delta, effectiveTableTargetWidthPx);
       emitWidths(next);
     };
     const up = (ev: PointerEvent) => {
@@ -1174,7 +1170,7 @@ function ItemsSection({
     <div
       className="wsv2-wf-section-body wsv2-wf-naked-section wsv2-wf-items-outer wsv2-wf-items-studio-wrap"
       data-wsv2-resizable={showHandles ? "true" : undefined}
-      data-items-target-width={tableTargetWidthPx}
+      data-items-target-width={effectiveTableTargetWidthPx}
       data-items-used-width={sumW}
       data-items-description-width={descWp}
       data-items-total-width={lineTotalWp}
@@ -1220,7 +1216,7 @@ function ItemsSection({
           ref={tableRef}
           className="wsv2-wf-items-table"
           data-density={density}
-          data-items-target-width={tableTargetWidthPx}
+          data-items-target-width={effectiveTableTargetWidthPx}
           data-items-used-width={sumW}
           data-items-overflow={tableOverflowFlag ? "true" : "false"}
           style={{
@@ -1621,12 +1617,13 @@ function QrSection({
         }}
       >
         {qrImageDataUrl ? (
-          <img
+          <Image
             src={qrImageDataUrl}
             alt="ZATCA QR"
             className="wsv2-wf-qr-image"
             width={Math.round(qb.imageSizePx)}
             height={Math.round(qb.imageSizePx)}
+            unoptimized
             style={{ display: "block", width: "100%", height: "100%", objectFit: "contain" }}
           />
         ) : (
@@ -2000,11 +1997,7 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
 
     const innerRootRef = useRef<HTMLDivElement | null>(null);
     const [paperOverflow, setPaperOverflow] = useState(false);
-    const overflowProbeKey = useMemo(
-      () =>
-        `${layout.sections.map((s) => s.id).join("|")}/${layout.itemColumns.map((c) => `${c.key}:${Math.round(c.widthPx)}`).join(",")}/${language}/${style}/${doc.lines?.length ?? 0}`,
-      [layout.sections, layout.itemColumns, language, style, doc.lines?.length],
-    );
+    const overflowProbeKey = `${layout.sections.map((s) => s.id).join("|")}/${layout.itemColumns.map((c) => `${c.key}:${Math.round(c.widthPx)}`).join(",")}/${language}/${style}/${doc.lines?.length ?? 0}`;
     const setRootEl = useCallback(
       (node: HTMLDivElement | null) => {
         innerRootRef.current = node;
@@ -2015,7 +2008,6 @@ export const WorkspaceDocumentRenderer = forwardRef<HTMLDivElement, RendererOpti
     useLayoutEffect(() => {
       const el = innerRootRef.current;
       if (!el) {
-        setPaperOverflow(false);
         return undefined;
       }
       const measure = () => {

@@ -13,6 +13,14 @@ import {
 import { resolveZatcaRuntimeDocument } from "../_shared";
 
 type ZatcaRuntimeMode = "preview" | "backend";
+type RouteParams = {
+  id: string;
+  action: string;
+};
+
+type RouteContext = {
+  params: Promise<RouteParams>;
+};
 
 function readMode(request: NextRequest): ZatcaRuntimeMode {
   const mode = request.nextUrl.searchParams.get("mode")?.toLowerCase() ?? request.headers.get("X-Workspace-Mode")?.toLowerCase();
@@ -283,7 +291,7 @@ async function handleSandbox(request: NextRequest, documentId: number, operation
   }, { status: 501 });
 }
 
-async function handleAction(request: NextRequest, params: { id: string; action: string }) {
+async function handleAction(request: NextRequest, params: RouteParams) {
   const documentId = Number(params.id);
   if (!Number.isFinite(documentId) || documentId <= 0) {
     return NextResponse.json({ message: "Invalid ZATCA document id." }, { status: 400 });
@@ -309,12 +317,12 @@ async function handleAction(request: NextRequest, params: { id: string; action: 
   }
 }
 
-export async function GET(request: NextRequest, context: { params: Promise<{ id: string; action: string }> | { id: string; action: string } }) {
-  const params = await Promise.resolve(context.params);
+export async function GET(request: NextRequest, context: RouteContext) {
+  const params = await context.params;
   return handleAction(request, params);
 }
 
-export async function POST(request: NextRequest, context: { params: Promise<{ id: string; action: string }> | { id: string; action: string } }) {
-  const params = await Promise.resolve(context.params);
+export async function POST(request: NextRequest, context: RouteContext) {
+  const params = await context.params;
   return handleAction(request, params);
 }

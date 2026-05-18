@@ -255,7 +255,7 @@ function finalizeUnderTarget(
   minGetter: (k: ColumnKey) => number,
   hard: (k: ColumnKey) => number,
 ): number[] {
-  let ww = keys.map((k, i) =>
+  const ww = keys.map((k, i) =>
     isNoWrapItemColumn(k)
       ? Math.min(itemColumnMaxPx(k), Math.max(hard(k), Math.round(w[i]!)))
       : Math.max(hard(k), Math.round(w[i]!)),
@@ -296,7 +296,7 @@ function enforceDescriptionWiderThanTotal(
   const di = keys.indexOf("description");
   const ti = keys.indexOf("lineTotal");
   if (di < 0 || ti < 0) return w;
-  let ww = [...w];
+  const ww = [...w];
   let guard = 0;
   while (ww[di]! <= ww[ti]! && guard < 4000) {
     if (ww[ti]! > hard(keys[ti]!)) {
@@ -436,7 +436,7 @@ export function applyBoundaryDragPx(
     return Math.max(h, Math.round(x));
   };
 
-  let w = widths.map((x, i) => clampW(i, x));
+  const w = widths.map((x, i) => clampW(i, x));
   const i = rightIndex - 1;
   const j = rightIndex;
   const desiredLeft = clampW(i, w[i]! + delta);

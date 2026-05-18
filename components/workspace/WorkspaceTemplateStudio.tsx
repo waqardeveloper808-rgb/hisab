@@ -11,7 +11,6 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -89,7 +88,6 @@ import {
   defaultTemplateUi,
   modernTemplatePresetUi,
   compactTemplatePresetUi,
-  zatcaStandardPresetUi,
   mergeTemplateUi,
   migrateTemplateUiPayload,
   readTemplateUiFromStorage,
@@ -291,11 +289,14 @@ function StudioFloatingPopover({
   onClose: () => void;
   children: ReactNode;
 }) {
-  const [pos, setPos] = useState<{ left: number; top: number } | null>(null);
-  useLayoutEffect(() => {
+  const pos = useMemo(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
     const left = Math.max(16, Math.min(state.anchor.x - 160, window.innerWidth - 340));
     const top = Math.max(16, Math.min(state.anchor.y, window.innerHeight - 260));
-    setPos({ left, top });
+    return { left, top };
   }, [state.anchor.x, state.anchor.y]);
   if (!pos) return null;
   return (
@@ -858,7 +859,10 @@ export function WorkspaceTemplateStudio({
       ("standard" as TemplateStyle);
     return uiPresetForStyle(seed);
   });
-  const hiddenItemColumns = templateUi.hiddenItemColumns ?? {};
+  const hiddenItemColumns = useMemo(
+    () => templateUi.hiddenItemColumns ?? {},
+    [templateUi.hiddenItemColumns],
+  );
   const infoLayoutMerged = { ...DEFAULT_INFO_CARD_LAYOUT, ...templateUi.infoCardLayout };
   const [templateAssets, setTemplateAssets] = useState<TemplateAssetState>(() =>
     readTemplateAssetsFromStorage(),
@@ -1414,8 +1418,10 @@ export function WorkspaceTemplateStudio({
   const xmlAvailable = schema.zatcaClassification === "foundation_only";
   // Style tabs: real variants only. Per spec, do not show fake templates;
   // doc types other than tax_invoice expose only the Standard variant.
-  const styleVariantsForDocType: TemplateStyle[] =
-    REAL_STYLE_VARIANTS_BY_DOC_TYPE[docType] ?? ["standard"];
+  const styleVariantsForDocType = useMemo<TemplateStyle[]>(
+    () => REAL_STYLE_VARIANTS_BY_DOC_TYPE[docType] ?? ["standard"],
+    [docType],
+  );
   useEffect(() => {
     if (!styleVariantsForDocType.includes(style)) {
       setStyle(styleVariantsForDocType[0]);

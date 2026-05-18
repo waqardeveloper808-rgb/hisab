@@ -633,7 +633,7 @@ export function buildDocumentLayout(options: BuildLayoutOptions): LayoutPlan {
   // Items columns — order overrides + visibility filter (required wins).
   const orderedKeys = options.columnOrder ?? schema.itemColumns.map((c) => c.key);
   const colMap = new Map(schema.itemColumns.map((c) => [c.key, c]));
-  let itemColumns: LayoutItemColumn[] = normalizeItemColumnWidths(
+  const itemColumns: LayoutItemColumn[] = normalizeItemColumnWidths(
     orderedKeys
       .map((key) => colMap.get(key))
       .filter((col): col is ItemColumnSpec => Boolean(col))

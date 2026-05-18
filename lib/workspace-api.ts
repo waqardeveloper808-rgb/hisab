@@ -92,6 +92,12 @@ type BackendPayment = {
   reference?: string | null;
 };
 
+type BackendCustomerStatementPayload = {
+  contact: BackendContact;
+  documents: Array<Pick<BackendDocument, "id" | "document_number" | "type" | "status" | "issue_date" | "grand_total" | "paid_total" | "balance_due">>;
+  payments: Array<Pick<BackendPayment, "id" | "payment_number" | "payment_date" | "amount" | "reference">>;
+};
+
 type BackendSettings = {
   default_language: string;
   invoice_prefix: string;
@@ -1028,6 +1034,31 @@ export type SupportAccountRecord = {
   platformRole: string;
   supportPermissions: string[];
   isPlatformActive: boolean;
+};
+
+export type CustomerStatementDocumentRecord = {
+  id: number;
+  documentNumber: string;
+  type: string;
+  status: string;
+  issueDate: string;
+  grandTotal: number;
+  paidTotal: number;
+  balanceDue: number;
+};
+
+export type CustomerStatementPaymentRecord = {
+  id: number;
+  paymentNumber: string;
+  paymentDate: string;
+  amount: number;
+  reference: string;
+};
+
+export type CustomerStatementRecord = {
+  contact: ContactRecord;
+  documents: CustomerStatementDocumentRecord[];
+  payments: CustomerStatementPaymentRecord[];
 };
 
 export type CompanyUserRecord = {
@@ -2055,6 +2086,36 @@ export async function getWorkspaceDirectory(): Promise<DirectorySnapshot | null>
   } catch {
     return null;
   }
+}
+
+export async function getCustomerStatement(contactId: number, options?: { mode?: WorkspaceResponseMode }): Promise<CustomerStatementRecord> {
+  const mode = options?.mode ?? "backend";
+  const path = mode === "preview"
+    ? `reports/customer-statements/${contactId}?mode=preview`
+    : `reports/customer-statements/${contactId}`;
+
+  const result = await request<ApiEnvelope<BackendCustomerStatementPayload>>(path, { expectedMode: mode });
+
+  return {
+    contact: mapContact(result.data.contact),
+    documents: result.data.documents.map((document) => ({
+      id: document.id,
+      documentNumber: String(document.document_number ?? ""),
+      type: document.type,
+      status: document.status,
+      issueDate: String(document.issue_date ?? ""),
+      grandTotal: numberValue(document.grand_total),
+      paidTotal: numberValue(document.paid_total),
+      balanceDue: numberValue(document.balance_due),
+    })),
+    payments: result.data.payments.map((payment) => ({
+      id: payment.id,
+      paymentNumber: String(payment.payment_number ?? ""),
+      paymentDate: String(payment.payment_date ?? ""),
+      amount: numberValue(payment.amount),
+      reference: String(payment.reference ?? ""),
+    })),
+  };
 }
 
 export async function createContactInBackend(payload: ContactPayload): Promise<ContactRecord | null> {
@@ -3389,16 +3450,21 @@ export async function getDocument(documentId: number): Promise<DocumentDetailRec
   return mapDocumentDetail(result.data);
 }
 
-export async function getDocumentPreview(documentId: number, options?: { templateId?: number | null }): Promise<DocumentPreviewRecord> {
+export async function getDocumentPreview(documentId: number, options?: { templateId?: number | null; mode?: WorkspaceResponseMode }): Promise<DocumentPreviewRecord> {
   const searchParams = new URLSearchParams();
+  const mode = options?.mode ?? "backend";
 
   if (typeof options?.templateId === "number") {
     searchParams.set("template_id", String(options.templateId));
   }
 
+  if (mode === "preview") {
+    searchParams.set("mode", "preview");
+  }
+
   const path = searchParams.size ? `documents/${documentId}/preview?${searchParams.toString()}` : `documents/${documentId}/preview`;
   const cacheKey = searchParams.size ? `document-preview:${documentId}:${searchParams.toString()}` : `document-preview:${documentId}`;
-  const result = await dedupeWorkspaceRead(cacheKey, () => request<ApiEnvelope<BackendDocumentPreview>>(path));
+  const result = await dedupeWorkspaceRead(cacheKey, () => request<ApiEnvelope<BackendDocumentPreview>>(path, { expectedMode: mode }));
   return result.data;
 }
 
@@ -3589,8 +3655,10 @@ export function getDocumentPdfUrl(
     : `${base}/documents/${documentId}/${action}`;
 }
 
-export async function listDocumentTemplates(): Promise<DocumentTemplateRecord[]> {
-  const result = await request<ApiEnvelope<BackendDocumentTemplate[]>>("templates");
+export async function listDocumentTemplates(options?: { mode?: WorkspaceResponseMode }): Promise<DocumentTemplateRecord[]> {
+  const mode = options?.mode ?? "backend";
+  const path = mode === "preview" ? "templates?mode=preview" : "templates";
+  const result = await request<ApiEnvelope<BackendDocumentTemplate[]>>(path, { expectedMode: mode });
   return result.data.map(mapDocumentTemplate);
 }
 
